@@ -1,0 +1,38 @@
+[tool.ruff]
+line-length = 200
+target-version = "py313"
+exclude = [
+  "meobeo",
+  ".git",
+  ".venv",
+  "__pycache__",
+  "build",
+  "dist",
+  "alembic",
+  "node_modules"
+]
+extend-include = ["*.ipynb"]
+
+[tool.ruff.lint]
+ignore = [
+  "E402",  # Module level import not at top of file,
+  "E712",  # Comparison to True should be 'if cond is True:' or 'if cond:' 
+  "F401",  # Module level import not at top of file
+]
+fixable = ["ALL"]
+unfixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Allow unused imports in __init__.py
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
+docstring-code-format = true
+docstring-code-line-length = 72
+preview = true
+
+[tool.ruff.analyze]
+detect-string-imports = true
+direction = "Dependents"
+exclude = ["tests/*", "scripts/*", "meobeo/*"]

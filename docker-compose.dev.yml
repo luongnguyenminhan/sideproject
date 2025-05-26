@@ -1,0 +1,58 @@
+x-shared: &shared
+  restart: always
+  image: harbor.epoints.vn/ai/meobeo-ai-api-dev:latest
+  env_file:
+    - .env
+  volumes:
+    - audio_data:/data/audio  # Add shared volume for audio files
+  networks:
+    - frecord
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "2"
+    tag: "{{.Name}}"
+services:
+  api:
+    <<: *shared
+    container_name: meobeo-ai-api-dev
+    labels:
+      logging: "promtail"
+      logging_jobname: "meobeo-ai-api-dev"
+    command: ["/app/startup.sh"]
+    ports:
+      - "${APP_PORT}:8000"
+    logging: *default-logging
+    environment:
+      - ENV=development
+      - SERVICE_TYPE=api
+      - WORKER_CONCURRENCY=4
+      - CELERY_WORKER_CONCURRENCY=4
+      - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+      - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+
+  worker:
+    <<: *shared
+    container_name: meobeo-ai-api-dev-worker
+    labels:
+      logging: "promtail"
+      logging_jobname: "meobeo-ai-api-dev-worker"
+    command: ["/app/startup.sh"]
+    logging: *default-logging
+    environment:
+      - ENV=development
+      - SERVICE_TYPE=celery_worker
+      - WORKER_CONCURRENCY=4
+      - CELERY_WORKER_CONCURRENCY=4
+      - CELERY_BROKER_URL=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+      - CELERY_RESULT_BACKEND=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+    depends_on:
+      - api
+networks:
+  frecord:
+    name: frecord
+    external: true
+volumes:
+  audio_data:  # Define the volume that was referenced

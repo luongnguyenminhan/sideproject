@@ -1,0 +1,76 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meobeo-api:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - audio_data:/data/audio  # Add shared volume for audio files
+    environment:
+      - ENV=development
+      - RUN_TESTS=false  
+      - TZ=Asia/Ho_Chi_Minh
+      - DATABASE_URL=${DATABASE_URL}
+      - DB_HOST=host.docker.internal
+      - DOCKER_ENVIRONMENT=True
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
+      - MINIO_SECURE=${MINIO_SECURE:-False}
+      - PYTHONDONTWRITEBYTECODE=1
+      - CELERY_BROKER_URL=redis://redis-meobeo:6379/5
+      - CELERY_RESULT_BACKEND=redis://redis-meobeo:6379/5
+    env_file:
+      - .env
+    # Add extra_hosts to ensure host.docker.internal works on all Docker environments
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+    networks:
+      - meobeo-network
+    depends_on:
+      - minio
+
+  celery:
+    build:  
+      context: .
+      dockerfile: Dockerfile
+    image: meobeo-api:latest
+    command: ["/app/startup.sh"]  # Explicitly set command to use startup.sh
+    volumes:
+      - .:/app
+      - audio_data:/data/audio  # Add shared volume for audio files
+    environment:
+      - ENV=development
+      - SERVICE_TYPE=celery_worker
+      - CELERY_BROKER_URL=redis://redis-meobeo:6379/5
+      - CELERY_RESULT_BACKEND=redis://redis-meobeo:6379/5
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
+      - MINIO_SECURE=false
+      - CELERY_WORKER_CONCURRENCY=4  # Set concurrency for Celery workers
+    env_file:
+      - .env
+    networks:
+      - meobeo-network
+    depends_on:
+      - redis-meobeo
+      - minio
+      - api
+    restart: always
+
+networks:
+  meobeo-network:
+    driver: bridge
+
+volumes:
+  minio-data:
+  audio_data:  # Add new volume for audio files

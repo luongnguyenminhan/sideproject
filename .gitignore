@@ -1,0 +1,28 @@
+
+# Bỏ qua thư mục __pycache__ và các tệp compiled Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Bỏ qua môi trường ảo (virtual environment)
+venv/
+meobeo/
+
+# Bỏ qua file log, cache
+*.log
+*.sqlite3
+db.sqlite3
+
+# Bỏ qua thư mục của IDE (VSCode, PyCharm)
+.vscode/
+.idea/
+alembic.ini
+.env
+
+# Bỏ qua các tệp cấu hình cá nhân
+*.sublime-project
+*.sublime-workspace
+# Bỏ qua các tệp cấu hình của hệ điều hành
+*.DS_Store
+# Bỏ qua các tệp cấu hình của hệ điều hành
+client-secret.json
