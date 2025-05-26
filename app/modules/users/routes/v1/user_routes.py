@@ -1,29 +1,26 @@
 import json
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query
 
 from app.core.base_model import APIResponse, PagingInfo
 from app.enums.base_enums import BaseErrorCode
-from app.exceptions.exception import CustomHTTPException, NotFoundException
+from app.exceptions.exception import CustomHTTPException
 from app.exceptions.handlers import handle_exceptions
 from app.http.oauth2 import get_current_user
 from app.middleware.auth_middleware import verify_token
 from app.middleware.translation_manager import _
 from app.modules.users.repository.user_repo import UserRepo
 from app.modules.users.schemas.users import (
-	ChangePasswordRequest,
-	LoginResponse,
 	PaginatedResponse,
 	SearchUserRequest,
 	SearchUserResponse,
 	UserResponse,
 )
-from fastapi import status
 
 route = APIRouter(prefix='/users', tags=['Users'], dependencies=[Depends(verify_token)])
 
 
-@route.get('/', response_model=SearchUserResponse)
+@route.get('/', response_model=APIResponse)
 @handle_exceptions
 async def search_users(
 	page: int = Query(1, ge=1),
@@ -69,7 +66,7 @@ async def search_users(
 
 	request = SearchUserRequest(page=page, page_size=page_size, filters=filters)
 	result = repo.search_users(request)
-	return SearchUserResponse(
+	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=PaginatedResponse[UserResponse](
@@ -84,7 +81,7 @@ async def search_users(
 	)
 
 
-@route.get('/me', response_model=LoginResponse)
+@route.get('/me', response_model=APIResponse)
 @handle_exceptions
 async def get_current_user_profile(current_user_payload: dict = Depends(get_current_user), repo: UserRepo = Depends()):
 	"""
@@ -99,7 +96,7 @@ async def get_current_user_profile(current_user_payload: dict = Depends(get_curr
 	if not user:
 		raise CustomHTTPException(message=_('user_not_found'))
 
-	return LoginResponse(
+	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=UserResponse.model_validate(user),
@@ -128,56 +125,4 @@ async def update_current_user_profile(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=UserResponse.model_validate(updated_user),
-	)
-
-
-@route.get('/me/isPasswordExisted', response_model=APIResponse)
-@handle_exceptions
-async def check_password_changed(current_user_payload: dict = Depends(get_current_user), repo: UserRepo = Depends()):
-	"""
-	Check if the password has been changed for the currently authenticated user
-
-	This endpoint checks if the authenticated user's password has been changed.
-	"""
-	user_id = current_user_payload.get('user_id')
-	user = repo.get_user_by_id(user_id)
-
-	if not user:
-		raise CustomHTTPException(message=_('user_not_found'))
-
-	if user.password_hash:
-		return APIResponse(
-			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-			message=_('operation_successful'),
-			data={'isPasswordChanged': True},
-		)
-	else:
-		return APIResponse(
-			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-			message=_('operation_successful'),
-			data={'isPasswordChanged': False},
-		)
-
-
-@route.post('/change-password', response_model=APIResponse)
-async def change_password(
-	request: Request,
-	change_password_data: ChangePasswordRequest,
-	current_user_payload: dict = Depends(get_current_user),
-	repo: UserRepo = Depends(),
-) -> APIResponse:
-	user_id = current_user_payload.get('user_id')
-
-	user = repo.get_user_by_id(user_id)
-
-	if not user:
-		raise CustomHTTPException(message=_('user_not_found'))
-	request_data = change_password_data.model_dump()
-	if not repo.update_password(user, request_data):
-		raise CustomHTTPException(message=_('password_update_failed'))
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('password_changed_successfully'),
-		data=None,
 	)

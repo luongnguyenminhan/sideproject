@@ -120,7 +120,7 @@ class AgentMicroService:
 						data = await response.read()
 						result = json.loads(data.decode('utf-8'))
 
-						logger.debug(f'Received complete response data')
+						logger.debug('Received complete response data')
 						print('Result:', result)
 
 						return {

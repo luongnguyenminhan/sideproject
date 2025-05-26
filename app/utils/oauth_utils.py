@@ -311,12 +311,10 @@ async def get_google_token(request: Request) -> dict:
 		logger.info(f'[OAuth Debug] Session state: {session_state}, Request state: {request_state}')
 
 		# Enhanced state validation with fallback options:
-		valid_state = False
 
 		# 1. Traditional session-based validation
 		if session_state and request_state and session_state == request_state:
 			logger.info('[OAuth Debug] State validated via session.')
-			valid_state = True
 
 		# 2. If state is missing from session but exists in request (common when sessions aren't preserved properly)
 		# We can choose to proceed with caution

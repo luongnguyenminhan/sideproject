@@ -15,54 +15,54 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenRepo(BaseRepo):
-    """Authentication repository for handling Google OAuth authentication
+	"""Authentication repository for handling Google OAuth authentication
 
-    This is the main entry point for Google OAuth authentication operations.
-    """
+	This is the main entry point for Google OAuth authentication operations.
+	"""
 
-    def __init__(self, db: Session = Depends(get_db)):
-        """Initialize the authentication repository
+	def __init__(self, db: Session = Depends(get_db)):
+		"""Initialize the authentication repository
 
-        Args:
-            db (Session): Database session
-        """
-        self.db = db
-        self.user_dal = UserDAL(db)
-        self.user_logs_dal = UserLogDAL(db)
+		Args:
+		    db (Session): Database session
+		"""
+		self.db = db
+		self.user_dal = UserDAL(db)
+		self.user_logs_dal = UserLogDAL(db)
 
-        # Initialize service
-        self._oauth_service = None
+		# Initialize service
+		self._oauth_service = None
 
-    def get_oauth_service(self):
-        """Get or initialize the OAuth service
+	def get_oauth_service(self):
+		"""Get or initialize the OAuth service
 
-        Returns:
-            OAuthService: OAuth service instance
-        """
-        if not self._oauth_service:
-            self._oauth_service = OAuthService(self.user_dal, self.user_logs_dal, self.db)
-        return self._oauth_service
+		Returns:
+		    OAuthService: OAuth service instance
+		"""
+		if not self._oauth_service:
+			self._oauth_service = OAuthService(self.user_dal, self.user_logs_dal, self.db)
+		return self._oauth_service
 
-    # ----- OAuth Methods -----
+	# ----- OAuth Methods -----
 
-    async def login_with_google(self, user_info: OAuthUserInfo):
-        """Login or register a user with Google OAuth
+	async def login_with_google(self, user_info: OAuthUserInfo):
+		"""Login or register a user with Google OAuth
 
-        Args:
-            user_info (OAuthUserInfo): Google user information
+		Args:
+		    user_info (OAuthUserInfo): Google user information
 
-        Returns:
-            dict: User information with tokens including is_new_user flag
-        """
-        return await self.get_oauth_service().login_with_google(user_info)
+		Returns:
+		    dict: User information with tokens including is_new_user flag
+		"""
+		return await self.get_oauth_service().login_with_google(user_info)
 
-    async def log_oauth_token_revocation(self, user_id: str):
-        """Log OAuth token revocation
+	async def log_oauth_token_revocation(self, user_id: str):
+		"""Log OAuth token revocation
 
-        Args:
-            user_id (str): The ID of the user revoking access
+		Args:
+		    user_id (str): The ID of the user revoking access
 
-        Returns:
-            bool: True if successful
-        """
-        return await self.get_oauth_service().log_oauth_token_revocation(user_id)
+		Returns:
+		    bool: True if successful
+		"""
+		return await self.get_oauth_service().log_oauth_token_revocation(user_id)
