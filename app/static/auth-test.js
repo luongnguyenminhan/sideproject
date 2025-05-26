@@ -7,8 +7,8 @@ class AuthTestSuite {
     constructor() {
         this.authToken = localStorage.getItem('auth_token');
         this.userInfo = null;
-        this.baseURL = window.location.origin;
-        
+        this.baseURL = "http://localhost:8000/api/v1";
+
         this.initializeElements();
         this.attachEventListeners();
         this.checkAuthStatus();
@@ -164,10 +164,10 @@ class AuthTestSuite {
             }
 
             const response = await fetch(`${this.baseURL}${endpoint}`, options);
-            
+
             let responseData;
             const contentType = response.headers.get('content-type');
-            
+
             if (contentType && contentType.includes('application/json')) {
                 responseData = await response.json();
             } else {
@@ -230,7 +230,7 @@ class AuthTestSuite {
         // Simulate fetching user info from your backend
         // In a real app, you'd call your protected user info endpoint
         this.logActivity('info', 'Fetching user information...');
-        
+
         // For testing purposes, we'll decode the JWT token if it's a JWT
         try {
             const tokenParts = this.authToken.split('.');
@@ -276,7 +276,7 @@ class AuthTestSuite {
             this.userName.textContent = this.userInfo.name;
             this.userEmail.textContent = this.userInfo.email;
             this.userId.textContent = `ID: ${this.userInfo.id}`;
-            
+
             this.userInfoDiv.style.display = 'flex';
             this.authenticatedActions.style.display = 'block';
 
@@ -331,7 +331,7 @@ class AuthTestSuite {
             <span class="log-time">${timestamp}</span>
             <span class="log-message">${message}</span>
         `;
-        
+
         this.logsContainer.appendChild(logEntry);
         this.logsContainer.scrollTop = this.logsContainer.scrollHeight;
     }
@@ -372,7 +372,7 @@ const OAuthUtils = {
     isTokenExpired: (token) => {
         const payload = OAuthUtils.parseJWT(token);
         if (!payload || !payload.exp) return true;
-        
+
         const currentTime = Math.floor(Date.now() / 1000);
         return payload.exp < currentTime;
     },
@@ -383,7 +383,7 @@ const OAuthUtils = {
     getTokenExpiryTime: (token) => {
         const payload = OAuthUtils.parseJWT(token);
         if (!payload || !payload.exp) return null;
-        
+
         const expiryTime = new Date(payload.exp * 1000);
         return expiryTime;
     },
@@ -394,10 +394,10 @@ const OAuthUtils = {
     formatTokenInfo: (token) => {
         const payload = OAuthUtils.parseJWT(token);
         if (!payload) return 'Invalid token';
-        
+
         const expiryTime = OAuthUtils.getTokenExpiryTime(token);
         const isExpired = OAuthUtils.isTokenExpired(token);
-        
+
         return {
             userId: payload.sub || payload.user_id,
             email: payload.email,
@@ -414,10 +414,10 @@ const OAuthUtils = {
 // Initialize the test suite when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.authTestSuite = new AuthTestSuite();
-    
+
     // Make utilities globally available for console testing
     window.OAuthUtils = OAuthUtils;
-    
+
     // Add some helpful console commands
     console.log('🔧 Google OAuth Test Suite loaded!');
     console.log('Available commands:');

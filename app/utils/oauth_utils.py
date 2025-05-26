@@ -31,7 +31,7 @@ oauth.register(
 	client_secret=GOOGLE_CLIENT_SECRET,
 	server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
 	client_kwargs={
-		'scope': 'openid email profile https://www.googleapis.com/auth/calendar',
+		'scope': 'openid email profile',
 	},
 )
 
@@ -604,31 +604,7 @@ def check_granted_scopes(credentials: dict) -> Dict[str, bool]:
 
 		# Check for openid access
 		features['openid'] = 'openid' in granted_scopes
-
-		# === Calendar Scopes with different granularity levels ===
-		# Full access
-		features['calendar_full'] = 'https://www.googleapis.com/auth/calendar' in granted_scopes
-
-		# Read-only access
-		features['calendar_readonly'] = 'https://www.googleapis.com/auth/calendar.readonly' in granted_scopes
-
-		# Events-only access
-		features['calendar_events'] = 'https://www.googleapis.com/auth/calendar.events' in granted_scopes
-
-		# Events read-only access
-		features['calendar_events_readonly'] = 'https://www.googleapis.com/auth/calendar.events.readonly' in granted_scopes
-
-		# Any calendar access (summary field)
-		features['calendar_any'] = any(
-			features.get(key, False)
-			for key in [
-				'calendar_full',
-				'calendar_readonly',
-				'calendar_events',
-				'calendar_events_readonly',
-			]
-		)
-
+		
 		# Add checks for other scopes as needed for your application
 
 		logger.info(f'Checked granted scopes, enabled features: {features}')

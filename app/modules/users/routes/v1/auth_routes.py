@@ -54,7 +54,7 @@ async def google_login(request: Request, login_hint: str | None = None):
 	        HTMLResponse: HTML page with the Google login button
 	"""
 	# Define scopes we want to request
-	scopes = ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/calendar']
+	scopes = ['openid', 'email', 'profile']
 
 	# Generate and return the HTML page with Google login button
 	return await generate_google_login_page(request, scopes=scopes, login_hint=login_hint)
@@ -76,7 +76,7 @@ async def google_auth_redirect(request: Request, login_hint: str | None = None):
 	        RedirectResponse: Redirect to Google OAuth consent screen
 	"""
 	# Define scopes we want to request
-	scopes = ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/calendar']
+	scopes = ['openid', 'email', 'profile']
 
 	# Return the redirect response to Google OAuth
 	return await get_google_oauth_url(request, scopes=scopes, login_hint=login_hint)

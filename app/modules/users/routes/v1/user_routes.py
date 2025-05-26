@@ -103,7 +103,7 @@ async def get_current_user_profile(current_user_payload: dict = Depends(get_curr
 	)
 
 
-@route.put('/me', response_model=LoginResponse)
+@route.put('/me', response_model=APIResponse)
 @handle_exceptions
 async def update_current_user_profile(
 	user_data: dict,
@@ -121,7 +121,7 @@ async def update_current_user_profile(
 	if not updated_user:
 		raise CustomHTTPException(message=_('user_not_found'))
 
-	return LoginResponse(
+	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=UserResponse.model_validate(updated_user),

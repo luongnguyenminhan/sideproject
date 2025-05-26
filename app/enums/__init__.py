@@ -3,9 +3,6 @@
 # Base enums
 from .base_enums import BaseEnum, BaseErrorCode, BaseMetadataEnum, Constants
 
-# Calendar enums
-from .calendar_enums import CalendarProviderEnum, EventStatusEnum
-
 # Meeting enums
 from .meeting_enums import MeetingStatusEnum, MeetingTypeEnum
 

@@ -1,10 +1,10 @@
-# Sử dụng Python 3.11 làm base image
-FROM python:3.11-slim
+# Use Python 3.11 slim-buster as the base image
+FROM python:3.11-slim-buster
 
 # Set environment variable to prevent Python from writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Đặt thư mục làm việc trong container
+# Set working directory in the container
 WORKDIR /app
 
 # Install required system dependencies
@@ -33,11 +33,12 @@ RUN mkdir -p /data/audio && \
 
 RUN python -m venv venv
 
-# Copy file yêu cầu và cài đặt dependencies
+# Install uv and use it for dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install uv && \
+    uv pip install --system -r requirements.txt
 
-# Copy toàn bộ mã nguồn vào container
+# Copy the entire source code into the container
 COPY --chown=appuser:appuser . .
 
 # Expose port
@@ -52,8 +53,6 @@ if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
     echo \"Starting Celery worker...\" && \
     python -m celery -A app.jobs.celery_worker worker --loglevel=debug --concurrency=${CELERY_WORKER_CONCURRENCY:-4}; \
 else \
-    echo \"Running database schema creation script...\" && \
-    python /app/scripts/create_db_schema.py && \
     if [ \"$ENV\" = \"development\" ]; then \
         echo \"Starting API in local mode (with hot reload)\" && \
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug; \
