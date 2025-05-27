@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { type Locale } from "@/i18n.config";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,12 +65,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen transition-colors duration-300`}
         suppressHydrationWarning={true}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
           <div className="relative min-h-screen">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
@@ -81,7 +74,6 @@ export default async function RootLayout({
               {children}
             </div>
           </div>
-        </ThemeProvider>
       </body>
     </html>
   )
