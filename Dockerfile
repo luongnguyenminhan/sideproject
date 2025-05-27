@@ -38,8 +38,9 @@ COPY requirements.txt .
 RUN pip install uv && \
     uv pip install --system -r requirements.txt
 
-# Copy the entire source code into the container
+# Copy the backend code, excluding the frontend folder
 COPY --chown=appuser:appuser . .
+RUN rm -rf frontend/
 
 # Expose port
 EXPOSE 8000

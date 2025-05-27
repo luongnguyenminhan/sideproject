@@ -8,7 +8,7 @@ from app.core.base_repo import BaseRepo
 from app.core.database import get_db
 from app.modules.users.dal.user_dal import UserDAL
 from app.modules.users.dal.user_logs_dal import UserLogDAL
-from app.modules.users.schemas.users import OAuthUserInfo
+from app.modules.users.schemas.users import OAuthUserInfo, RefreshTokenRequest
 from app.modules.users.auth.oauth_service import OAuthService
 
 logger = logging.getLogger(__name__)
@@ -44,6 +44,16 @@ class AuthenRepo(BaseRepo):
 		return self._oauth_service
 
 	# ----- OAuth Methods -----
+	async def refresh_token(self, request: RefreshTokenRequest):
+		"""Refresh user access token
+
+		Args:
+		    request (RefreshTokenRequest): Request containing refresh token
+
+		Returns:
+		    dict: New access token and user information
+		"""
+		return await self.get_oauth_service().refresh_token(request)
 
 	async def login_with_google(self, user_info: OAuthUserInfo):
 		"""Login or register a user with Google OAuth

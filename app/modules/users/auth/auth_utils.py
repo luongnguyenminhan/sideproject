@@ -148,3 +148,30 @@ def verify_refresh_token(refresh_token):
 		raise CustomHTTPException(
 			message=_('invalid_refresh_token'),
 		)
+
+
+def verify_refresh_token(refresh_token):
+	"""Verify and decode a refresh token
+
+	Args:
+	    refresh_token (str): Refresh token to verify
+
+	Returns:
+	    dict: Claims from the token
+
+	Raises:
+	    CustomHTTPException: If token validation fails
+	"""
+	jwt_generator = GenerateJWToken()
+	try:
+		claims = jwt_generator.decode_token(
+			refresh_token,
+			SECRET_KEY,
+			issuer=TOKEN_ISSUER,
+			audience=TOKEN_AUDIENCE,
+		)
+		return claims
+	except Exception:
+		raise CustomHTTPException(
+			message=_('invalid_refresh_token'),
+		)

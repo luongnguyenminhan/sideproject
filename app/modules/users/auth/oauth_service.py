@@ -8,8 +8,9 @@ from pytz import timezone
 from app.exceptions.exception import CustomHTTPException
 from app.enums.user_enums import UserRoleEnum
 from app.middleware.translation_manager import _
-from app.modules.users.schemas.users import OAuthUserInfo
-from app.modules.users.auth.auth_utils import generate_auth_tokens, log_user_action
+from app.modules.users.models.users import User
+from app.modules.users.schemas.users import OAuthUserInfo, RefreshTokenRequest
+from app.modules.users.auth.auth_utils import generate_auth_tokens, log_user_action, verify_refresh_token
 
 logger = logging.getLogger(__name__)
 
@@ -140,3 +141,55 @@ class OAuthService:
 		except Exception as ex:
 			logger.error(f'Failed to log token revocation: {ex}')
 			return False
+
+	async def refresh_token(self, request: RefreshTokenRequest):
+		"""Refresh authentication tokens using a valid refresh token
+
+		Args:
+		    request (RefreshTokenRequest): Request with refresh token
+
+		Returns:
+		    dict: User info with new authentication tokens
+
+		Raises:
+		    CustomHTTPException: If token refresh fails
+		"""
+		try:
+			# Verify and decode the refresh token
+			claims = verify_refresh_token(request.refresh_token)
+
+			# Get user from claims
+			user: User = self.user_dal.get_by_id(claims['user_id'])
+			if not user:
+				raise CustomHTTPException(message=_('user_not_found'))
+
+			# Verify user is still active
+			if not user.confirmed:
+				raise CustomHTTPException(
+					message=_('user_not_activated'),
+				)
+
+			# Generate new tokens
+			tokens = generate_auth_tokens(user)
+
+			# Prepare response with user data and new tokens
+			user_dict = user.to_dict()
+			user_dict.update(tokens)
+
+			# Log the token refresh
+			with self.user_logs_dal.transaction():
+				log_user_action(
+					self.user_logs_dal,
+					str(user.id),
+					'refresh_token',
+					'User refreshed access token',
+				)
+
+			return user_dict
+
+		except Exception as ex:
+			if not isinstance(ex, CustomHTTPException):
+				raise CustomHTTPException(
+					message=_('invalid_refresh_token'),
+				)
+			raise ex

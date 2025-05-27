@@ -22,6 +22,7 @@ from app.modules.users.schemas.users import (
 	GoogleLoginResponse,
 	GoogleRevokeTokenRequest,
 	OAuthUserInfo,
+	RefreshTokenRequest,
 	UserResponse,
 )
 from app.utils.oauth_utils import (
@@ -458,3 +459,16 @@ async def revoke_google_access(
 		message=_('google_token_revoked'),
 		data=None,
 	)
+
+@route.get('/refresh', response_model=APIResponse)
+@handle_exceptions
+async def refresh_token(token_data: RefreshTokenRequest, repo: AuthenRepo = Depends()):
+	"""Refresh token endpoint: Validate refresh token and issue a new access token"""
+	result = await repo.refresh_token(token_data)
+	response = UserResponse.model_validate(result)
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('refresh_token_success'),
+		data=response,
+	)
+
