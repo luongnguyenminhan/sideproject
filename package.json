@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "github:fortawesome/react-fontawesome",
+    "country-flag-icons": "^1.5.19",
+    "fortawesome": "^0.0.1-security",
     "next-themes": "^0.4.6"
   }
 }

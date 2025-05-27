@@ -2,7 +2,8 @@
 
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Globe, Check } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { i18n, languages, type Locale } from "@/i18n.config";
+import { VN, US } from "country-flag-icons/react/3x2";
 
 interface LanguageSwitcherProps {
   align?: "start" | "center" | "end";
@@ -42,6 +44,23 @@ export default function LanguageSwitcher({
     });
   };
 
+  const getFlagComponent = (locale: Locale) => {
+    const countryCode = languages[locale].countryCode;
+    const commonProps = { 
+      className: "w-5 h-4 object-cover rounded-sm",
+      title: languages[locale].name 
+    };
+    
+    switch (countryCode) {
+      case 'VN':
+        return <VN {...commonProps} />;
+      case 'US':
+        return <US {...commonProps} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,7 +70,7 @@ export default function LanguageSwitcher({
           className="relative"
           disabled={isPending}
         >
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
+          <FontAwesomeIcon icon={faGlobe} className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Change language</span>
           {isPending && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/80">
@@ -59,8 +78,7 @@ export default function LanguageSwitcher({
             </div>
           )}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} side={side}>
+      </DropdownMenuTrigger>      <DropdownMenuContent align={align} side={side}>
         {i18n.locales.map((locale) => (
           <DropdownMenuItem
             key={locale}
@@ -68,14 +86,16 @@ export default function LanguageSwitcher({
             className="cursor-pointer"
             disabled={isPending}
           >
-            <span className="mr-2">{languages[locale].flag}</span>
-            <span>{languages[locale].name}</span>
+            <div className="flex items-center gap-2">
+              {getFlagComponent(locale)}
+              <span>{languages[locale].name}</span>
+            </div>
             {currentLocale === locale && (
-              <Check className="ml-auto h-4 w-4" />
+              <FontAwesomeIcon icon={faCheck} className="ml-auto h-4 w-4" />
             )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
   );
 }

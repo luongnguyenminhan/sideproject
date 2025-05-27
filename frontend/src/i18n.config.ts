@@ -8,10 +8,10 @@ export type Locale = (typeof i18n)['locales'][number]
 export const languages = {
   vi: {
     name: 'Tiếng Việt',
-    flag: '🇻🇳'
+    countryCode: 'VN',
   },
   en: {
-    name: 'English', 
-    flag: '��🇸'
+    name: 'English',
+    countryCode: 'US',
   }
 } as const
