@@ -1,4 +1,5 @@
 import LanguageSwitcher from "@/components/global/languageSwapper"
+import ThemeSwapper from "@/components/global/themeSwapper"
 import ServerComponent from "@/components/server-components"
 import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
@@ -12,6 +13,7 @@ export default async function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <header className="relative w-full">
         <div className="absolute top-6 right-6 z-10 flex items-center gap-4">
+          <ThemeSwapper />
           <LanguageSwitcher />
         </div>
       </header>

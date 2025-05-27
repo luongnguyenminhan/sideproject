@@ -26,3 +26,5 @@ alembic.ini
 *.DS_Store
 # Bỏ qua các tệp cấu hình của hệ điều hành
 client-secret.json
+
+node_modules/
