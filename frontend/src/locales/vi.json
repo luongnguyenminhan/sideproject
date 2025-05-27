@@ -1,0 +1,27 @@
+{
+  "common": {
+    "hello": "Xin chào",
+    "welcome": "Chào mừng",
+    "language": "Ngôn ngữ",
+    "theme": "Giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+  "home": {
+    "title": "Tạo ứng dụng Next",
+    "description": "Được tạo bởi create next app",
+    "getStarted": "Bắt đầu bằng cách chỉnh sửa",
+    "saveChanges": "Lưu và xem thay đổi ngay lập tức",
+    "deployNow": "Triển khai ngay",
+    "readDocs": "Đọc tài liệu",
+    "learn": "Học hỏi",
+    "examples": "Ví dụ",
+    "goToNextjs": "Đến nextjs.org →"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ"
+  }
+}
