@@ -6,15 +6,33 @@
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark",
+    "system": "System",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
     "system": "System"
+  },
+  "language": {
+    "switch": "Switch language",
+    "vietnamese": "Tiếng Việt",
+    "english": "English"
   },
   "home": {
     "title": "Welcome to Next.js",
-    "description": "A powerful React framework for building modern web applications with internationalization support",
+    "description": "A powerful React framework for building modern web applications with internationalization and custom theme support",
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "serverComponentDemo": "Server Component Demo",
-    "copyright": "© 2025 Next.js Internationalization Demo. Built with ❤️",
+    "copyright": "© 2025 Next.js Internationalization Demo. Made with ❤️",
     "features": {
       "fastPerformance": {
         "title": "Fast Performance",
@@ -27,12 +45,24 @@
       "modernStack": {
         "title": "Modern Stack",
         "description": "Built with the latest React features and modern development tools"
+      },
+      "darkMode": {
+        "title": "Dark Mode",
+        "description": "Light/dark mode support with automatic system preference detection"
       }
     }
   },
   "navigation": {
     "home": "Home",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "services": "Services",
+    "blog": "Blog"
+  },
+  "server": {
+    "currentTime": "Current Time",
+    "serverRendered": "Server Rendered",
+    "locale": "Current Locale",
+    "theme": "Current Theme"
   }
 }

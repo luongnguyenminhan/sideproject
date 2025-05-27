@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Languages, Locale } from "@/i18n.config";
+import { type Locale } from "@/i18n.config";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
@@ -15,34 +15,52 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js i18n App",
-  description: "A modern Next.js application with internationalization support",
+  title: {
+    default: "Next.js i18n App",
+    template: "%s | Next.js i18n App"
+  },
+  description: "A modern Next.js application with internationalization and theme support",
+  keywords: ["Next.js", "React", "TypeScript", "i18n", "Internationalization", "Dark Mode"],
+  authors: [{ name: "Your Name" }],
+  creator: "Your Name",
+  metadataBase: new URL("https://your-domain.com"),
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "https://your-domain.com",
+    title: "Next.js i18n App",
+    description: "A modern Next.js application with internationalization and theme support",
+    siteName: "Next.js i18n App",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Next.js i18n App",
+    description: "A modern Next.js application with internationalization and theme support",
+  },
 };
 
-enum Directions {
-  RTL = "rtl",
-  LTR = "ltr",
+interface RootLayoutProps {
+  children: React.ReactNode
+  params: Promise<{ locale: Locale }>
 }
 
 export default async function RootLayout({
   children,
   params,
-}: Readonly<{
-  children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
-}>) {
-  const { locale } = await params;
+}: RootLayoutProps) {
+  const { locale } = await params
   
   return (
     <html
       lang={locale}
-      dir={locale === Languages.VIETNAMESE ? Directions.LTR : Directions.LTR}
+      dir="ltr"
       className="scroll-smooth"
       suppressHydrationWarning
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#3b82f6" />
+        <meta name="color-scheme" content="light dark" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen transition-colors duration-300`}
@@ -66,5 +84,5 @@ export default async function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

@@ -6,11 +6,29 @@
     "theme": "Giao diện",
     "light": "Sáng",
     "dark": "Tối",
-    "system": "Hệ thống"
+    "system": "Hệ thống",
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "close": "Đóng"
+  },
+  "theme": {
+    "toggle": "Chuyển đổi giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Theo hệ thống"
+  },
+  "language": {
+    "switch": "Chuyển đổi ngôn ngữ",
+    "vietnamese": "Tiếng Việt",
+    "english": "English"
   },
   "home": {
     "title": "Chào mừng đến với Next.js",
-    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ",
+    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "serverComponentDemo": "Demo Server Component",
@@ -27,12 +45,24 @@
       "modernStack": {
         "title": "Công nghệ hiện đại",
         "description": "Được xây dựng với các tính năng React mới nhất và công cụ phát triển hiện đại"
+      },
+      "darkMode": {
+        "title": "Dark Mode",
+        "description": "Hỗ trợ chế độ sáng/tối với khả năng tự động theo hệ thống"
       }
     }
   },
   "navigation": {
     "home": "Trang chủ",
     "about": "Giới thiệu",
-    "contact": "Liên hệ"
+    "contact": "Liên hệ",
+    "services": "Dịch vụ",
+    "blog": "Blog"
+  },
+  "server": {
+    "currentTime": "Thời gian hiện tại",
+    "serverRendered": "Được render từ server",
+    "locale": "Ngôn ngữ hiện tại",
+    "theme": "Theme hiện tại"
   }
 }
