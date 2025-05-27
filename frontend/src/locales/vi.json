@@ -9,15 +9,26 @@
     "system": "Hệ thống"
   },
   "home": {
-    "title": "Tạo ứng dụng Next",
-    "description": "Được tạo bởi create next app",
-    "getStarted": "Bắt đầu bằng cách chỉnh sửa",
-    "saveChanges": "Lưu và xem thay đổi ngay lập tức",
-    "deployNow": "Triển khai ngay",
-    "readDocs": "Đọc tài liệu",
-    "learn": "Học hỏi",
-    "examples": "Ví dụ",
-    "goToNextjs": "Đến nextjs.org →"
+    "title": "Chào mừng đến với Next.js",
+    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ",
+    "getStarted": "Bắt đầu",
+    "learnMore": "Tìm hiểu thêm",
+    "serverComponentDemo": "Demo Server Component",
+    "copyright": "© 2025 Next.js Internationalization Demo. Được tạo với ❤️",
+    "features": {
+      "fastPerformance": {
+        "title": "Hiệu suất nhanh",
+        "description": "Được xây dựng với tâm lý hiệu suất, mang lại trải nghiệm người dùng siêu nhanh"
+      },
+      "globalReady": {
+        "title": "Sẵn sàng toàn cầu",
+        "description": "Hỗ trợ đa ngôn ngữ đầy đủ với khả năng chuyển đổi ngôn ngữ mượt mà"
+      },
+      "modernStack": {
+        "title": "Công nghệ hiện đại",
+        "description": "Được xây dựng với các tính năng React mới nhất và công cụ phát triển hiện đại"
+      }
+    }
   },
   "navigation": {
     "home": "Trang chủ",
