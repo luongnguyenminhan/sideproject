@@ -32,7 +32,7 @@ class OTPUtils:
 		self.smtp_password = os.getenv('SMTP_PASSWORD', '')
 		self.smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
 		self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
-		self.project_name = os.getenv('PROJECT_NAME', 'MeoBeo AI')
+		self.project_name = os.getenv('PROJECT_NAME', 'CGSEM')
 
 	def GenerateOTP(self, length=6):
 		"""Generate a random OTP code

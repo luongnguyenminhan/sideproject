@@ -19,6 +19,7 @@ from app.core.config import (
 )
 from app.exceptions.exception import CustomHTTPException
 from app.middleware.translation_manager import _
+import json
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -228,7 +229,7 @@ async def generate_google_login_page(request: Request, scopes: list | None = Non
 			<body>
 				<div class="container">
 					<img src="/path/to/your/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-					<h1>MeoBeo AI</h1>
+					<h1>CGSEM</h1>
 					<p>{_('please_sign_in_with_google')}</p>
 					
 					<!-- Store state in local storage to help maintain it -->
@@ -360,20 +361,38 @@ async def get_google_token(request: Request) -> dict:
 			message=_('token_retrieval_error'),
 		)
 
-
-async def generate_auth_success_page(access_token: str, refresh_token: str = None) -> HTMLResponse:
+async def generate_auth_success_page(user: dict, is_new_user: bool = False, frontend_success_url: str = None, granted_scopes: list = None) -> HTMLResponse:
 	"""
-	Generate an HTML page that sends the authentication tokens back to the opener window.
+	Generate an HTML page that sends the authentication results back to the opener window.
 	This is used after successful OAuth authentication to communicate back to the frontend.
 
 	Args:
-	    access_token (str): The JWT access token
-	    refresh_token (str, optional): The refresh token. Defaults to None.
+		user (dict): User data including access tokens
+		is_new_user (bool, optional): Whether this is a new user registration. Defaults to False.
+		frontend_success_url (str, optional): URL to redirect if no opener window. Defaults to None.
+		granted_scopes (list, optional): List of scopes granted by the user. Defaults to None.
 
 	Returns:
-	    HTMLResponse: HTML page with JavaScript to communicate with opener
+		HTMLResponse: HTML page with JavaScript to communicate with opener
 	"""
 	try:
+		# Extract tokens from user data
+		access_token = user.get('access_token', '')
+		refresh_token = user.get('refresh_token', '')
+		
+		# Prepare user data to send back (excluding sensitive information)
+		user_data = {
+			'id': user.get('id', ''),
+			'email': user.get('email', ''),
+			'name': user.get('name', ''),
+			'picture': user.get('picture', ''),
+			'is_new_user': is_new_user,
+			'enabled_features': user.get('enabled_features', {})
+		}
+		
+		# Convert user_data to JSON string for JavaScript
+		user_data_json = json.dumps(user_data).replace("'", "\\'")
+		
 		html_content = f"""
 		<!DOCTYPE html>
 		<html>
@@ -461,7 +480,7 @@ async def generate_auth_success_page(access_token: str, refresh_token: str = Non
 				</div>
 				<div class="content">
 					<div class="success-icon"></div>
-					<p class="message">{_('authentication_successful')}</p>
+					<p class="message">{'✨ ' + _('welcome_new_user') + ' ✨' if is_new_user else _('welcome_back')}</p>
 					<p>{_('redirecting_back')}</p>
 					<div class="spinner"></div>
 				</div>
@@ -475,17 +494,21 @@ async def generate_auth_success_page(access_token: str, refresh_token: str = Non
 						window.opener.postMessage({{
 							type: 'GOOGLE_AUTH_SUCCESS',
 							accessToken: '{access_token}',
-							refreshToken: '{refresh_token or ''}',
+							refreshToken: '{refresh_token}',
+							userData: {user_data_json},
+							isNewUser: {str(is_new_user).lower()},
 							timestamp: Date.now()
 						}}, '*');  // Using '*' but the parent will validate origin
 						
 						// Close this window after a short delay
-                        alert('Authentication successful! Redirecting back to the app...');
 						setTimeout(function() {{
 							window.close();
 						}}, 1000);
+					}} else if ('{frontend_success_url}') {{
+						// If no opener but we have a success URL, redirect there
+						window.location.href = '{frontend_success_url}';
 					}} else {{
-						// If no opener, redirect to frontend
+						// If no opener and no success URL
 						document.body.innerHTML += '<p>{_('no_parent_window')}</p>';
 					}}
 				}}

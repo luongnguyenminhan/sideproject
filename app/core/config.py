@@ -40,12 +40,12 @@ GOOGLE_CLIENT_SECRET = google_creds["client_secret"]
 # Update the redirect URI to support Next.js frontend
 GOOGLE_REDIRECT_URI = "http://localhost:8000/api/v1/auth/google/callback"
 
-# Frontend redirect URLs for OAuth flows - updated for test page on port 5501
+# Frontend redirect URLs for OAuth flows - callback server on port 3000
 FRONTEND_SUCCESS_URL = os.getenv(
-    "FRONTEND_SUCCESS_URL", "http://localhost:5501/static/google_auth_test/success.html"
+    "FRONTEND_SUCCESS_URL", "http://127.0.0.1:5500/auth/google/callback"
 )
 FRONTEND_ERROR_URL = os.getenv(
-    "FRONTEND_ERROR_URL", "http://localhost:5501/static/google_auth_test/error.html"
+    "FRONTEND_ERROR_URL", "http://127.0.0.1:5500/auth?error=true"
 )
 
 # JWT Settings
