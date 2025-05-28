@@ -4,6 +4,8 @@ import "./globals.css";
 import { type Locale } from "@/i18n.config";
 import { ThemeProvider } from "next-themes";
 import { ReduxProvider } from "@/redux/provider";
+import PageWrapper from "@/components/layout/page-wrapper";
+import ClientWrapper from "@/components/layout/client-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,21 +67,25 @@ export default async function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen transition-colors duration-300`}
-        suppressHydrationWarning={true}
-      >      <ThemeProvider attribute="class">
-        <ReduxProvider>
-          <div className="relative min-h-screen">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
-            
-            {/* Main Content */}
-            <div className="relative z-10">
-              {children}
-            </div>
-          </div>
-        </ReduxProvider>
-      </ThemeProvider>
-      </body>
-    </html>
+        suppressHydrationWarning={true}>
+          <ThemeProvider attribute="class">
+            <ReduxProvider>
+              <ClientWrapper>
+                <PageWrapper>
+                  <div className="relative min-h-screen">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
+
+                    {/* Main Content */}
+                    <div className="relative z-10">
+                      {children}
+                    </div>
+                  </div>
+                </PageWrapper>
+              </ClientWrapper>
+            </ReduxProvider>
+          </ThemeProvider>
+        </body>
+      </html>
   )
 }
