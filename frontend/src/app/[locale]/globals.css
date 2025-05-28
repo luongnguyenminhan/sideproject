@@ -23,6 +23,49 @@
   --input: #e2e8f0;
   --ring: #3b82f6;
   --radius: 0.5rem;
+  
+  /* Custom gradient colors */
+  --gradient-bg-from: #eff6ff;
+  --gradient-bg-via: #ffffff;
+  --gradient-bg-to: #eef2ff;
+  --gradient-text-from: #2563eb;
+  --gradient-text-via: #9333ea;
+  --gradient-text-to: #1e40af;
+  --gradient-button-from: #3b82f6;
+  --gradient-button-to: #1d4ed8;
+  
+  /* Feature card colors */
+  --feature-blue: #dbeafe;
+  --feature-blue-dark: #1e3a8a;
+  --feature-blue-text: #2563eb;
+  --feature-blue-text-dark: #60a5fa;
+  --feature-green: #dcfce7;
+  --feature-green-dark: #14532d;
+  --feature-green-text: #16a34a;
+  --feature-green-text-dark: #4ade80;
+  --feature-purple: #f3e8ff;
+  --feature-purple-dark: #581c87;
+  --feature-purple-text: #9333ea;
+  --feature-purple-text-dark: #a855f7;
+  --feature-yellow: #fefce8;
+  --feature-yellow-dark: #713f12;
+  --feature-yellow-text: #ca8a04;
+  --feature-yellow-text-dark: #facc15;
+  
+  /* Auth page specific */
+  --auth-bg-from: #eff6ff;
+  --auth-bg-via: #ffffff;
+  --auth-bg-to: #e0e7ff;
+  --auth-card-bg: rgba(255, 255, 255, 0.9);
+  --auth-card-border: rgba(255, 255, 255, 0.2);
+  --auth-floating-blue: rgba(59, 130, 246, 0.1);
+  --auth-floating-purple: rgba(147, 51, 234, 0.1);
+  --auth-floating-pink: rgba(236, 72, 153, 0.1);
+  
+  /* Animation and interactive colors */
+  --hover-scale: 1.05;
+  --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --card-hover-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
 }
 
 /* Dark mode theme variables */
@@ -46,6 +89,49 @@
   --border: #334155;
   --input: #334155;
   --ring: #3b82f6;
+  
+  /* Custom gradient colors - dark mode */
+  --gradient-bg-from: #111827;
+  --gradient-bg-via: #1f2937;
+  --gradient-bg-to: #111827;
+  --gradient-text-from: #60a5fa;
+  --gradient-text-via: #a855f7;
+  --gradient-text-to: #93c5fd;
+  --gradient-button-from: #3b82f6;
+  --gradient-button-to: #1d4ed8;
+  
+  /* Feature card colors - dark mode */
+  --feature-blue: #1e3a8a;
+  --feature-blue-dark: #1e3a8a;
+  --feature-blue-text: #60a5fa;
+  --feature-blue-text-dark: #60a5fa;
+  --feature-green: #14532d;
+  --feature-green-dark: #14532d;
+  --feature-green-text: #4ade80;
+  --feature-green-text-dark: #4ade80;
+  --feature-purple: #581c87;
+  --feature-purple-dark: #581c87;
+  --feature-purple-text: #a855f7;
+  --feature-purple-text-dark: #a855f7;
+  --feature-yellow: #713f12;
+  --feature-yellow-dark: #713f12;
+  --feature-yellow-text: #facc15;
+  --feature-yellow-text-dark: #facc15;
+  
+  /* Auth page specific - dark mode */
+  --auth-bg-from: #111827;
+  --auth-bg-via: #1f2937;
+  --auth-bg-to: #312e81;
+  --auth-card-bg: rgba(31, 41, 55, 0.8);
+  --auth-card-border: rgba(255, 255, 255, 0.1);
+  --auth-floating-blue: rgba(59, 130, 246, 0.05);
+  --auth-floating-purple: rgba(147, 51, 234, 0.05);
+  --auth-floating-pink: rgba(236, 72, 153, 0.05);
+  
+  /* Animation and interactive colors - dark mode */
+  --hover-scale: 1.05;
+  --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --card-hover-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* System preference support */
@@ -70,5 +156,48 @@
     --border: #334155;
     --input: #334155;
     --ring: #3b82f6;
+    
+    /* Custom gradient colors - system dark mode */
+    --gradient-bg-from: #111827;
+    --gradient-bg-via: #1f2937;
+    --gradient-bg-to: #111827;
+    --gradient-text-from: #60a5fa;
+    --gradient-text-via: #a855f7;
+    --gradient-text-to: #93c5fd;
+    --gradient-button-from: #3b82f6;
+    --gradient-button-to: #1d4ed8;
+    
+    /* Feature card colors - system dark mode */
+    --feature-blue: #1e3a8a;
+    --feature-blue-dark: #1e3a8a;
+    --feature-blue-text: #60a5fa;
+    --feature-blue-text-dark: #60a5fa;
+    --feature-green: #14532d;
+    --feature-green-dark: #14532d;
+    --feature-green-text: #4ade80;
+    --feature-green-text-dark: #4ade80;
+    --feature-purple: #581c87;
+    --feature-purple-dark: #581c87;
+    --feature-purple-text: #a855f7;
+    --feature-purple-text-dark: #a855f7;
+    --feature-yellow: #713f12;
+    --feature-yellow-dark: #713f12;
+    --feature-yellow-text: #facc15;
+    --feature-yellow-text-dark: #facc15;
+    
+    /* Auth page specific - system dark mode */
+    --auth-bg-from: #111827;
+    --auth-bg-via: #1f2937;
+    --auth-bg-to: #312e81;
+    --auth-card-bg: rgba(31, 41, 55, 0.8);
+    --auth-card-border: rgba(255, 255, 255, 0.1);
+    --auth-floating-blue: rgba(59, 130, 246, 0.05);
+    --auth-floating-purple: rgba(147, 51, 234, 0.05);
+    --auth-floating-pink: rgba(236, 72, 153, 0.05);
+    
+    /* Animation and interactive colors - system dark mode */
+    --hover-scale: 1.05;
+    --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    --card-hover-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.5);
   }
 }

@@ -34,7 +34,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const t = createTranslator(dictionary);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center bg-gradient-to-br from-[color:var(--auth-bg-from)] via-[color:var(--auth-bg-via)] to-[color:var(--auth-bg-to)]">
       <header className="relative w-full h-full">
       <div className="fixed top-6 right-6 z-10 flex items-center gap-4">
         <ThemeSwapper />
@@ -44,7 +44,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       {error && (
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 rounded">
         {t('auth.authenticationError')}
         </div>
       </div>

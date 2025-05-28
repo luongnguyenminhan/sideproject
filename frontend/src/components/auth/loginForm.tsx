@@ -10,6 +10,7 @@ import { loginStart, loginSuccess, loginFailure } from '@/redux/slices/authSlice
 import authApi from '@/apis/authApi';
 import Cookies from 'js-cookie';
 import { getErrorMessage } from '@/utils/apiHandler';
+import React from 'react';
 
 interface LoginFormProps {
     callbackUrl?: string;
@@ -238,8 +239,7 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                     clearInterval(popupChecker);
                     setIsLoading(false);
                 }
-            }, 1000);
-        } catch (error) {
+            }, 1000);        } catch (error) {
             console.error("Failed to initiate Google login:", error);
             setIsLoading(false);
             const errorMessage = getErrorMessage(error);
@@ -249,59 +249,77 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
     };
 
     return (
-        <div className="flex justify-center items-center">
-            <Card 
-                className="w-full max-w-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                style={{ 
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', 
-                    borderRadius: '8px',
-                    backgroundColor: 'transparent'
-                }}
-            >
-                <Space direction="vertical" size="large" className="w-full">
-                    <div className="text-center">
-                        <h3 
-                            className="text-gray-900 dark:text-white"
-                            style={{ marginBottom: '8px', fontSize: '24px', fontWeight: '600' }}
-                        >
-                            {translations.login}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                            {translations.loginWithGoogle}
-                        </p>
-                    </div>
+        <div className="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-[color:var(--auth-bg-from)] via-[color:var(--auth-bg-via)] to-[color:var(--auth-bg-to)]">
+            <div className="w-full max-w-md relative z-10">
+                <Card 
+                    className="backdrop-blur-sm border-0 shadow-xl"
+                    style={{ 
+                        borderRadius: '20px',
+                        background: 'var(--auth-card-bg)',
+                        border: '1px solid var(--auth-card-border)'
+                    }}
+                >
+                    <div className="p-8">
+                        <Space direction="vertical" size="large" className="w-full">
+                            <div className="text-center space-y-4">
+                                <h1 className="text-4xl mb-4 p-4 font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
+                                    {translations.login}
+                                </h1>
+                                <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
+                                    {translations.loginWithGoogle}
+                                </p>
+                            </div>
 
-                    <div className="w-full">
-                        <Button 
-                            type="default"
-                            size="large"
-                            block
-                            loading={isLoading}
-                            onClick={handleGoogleLogin}
-                            icon={<FontAwesomeIcon icon={faGoogle} style={{ color: '#4285f4' }} />}
-                            className="border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            style={{
-                                height: '48px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px'
-                            }}
-                        >
-                            {isLoading 
-                                ? translations.signingIn 
-                                : translations.signInWithGoogle
-                            }
-                        </Button>
-                    </div>
+                            <div className="w-full mt-8">
+                                <Button 
+                                    type="default"
+                                    size="large"
+                                    block
+                                    loading={isLoading}
+                                    onClick={handleGoogleLogin}
+                                    className="transition-all duration-200 hover:shadow-lg"
+                                    style={{
+                                        height: '56px',
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        background: isLoading 
+                                            ? '#e5e7eb'
+                                            : '#ffffff',
+                                        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+                                        color: '#374151',
+                                        fontWeight: '600',
+                                        fontSize: '16px'
+                                    }}
+                                >
+                                    <div className="flex items-center justify-center gap-3">
+                                        {isLoading ? (
+                                            <>
+                                                <div className="w-5 h-5 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
+                                                <span>{translations.signingIn}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FontAwesomeIcon 
+                                                    icon={faGoogle} 
+                                                    className="text-[#4285f4]" 
+                                                    size="lg"
+                                                />
+                                                <span>{translations.signInWithGoogle}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </Button>
+                            </div>
 
-                    <div className="text-center">
-                        <p className="text-gray-500 dark:text-gray-400" style={{ fontSize: '12px' }}>
-                            {translations.bySigningIn}
-                        </p>
+                            <div className="text-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                                    {translations.bySigningIn}
+                                </p>
+                            </div>
+                        </Space>
                     </div>
-                </Space>
-            </Card>
+                </Card>
+            </div>
         </div>
     );
 }
