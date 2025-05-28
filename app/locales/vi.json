@@ -62,8 +62,13 @@
   "group_invitation_body_new_user": "Bạn đã được mời tham gia nhóm '{group_name}'. Vì bạn là người dùng mới trên nền tảng của chúng tôi, vui lòng đăng ký tài khoản và sau đó chấp nhận lời mời.",
   "group_invitation_button_register_join": "Đăng ký và Tham gia Nhóm",
   "group_invitation_greeting_existing_user": "Chào bạn {user_name},",
-  "group_invitation_body_existing_user": "Bạn đã được mời tham gia nhóm '{group_name}'. Nhấp vào nút bên dưới để xem và phản hồi lời mời của bạn.",
-  "group_invitation_button_view_invitation": "Xem Lời mời",
+  "group_invitation_body_existing_user": "Bạn đã được mời tham gia nhóm '{group_name}'. Nhấp vào nút bên dưới để xem và phản hồi lời mời của bạn.",  "group_invitation_button_view_invitation": "Xem Lời mời",
   "invitation_link_alternative": "Nếu bạn không thể nhấp vào nút, vui lòng sao chép và dán liên kết này vào trình duyệt của bạn: {invitation_link}",
-  "group_invitation_ignore": "Nếu bạn không mong đợi lời mời này, vui lòng bỏ qua email này."
+  "group_invitation_ignore": "Nếu bạn không mong đợi lời mời này, vui lòng bỏ qua email này.",  "facebook_page_not_found": "Không tìm thấy trang Facebook",
+  "facebook_api_error": "Đã xảy ra lỗi Facebook API",
+  "facebook_api_timeout": "Yêu cầu Facebook API đã hết thời gian chờ",
+  "facebook_api_connection_error": "Lỗi kết nối Facebook API",
+  "facebook_api_unexpected_error": "Lỗi Facebook API không mong đợi",
+  "cache_cleared_successfully": "Xóa cache thành công",
+  "cache_clear_failed": "Không thể xóa cache"
 }

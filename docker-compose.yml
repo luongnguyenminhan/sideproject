@@ -48,8 +48,6 @@ services:
     command: server /data --console-address ":9001"
     networks:
       - meobeo-network
-    restart: always
-
   celery:
     build:  
       context: .

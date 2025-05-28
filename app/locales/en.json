@@ -62,8 +62,13 @@
   "group_invitation_body_new_user": "You have been invited to join the group '{group_name}'. As you are new to our platform, please register and then accept the invitation.",
   "group_invitation_button_register_join": "Register and Join Group",
   "group_invitation_greeting_existing_user": "Hello {user_name},",
-  "group_invitation_body_existing_user": "You have been invited to join the group '{group_name}'. Click the button below to view and respond to your invitation.",
-  "group_invitation_button_view_invitation": "View Invitation",
+  "group_invitation_body_existing_user": "You have been invited to join the group '{group_name}'. Click the button below to view and respond to your invitation.",  "group_invitation_button_view_invitation": "View Invitation",
   "invitation_link_alternative": "If you cannot click the button, please copy and paste this link into your browser: {invitation_link}",
-  "group_invitation_ignore": "If you did not expect this invitation, please ignore this email."
+  "group_invitation_ignore": "If you did not expect this invitation, please ignore this email.",  "facebook_page_not_found": "Facebook page not found",
+  "facebook_api_error": "Facebook API error occurred",
+  "facebook_api_timeout": "Facebook API request timed out",
+  "facebook_api_connection_error": "Facebook API connection error",
+  "facebook_api_unexpected_error": "Unexpected Facebook API error",
+  "cache_cleared_successfully": "Cache cleared successfully",
+  "cache_clear_failed": "Failed to clear cache"
 }
