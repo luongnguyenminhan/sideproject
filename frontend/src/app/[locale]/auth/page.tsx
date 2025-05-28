@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import { getDictionary, createTranslator } from '@/utils/translation';
 import LoginForm from '@/components/auth/loginForm';
@@ -24,6 +26,15 @@ interface LoginPageProps {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  // Check for authentication cookies first
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get('access_token'); // Replace with your actual auth cookie name
+  
+  // If user is already authenticated, redirect to home
+  if (authToken) {
+    redirect('/');
+  }
+
   const params = await searchParams;
   const callbackUrl = params?.callbackUrl;
   const error = params?.error;
