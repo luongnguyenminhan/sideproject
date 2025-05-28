@@ -49,7 +49,7 @@ export default async function Header() {
       </div>
       <div className="flex items-center gap-2">
         {/* Theme and Language Switchers moved here for compact header */}
-        <div className="flex items-center gap-2">
+        <div className="fixed min-h-0 bottom-4 right-4">
           <ThemeSwapper />
         </div>
         {user ? (

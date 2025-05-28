@@ -11,6 +11,7 @@ import authApi from '@/apis/authApi';
 import Cookies from 'js-cookie';
 import { getErrorMessage } from '@/utils/apiHandler';
 import React from 'react';
+import ThemeSwapper from '../global/themeSwapper';
 
 interface LoginFormProps {
     callbackUrl?: string;
@@ -239,7 +240,8 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                     clearInterval(popupChecker);
                     setIsLoading(false);
                 }
-            }, 1000);        } catch (error) {
+            }, 1000);
+        } catch (error) {
             console.error("Failed to initiate Google login:", error);
             setIsLoading(false);
             const errorMessage = getErrorMessage(error);
@@ -247,7 +249,6 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
             message.error(translations.unableToConnect, 5);
         }
     };
-
     return (
         <div className="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-[color:var(--auth-bg-from)] via-[color:var(--auth-bg-via)] to-[color:var(--auth-bg-to)]">
             <div className="w-full max-w-md relative z-10">
@@ -319,6 +320,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                         </Space>
                     </div>
                 </Card>
+                <div className="fixed min-h-0 bottom-4 right-4">
+                <ThemeSwapper />
+                </div>
             </div>
         </div>
     );
