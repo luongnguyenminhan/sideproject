@@ -39,7 +39,8 @@ const authApi = {
       });
       
       console.log('API Response: getGoogleAuthUrl', 'HTML received');
-      return response.data;    } catch (error: unknown) {
+      return response.data;    
+    } catch (error: unknown) {
       // If we get a redirect response, return the URL to redirect to
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as any;

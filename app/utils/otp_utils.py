@@ -276,9 +276,9 @@ class OTPUtils:
 	def send_meeting_note_to_email(self, email, note: str):
 		# Create the email message
 		msg = MIMEMultipart()
-		msg['From'] = f'Meobeo.ai <{self.smtp_username}>'
+		msg['From'] = f'CGSEM <{self.smtp_username}>'
 		msg['To'] = email
-		msg['Subject'] = 'Meeting Note from Meobeo.ai'
+		msg['Subject'] = 'Meeting Note from CGSEM'
 
 		# Generate a formatted date and time for the filename
 		def get_formatted_date_time():
@@ -322,19 +322,19 @@ class OTPUtils:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Meeting Note by Meobeo.ai</title>
+            <title>Meeting Note by CGSEM</title>
         </head>
         <body style="background-color: #f0f2f5; margin: 0; padding: 0; font-family: Arial, sans-serif;">
             <div style="width: 100%; max-width: 600px; margin: 50px auto; background-color: #fff; box-shadow: 0px 15px 25px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
                 <div style="background-color: #F37429; padding: 25px; color: #fff; font-size: 26px; font-weight: bold; text-align: center; letter-spacing: 1px;">
-                    Meeting Note by Meobeo.ai
+                    Meeting Note by CGSEM
                 </div>
                 <div style="padding: 40px; text-align: center;">
                     <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">Ghi chú cuộc họp gần đây của bạn</h1>
                     <p style="font-size: 16px; color: #666; margin-bottom: 30px;">Chúng tôi đã đính kèm ghi chú dưới dạng file PDF để bạn dễ dàng tham khảo</p>
                 </div>
                 <div style="background-color: #f7f7f7; padding: 20px; text-align: center;">
-                    <p style="font-size: 16px; font-weight: bold; color: #F37429; margin: 0;">Sent by Meobeo.ai</p>
+                    <p style="font-size: 16px; font-weight: bold; color: #F37429; margin: 0;">Sent by CGSEM</p>
                     <div style="margin-top: 10px;">
                         <a href="https://www.facebook.com/profile.php?id=61564246875319" style="display: inline-block; margin: 0 10px;"><svg style="width: 24px; opacity: 0.8;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 512"><path d="M279.1 288l14.2-92.7h-88.9v-60.1c0-25.4 12.4-50.1 52.2-50.1h40.4V6.3S260.4 0 225.4 0c-73.2 0-121.1 44.4-121.1 124.7v70.6H22.9V288h81.4v224h100.2V288z"/></svg></a>
                         <a href="https://www.linkedin.com/company/fpt-telecom-hcm" style="display: inline-block; margin: 0 10px;"><svg style="width: 24px; opacity: 0.8;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 512"><path d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"/></svg></a>

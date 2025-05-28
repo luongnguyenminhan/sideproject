@@ -26,6 +26,24 @@
     "vietnamese": "Tiếng Việt",
     "english": "English"
   },
+  "auth": {
+    "login": "Login",
+    "loginDescription": "Sign in to your account",
+    "loginWithGoogle": "Sign in with your Google account",
+    "signInWithGoogle": "Sign in with Google",
+    "bySigningIn": "By signing in, you agree to our Terms and Privacy Policy",
+    "logout": "Logout",
+    "signOut": "Sign Out",
+    "welcome": "Welcome back!",
+    "authenticationError": "Authentication error occurred. Please try again.",
+    "loginSuccess": "Successfully signed in!",
+    "logoutSuccess": "Successfully signed out!",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "unauthorized": "You are not authorized to access this page.",
+    "termsAndPrivacy": "Terms and Privacy Policy",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
   "home": {
     "title": "Welcome to Next.js",
     "description": "A powerful React framework for building modern web applications with internationalization and custom theme support",
@@ -57,7 +75,10 @@
     "about": "About",
     "contact": "Contact",
     "services": "Services",
-    "blog": "Blog"
+    "blog": "Blog",
+    "login": "Login",
+    "profile": "Profile",
+    "dashboard": "Dashboard"
   },
   "server": {
     "currentTime": "Current Time",

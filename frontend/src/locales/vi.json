@@ -26,6 +26,24 @@
     "vietnamese": "Tiếng Việt",
     "english": "English"
   },
+  "auth": {
+    "login": "Đăng nhập",
+    "loginDescription": "Đăng nhập vào tài khoản của bạn",
+    "loginWithGoogle": "Đăng nhập với tài khoản Google của bạn",
+    "signInWithGoogle": "Đăng nhập với Google",
+    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với Điều khoản và Chính sách Bảo mật của chúng tôi",
+    "logout": "Đăng xuất",
+    "signOut": "Đăng xuất",
+    "welcome": "Chào mừng bạn trở lại!",
+    "authenticationError": "Có lỗi xác thực xảy ra. Vui lòng thử lại.",
+    "loginSuccess": "Đăng nhập thành công!",
+    "logoutSuccess": "Đăng xuất thành công!",
+    "sessionExpired": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "unauthorized": "Bạn không có quyền truy cập trang này.",
+    "termsAndPrivacy": "Điều khoản và Chính sách Bảo mật",
+    "privacyPolicy": "Chính sách Bảo mật",
+    "termsOfService": "Điều khoản Dịch vụ"
+  },
   "home": {
     "title": "Chào mừng đến với Next.js",
     "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",
@@ -57,7 +75,10 @@
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "services": "Dịch vụ",
-    "blog": "Blog"
+    "blog": "Blog",
+    "login": "Đăng nhập",
+    "profile": "Hồ sơ",
+    "dashboard": "Bảng điều khiển"
   },
   "server": {
     "currentTime": "Thời gian hiện tại",

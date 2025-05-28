@@ -15,7 +15,7 @@ class MDToPDFConverter:
           size: A4;
           margin: 2.5cm 2cm;
           @top-center {
-            content: "Meobeo.ai";
+            content: "cgsem.ai";
             font-family: 'Montserrat', sans-serif;
             font-size: 10pt;
             font-weight: 600;
