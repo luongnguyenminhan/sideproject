@@ -85,7 +85,7 @@ class FacebookRepo(BaseRepo):
 			url = f'{self.base_url}/{self.page_id}'
 			params = {'fields': fields, 'access_token': self.access_token}
 
-			print(f'\033[96mDEBUG: Making request to: {url}\033[0m')
+			print(f'\033[96mDEBUG: Making request to: {url}, {params}\033[0m')
 
 			async with httpx.AsyncClient(timeout=30.0) as client:
 				response = await client.get(url, params=params)
@@ -97,14 +97,17 @@ class FacebookRepo(BaseRepo):
 					raise NotFoundException(_('facebook_page_not_found'))
 
 				if response.status_code != 200:
-					print(f'\033[91mERROR: Facebook API error: {response.status_code}\033[0m')
+					print(f'\033[91mERROR: Facebook API error: {response}\033[0m')
 					raise CustomHTTPException(
 						message=_('facebook_api_error'),
-						status_code=response.status_code,
 					)
 
 				data = response.json()
-				page_info = FacebookPageInfo.model_validate(data)
+				page_info: FacebookPageInfo = FacebookPageInfo.model_validate(data)
+				page_info.posts.paging = None
+				for post in page_info.posts.data:
+					post.reactions.paging = None
+
 
 				# Cache the successful response for 24 hours
 				await redis_client.set(cache_key, data, ttl=self.cache_ttl)
