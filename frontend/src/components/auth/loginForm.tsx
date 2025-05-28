@@ -19,7 +19,8 @@ interface LoginFormProps {
         signInWithGoogle: string;
         bySigningIn: string;
         signingIn: string;
-        loginSuccess: string;        connectingToGoogle: string;
+        loginSuccess: string;
+        connectingToGoogle: string;
         pleaseWait: string;
         unableToConnect: string;
         openingGoogleLogin: string;
@@ -29,7 +30,8 @@ interface LoginFormProps {
 
 // Client Component
 export default function LoginForm({ callbackUrl, translations }: LoginFormProps) {
-    const [isLoading, setIsLoading] = useState(false);    const dispatch = useAppDispatch();
+    const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useAppDispatch();
     const router = useRouter();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -38,7 +40,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
         if (isAuthenticated && callbackUrl) {
             router.push(callbackUrl);
         }
-    }, [isAuthenticated, callbackUrl, router]);    // Listen for postMessage events from OAuth popup
+    }, [isAuthenticated, callbackUrl, router]);
+
+    // Listen for postMessage events from OAuth popup
     useEffect(() => {
         const handleMessage = async (event: MessageEvent) => {
             // Verify origin for security
@@ -134,7 +138,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
         return () => {
             window.removeEventListener("message", handleMessage);
         };
-    }, [dispatch, router, callbackUrl, translations]);const handleGoogleLogin = () => {
+    }, [dispatch, router, callbackUrl, translations]);
+
+    const handleGoogleLogin = () => {
         try {
             setIsLoading(true);
             dispatch(loginStart());
@@ -142,7 +148,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
             const apiBaseUrl =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
                 "http://localhost:8000/api/v1";
-            const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;            // Show loading message
+            const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;
+
+            // Show loading message
             message.info(translations.openingGoogleLogin, 2);
 
             // Calculate popup window position (centered)
@@ -157,7 +165,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                 "about:blank",
                 "GoogleLogin",
                 `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-            );            // Handle popup blockers
+            );
+
+            // Handle popup blockers
             if (!popup) {
                 setIsLoading(false);
                 message.error(translations.allowPopups, 5);
@@ -167,7 +177,9 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
             // Add additional metadata to the window
             if (popup.opener !== window) {
                 popup.opener = window;
-            }            // Show loading indicator in the popup while we navigate
+            }
+
+            // Show loading indicator in the popup while we navigate
             if (popup.document) {
                 popup.document.write(`
                     <html>
@@ -228,7 +240,8 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                 }
             }, 1000);
         } catch (error) {
-            console.error("Failed to initiate Google login:", error);            setIsLoading(false);
+            console.error("Failed to initiate Google login:", error);
+            setIsLoading(false);
             const errorMessage = getErrorMessage(error);
             dispatch(loginFailure(errorMessage));
             message.error(translations.unableToConnect, 5);
@@ -238,16 +251,27 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
     return (
         <div className="flex justify-center items-center">
             <Card 
-                className="w-full max-w-md"
-                style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}
+                className="w-full max-w-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                style={{ 
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', 
+                    borderRadius: '8px',
+                    backgroundColor: 'transparent'
+                }}
             >
-                <Space direction="vertical" size="large" className="w-full">                    <div className="text-center">                          <h3 style={{ marginBottom: '8px', fontSize: '24px', fontWeight: '600' }}>
+                <Space direction="vertical" size="large" className="w-full">
+                    <div className="text-center">
+                        <h3 
+                            className="text-gray-900 dark:text-white"
+                            style={{ marginBottom: '8px', fontSize: '24px', fontWeight: '600' }}
+                        >
                             {translations.login}
                         </h3>
-                        <p style={{ color: '#888' }}>
+                        <p className="text-gray-600 dark:text-gray-300">
                             {translations.loginWithGoogle}
                         </p>
-                    </div><div className="w-full">
+                    </div>
+
+                    <div className="w-full">
                         <Button 
                             type="default"
                             size="large"
@@ -255,19 +279,24 @@ export default function LoginForm({ callbackUrl, translations }: LoginFormProps)
                             loading={isLoading}
                             onClick={handleGoogleLogin}
                             icon={<FontAwesomeIcon icon={faGoogle} style={{ color: '#4285f4' }} />}
+                            className="border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             style={{
                                 height: '48px',
-                                borderColor: '#dadce0',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px'
-                            }}                        >                            {isLoading 
+                            }}
+                        >
+                            {isLoading 
                                 ? translations.signingIn 
                                 : translations.signInWithGoogle
                             }
                         </Button>
-                    </div>                    <div className="text-center">                        <p style={{ fontSize: '12px', color: '#888' }}>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-gray-500 dark:text-gray-400" style={{ fontSize: '12px' }}>
                             {translations.bySigningIn}
                         </p>
                     </div>
