@@ -60,11 +60,6 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
   if (loading) {
     return (
       <div className="w-full">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            Latest Facebook Posts
-          </h2>
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: itemsPerView }).map((_, index) => (
             <div
@@ -139,20 +134,6 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Page Info Header */}
-      {pageInfo.name && (
-        <div className="text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {translation?.postsTitle || 'Latest Posts from'} {pageInfo.name}
-          </h2>
-          {pageInfo.about && (
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
-              {pageInfo.about}
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Posts Carousel */}
       <Carousel
         autoPlay={autoPlay}
