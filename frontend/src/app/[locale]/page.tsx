@@ -5,7 +5,7 @@ import React from "react"
 import Header from '@/components/layout/header';
 import { withAuthState } from '@/hoc/withAuth';
 import type { UserResponse } from '@/types/auth.type';
-import { FacebookPostList } from '@/components/facebook';
+import { FacebookPostCarousel } from '@/components/facebook';
 
 interface HomeProps {
   user: UserResponse | null;
@@ -16,11 +16,23 @@ async function Home({ user, isAuthenticated }: HomeProps) {
   const locale = await getCurrentLocale()
   const dictionary = await getDictionary(locale)
   const t = createTranslator(dictionary)
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
       <Header />
-      <main className="flex flex-col items-center justify-center min-h-screen px-6 sm:px-8 lg:px-12 pt-24 pb-20">
+      
+      {/* Facebook Posts Carousel - Top of page */}
+      <div className="pt-10 pb-8 px-6 sm:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto">
+          <FacebookPostCarousel 
+            limit={9} 
+            autoPlay={true} 
+            itemsPerView={3}
+            truncateMessage={true}
+            maxMessageLength={120}
+          />
+        </div>
+      </div>
+      <main className="flex flex-col items-center justify-center px-6 sm:px-8 lg:px-12 pb-20">
         <div className="max-w-6xl mx-auto text-center space-y-12">
           <div className="space-y-6">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
@@ -115,16 +127,6 @@ async function Home({ user, isAuthenticated }: HomeProps) {
             </h2>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl !p-8 border-2 border-dashed border-gray-300 dark:border-gray-600">
               <ServerComponent />
-            </div>
-          </div>
-
-          {/* Facebook Posts Section */}
-          <div className="mt-20 bg-white dark:bg-gray-800 rounded-3xl !p-10 lg:!p-12 shadow-2xl border border-gray-200 dark:border-gray-700">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-              Facebook Posts
-            </h2>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl !p-8 border-2 border-dashed border-gray-300 dark:border-gray-600">
-              <FacebookPostList limit={5} />
             </div>
           </div>
 

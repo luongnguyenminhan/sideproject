@@ -7,9 +7,15 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface FacebookPostProps {
   post: FacebookPostType;
+  truncateMessage?: boolean;
+  maxMessageLength?: number;
 }
 
-const FacebookPost: React.FC<FacebookPostProps> = ({ post }) => {  const formatDate = (dateString: string) => {
+const FacebookPost: React.FC<FacebookPostProps> = ({ 
+  post, 
+  truncateMessage = false, 
+  maxMessageLength = 150 
+}) => {  const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
       return formatDistanceToNow(date, { addSuffix: true });
@@ -17,10 +23,17 @@ const FacebookPost: React.FC<FacebookPostProps> = ({ post }) => {  const formatD
       return 'Unknown time';
     }
   };
-
   const getTotalReactions = () => {
     return post.reactions?.summary?.total_count || 0;
   };
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+  const displayMessage = post.message?.split('\n')[0] // Take the first paragraph
+    ? (truncateMessage ? truncateText(post.message?.split('\n')[0], maxMessageLength) : post.message?.split('\n')[0])
+    : null;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -39,12 +52,11 @@ const FacebookPost: React.FC<FacebookPostProps> = ({ post }) => {  const formatD
             </p>
           </div>
         </div>
-
         {/* Post Message */}
-        {post.message && (
+        {displayMessage && (
           <div className="mb-4">
-            <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-              {post.message}
+            <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap min-h-[6rem] max-h-[6rem]">
+              {displayMessage}
             </p>
           </div>
         )}
@@ -82,11 +94,6 @@ const FacebookPost: React.FC<FacebookPostProps> = ({ post }) => {  const formatD
                 {getTotalReactions()}
               </span>
             </div>
-          </div>
-
-          {/* Post ID */}
-          <div className="text-xs text-gray-400 dark:text-gray-500">
-            ID: {post.id.slice(-8)}
           </div>
         </div>
       </div>

@@ -50,12 +50,13 @@ class FacebookPosts(ResponseSchema):
 	data: List[FacebookPost] = Field(default_factory=list, description='List of posts')
 	paging: Optional[PagingInfo] = Field(None, description='Paging information')
 
-
 class FacebookPageInfo(ResponseSchema):
 	"""Facebook page information"""
 
 	id: str = Field(..., description='Page ID')
 	name: str = Field(..., description='Page name')
+	picture: Optional[dict] = Field(None, description='Page picture information')
+	followers_count: Optional[int] = Field(None, description='Number of followers')
 	about: Optional[str] = Field(None, description='Page about information')
 	emails: Optional[List[str]] = Field(default_factory=list, description='Page emails')
 	website: Optional[str] = Field(None, description='Page website')
@@ -67,8 +68,6 @@ class FacebookPageResponse(APIResponse):
 	"""Facebook page API response"""
 
 	data: Optional[FacebookPageInfo] = Field(None, description='Facebook page data')
-
-
 class FacebookPostsResponse(APIResponse):
 	"""Facebook posts API response"""
 

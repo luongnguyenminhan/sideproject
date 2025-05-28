@@ -77,7 +77,8 @@ export async function handleApiCall<T>(
       }
     } else if (error instanceof ApiException) {
       // Re-throw our custom API exceptions
-      throw error;    } else {
+      throw error;
+    } else {
       // Other errors
       throw new ApiException(
         0,
