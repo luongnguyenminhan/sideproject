@@ -1,11 +1,7 @@
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
 import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import { getDictionary, createTranslator } from '@/utils/translation';
 import LoginForm from '@/components/auth/loginForm';
-import ThemeSwapper from '@/components/global/themeSwapper';
-import LanguageSwitcher from '@/components/global/languageSwapper';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getCurrentLocale();
@@ -26,15 +22,6 @@ interface LoginPageProps {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  // Check for authentication cookies first
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get('access_token'); // Replace with your actual auth cookie name
-  
-  // If user is already authenticated, redirect to home
-  if (authToken) {
-    redirect('/');
-  }
-
   const params = await searchParams;
   const callbackUrl = params?.callbackUrl;
   const error = params?.error;
@@ -46,13 +33,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-gradient-to-br from-[color:var(--auth-bg-from)] via-[color:var(--auth-bg-via)] to-[color:var(--auth-bg-to)]">
-      <header className="relative w-full h-full">
-      <div className="fixed top-6 right-6 z-10 flex items-center gap-4">
-        <ThemeSwapper />
-        <LanguageSwitcher />
-      </div>
-      </header>
-
       {error && (
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 rounded">

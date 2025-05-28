@@ -1,6 +1,6 @@
 {
   "common": {
-    "branding": "CGSEM - Cơ quan truyền thông Huyện đoàn Cần Giuộc",
+    "branding": "Tao là Minh An",
     "hello": "Xin chào",
     "welcome": "Chào mừng",
     "language": "Ngôn ngữ",
@@ -12,9 +12,10 @@
     "error": "Có lỗi xảy ra",
     "success": "Thành công",
     "cancel": "Hủy",
-    "confirm": "Xác nhận",
-    "save": "Lưu",
-    "close": "Đóng"
+    "confirm": "Xác nhận",    "save": "Lưu",
+    "close": "Đóng",
+    "yes": "Có",
+    "no": "Không"
   },
   "theme": {
     "toggle": "Chuyển đổi giao diện",
@@ -48,10 +49,15 @@
     "unableToConnect": "Không thể kết nối tới dịch vụ đăng nhập Google. Vui lòng thử lại sau.",
     "openingGoogleLogin": "Đang mở cửa sổ đăng nhập Google...",
     "allowPopups": "Vui lòng cho phép popup và thử lại"
-  },
+  },  
   "home": {
     "title": "Chào mừng đến với Next.js",
-    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",
+    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",    "welcomeBack": "Chào mừng bạn trở lại",
+    "authenticatedDescription": "Bạn đã đăng nhập thành công và có thể truy cập tất cả các tính năng của ứng dụng. Khám phá bảng điều khiển và quản lý nội dung của bạn.",
+    "userInformation": "Thông tin người dùng",
+    "email": "Email",
+    "username": "Tên người dùng",
+    "confirmed": "Đã xác nhận",
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "serverComponentDemo": "Demo Server Component",
@@ -70,8 +76,8 @@
         "description": "Được xây dựng với các tính năng React mới nhất và công cụ phát triển hiện đại"
       },
       "darkMode": {
-        "title": "Dark Mode",
-        "description": "Hỗ trợ chế độ sáng/tối với khả năng tự động theo hệ thống"
+        "title": "Chế độ tối",
+        "description": "Hỗ trợ chế độ sáng/tối với tự động phát hiện tùy chọn hệ thống"
       }
     }
   },

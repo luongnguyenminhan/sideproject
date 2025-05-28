@@ -1,6 +1,6 @@
 {
   "common": {
-    "branding": "CGSEM - Media department of Can Giuoc Youth Union",
+    "branding": "Tao là Minh An",
     "hello": "Hello",
     "welcome": "Welcome",
     "language": "Language",
@@ -12,9 +12,10 @@
     "error": "An error occurred",
     "success": "Success",
     "cancel": "Cancel",
-    "confirm": "Confirm",
-    "save": "Save",
-    "close": "Close"
+    "confirm": "Confirm",    "save": "Save",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -48,10 +49,15 @@
     "unableToConnect": "Unable to connect to Google login service. Please try again later.",
     "openingGoogleLogin": "Opening Google login window...",
     "allowPopups": "Please allow pop-ups and try again"
-  },
+  },  
   "home": {
     "title": "Welcome to Next.js",
-    "description": "A powerful React framework for building modern web applications with internationalization and custom theme support",
+    "description": "A powerful React framework for building modern web applications with internationalization and custom theme support",    "welcomeBack": "Welcome back",
+    "authenticatedDescription": "You are now logged in and can access all features of our application. Explore the dashboard and manage your content.",
+    "userInformation": "User Information",
+    "email": "Email",
+    "username": "Username", 
+    "confirmed": "Confirmed",
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "serverComponentDemo": "Server Component Demo",

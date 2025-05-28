@@ -3,8 +3,15 @@ import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
 import React from "react"
 import Header from '@/components/layout/header';
+import { withAuthState } from '@/hoc/withAuth';
+import type { UserResponse } from '@/types/auth.type';
 
-export default async function Home() {
+interface HomeProps {
+  user: UserResponse | null;
+  isAuthenticated: boolean;
+}
+
+async function Home({ user, isAuthenticated }: HomeProps) {
   const locale = await getCurrentLocale()
   const dictionary = await getDictionary(locale)
   const t = createTranslator(dictionary)
@@ -14,11 +21,12 @@ export default async function Home() {
       <Header />
       <main className="flex flex-col items-center justify-center min-h-screen px-6 sm:px-8 lg:px-12 pt-24 pb-20">
         <div className="max-w-6xl mx-auto text-center space-y-12">
-          <div className="space-y-6">            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
-              {t('home.title')}
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
+              {isAuthenticated ? `${t('home.welcomeBack')}, ${user?.name || user?.username}!` : t('home.title')}
             </h1>
             <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              {t('home.description')}
+              {isAuthenticated ? t('home.authenticatedDescription') : t('home.description')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 mt-16">            
@@ -120,10 +128,10 @@ export default async function Home() {
                 {t('home.learnMore')}
               </button>
             </div>
-          </div>
-        </div>
+          </div>        </div>
       </main>
     </div>
-
   )
 }
+
+export default withAuthState(Home);
