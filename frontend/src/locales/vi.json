@@ -38,11 +38,15 @@
     "authenticationError": "Có lỗi xác thực xảy ra. Vui lòng thử lại.",
     "loginSuccess": "Đăng nhập thành công!",
     "logoutSuccess": "Đăng xuất thành công!",
-    "sessionExpired": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",
-    "unauthorized": "Bạn không có quyền truy cập trang này.",
+    "sessionExpired": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",    "unauthorized": "Bạn không có quyền truy cập trang này.",
     "termsAndPrivacy": "Điều khoản và Chính sách Bảo mật",
     "privacyPolicy": "Chính sách Bảo mật",
-    "termsOfService": "Điều khoản Dịch vụ"
+    "termsOfService": "Điều khoản Dịch vụ",
+    "connectingToGoogle": "Đang kết nối tới Google...",
+    "pleaseWait": "Quá trình này sẽ diễn ra tự động, vui lòng chờ một chút.",
+    "unableToConnect": "Không thể kết nối tới dịch vụ đăng nhập Google. Vui lòng thử lại sau.",
+    "openingGoogleLogin": "Đang mở cửa sổ đăng nhập Google...",
+    "allowPopups": "Vui lòng cho phép popup và thử lại"
   },
   "home": {
     "title": "Chào mừng đến với Next.js",

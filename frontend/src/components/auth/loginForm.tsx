@@ -13,10 +13,22 @@ import { getErrorMessage } from '@/utils/apiHandler';
 
 interface LoginFormProps {
     callbackUrl?: string;
+    translations: {
+        login: string;
+        loginWithGoogle: string;
+        signInWithGoogle: string;
+        bySigningIn: string;
+        signingIn: string;
+        loginSuccess: string;        connectingToGoogle: string;
+        pleaseWait: string;
+        unableToConnect: string;
+        openingGoogleLogin: string;
+        allowPopups: string;
+    };
 }
 
 // Client Component
-export default function LoginForm({ callbackUrl }: LoginFormProps) {
+export default function LoginForm({ callbackUrl, translations }: LoginFormProps) {
     const [isLoading, setIsLoading] = useState(false);    const dispatch = useAppDispatch();
     const router = useRouter();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -85,7 +97,7 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                             })
                         );
 
-                        message.success("Login successful!", 3);
+                        message.success(translations.loginSuccess, 3);
                         
                         // Redirect to callback URL or home
                         setTimeout(() => {
@@ -122,7 +134,7 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
         return () => {
             window.removeEventListener("message", handleMessage);
         };
-    }, [dispatch, router, callbackUrl]);const handleGoogleLogin = () => {
+    }, [dispatch, router, callbackUrl, translations]);const handleGoogleLogin = () => {
         try {
             setIsLoading(true);
             dispatch(loginStart());
@@ -130,10 +142,8 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
             const apiBaseUrl =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
                 "http://localhost:8000/api/v1";
-            const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;
-
-            // Show loading message
-            message.info("Opening Google login window...", 2);
+            const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;            // Show loading message
+            message.info(translations.openingGoogleLogin, 2);
 
             // Calculate popup window position (centered)
             const width = 600;
@@ -147,26 +157,22 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                 "about:blank",
                 "GoogleLogin",
                 `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-            );
-
-            // Handle popup blockers
+            );            // Handle popup blockers
             if (!popup) {
                 setIsLoading(false);
-                message.error("Please allow pop-ups and try again", 5);
+                message.error(translations.allowPopups, 5);
                 return;
             }
 
             // Add additional metadata to the window
             if (popup.opener !== window) {
                 popup.opener = window;
-            }
-
-            // Show loading indicator in the popup while we navigate
+            }            // Show loading indicator in the popup while we navigate
             if (popup.document) {
                 popup.document.write(`
                     <html>
                         <head>
-                            <title>Connecting to Google...</title>
+                            <title>${translations.connectingToGoogle}</title>
                             <style>
                                 body {
                                     font-family: Arial, sans-serif;
@@ -195,9 +201,9 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                             </style>
                         </head>
                         <body>
-                            <h2>Connecting to Google...</h2>
+                            <h2>${translations.connectingToGoogle}</h2>
                             <div class="spinner"></div>
-                            <p>This process will happen automatically, please wait a moment.</p>
+                            <p>${translations.pleaseWait}</p>
                         </body>
                     </html>
                 `);
@@ -222,11 +228,10 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                 }
             }, 1000);
         } catch (error) {
-            console.error("Failed to initiate Google login:", error);
-            setIsLoading(false);
+            console.error("Failed to initiate Google login:", error);            setIsLoading(false);
             const errorMessage = getErrorMessage(error);
             dispatch(loginFailure(errorMessage));
-            message.error("Unable to connect to Google login service. Please try again later.", 5);
+            message.error(translations.unableToConnect, 5);
         }
     };
 
@@ -236,14 +241,13 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                 className="w-full max-w-md"
                 style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}
             >
-                <Space direction="vertical" size="large" className="w-full">
-                    <div className="text-center">                          <h3 style={{ marginBottom: '8px', fontSize: '24px', fontWeight: '600' }}>
-                            Login
+                <Space direction="vertical" size="large" className="w-full">                    <div className="text-center">                          <h3 style={{ marginBottom: '8px', fontSize: '24px', fontWeight: '600' }}>
+                            {translations.login}
                         </h3>
                         <p style={{ color: '#888' }}>
-                            Sign in with your Google account
+                            {translations.loginWithGoogle}
                         </p>
-                    </div>                    <div className="w-full">
+                    </div><div className="w-full">
                         <Button 
                             type="default"
                             size="large"
@@ -258,16 +262,13 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px'
-                            }}                        >
-                            {isLoading 
-                                ? 'Signing in...' 
-                                : 'Sign in with Google'
+                            }}                        >                            {isLoading 
+                                ? translations.signingIn 
+                                : translations.signInWithGoogle
                             }
                         </Button>
-                    </div>
-
-                    <div className="text-center">                        <p style={{ fontSize: '12px', color: '#888' }}>
-                            By signing in, you agree to our Terms and Privacy Policy
+                    </div>                    <div className="text-center">                        <p style={{ fontSize: '12px', color: '#888' }}>
+                            {translations.bySigningIn}
                         </p>
                     </div>
                 </Space>

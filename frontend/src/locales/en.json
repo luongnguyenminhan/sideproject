@@ -38,11 +38,15 @@
     "authenticationError": "Authentication error occurred. Please try again.",
     "loginSuccess": "Successfully signed in!",
     "logoutSuccess": "Successfully signed out!",
-    "sessionExpired": "Your session has expired. Please sign in again.",
-    "unauthorized": "You are not authorized to access this page.",
+    "sessionExpired": "Your session has expired. Please sign in again.",    "unauthorized": "You are not authorized to access this page.",
     "termsAndPrivacy": "Terms and Privacy Policy",
     "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "connectingToGoogle": "Connecting to Google...",
+    "pleaseWait": "This process will happen automatically, please wait a moment.",
+    "unableToConnect": "Unable to connect to Google login service. Please try again later.",
+    "openingGoogleLogin": "Opening Google login window...",
+    "allowPopups": "Please allow pop-ups and try again"
   },
   "home": {
     "title": "Welcome to Next.js",
