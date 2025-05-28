@@ -4,6 +4,7 @@ import ServerComponent from "@/components/server-components"
 import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
 import React from "react"
+import Header from '@/components/layout/header';
 
 export default async function Home() {
   const locale = await getCurrentLocale()
@@ -12,6 +13,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
+      <Header />
       <header className="relative w-full">
         <div className="absolute top-6 right-6 z-10 flex items-center gap-4">
           <ThemeSwapper />
