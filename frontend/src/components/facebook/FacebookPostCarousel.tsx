@@ -12,6 +12,17 @@ interface FacebookPostCarouselProps {
   itemsPerView?: number;
   truncateMessage?: boolean;
   maxMessageLength?: number;
+  locale?: string;
+  translation?: {
+    postsTitle?: string;
+    postCountPrefix?: string;
+    postCountSuffix?: string;
+    errorTitle?: string;
+    noPostsTitle?: string;
+    noPostsDescription?: string;
+    unknownTime?: string;
+    post?: string;
+  };
 }
 
 const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({ 
@@ -19,7 +30,9 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
   autoPlay = true,
   itemsPerView = 3,
   truncateMessage = true,
-  maxMessageLength = 150
+  maxMessageLength = 150,
+  translation,
+  locale
 }) => {
   const [pageInfo, setPageInfo] = useState<FacebookPageInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +105,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
-            Failed to load Facebook posts
+            {translation?.errorTitle || 'Error Fetching Posts'}
           </h3>
           <p className="text-red-600 dark:text-red-400 text-sm">
             {error}
@@ -112,10 +125,10 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            No posts available
+            {translation?.noPostsTitle || 'No Facebook Posts Available'}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            There are no Facebook posts to display at the moment.
+            {translation?.noPostsDescription || 'There are no Facebook posts to display at the moment.'}
           </p>
         </div>
       </div>
@@ -130,7 +143,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
       {pageInfo.name && (
         <div className="text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Latest Posts from {pageInfo.name}
+            {translation?.postsTitle || 'Latest Posts from'} {pageInfo.name}
           </h2>
           {pageInfo.about && (
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
@@ -153,6 +166,11 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
             post={post}
             truncateMessage={truncateMessage}
             maxMessageLength={maxMessageLength}
+            locale={locale}
+            translation={{
+              unknownTime: translation?.unknownTime,
+              post: translation?.post,
+            }}
           />
         ))}
       </Carousel>
@@ -161,7 +179,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = ({
       {posts.length > 0 && (
         <div className="text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {posts.length} latest posts
+            {translation?.postCountPrefix || 'Showing'} {posts.length} {translation?.postCountSuffix || 'posts from this page.'}
           </p>
         </div>
       )}

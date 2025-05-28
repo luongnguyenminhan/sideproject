@@ -44,6 +44,12 @@ export interface FacebookPosts {
 export interface FacebookPageInfo {
   id: string;
   name: string;
+  picture?: {
+        data: {
+            url: string;
+        }
+    } | null;
+  followers_count?: number | null;
   about?: string | null;
   emails?: string[];
   website?: string | null;

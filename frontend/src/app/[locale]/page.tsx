@@ -29,6 +29,17 @@ async function Home({ user, isAuthenticated }: HomeProps) {
             itemsPerView={3}
             truncateMessage={true}
             maxMessageLength={120}
+            locale={locale}
+            translation= {{
+              postsTitle: t('home.facebookPostsTitle') || 'Latest Facebook Posts',
+              postCountPrefix: t('home.facebookPostCountPrefix') || 'Showing',
+              postCountSuffix: t('home.facebookPostCountSuffix') || 'posts from this page.',
+              errorTitle: t('home.facebookErrorTitle') || 'Error Fetching Facebook Posts',
+              noPostsTitle: t('home.noPostsTitle') || 'No Facebook Posts Available',
+              noPostsDescription: t('home.noPostsDescription') || 'There are currently no posts available from this Facebook page.',
+              unknownTime: t('home.unknownTime') || 'Unknown time',
+              post: t('home.post') || 'Post'
+            }}
           />
         </div>
       </div>
@@ -121,7 +132,8 @@ async function Home({ user, isAuthenticated }: HomeProps) {
                 {t('home.features.darkMode.description')}
               </p>
             </div>
-          </div>          <div className="mt-20 bg-white dark:bg-gray-800 rounded-3xl !p-10 lg:!p-12 shadow-2xl border border-gray-200 dark:border-gray-700">
+          </div>
+          <div className="mt-20 bg-white dark:bg-gray-800 rounded-3xl !p-10 lg:!p-12 shadow-2xl border border-gray-200 dark:border-gray-700">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-8">
               {t('home.serverComponentDemo')}
             </h2>
@@ -132,14 +144,16 @@ async function Home({ user, isAuthenticated }: HomeProps) {
 
           
           <div className="mt-16 space-y-8">
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">              <button className="px-10 py-4 text-lg text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:from-blue-700 hover:to-blue-900">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <button className="px-10 py-4 text-lg text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:from-blue-700 hover:to-blue-900">
                 {t('home.getStarted')}
               </button>
               <button className="px-10 py-4 text-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-300 dark:border-gray-600 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 transform hover:-translate-y-1">
                 {t('home.learnMore')}
               </button>
             </div>
-          </div>        </div>
+          </div>
+        </div>
       </main>
     </div>
   )

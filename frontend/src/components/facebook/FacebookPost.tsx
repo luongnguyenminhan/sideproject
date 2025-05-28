@@ -4,25 +4,37 @@ import React from 'react';
 import Image from 'next/image';
 import { FacebookPost as FacebookPostType } from '@/types/facebook.type';
 import { formatDistanceToNow } from 'date-fns';
+import { vi, enUS } from 'date-fns/locale';
 
 interface FacebookPostProps {
   post: FacebookPostType;
   truncateMessage?: boolean;
   maxMessageLength?: number;
+  locale?: string;
+  translation?: {
+    unknownTime?: string;
+    post?: string;
+  };
 }
 
 const FacebookPost: React.FC<FacebookPostProps> = ({ 
   post, 
   truncateMessage = false, 
-  maxMessageLength = 150 
-}) => {  const formatDate = (dateString: string) => {
+  maxMessageLength = 150,
+  locale,
+  translation
+}) => {
+const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true });
+        const date = new Date(dateString);
+        return formatDistanceToNow(date,{
+  addSuffix: true,
+  locale: locale === 'vi' ? vi : enUS,
+});
     } catch {
-      return 'Unknown time';
+        return translation?.unknownTime || 'Unknown time';
     }
-  };
+};
   const getTotalReactions = () => {
     return post.reactions?.summary?.total_count || 0;
   };
@@ -46,7 +58,7 @@ const FacebookPost: React.FC<FacebookPostProps> = ({
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Facebook Post</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">{translation?.post || 'Facebook Post'}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {formatDate(post.created_time)}
             </p>
