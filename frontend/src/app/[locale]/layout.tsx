@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Next.js i18n App",
-    template: "%s | Next.js i18n App"
+    default: "CGSEM",
+    template: "%s | CGSEM"
   },
   description: "A modern Next.js application with internationalization and theme support",
   keywords: ["Next.js", "React", "TypeScript", "i18n", "Internationalization", "Dark Mode"],
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     url: "https://your-domain.com",
-    title: "Next.js i18n App",
+    title: "CGSEM",
     description: "A modern Next.js application with internationalization and theme support",
-    siteName: "Next.js i18n App",
+    siteName: "CGSEM",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Next.js i18n App",
+    title: "CGSEM",
     description: "A modern Next.js application with internationalization and theme support",
   },
 };

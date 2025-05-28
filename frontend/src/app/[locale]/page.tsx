@@ -1,5 +1,3 @@
-import LanguageSwitcher from "@/components/global/languageSwapper"
-import ThemeSwapper from "@/components/global/themeSwapper"
 import ServerComponent from "@/components/server-components"
 import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
@@ -14,13 +12,6 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
       <Header />
-      <header className="relative w-full">
-        <div className="absolute top-6 right-6 z-10 flex items-center gap-4">
-          <ThemeSwapper />
-          <LanguageSwitcher />
-        </div>
-      </header>
-
       <main className="flex flex-col items-center justify-center min-h-screen px-6 sm:px-8 lg:px-12 pt-24 pb-20">
         <div className="max-w-6xl mx-auto text-center space-y-12">
           <div className="space-y-6">            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
