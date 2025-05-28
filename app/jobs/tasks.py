@@ -36,4 +36,3 @@ class CallbackTask(Task):
 		"""
 		logger.debug(f'Task {task_id} failed with exception: {exc}')
 		pass
-

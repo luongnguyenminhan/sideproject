@@ -361,6 +361,7 @@ async def get_google_token(request: Request) -> dict:
 			message=_('token_retrieval_error'),
 		)
 
+
 async def generate_auth_success_page(user: dict, is_new_user: bool = False, frontend_success_url: str = None, granted_scopes: list = None) -> HTMLResponse:
 	"""
 	Generate an HTML page that sends the authentication results back to the opener window.
@@ -379,7 +380,7 @@ async def generate_auth_success_page(user: dict, is_new_user: bool = False, fron
 		# Extract tokens from user data
 		access_token = user.get('access_token', '')
 		refresh_token = user.get('refresh_token', '')
-		
+
 		# Prepare user data to send back (excluding sensitive information)
 		user_data = {
 			'id': user.get('id', ''),
@@ -387,12 +388,12 @@ async def generate_auth_success_page(user: dict, is_new_user: bool = False, fron
 			'name': user.get('name', ''),
 			'picture': user.get('picture', ''),
 			'is_new_user': is_new_user,
-			'enabled_features': user.get('enabled_features', {})
+			'enabled_features': user.get('enabled_features', {}),
 		}
-		
+
 		# Convert user_data to JSON string for JavaScript
 		user_data_json = json.dumps(user_data).replace("'", "\\'")
-		
+
 		html_content = f"""
 		<!DOCTYPE html>
 		<html>
@@ -627,7 +628,7 @@ def check_granted_scopes(credentials: dict) -> Dict[str, bool]:
 
 		# Check for openid access
 		features['openid'] = 'openid' in granted_scopes
-		
+
 		# Add checks for other scopes as needed for your application
 
 		logger.info(f'Checked granted scopes, enabled features: {features}')

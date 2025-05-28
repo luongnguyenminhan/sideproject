@@ -460,6 +460,7 @@ async def revoke_google_access(
 		data=None,
 	)
 
+
 @route.get('/refresh', response_model=APIResponse)
 @handle_exceptions
 async def refresh_token(token_data: RefreshTokenRequest, repo: AuthenRepo = Depends()):
@@ -471,4 +472,3 @@ async def refresh_token(token_data: RefreshTokenRequest, repo: AuthenRepo = Depe
 		message=_('refresh_token_success'),
 		data=response,
 	)
-
