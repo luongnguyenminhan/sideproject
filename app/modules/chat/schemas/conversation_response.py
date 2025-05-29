@@ -5,13 +5,13 @@ from datetime import datetime
 
 
 class ConversationResponse(ResponseSchema):
-    """Response schema for conversation information"""
+	"""Response schema for conversation information"""
 
-    model_config = ConfigDict(from_attributes=True)
+	model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    name: str
-    message_count: int
-    last_activity: datetime
-    create_date: datetime
-    update_date: Optional[datetime]
+	id: str
+	name: str
+	message_count: int
+	last_activity: datetime
+	create_date: datetime
+	update_date: Optional[datetime]
