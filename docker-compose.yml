@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   api:
     build:
@@ -85,6 +87,27 @@ services:
     networks:
       - meobeo-network
     restart: always
+  mongodb:
+    image: mongo:7.0
+    container_name: sideproject_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: sideproject_chat
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - sideproject_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # frontend:
   #   build:
@@ -108,7 +131,11 @@ services:
 networks:
   meobeo-network:
     driver: bridge
+  sideproject_network:
+    driver: bridge
 
 volumes:
   minio-data:
   audio_data:  # Add new volume for audio files
+  mongodb_data:
+    driver: local
