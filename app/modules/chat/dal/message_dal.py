@@ -88,3 +88,17 @@ class MessageDAL(BaseDAL[Message]):
 		else:
 			print(f'\033[95m[MessageDAL.get_latest_message] No messages found for conversation: {conversation_id}\033[0m')
 		return message
+
+	def soft_delete_by_conversation(self, conversation_id: str):
+		"""Soft delete all messages in a conversation"""
+		print(f'\033[93m[MessageDAL.soft_delete_by_conversation] Soft deleting all messages for conversation: {conversation_id}\033[0m')
+		updated_count = (
+			self.db.query(self.model)
+			.filter(
+				self.model.conversation_id == conversation_id,
+				self.model.is_deleted == False,
+			)
+			.update({'is_deleted': True})
+		)
+		print(f'\033[92m[MessageDAL.soft_delete_by_conversation] Soft deleted {updated_count} messages for conversation: {conversation_id}\033[0m')
+		return updated_count

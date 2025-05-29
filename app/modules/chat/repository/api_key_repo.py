@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.core.database import get_db
 from app.modules.chat.dal.api_key_dal import ApiKeyDAL
-from app.exceptions.exception import NotFoundException, ValidationException
+from app.exceptions.exception import NotFoundException
 from app.middleware.translation_manager import _
 
 

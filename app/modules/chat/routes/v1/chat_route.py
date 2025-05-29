@@ -229,15 +229,15 @@ async def websocket_chat_endpoint(
 					await websocket_manager.send_message(user_id, {'type': 'assistant_typing', 'status': True})
 
 					try:
-						# Get AI response with streaming
-						print(f'\033[95m[websocket_chat_endpoint] Getting AI response\033[0m')
-						## TODO: This will integrate with LangChain/LangGraph agent
+						# Get AI response with streaming using Agent system
+						print(f'\033[95m[websocket_chat_endpoint] Getting AI response via Agent system\033[0m')
 						ai_response = await chat_repo.get_ai_response(
 							conversation_id=conversation_id,
 							user_message=content,
 							api_key=api_key,
+							user_id=user_id
 						)
-						print(f'\033[92m[websocket_chat_endpoint] AI response received: {ai_response.get("model_used", "unknown_model")}\033[0m')
+						print(f'\033[92m[websocket_chat_endpoint] Agent response received: {ai_response.get("model_used", "unknown_model")}\033[0m')
 
 						# Create AI message in database
 						print(f'\033[96m[websocket_chat_endpoint] Creating AI message in database\033[0m')
@@ -352,15 +352,15 @@ async def send_message(
 		raise
 
 	try:
-		# Get AI response (non-streaming)
-		print(f'\033[95m[send_message] Getting AI response (non-streaming)\033[0m')
-		## TODO: This will integrate with LangChain/LangGraph agent
+		# Get AI response using Agent system (non-streaming)
+		print(f'\033[95m[send_message] Getting AI response via Agent system (non-streaming)\033[0m')
 		ai_response = await chat_repo.get_ai_response(
 			conversation_id=request.conversation_id,
 			user_message=request.content,
 			api_key=request.api_key,
+			user_id=user_id
 		)
-		print(f'\033[92m[send_message] AI response received: {ai_response.get("model_used", "unknown_model")}\033[0m')
+		print(f'\033[92m[send_message] Agent response received: {ai_response.get("model_used", "unknown_model")}\033[0m')
 
 		# Create AI message
 		print(f'\033[96m[send_message] Creating AI message\033[0m')

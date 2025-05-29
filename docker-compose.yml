@@ -10,7 +10,8 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - audio_data:/data/audio  # Add shared volume for audio files    environment:
+      - audio_data:/data/audio 
+    environment:
       - ENV=development
       - RUN_TESTS=false  
       - TZ=Asia/Ho_Chi_Minh
@@ -27,12 +28,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
       - MINIO_SECURE=${MINIO_SECURE:-False}
-      - MONGODB_USER=${MONGODB_USER}
-      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
-      - MONGODB_HOST=${MONGODB_HOST}
-      - MONGODB_PORT=${MONGODB_PORT}
-      - MONGODB_DATABASE=${MONGODB_DATABASE}
-      - MONGODB_AUTH_SOURCE=${MONGODB_AUTH_SOURCE}
+
       - PYTHONDONTWRITEBYTECODE=1
     env_file:
       - .env
@@ -44,7 +40,6 @@ services:
       - meobeo-network
     depends_on:
       - minio
-      - mongodb
 
   minio:
     image: minio/minio
@@ -78,12 +73,6 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
-      - MONGODB_USER=${MONGODB_USER}
-      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
-      - MONGODB_HOST=${MONGODB_HOST}
-      - MONGODB_PORT=${MONGODB_PORT}
-      - MONGODB_DATABASE=${MONGODB_DATABASE}
-      - MONGODB_AUTH_SOURCE=${MONGODB_AUTH_SOURCE}
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
@@ -97,7 +86,6 @@ services:
     depends_on:
       - redis-meobeo
       - minio
-      - mongodb
       - api
     restart: always
   redis-meobeo:
@@ -108,27 +96,6 @@ services:
     networks:
       - meobeo-network
     restart: always
-  mongodb:
-    image: mongo:7.0
-    container_name: sideproject_mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD:-password123}
-      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-sideproject_chat}
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d
-    networks:
-      - meobeo-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   # frontend:
   #   build:
@@ -156,5 +123,4 @@ networks:
 volumes:
   minio-data:
   audio_data:  # Add new volume for audio files
-  mongodb_data:
-    driver: local
+

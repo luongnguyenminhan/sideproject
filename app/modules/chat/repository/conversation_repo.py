@@ -4,8 +4,7 @@ from app.core.database import get_db
 from app.modules.chat.dal.conversation_dal import ConversationDAL
 from app.modules.chat.dal.message_dal import MessageDAL
 from app.modules.chat.schemas.conversation_request import ConversationListRequest
-from app.modules.chat.services.mongodb_service import mongodb_service
-from app.exceptions.exception import NotFoundException, ValidationException
+from app.exceptions.exception import NotFoundException
 from app.middleware.translation_manager import _
 from datetime import datetime
 
@@ -95,22 +94,15 @@ class ConversationRepo:
 		print(f'\033[94m[ConversationRepo.delete_conversation] Conversation found: {conversation.name}, message_count: {conversation.message_count}\033[0m')
 
 		with self.conversation_dal.transaction():
-			# Soft delete in MySQL
+			# Soft delete related messages in MySQL first
+			print(f'\033[94m[ConversationRepo.delete_conversation] Soft deleting related messages in MySQL\033[0m')
+			self.message_dal.soft_delete_by_conversation(conversation_id)
+			print(f'\033[92m[ConversationRepo.delete_conversation] Messages soft deleted in MySQL\033[0m')
+
+			# Soft delete conversation in MySQL
 			print(f'\033[94m[ConversationRepo.delete_conversation] Performing soft delete in MySQL\033[0m')
 			self.conversation_dal.delete(conversation_id)
 			print(f'\033[92m[ConversationRepo.delete_conversation] Conversation soft deleted in MySQL\033[0m')
-
-			# Delete messages from MongoDB
-			try:
-				print(f'\033[94m[ConversationRepo.delete_conversation] Deleting messages from MongoDB\033[0m')
-				mongodb_service.delete_conversation_messages(conversation_id)
-				print(f'\033[92m[ConversationRepo.delete_conversation] Messages deleted from MongoDB\033[0m')
-			except Exception as e:
-				print(f'\033[91m[ConversationRepo.delete_conversation] Failed to delete MongoDB messages: {e}\033[0m')
-				import logging
-
-				logger = logging.getLogger(__name__)
-				logger.error(f'Failed to delete MongoDB messages for conversation {conversation_id}: {e}')
 
 		print(f'\033[92m[ConversationRepo.delete_conversation] Conversation deletion completed\033[0m')
 

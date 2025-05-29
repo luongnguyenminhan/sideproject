@@ -10,7 +10,7 @@ class MessageRole(str, enum.Enum):
 
 
 class Message(BaseEntity):
-	"""Message model - stored in MongoDB but metadata in MySQL"""
+	"""Message model - stored entirely in MySQL"""
 
 	__tablename__ = 'messages'
 
