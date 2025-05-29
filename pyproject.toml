@@ -18,6 +18,7 @@ ignore = [
   "E402",  # Module level import not at top of file,
   "E712",  # Comparison to True should be 'if cond is True:' or 'if cond:' 
   "F401",  # Module level import not at top of file
+  "F541",  # f-string is missing placeholders
 ]
 fixable = ["ALL"]
 unfixable = ["ALL"]
