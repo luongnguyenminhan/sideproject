@@ -149,5 +149,31 @@
     "serverRendered": "Server Rendered",
     "locale": "Current Locale",
     "theme": "Current Theme"
+  },
+  "chat": {
+    "welcomeTitle": "Welcome to Chat",
+    "welcomeDescription": "Select a conversation from the sidebar to start chatting.",
+    "addApiKey": "Add API Key",
+    "enterApiKey": "Enter API key...",
+    "apiKeySet": "API Key Set",
+    "resetApiKey": "Reset API Key",
+    "noMessages": "No messages yet",
+    "startConversation": "Start a conversation!",
+    "typeMessage": "Type your message...",
+    "conversations": "Conversations",
+    "new": "New",
+    "newConversation": "New Conversation",
+    "noConversationsYet": "No conversations yet",
+    "createFirstChat": "Create your first chat",
+    "messages": "messages",
+    "uploadedFiles": "Uploaded Files",
+    "noFilesUploaded": "No files uploaded yet",
+    "uploadFilesDescription": "Upload files in the chat to see them here",
+    "chats": "Chats",
+    "files": "Files",
+    "download": "Download",
+    "delete": "Delete",
+    "file": "file",
+    "filesPlural": "files"
   }
 }

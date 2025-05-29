@@ -56,7 +56,7 @@ if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
 else \
     if [ \"$ENV\" = \"development\" ]; then \
         echo \"Starting API in local mode (with hot reload)\" && \
-        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug; \
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app --log-level debug; \
     else \
         echo \"Starting API in production mode\" && \
         uvicorn main:app --host 0.0.0.0 --port 8000 --workers ${WORKER_CONCURRENCY:-4} --log-level debug; \

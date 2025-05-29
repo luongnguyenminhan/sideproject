@@ -149,5 +149,31 @@
     "serverRendered": "Được render từ server",
     "locale": "Ngôn ngữ hiện tại",
     "theme": "Theme hiện tại"
+  },
+  "chat": {
+    "welcomeTitle": "Chào mừng đến với Chat",
+    "welcomeDescription": "Chọn một cuộc trò chuyện từ thanh bên để bắt đầu chat.",
+    "addApiKey": "Thêm API Key",
+    "enterApiKey": "Nhập API key...",
+    "apiKeySet": "Đã thiết lập API Key",
+    "resetApiKey": "Đặt lại API Key",
+    "noMessages": "Chưa có tin nhắn",
+    "startConversation": "Bắt đầu cuộc trò chuyện!",
+    "typeMessage": "Nhập tin nhắn của bạn...",
+    "conversations": "Cuộc trò chuyện",
+    "new": "Mới",
+    "newConversation": "Cuộc trò chuyện mới",
+    "noConversationsYet": "Chưa có cuộc trò chuyện",
+    "createFirstChat": "Tạo chat đầu tiên của bạn",
+    "messages": "tin nhắn",
+    "uploadedFiles": "Tệp đã tải lên",
+    "noFilesUploaded": "Chưa có tệp nào được tải lên",
+    "uploadFilesDescription": "Tải tệp lên trong chat để xem chúng ở đây",
+    "chats": "Chat",
+    "files": "Tệp",
+    "download": "Tải xuống",
+    "delete": "Xóa",
+    "file": "tệp",
+    "filesPlural": "tệp"
   }
 }

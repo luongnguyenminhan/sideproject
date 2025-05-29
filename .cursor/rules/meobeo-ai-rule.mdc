@@ -350,4 +350,4 @@ app/modules/{module_name}/
 - **Models**: `{module}_model.py` inheriting `BaseEntity`
 - **Requests**: `{module}_request.py` inheriting `RequestSchema` or `FilterableRequestSchema`
 - **Responses**: `{module}_response.py` inheriting `ResponseSchema`
-- **Always use APIResponse[T] for route responses**
+- **Always use APIResponse for route responses**

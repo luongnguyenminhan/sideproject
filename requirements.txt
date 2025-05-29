@@ -28,3 +28,4 @@ aiohttp==3.11.18
 weasyprint>=54.0
 markdown2>=2.4.0
 python-dotenv==1.0.1
+python-jose==3.5.0
