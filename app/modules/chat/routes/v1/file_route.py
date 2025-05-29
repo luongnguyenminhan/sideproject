@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.file_repo import FileRepo
 from app.modules.chat.schemas.file_request import FileListRequest
 from app.modules.chat.schemas.file_response import FileResponse
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
 from app.exceptions.handlers import handle_exceptions
-from app.middleware.auth_middleware import verify_token, get_current_user
+from app.middleware.auth_middleware import verify_token
 from app.middleware.translation_manager import _
 from typing import List, Optional
 import io
@@ -30,7 +31,7 @@ async def upload_files(
     )
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("files_uploaded_successfully"),
         data=[FileResponse.model_validate(file) for file in uploaded_files],
     )
@@ -48,7 +49,7 @@ async def get_files(
     result = repo.get_user_files(user_id, request)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("files_retrieved_successfully"),
         data=PaginatedResponse(
             items=[FileResponse.model_validate(file) for file in result.items],
@@ -74,7 +75,7 @@ async def get_file(
     file = repo.get_file_by_id(file_id, user_id)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("file_retrieved_successfully"),
         data=FileResponse.model_validate(file),
     )
@@ -93,7 +94,7 @@ async def get_file_download_url(
     download_url = repo.get_file_download_url(file_id, user_id, expires)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("download_url_generated"),
         data={"download_url": download_url, "expires_in": expires},
     )
@@ -135,5 +136,7 @@ async def delete_file(
     await repo.delete_file(file_id, user_id)
 
     return APIResponse(
-        error_code=0, message=_("file_deleted_successfully"), data={"deleted": True}
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("file_deleted_successfully"),
+        data={"deleted": True},
     )

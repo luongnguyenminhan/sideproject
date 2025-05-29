@@ -20,7 +20,8 @@ RUN apt-get update && \
     libjpeg-dev \
     libopenjp2-7-dev \
     fonts-dejavu \
-    fonts-liberation && \
+    fonts-liberation \
+    netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
@@ -51,7 +52,9 @@ USER appuser
 # Create an entrypoint script within the Dockerfile
 ENTRYPOINT ["/bin/bash", "-c", "\
 if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
-    echo \"Starting Celery worker...\" && \
+    echo \"Waiting for MongoDB to be ready...\" && \
+    while ! nc -z mongodb 27017; do sleep 1; done && \
+    echo \"MongoDB is ready. Starting Celery worker...\" && \
     python -m celery -A app.jobs.celery_worker worker --loglevel=debug --concurrency=${CELERY_WORKER_CONCURRENCY:-4}; \
 else \
     if [ \"$ENV\" = \"development\" ]; then \

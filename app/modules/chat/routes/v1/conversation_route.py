@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from app.core.database import get_db
+from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.conversation_repo import ConversationRepo
 from app.modules.chat.schemas.conversation_request import (
     CreateConversationRequest,
@@ -10,7 +9,7 @@ from app.modules.chat.schemas.conversation_request import (
 from app.modules.chat.schemas.conversation_response import ConversationResponse
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
 from app.exceptions.handlers import handle_exceptions
-from app.middleware.auth_middleware import verify_token, get_current_user
+from app.middleware.auth_middleware import verify_token
 from app.middleware.translation_manager import _
 
 route = APIRouter(
@@ -32,7 +31,7 @@ async def get_conversations(
     result = repo.get_user_conversations(user_id, request)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("conversations_retrieved_successfully"),
         data=PaginatedResponse(
             items=[ConversationResponse.model_validate(conv) for conv in result.items],
@@ -60,7 +59,7 @@ async def create_conversation(
     )
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("conversation_created_successfully"),
         data=ConversationResponse.model_validate(conversation),
     )
@@ -78,7 +77,7 @@ async def get_conversation(
     conversation = repo.get_conversation_by_id(conversation_id, user_id)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("conversation_retrieved_successfully"),
         data=ConversationResponse.model_validate(conversation),
     )
@@ -99,7 +98,7 @@ async def update_conversation(
     )
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("conversation_updated_successfully"),
         data=ConversationResponse.model_validate(conversation),
     )
@@ -117,7 +116,7 @@ async def delete_conversation(
     repo.delete_conversation(conversation_id, user_id)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("conversation_deleted_successfully"),
         data={"deleted": True},
     )
@@ -148,7 +147,7 @@ async def get_conversation_messages(
     )
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("messages_retrieved_successfully"),
         data=PaginatedResponse(
             items=[msg.dict() for msg in result.items],

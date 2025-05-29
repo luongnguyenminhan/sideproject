@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.api_key_repo import ApiKeyRepo
 from app.modules.chat.schemas.api_key_request import SaveApiKeyRequest
 from app.modules.chat.schemas.api_key_response import ApiKeyResponse
 from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
-from app.middleware.auth_middleware import verify_token, get_current_user
+from app.middleware.auth_middleware import verify_token
 from app.middleware.translation_manager import _
 
 route = APIRouter(
@@ -32,7 +33,7 @@ async def save_api_key(
     )
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("api_key_saved_successfully"),
         data=ApiKeyResponse.model_validate(api_key),
     )
@@ -48,7 +49,7 @@ async def get_api_keys(
     api_keys = repo.get_user_api_keys(user_id)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("api_keys_retrieved_successfully"),
         data=[ApiKeyResponse.model_validate(key) for key in api_keys],
     )
@@ -66,7 +67,9 @@ async def delete_api_key(
     repo.delete_api_key(key_id, user_id)
 
     return APIResponse(
-        error_code=0, message=_("api_key_deleted_successfully"), data={"deleted": True}
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("api_key_deleted_successfully"),
+        data={"deleted": True},
     )
 
 
@@ -82,7 +85,7 @@ async def set_default_api_key(
     api_key = repo.set_default_api_key(key_id, user_id)
 
     return APIResponse(
-        error_code=0,
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
         message=_("api_key_set_as_default"),
         data=ApiKeyResponse.model_validate(api_key),
     )

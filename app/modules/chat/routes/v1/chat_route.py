@@ -7,11 +7,10 @@ from app.modules.chat.schemas.chat_request import SendMessageRequest
 from app.modules.chat.schemas.chat_response import SendMessageResponse
 from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
-from app.middleware.auth_middleware import verify_token, get_current_user
-from app.http.oauth2 import verify_websocket_token
+from app.middleware.auth_middleware import verify_token
+from app.http.oauth2 import get_current_user, verify_websocket_token
 from app.middleware.translation_manager import _
-from app.modules.users.models.users import User
-from app.exceptions.exception import ForbiddenException, ValidationException
+from app.exceptions.exception import ValidationException
 import logging
 
 logger = logging.getLogger(__name__)
@@ -246,7 +245,7 @@ async def send_message(
         )
 
         return APIResponse(
-            error_code=0,
+            error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
             message=_("message_sent_successfully"),
             data=SendMessageResponse(
                 user_message=user_message.dict(), ai_message=ai_message.dict()

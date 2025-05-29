@@ -36,6 +36,7 @@ services:
       - meobeo-network
     depends_on:
       - minio
+      - mongodb
 
   minio:
     image: minio/minio
@@ -64,6 +65,7 @@ services:
       - SERVICE_TYPE=celery_worker
       - CELERY_BROKER_URL=redis://redis-meobeo:6379/0
       - CELERY_RESULT_BACKEND=redis://redis-meobeo:6379/0
+      - MONGODB_URL=mongodb://admin:password123@mongodb:27017/sideproject_chat?authSource=admin
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
@@ -77,6 +79,7 @@ services:
     depends_on:
       - redis-meobeo
       - minio
+      - mongodb
       - api
     restart: always
   redis-meobeo:
@@ -101,7 +104,7 @@ services:
       - mongodb_data:/data/db
       - ./mongo-init:/docker-entrypoint-initdb.d
     networks:
-      - sideproject_network
+      - meobeo-network
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 30s
@@ -130,8 +133,6 @@ services:
 
 networks:
   meobeo-network:
-    driver: bridge
-  sideproject_network:
     driver: bridge
 
 volumes:
