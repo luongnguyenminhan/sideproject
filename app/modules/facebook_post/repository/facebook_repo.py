@@ -109,10 +109,24 @@ class FacebookRepo(BaseRepo):
                     )
 
                 data = response.json()
+                def remove_paging_recursively(obj):
+                    """Recursively remove all 'paging' fields from a dictionary or list"""
+                    if isinstance(obj, dict):
+                        # Remove paging key if it exists
+                        if 'paging' in obj:
+                            obj['paging'] = None
+                        # Recursively process all values
+                        for value in obj.values():
+                            remove_paging_recursively(value)
+                    elif isinstance(obj, list):
+                        # Recursively process all items in the list
+                        for item in obj:
+                            remove_paging_recursively(item)
+
+                # Remove all paging fields from the response data
+                remove_paging_recursively(data)
+                
                 page_info: FacebookPageInfo = FacebookPageInfo.model_validate(data)
-                page_info.posts.paging = None
-                for post in page_info.posts.data:
-                    post.reactions.paging = None
 
                 # Cache the successful response for 24 hours
                 await redis_client.set(cache_key, data, ttl=self.cache_ttl)

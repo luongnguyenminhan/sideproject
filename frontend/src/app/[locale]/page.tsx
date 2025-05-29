@@ -6,6 +6,7 @@ import Header from '@/components/layout/header';
 import { withAuthState } from '@/hoc/withAuth';
 import type { UserResponse } from '@/types/auth.type';
 import { FacebookPostCarousel } from '@/components/facebook';
+import facebookPostApi from "@/apis/facebookPost";
 
 interface HomeProps {
   user: UserResponse | null;
@@ -16,30 +17,25 @@ async function Home({ user, isAuthenticated }: HomeProps) {
   const locale = await getCurrentLocale()
   const dictionary = await getDictionary(locale)
   const t = createTranslator(dictionary)
-  return (
+
+    const postInformation = await facebookPostApi.getPageInfoWithPosts({ limit: 9 })  || null;
+    console.log('Post Information:', postInformation)
+
+
+    return (
     <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
       <Header />
       
       {/* Facebook Posts Carousel - Top of page */}
       <div className="pt-10 pb-8 px-6 sm:px-8 lg:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[80%] mx-auto">
           <FacebookPostCarousel 
             limit={9} 
             autoPlay={true} 
-            itemsPerView={3}
             truncateMessage={true}
             maxMessageLength={120}
+            pageInfo={postInformation}
             locale={locale}
-            translation= {{
-              postsTitle: t('home.facebookPostsTitle') || 'Latest Facebook Posts',
-              postCountPrefix: t('home.facebookPostCountPrefix') || 'Showing',
-              postCountSuffix: t('home.facebookPostCountSuffix') || 'posts from this page.',
-              errorTitle: t('home.facebookErrorTitle') || 'Error Fetching Facebook Posts',
-              noPostsTitle: t('home.noPostsTitle') || 'No Facebook Posts Available',
-              noPostsDescription: t('home.noPostsDescription') || 'There are currently no posts available from this Facebook page.',
-              unknownTime: t('home.unknownTime') || 'Unknown time',
-              post: t('home.post') || 'Post'
-            }}
           />
         </div>
       </div>

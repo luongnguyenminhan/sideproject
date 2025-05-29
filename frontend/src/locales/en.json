@@ -69,8 +69,7 @@
     "noPostsTitle": "No Facebook Posts Available",
     "noPostsDescription": "There are currently no posts available from this Facebook page.",
     "unknownTime": "Unknown time",
-    "post": "Facebook Post",
-    "features": {
+    "post": "Facebook Post",    "features": {
       "fastPerformance": {
         "title": "Fast Performance",
         "description": "Built with performance in mind, delivering lightning-fast user experiences"
@@ -87,6 +86,52 @@
         "title": "Dark Mode",
         "description": "Light/dark mode support with automatic system preference detection"
       }
+    }
+  },
+  "aboutUs": {
+    "title": "About Us",
+    "subtitle": "Learn more about our story, mission, and the team behind our platform.",
+    "mission": {
+      "title": "Our Mission",
+      "description": "We strive to create innovative solutions that connect people and enhance digital experiences through cutting-edge technology and user-centered design."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become a leading platform that empowers businesses and individuals to achieve their goals through seamless digital transformation and social connectivity."
+    },
+    "story": {
+      "title": "Our Story",
+      "paragraph1": "Founded with a passion for innovation and excellence, our company began as a small team of dedicated developers and designers who shared a common vision: to create digital solutions that make a real difference.",
+      "paragraph2": "Today, we continue to grow and evolve, always staying true to our core values of quality, innovation, and customer satisfaction. Our platform serves thousands of users worldwide, helping them connect, share, and achieve their goals."
+    },
+    "team": {
+      "title": "Our Team",
+      "description": "A diverse group of passionate professionals"
+    },
+    "values": {
+      "title": "Our Values",
+      "subtitle": "The principles that guide everything we do",
+      "innovation": "Innovation",
+      "innovationDesc": "Constantly pushing boundaries and exploring new possibilities",
+      "quality": "Quality", 
+      "qualityDesc": "Delivering excellence in every product and service we provide",
+      "collaboration": "Collaboration",
+      "collaborationDesc": "Working together to achieve shared goals and success",
+      "integrity": "Integrity",
+      "integrityDesc": "Building trust through transparency and ethical practices"
+    },
+    "social": {
+      "title": "Connect With Us",
+      "subtitle": "Follow our latest updates and connect with our community",
+      "pageInfo": "Facebook Page Information",
+      "followers": "Followers",
+      "about": "About this page"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Join thousands of users who trust our platform for their digital needs.",
+      "getStarted": "Get Started",
+      "contactUs": "Contact Us"
     }
   },
   "navigation": {
