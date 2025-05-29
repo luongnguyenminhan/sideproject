@@ -31,7 +31,11 @@ export default async function ChatPage() {
     chats: t('chat.chats'),
     files: t('chat.files'),
     download: t('chat.download'),
-    delete: t('chat.delete')
+    delete: t('chat.delete'),
+    // Add missing translations for mobile sidebar
+    openMenu: t('chat.openMenu'),
+    typing: t('chat.typing'),
+    sending: t('chat.sending')
   }
 
   return (

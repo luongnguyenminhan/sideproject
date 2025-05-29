@@ -10,8 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - audio_data:/data/audio  # Add shared volume for audio files
-    environment:
+      - audio_data:/data/audio  # Add shared volume for audio files    environment:
       - ENV=development
       - RUN_TESTS=false  
       - TZ=Asia/Ho_Chi_Minh
@@ -25,6 +24,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
       - MINIO_SECURE=${MINIO_SECURE:-False}
+      - MONGODB_URL=mongodb://admin:password123@mongodb:27017/sideproject_chat?authSource=admin
       - PYTHONDONTWRITEBYTECODE=1
     env_file:
       - .env

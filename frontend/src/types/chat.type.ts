@@ -7,7 +7,7 @@ import type { RequestSchema, FilterableRequestSchema } from './common.type'
 export interface MessageResponse {
   id: string
   conversation_id: string
-  role: 'user' | 'assistant' | 'system'
+  role: 'user' | 'assistant' 
   content: string
   timestamp: string
   model_used?: string
@@ -73,7 +73,6 @@ export interface FileResponse {
   type: string
   upload_date: string
   download_url: string
-  is_public: boolean
 }
 
 export interface UploadFileResponse {
@@ -115,9 +114,8 @@ export interface WebSocketTokenRequest extends RequestSchema {
 }
 
 export interface WebSocketTokenResponse {
-  ws_token: string
+  token: string
   expires_in: number
-  ws_url: string
 }
 
 export interface WebSocketOptions {
@@ -187,7 +185,7 @@ export interface Conversation {
 
 export interface Message {
   id: string
-  role: 'user' | 'assistant' | 'system'
+  role: 'user' | 'assistant'
   content: string
   timestamp: Date
   isStreaming?: boolean

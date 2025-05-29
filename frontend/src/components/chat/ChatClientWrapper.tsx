@@ -7,13 +7,13 @@ import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
 import chatApi from '@/apis/chatApi'
 import { createChatWebSocket, ChatWebSocket } from '@/utils/websocket'
-import type { 
-  Message, 
-  ChatState,
-  WebSocketResponse,
-  convertToUIConversation,
+import { 
+  type Message, 
+  type ChatState,
+  type WebSocketResponse,
   convertToUIMessage,
-  convertToUIFile
+  convertToUIFile,
+  convertToUIConversation
 } from '@/types/chat.type'
 import { getErrorMessage } from '@/utils/apiHandler'
 
@@ -40,6 +40,9 @@ interface ChatClientWrapperProps {
     files: string
     download: string
     delete: string
+    openMenu?: string
+    typing?: string
+    sending?: string
   }
 }
 
@@ -278,17 +281,19 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       // Close existing connection
       if (websocket) {
         websocket.close()
-      }
-
-      // Get WebSocket token
+      }      // Get WebSocket token
+      console.log('[setupWebSocket] Requesting WebSocket token for conversation:', conversationId)
       const tokenResponse = await chatApi.getWebSocketToken({ conversation_id: conversationId })
-      if (tokenResponse) {
-        setState(prev => ({ ...prev, wsToken: tokenResponse.ws_token }))
+      console.log('[setupWebSocket] Token response received:', tokenResponse)
+      
+      if (tokenResponse && tokenResponse.token) {
+        console.log('[setupWebSocket] Token extracted:', tokenResponse.token)
+        setState(prev => ({ ...prev, wsToken: tokenResponse.token }))
 
         // Create WebSocket connection
         const ws = createChatWebSocket({
           conversationId,
-          token: tokenResponse.ws_token,
+          token: tokenResponse.token,
           onMessage: handleWebSocketMessage,
           onError: (error) => {
             console.error('[ChatClientWrapper] WebSocket error:', error)
@@ -299,8 +304,7 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           },
           onClose: (event) => {
             console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
-          },
-          onOpen: () => {
+          },          onOpen: () => {
             console.log('[ChatClientWrapper] WebSocket connected')
             setState(prev => ({ ...prev, error: null }))
           }
@@ -308,6 +312,12 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
 
         await ws.connect()
         setWebsocket(ws)
+      } else {
+        console.error('[setupWebSocket] No token received or token is undefined:', tokenResponse)
+        setState(prev => ({ 
+          ...prev, 
+          error: 'Failed to get WebSocket authentication token'
+        }))
       }
     } catch (error) {
       console.error('Failed to setup WebSocket:', error)
@@ -328,13 +338,13 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       if (websocket && websocket.isConnected()) {
         // Send via WebSocket for real-time streaming
         const defaultApiKey = state.apiKeys.find(key => key.is_default)
-        websocket.sendMessage(content, defaultApiKey?.api_key)
+        websocket.sendMessage(content, defaultApiKey?.masked_key)
       } else {
         // Fallback to HTTP API
         const response = await chatApi.sendMessage({
           conversation_id: state.activeConversationId,
           content,
-          api_key: state.apiKeys.find(key => key.is_default)?.api_key
+          api_key: state.apiKeys.find(key => key.is_default)?.masked_key
         })
 
         if (response) {
@@ -459,7 +469,7 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         <ChatInterface
-          conversations={state.conversations}
+          conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
           activeConversationId={state.activeConversationId}
           messages={state.messages}
           isLoading={state.isLoading}
@@ -470,9 +480,16 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           translations={{
             welcomeTitle: translations.welcomeTitle,
             welcomeDescription: translations.welcomeDescription,
+            addApiKey: translations.addApiKey,
+            enterApiKey: translations.enterApiKey,
+            apiKeySet: translations.apiKeySet,
+            resetApiKey: translations.resetApiKey,
             noMessages: translations.noMessages,
             startConversation: translations.startConversation,
-            typeMessage: translations.typeMessage
+            typeMessage: translations.typeMessage,
+            typing: translations.typing || 'AI is typing...',
+            sending: translations.sending || 'Sending...',
+            openMenu: translations.openMenu || 'Menu'
           }}
         />
       </div>

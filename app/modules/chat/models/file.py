@@ -17,7 +17,6 @@ class File(BaseEntity):
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     conversation_id = Column(String(36), ForeignKey("conversations.id"), nullable=True)
     upload_date = Column(DateTime, nullable=False)
-    is_public = Column(Boolean, default=False)
     checksum = Column(String(64), nullable=True)
     download_count = Column(Integer, default=0)
     minio_bucket = Column(String(255), nullable=True)

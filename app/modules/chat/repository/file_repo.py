@@ -94,7 +94,6 @@ class FileRepo:
                     "upload_date": datetime.utcnow(),
                     "checksum": checksum,
                     "minio_bucket": "default",
-                    "is_public": False,
                 }
                 print(
                     f"\033[96m[FileRepo.upload_files] Created file_data: {file_data}\033[0m"

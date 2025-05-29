@@ -16,10 +16,11 @@ class MongoDBService:
 
         # Get MongoDB connection string from environment
         mongodb_url = os.getenv("MONGODB_URL", "mongodb://mongodb:27017")
-        database_name = os.getenv("MONGODB_DATABASE", "cgsem_chat")
+        database_name = os.getenv("MONGODB_DATABASE", "sideproject_chat")
 
+        print(f"\033[94m[MongoDBService.__init__] MongoDB URL: {mongodb_url}\033[0m")
         print(
-            f"\033[94m[MongoDBService.__init__] Connecting to MongoDB: {mongodb_url}\033[0m"
+            f"\033[94m[MongoDBService.__init__] Database name: {database_name}\033[0m"
         )
 
         try:
@@ -28,10 +29,16 @@ class MongoDBService:
             self.messages_collection = self.db.messages
             self.conversations_collection = self.db.conversations
 
-            # Test connection
-            self.client.admin.command("ping")
+            # Test connection with authentication
+            result = self.client.admin.command("ping")
             print(
-                f"\033[92m[MongoDBService.__init__] MongoDB connection successful\033[0m"
+                f"\033[92m[MongoDBService.__init__] MongoDB ping successful: {result}\033[0m"
+            )
+
+            # Test database access
+            collections = self.db.list_collection_names()
+            print(
+                f"\033[92m[MongoDBService.__init__] Available collections: {collections}\033[0m"
             )
 
         except Exception as e:
@@ -43,10 +50,19 @@ class MongoDBService:
     def save_message(self, message_data: Dict[str, Any]) -> str:
         """Save a chat message to MongoDB"""
         try:
+            print(
+                f"\033[94m[MongoDBService.save_message] Attempting to save message: {message_data}\033[0m"
+            )
             result = self.messages_collection.insert_one(message_data)
+            print(
+                f"\033[92m[MongoDBService.save_message] Message saved successfully with ID: {result.inserted_id}\033[0m"
+            )
             logger.info(f"Message saved to MongoDB with ID: {result.inserted_id}")
             return str(result.inserted_id)
         except Exception as e:
+            print(
+                f"\033[91m[MongoDBService.save_message] ERROR saving message: {e}\033[0m"
+            )
             logger.error(f"Error saving message to MongoDB: {e}")
             raise
 

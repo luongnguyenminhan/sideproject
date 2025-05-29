@@ -16,7 +16,6 @@ class FileResponse(ResponseSchema):
     type: str
     upload_date: datetime
     download_count: int
-    is_public: bool
     is_image: bool
     is_video: bool
     is_audio: bool

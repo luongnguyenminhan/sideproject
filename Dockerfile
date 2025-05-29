@@ -55,13 +55,13 @@ if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
     echo \"Waiting for MongoDB to be ready...\" && \
     while ! nc -z mongodb 27017; do sleep 1; done && \
     echo \"MongoDB is ready. Starting Celery worker...\" && \
-    python -m celery -A app.jobs.celery_worker worker --loglevel=debug --concurrency=${CELERY_WORKER_CONCURRENCY:-4}; \
+    python -m celery -A app.jobs.celery_worker worker --concurrency=${CELERY_WORKER_CONCURRENCY:-4}; \
 else \
     if [ \"$ENV\" = \"development\" ]; then \
         echo \"Starting API in local mode (with hot reload)\" && \
-        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app --log-level debug; \
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app; \
     else \
         echo \"Starting API in production mode\" && \
-        uvicorn main:app --host 0.0.0.0 --port 8000 --workers ${WORKER_CONCURRENCY:-4} --log-level debug; \
+        uvicorn main:app --host 0.0.0.0 --port 8000 --workers ${WORKER_CONCURRENCY:-4}; \
     fi; \
 fi"]

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from app.core.base_dal import BaseDAL
+from app.core.base_model import Pagination
 from app.modules.chat.models.message import Message
 from typing import List, Optional
 
@@ -56,7 +57,15 @@ class MessageDAL(BaseDAL[Message]):
         )
         query = query.order_by(desc(self.model.timestamp))
 
-        paginated_result = self.paginate(query, page, page_size)
+        # Count total records
+        total_count = query.count()
+
+        # Apply pagination
+        conversations = query.offset((page - 1) * page_size).limit(page_size).all()
+
+        print(f'Found {total_count} conversations, returning page {page} with {len(conversations)} items')
+
+        paginated_result = Pagination(items=conversations, total_count=total_count, page=page, page_size=page_size)
         print(
             f"\033[92m[MessageDAL.get_conversation_messages] Pagination completed, returning results\033[0m"
         )

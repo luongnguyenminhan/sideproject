@@ -101,7 +101,7 @@ class ChatApi {
     search?: string
   } = {}) {
     return handleApiCall<Pagination<FileResponse>>(() =>
-      axiosInstance.get<CommonResponse<Pagination<FileResponse>>>('/files', { params })
+      axiosInstance.get<CommonResponse<Pagination<FileResponse>>>('/files/', { params })
     )
   }
 
@@ -126,13 +126,13 @@ class ChatApi {
   
   async saveApiKey(data: ApiKeyRequest) {
     return handleApiCall<ApiKeyResponse>(() =>
-      axiosInstance.post<CommonResponse<ApiKeyResponse>>('/api-keys', data)
+      axiosInstance.post<CommonResponse<ApiKeyResponse>>('/api-keys/', data)
     )
   }
 
   async getApiKeys() {
     return handleApiCall<ApiKeyResponse[]>(() =>
-      axiosInstance.get<CommonResponse<ApiKeyResponse[]>>('/api-keys')
+      axiosInstance.get<CommonResponse<ApiKeyResponse[]>>('/api-keys/')
     )
   }
 
@@ -154,7 +154,7 @@ class ChatApi {
   
   async getWebSocketToken(data: WebSocketTokenRequest = {}) {
     return handleApiCall<WebSocketTokenResponse>(() =>
-      axiosInstance.post<CommonResponse<WebSocketTokenResponse>>('/websocket/token', data)
+      axiosInstance.post<CommonResponse<WebSocketTokenResponse>>('/chat/websocket/token', data)
     )
   }
   
