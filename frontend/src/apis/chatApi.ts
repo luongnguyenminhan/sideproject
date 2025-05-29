@@ -1,91 +1,82 @@
-import axiosInstance from './axiosInstance'
-import { handleApiCall } from '@/utils/apiHandler'
-import type {
-  Conversation,
+import axiosInstance from '@/apis/axiosInstance'
+import { handleApiCall, handleApiCallNoData } from '@/utils/apiHandler'
+import type { 
+  SendMessageRequest, 
+  SendMessageResponse,
   ConversationListRequest,
+  ConversationResponse,
   CreateConversationRequest,
   UpdateConversationRequest,
-  SendMessageRequest,
-  SendMessageResponse,
-  SaveApiKeyRequest,
-  ApiKey,
-  ChatFile,
-  FileListRequest,
-  ConversationListResponse,
-  FileListResponse
+  MessageListRequest,
+  MessageResponse,
+  ApiKeyRequest,
+  ApiKeyResponse,
+  FileResponse,
+  WebSocketTokenRequest,
+  WebSocketTokenResponse,
+  UploadFileResponse
 } from '@/types/chat.type'
+import type { CommonResponse, Pagination } from '@/types/common.type'
 
 class ChatApi {
-  private baseUrl = '/chat'
-  private conversationsUrl = '/conversations'
-  private apiKeysUrl = '/api-keys'
-  private filesUrl = '/files'
-
-  // ================== Conversations ==================
+  // ============================================
+  // CONVERSATION MANAGEMENT
+  // ============================================
   
-  async getConversations(params?: ConversationListRequest): Promise<ConversationListResponse | null> {
-    return handleApiCall(() => axiosInstance.get(this.conversationsUrl, { params }))
-  }
-
-  async createConversation(data: CreateConversationRequest): Promise<Conversation | null> {
-    return handleApiCall(() => axiosInstance.post(this.conversationsUrl, data))
-  }
-
-  async getConversation(conversationId: string): Promise<Conversation | null> {
-    return handleApiCall(() => axiosInstance.get(`${this.conversationsUrl}/${conversationId}`))
-  }
-
-  async updateConversation(conversationId: string, data: UpdateConversationRequest): Promise<Conversation | null> {
-    return handleApiCall(() => axiosInstance.put(`${this.conversationsUrl}/${conversationId}`, data))
-  }
-
-  async deleteConversation(conversationId: string): Promise<{ deleted: boolean } | null> {
-    return handleApiCall(() => axiosInstance.delete(`${this.conversationsUrl}/${conversationId}`))
-  }
-
-  async getConversationMessages(
-    conversationId: string,
-    page: number = 1,
-    pageSize: number = 50,
-    beforeMessageId?: string
-  ): Promise<any> {
-    const params = {
-      page,
-      page_size: pageSize,
-      ...(beforeMessageId && { before_message_id: beforeMessageId })
-    }
-    return handleApiCall(() => 
-      axiosInstance.get(`${this.conversationsUrl}/${conversationId}/messages`, { params })
+  async getConversations(params: ConversationListRequest = {}) {
+    return handleApiCall<Pagination<ConversationResponse>>(() =>
+      axiosInstance.get<CommonResponse<Pagination<ConversationResponse>>>('/conversations/', { params })
     )
   }
 
-  // ================== Chat Messages ==================
+  async createConversation(data: CreateConversationRequest) {
+    return handleApiCall<ConversationResponse>(() =>
+      axiosInstance.post<CommonResponse<ConversationResponse>>('/conversations/', data)
+    )
+  }
+
+  async getConversation(conversationId: string) {
+    return handleApiCall<ConversationResponse>(() =>
+      axiosInstance.get<CommonResponse<ConversationResponse>>(`/conversations/${conversationId}`)
+    )
+  }
+
+  async updateConversation(conversationId: string, data: UpdateConversationRequest) {
+    return handleApiCall<ConversationResponse>(() =>
+      axiosInstance.put<CommonResponse<ConversationResponse>>(`/conversations/${conversationId}`, data)
+    )
+  }
+
+  async deleteConversation(conversationId: string) {
+    return handleApiCallNoData(() =>
+      axiosInstance.delete<CommonResponse<null>>(`/conversations/${conversationId}`)
+    )
+  }
+
+  // ============================================
+  // MESSAGE MANAGEMENT  
+  // ============================================
   
-  async sendMessage(data: SendMessageRequest): Promise<SendMessageResponse | null> {
-    return handleApiCall(() => axiosInstance.post(`${this.baseUrl}/send-message`, data))
+  async getConversationMessages(conversationId: string, params: MessageListRequest = {}) {
+    return handleApiCall<Pagination<MessageResponse>>(() =>
+      axiosInstance.get<CommonResponse<Pagination<MessageResponse>>>(
+        `/conversations/${conversationId}/messages`, 
+        { params }
+      )
+    )
   }
 
-  // ================== API Keys ==================
+  async sendMessage(data: SendMessageRequest) {
+    return handleApiCall<SendMessageResponse>(() =>
+      axiosInstance.post<CommonResponse<SendMessageResponse>>('/chat/send-message', data)
+    )
+  }
+
+  // ============================================
+  // FILE MANAGEMENT
+  // ============================================
   
-  async saveApiKey(data: SaveApiKeyRequest): Promise<ApiKey | null> {
-    return handleApiCall(() => axiosInstance.post(this.apiKeysUrl, data))
-  }
-
-  async getApiKeys(): Promise<ApiKey[] | null> {
-    return handleApiCall(() => axiosInstance.get(this.apiKeysUrl))
-  }
-
-  async deleteApiKey(keyId: string): Promise<{ deleted: boolean } | null> {
-    return handleApiCall(() => axiosInstance.delete(`${this.apiKeysUrl}/${keyId}`))
-  }
-
-  async setDefaultApiKey(keyId: string): Promise<ApiKey | null> {
-    return handleApiCall(() => axiosInstance.put(`${this.apiKeysUrl}/${keyId}/set-default`))
-  }
-
-  // ================== Files ==================
-  
-  async uploadFiles(files: File[], conversationId?: string): Promise<ChatFile[] | null> {
+  async uploadFiles(files: File[], conversationId?: string) {
     const formData = new FormData()
     files.forEach(file => {
       formData.append('files', file)
@@ -94,70 +85,80 @@ class ChatApi {
       formData.append('conversation_id', conversationId)
     }
 
-    return handleApiCall(() => 
-      axiosInstance.post(`${this.filesUrl}/upload`, formData, {
+    return handleApiCall<UploadFileResponse>(() =>
+      axiosInstance.post<CommonResponse<UploadFileResponse>>('/files/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-    )
-  }
-
-  async getFiles(params?: FileListRequest): Promise<FileListResponse | null> {
-    return handleApiCall(() => axiosInstance.get(this.filesUrl, { params }))
-  }
-
-  async getFile(fileId: string): Promise<ChatFile | null> {
-    return handleApiCall(() => axiosInstance.get(`${this.filesUrl}/${fileId}`))
-  }
-
-  async deleteFile(fileId: string): Promise<{ deleted: boolean } | null> {
-    return handleApiCall(() => axiosInstance.delete(`${this.filesUrl}/${fileId}`))
-  }
-
-  async getFileDownloadUrl(fileId: string, expires: number = 3600): Promise<{ download_url: string; expires_in: number } | null> {
-    return handleApiCall(() => axiosInstance.get(`${this.filesUrl}/${fileId}/url`, {
-      params: { expires }
-    }))
-  }
-
-  // Download file directly (returns blob)
-  async downloadFile(fileId: string): Promise<Blob> {
-    const response = await axiosInstance.get(`${this.filesUrl}/${fileId}/download`, {
-      responseType: 'blob'
-    })
-    return response.data
-  }
-
-  // ================== File Upload with Progress ==================
-  
-  async uploadFilesWithProgress(
-    files: File[], 
-    conversationId?: string,
-    onProgress?: (progress: number) => void
-  ): Promise<ChatFile[] | null> {
-    const formData = new FormData()
-    files.forEach(file => {
-      formData.append('files', file)
-    })
-    if (conversationId) {
-      formData.append('conversation_id', conversationId)
-    }
-
-    return handleApiCall(() => 
-      axiosInstance.post(`${this.filesUrl}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total && onProgress) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            onProgress(progress)
-          }
-        }
       })
     )
   }
+
+  async getFiles(params: { 
+    page?: number
+    page_size?: number
+    file_type?: string
+    search?: string
+  } = {}) {
+    return handleApiCall<Pagination<FileResponse>>(() =>
+      axiosInstance.get<CommonResponse<Pagination<FileResponse>>>('/files', { params })
+    )
+  }
+
+  async deleteFile(fileId: string) {
+    return handleApiCallNoData(() =>
+      axiosInstance.delete<CommonResponse<null>>(`/files/${fileId}`)
+    )
+  }
+
+  async getFileDownloadUrl(fileId: string, expires: number = 3600) {
+    return handleApiCall<{ download_url: string; expires_in: number }>(() =>
+      axiosInstance.get<CommonResponse<{ download_url: string; expires_in: number }>>(
+        `/chat/files/${fileId}/download`, 
+        { params: { expires } }
+      )
+    )
+  }
+
+  // ============================================
+  // API KEY MANAGEMENT
+  // ============================================
+  
+  async saveApiKey(data: ApiKeyRequest) {
+    return handleApiCall<ApiKeyResponse>(() =>
+      axiosInstance.post<CommonResponse<ApiKeyResponse>>('/api-keys', data)
+    )
+  }
+
+  async getApiKeys() {
+    return handleApiCall<ApiKeyResponse[]>(() =>
+      axiosInstance.get<CommonResponse<ApiKeyResponse[]>>('/api-keys')
+    )
+  }
+
+  async deleteApiKey(keyId: string) {
+    return handleApiCallNoData(() =>
+      axiosInstance.delete<CommonResponse<null>>(`/api-keys/${keyId}`)
+    )
+  }
+
+  async setDefaultApiKey(keyId: string) {
+    return handleApiCall<ApiKeyResponse>(() =>
+      axiosInstance.put<CommonResponse<ApiKeyResponse>>(`/api-keys/${keyId}/set-default`)
+    )
+  }
+
+  // ============================================
+  // WEBSOCKET TOKEN
+  // ============================================
+  
+  async getWebSocketToken(data: WebSocketTokenRequest = {}) {
+    return handleApiCall<WebSocketTokenResponse>(() =>
+      axiosInstance.post<CommonResponse<WebSocketTokenResponse>>('/websocket/token', data)
+    )
+  }
+  
 }
 
-export default new ChatApi()
+const chatApi = new ChatApi()
+export default chatApi

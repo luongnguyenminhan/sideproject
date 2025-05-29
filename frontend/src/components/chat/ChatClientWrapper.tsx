@@ -1,29 +1,21 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ChatInterface } from './ChatInterface'
 import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
-import { Button } from '@/components/ui/button'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
 import chatApi from '@/apis/chatApi'
-import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
-import { getErrorMessage, isApiException } from '@/utils/apiHandler'
-import Cookies from 'js-cookie'
+import { createChatWebSocket, ChatWebSocket } from '@/utils/websocket'
 import type { 
-  Conversation, 
   Message, 
-  ChatFile, 
-  ApiKey,
+  ChatState,
   WebSocketResponse,
-  AssistantMessageChunkResponse,
-  AssistantMessageCompleteResponse,
-  UserMessageResponse,
-  AssistantTypingResponse,
-  ErrorWebSocketResponse
+  convertToUIConversation,
+  convertToUIMessage,
+  convertToUIFile
 } from '@/types/chat.type'
+import { getErrorMessage } from '@/utils/apiHandler'
 
 interface ChatClientWrapperProps {
   translations: {
@@ -52,22 +44,20 @@ interface ChatClientWrapperProps {
 }
 
 export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
-  // State management
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [files, setFiles] = useState<ChatFile[]>([])
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isTyping, setIsTyping] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [state, setState] = useState<ChatState>({
+    conversations: [],
+    activeConversationId: null,
+    messages: [],
+    isLoading: false,
+    isTyping: false,
+    error: null,
+    uploadedFiles: [],
+    apiKeys: [],
+    wsToken: null
+  })
+
+  const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-  
-  // Refs
-  const webSocketRef = useRef<ChatWebSocket | null>(null)
-  const streamingMessageRef = useRef<string>('')
-  const streamingMessageIdRef = useRef<string | null>(null)
 
   // Load initial data
   useEffect(() => {
@@ -76,374 +66,382 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     loadApiKeys()
   }, [])
 
-  // WebSocket setup when active conversation changes
-  useEffect(() => {
-    if (activeConversation) {
-      setupWebSocket(activeConversation.id)
-      loadMessages(activeConversation.id)
-    } else {
-      disconnectWebSocket()
-    }
-
-    return () => {
-      disconnectWebSocket()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeConversation])
-
-  // API calls
-  const loadConversations = async () => {
-    try {
-      setIsLoading(true)
-      const response = await chatApi.getConversations({ page: 1, page_size: 50 })
-      if (response?.items) {
-        setConversations(response.items)
-      }
-    } catch (error) {
-      console.error('Error loading conversations:', error)
-      setError(getErrorMessage(error))
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const loadMessages = async (conversationId: string) => {
-    try {
-      const response = await chatApi.getConversationMessages(conversationId, 1, 50)
-      if (response?.data?.items) {
-        // Reverse to show oldest first
-        setMessages(response.data.items.reverse())
-      }
-    } catch (error) {
-      console.error('Error loading messages:', error)
-      setError(getErrorMessage(error))
-    }
-  }
-
-  const loadFiles = async () => {
-    try {
-      const response = await chatApi.getFiles({ page: 1, page_size: 50 })
-      if (response?.items) {
-        setFiles(response.items)
-      }
-    } catch (error) {
-      console.error('Error loading files:', error)
-    }
-  }
-
-  const loadApiKeys = async () => {
-    try {
-      const response = await chatApi.getApiKeys()
-      if (response) {
-        setApiKeys(response)
-      }
-    } catch (error) {
-      console.error('Error loading API keys:', error)
-    }
-  }
-
-  // WebSocket management
-  const setupWebSocket = (conversationId: string) => {
-    disconnectWebSocket()
-
-    const token = Cookies.get('access_token')
-    if (!token) {
-      setError('No authentication token found')
-      return
-    }
-
-    const ws = createChatWebSocket({
-      conversationId,
-      token,
-      onMessage: handleWebSocketMessage,
-      onError: handleWebSocketError,
-      onClose: handleWebSocketClose,
-      onOpen: handleWebSocketOpen
-    })
-
-    webSocketRef.current = ws
-    ws.connect().catch((error) => {
-      console.error('WebSocket connection failed:', error)
-      setError('Failed to connect to chat service')
-    })
-  }
-
-  const disconnectWebSocket = () => {
-    if (webSocketRef.current) {
-      webSocketRef.current.disconnect()
-      webSocketRef.current = null
-    }
-    setIsConnected(false)
-  }
-
-  // WebSocket event handlers
-  const handleWebSocketOpen = () => {
-    setIsConnected(true)
-    setError(null)
-  }
-
-  const handleWebSocketClose = () => {
-    setIsConnected(false)
-  }
-
-  const handleWebSocketError = (error: Event) => {
-    console.error('WebSocket error:', error)
-    setError('Connection error occurred')
-    setIsConnected(false)
-  }
-
-  const handleWebSocketMessage = (message: WebSocketResponse) => {
+  // Handle WebSocket messages
+  const handleWebSocketMessage = useCallback((message: WebSocketResponse) => {
+    console.log('[ChatClientWrapper] Received WebSocket message:', message.type)
+    
     switch (message.type) {
       case 'user_message':
-        handleUserMessage(message as UserMessageResponse)
-        break
-      
-      case 'assistant_typing':
-        handleAssistantTyping(message as AssistantTypingResponse)
-        break
-      
-      case 'assistant_message_chunk':
-        handleAssistantMessageChunk(message as AssistantMessageChunkResponse)
-        break
-      
-      case 'assistant_message_complete':
-        handleAssistantMessageComplete(message as AssistantMessageCompleteResponse)
-        break
-      
-      case 'error':
-        handleWebSocketErrorMessage(message as ErrorWebSocketResponse)
-        break
-      
-      case 'pong':
-        // Handle ping response
-        console.log('Received pong from server')
-        break
-      
-      default:
-        console.log('Unknown message type:', message.type)
-    }
-  }
-
-  const handleUserMessage = (message: UserMessageResponse) => {
-    setMessages(prev => [...prev, message.message])
-    // Update conversation's last activity and message count
-    setConversations(prev => 
-      prev.map(conv => 
-        conv.id === message.message.conversation_id 
-          ? { ...conv, message_count: conv.message_count + 1, last_activity: message.message.timestamp }
-          : conv
-      )
-    )
-  }
-
-  const handleAssistantTyping = (message: AssistantTypingResponse) => {
-    setIsTyping(message.status)
-  }
-
-  const handleAssistantMessageChunk = (message: AssistantMessageChunkResponse) => {
-    streamingMessageRef.current += message.chunk
-    
-    // Update or create streaming message in the UI
-    setMessages(prev => {
-      const lastMessage = prev[prev.length - 1]
-      
-      if (streamingMessageIdRef.current && lastMessage?.id === streamingMessageIdRef.current) {
-        // Update existing streaming message
-        return prev.map((msg, index) => 
-          index === prev.length - 1 
-            ? { ...msg, content: streamingMessageRef.current }
-            : msg
-        )
-      } else {
-        // Create new streaming message
-        const streamingMessage: Message = {
-          id: `streaming-${Date.now()}`,
-          conversation_id: activeConversation?.id || '',
-          user_id: '',
-          role: 'assistant',
-          content: streamingMessageRef.current,
-          timestamp: new Date().toISOString(),
-          create_date: new Date().toISOString(),
-          update_date: new Date().toISOString()
+        if (message.message) {
+          const newMessage: Message = {
+            id: message.message.id || '',
+            role: 'user',
+            content: message.message.content,
+            timestamp: new Date(message.message.timestamp || Date.now())
+          }
+          setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, newMessage]
+          }))
         }
-        streamingMessageIdRef.current = streamingMessage.id
-        return [...prev, streamingMessage]
+        break
+
+      case 'assistant_typing':
+        setState(prev => ({
+          ...prev,
+          isTyping: message.status || false
+        }))
+        break
+
+      case 'assistant_message_chunk':
+        if (message.chunk) {
+          setState(prev => {
+            const lastMessage = prev.messages[prev.messages.length - 1]
+            if (lastMessage && lastMessage.role === 'assistant' && lastMessage.isStreaming) {
+              // Update existing streaming message
+              const updatedMessages = [...prev.messages]
+              updatedMessages[updatedMessages.length - 1] = {
+                ...lastMessage,
+                content: lastMessage.content + message.chunk
+              }
+              return { ...prev, messages: updatedMessages }
+            } else {
+              // Create new streaming message
+              const streamingMessage: Message = {
+                id: `streaming-${Date.now()}`,
+                role: 'assistant',
+                content: message.chunk || '',
+                timestamp: new Date(),
+                isStreaming: true
+              }
+              return { ...prev, messages: [...prev.messages, streamingMessage] }
+            }
+          })
+        }
+        break
+
+      case 'assistant_message_complete':
+        if (message.message) {
+          setState(prev => {
+            const newMessage: Message = {
+              id: message.message!.id || '',
+              role: 'assistant',
+              content: message.message!.content,
+              timestamp: new Date(message.message!.timestamp || Date.now()),
+              model_used: message.message!.model_used,
+              response_time_ms: message.message!.response_time_ms,
+              isStreaming: false
+            }
+            
+            // Replace streaming message or add new one
+            const messages = [...prev.messages]
+            const lastMessage = messages[messages.length - 1]
+            if (lastMessage && lastMessage.isStreaming) {
+              messages[messages.length - 1] = newMessage
+            } else {
+              messages.push(newMessage)
+            }
+            
+            return {
+              ...prev,
+              messages,
+              isTyping: false
+            }
+          })
+        }
+        break
+
+      case 'error':
+        setState(prev => ({
+          ...prev,
+          error: message.error || 'An error occurred',
+          isTyping: false
+        }))
+        break
+
+      case 'pong':
+        console.log('[ChatClientWrapper] Received pong from server')
+        break
+    }
+  }, [])
+
+  // Load conversations
+  const loadConversations = async () => {
+    try {
+      setState(prev => ({ ...prev, isLoading: true }))
+      const response = await chatApi.getConversations()
+      
+      if (response && response.items) {
+        const conversations = response.items.map(convertToUIConversation)
+        setState(prev => ({ 
+          ...prev, 
+          conversations,
+          isLoading: false
+        }))
       }
-    })
-  }
-
-  const handleAssistantMessageComplete = (message: AssistantMessageCompleteResponse) => {
-    // Replace streaming message with final message
-    setMessages(prev => {
-      const filteredMessages = prev.filter(msg => !msg.id.startsWith('streaming-'))
-      return [...filteredMessages, message.message]
-    })
-    
-    // Reset streaming state
-    streamingMessageRef.current = ''
-    streamingMessageIdRef.current = null
-    setIsTyping(false)
-    
-    // Update conversation
-    setConversations(prev => 
-      prev.map(conv => 
-        conv.id === message.message.conversation_id 
-          ? { ...conv, message_count: conv.message_count + 1, last_activity: message.message.timestamp }
-          : conv
-      )
-    )
-  }
-
-  const handleWebSocketErrorMessage = (message: ErrorWebSocketResponse) => {
-    setError(message.message)
-    setIsTyping(false)
-  }
-
-  // Event handlers
-  const handleSendMessage = useCallback((content: string) => {
-    if (!webSocketRef.current || !webSocketRef.current.isConnected()) {
-      setError('Not connected to chat service')
-      return
-    }
-
-    // Get default API key
-    const defaultApiKey = apiKeys.find(key => key.is_default)
-    webSocketRef.current.sendMessage(content, defaultApiKey?.id)
-  }, [apiKeys])
-
-  const handleSelectConversation = (id: string) => {
-    const conversation = conversations.find(c => c.id === id)
-    if (conversation) {
-      setActiveConversation(conversation)
-      setMessages([])
-      setError(null)
+    } catch (error) {
+      console.error('Failed to load conversations:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: getErrorMessage(error),
+        isLoading: false
+      }))
     }
   }
 
+  // Load files
+  const loadFiles = async () => {
+    try {
+      const response = await chatApi.getFiles()
+      if (response && response.items) {
+        const files = response.items.map(convertToUIFile)
+        setState(prev => ({ ...prev, uploadedFiles: files }))
+      }
+    } catch (error) {
+      console.error('Failed to load files:', error)
+    }
+  }
+
+  // Load API keys
+  const loadApiKeys = async () => {
+    try {
+      const apiKeys = await chatApi.getApiKeys()
+      if (apiKeys) {
+        setState(prev => ({ ...prev, apiKeys }))
+      }
+    } catch (error) {
+      console.error('Failed to load API keys:', error)
+    }
+  }
+
+  // Create new conversation
   const handleCreateConversation = async () => {
     try {
       const newConversation = await chatApi.createConversation({
-        name: `New Conversation ${new Date().toLocaleTimeString()}`
+        name: `New Chat ${state.conversations.length + 1}`
       })
       
       if (newConversation) {
-        setConversations(prev => [newConversation, ...prev])
-        setActiveConversation(newConversation)
-        setMessages([])
+        const conversation = convertToUIConversation(newConversation)
+        setState(prev => ({
+          ...prev,
+          conversations: [conversation, ...prev.conversations],
+          activeConversationId: conversation.id,
+          messages: []
+        }))
+        
+        // Setup WebSocket for new conversation
+        await setupWebSocket(conversation.id)
       }
     } catch (error) {
-      console.error('Error creating conversation:', error)
-      setError(getErrorMessage(error))
+      console.error('Failed to create conversation:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
 
-  const handleUpdateConversationName = async (id: string, name: string) => {
+  // Select conversation
+  const handleSelectConversation = async (conversationId: string) => {
+    setState(prev => ({ 
+      ...prev, 
+      activeConversationId: conversationId,
+      messages: [],
+      isLoading: true
+    }))
+
     try {
-      const updatedConversation = await chatApi.updateConversation(id, { name })
-      
-      if (updatedConversation) {
-        setConversations(prev => 
-          prev.map(conv => conv.id === id ? updatedConversation : conv)
-        )
-        
-        if (activeConversation?.id === id) {
-          setActiveConversation(updatedConversation)
+      // Load messages for the conversation
+      const response = await chatApi.getConversationMessages(conversationId)
+      if (response && response.items) {
+        const messages = response.items.map(convertToUIMessage)
+        setState(prev => ({ 
+          ...prev, 
+          messages,
+          isLoading: false
+        }))
+      }
+
+      // Setup WebSocket
+      await setupWebSocket(conversationId)
+    } catch (error) {
+      console.error('Failed to load conversation messages:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: getErrorMessage(error),
+        isLoading: false
+      }))
+    }
+  }
+
+  // Setup WebSocket connection
+  const setupWebSocket = async (conversationId: string) => {
+    try {
+      // Close existing connection
+      if (websocket) {
+        websocket.close()
+      }
+
+      // Get WebSocket token
+      const tokenResponse = await chatApi.getWebSocketToken({ conversation_id: conversationId })
+      if (tokenResponse) {
+        setState(prev => ({ ...prev, wsToken: tokenResponse.ws_token }))
+
+        // Create WebSocket connection
+        const ws = createChatWebSocket({
+          conversationId,
+          token: tokenResponse.ws_token,
+          onMessage: handleWebSocketMessage,
+          onError: (error) => {
+            console.error('[ChatClientWrapper] WebSocket error:', error)
+            setState(prev => ({ 
+              ...prev, 
+              error: 'WebSocket connection error'
+            }))
+          },
+          onClose: (event) => {
+            console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
+          },
+          onOpen: () => {
+            console.log('[ChatClientWrapper] WebSocket connected')
+            setState(prev => ({ ...prev, error: null }))
+          }
+        })
+
+        await ws.connect()
+        setWebsocket(ws)
+      }
+    } catch (error) {
+      console.error('Failed to setup WebSocket:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: getErrorMessage(error)
+      }))
+    }
+  }
+
+  // Send message
+  const handleSendMessage = async (content: string) => {
+    if (!state.activeConversationId) return
+
+    try {
+      setState(prev => ({ ...prev, isLoading: true }))
+
+      if (websocket && websocket.isConnected()) {
+        // Send via WebSocket for real-time streaming
+        const defaultApiKey = state.apiKeys.find(key => key.is_default)
+        websocket.sendMessage(content, defaultApiKey?.api_key)
+      } else {
+        // Fallback to HTTP API
+        const response = await chatApi.sendMessage({
+          conversation_id: state.activeConversationId,
+          content,
+          api_key: state.apiKeys.find(key => key.is_default)?.api_key
+        })
+
+        if (response) {
+          const userMessage = convertToUIMessage(response.user_message)
+          const aiMessage = convertToUIMessage(response.ai_message)
+          
+          setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, userMessage, aiMessage]
+          }))
         }
       }
     } catch (error) {
-      console.error('Error updating conversation:', error)
-      setError(getErrorMessage(error))
+      console.error('Failed to send message:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: getErrorMessage(error)
+      }))
+    } finally {
+      setState(prev => ({ ...prev, isLoading: false }))
     }
   }
 
+  // Update conversation name
+  const handleUpdateConversationName = async (id: string, name: string) => {
+    try {
+      await chatApi.updateConversation(id, { name })
+      setState(prev => ({
+        ...prev,
+        conversations: prev.conversations.map(conv =>
+          conv.id === id ? { ...conv, name } : conv
+        )
+      }))
+    } catch (error) {
+      console.error('Failed to update conversation:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
+    }
+  }
+
+  // Delete conversation
   const handleDeleteConversation = async (id: string) => {
     try {
       await chatApi.deleteConversation(id)
-      
-      setConversations(prev => prev.filter(conv => conv.id !== id))
-      
-      if (activeConversation?.id === id) {
-        setActiveConversation(null)
-        setMessages([])
+      setState(prev => ({
+        ...prev,
+        conversations: prev.conversations.filter(conv => conv.id !== id),
+        activeConversationId: prev.activeConversationId === id ? null : prev.activeConversationId,
+        messages: prev.activeConversationId === id ? [] : prev.messages
+      }))
+
+      if (websocket && state.activeConversationId === id) {
+        websocket.close()
+        setWebsocket(null)
       }
     } catch (error) {
-      console.error('Error deleting conversation:', error)
-      setError(getErrorMessage(error))
+      console.error('Failed to delete conversation:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
 
-  const handleUploadFiles = async (uploadFiles: File[]) => {
+  // Upload files
+  const handleUploadFiles = async (files: File[]) => {
     try {
-      const uploadedFiles = await chatApi.uploadFiles(uploadFiles, activeConversation?.id)
-      
-      if (uploadedFiles) {
-        setFiles(prev => [...uploadedFiles, ...prev])
+      const response = await chatApi.uploadFiles(files, state.activeConversationId || undefined)
+      if (response && response.uploaded_files) {
+        const newFiles = response.uploaded_files.map(convertToUIFile)
+        setState(prev => ({
+          ...prev,
+          uploadedFiles: [...prev.uploadedFiles, ...newFiles]
+        }))
       }
     } catch (error) {
-      console.error('Error uploading files:', error)
-      setError(getErrorMessage(error))
+      console.error('Failed to upload files:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
 
+  // Delete file
   const handleDeleteFile = async (id: string) => {
     try {
       await chatApi.deleteFile(id)
-      setFiles(prev => prev.filter(file => file.id !== id))
+      setState(prev => ({
+        ...prev,
+        uploadedFiles: prev.uploadedFiles.filter(file => file.id !== id)
+      }))
     } catch (error) {
-      console.error('Error deleting file:', error)
-      setError(getErrorMessage(error))
+      console.error('Failed to delete file:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
 
-  // Transform data for components
-  const transformedConversations = conversations.map(conv => ({
-    id: conv.id,
-    name: conv.name,
-    messages: [], // We load messages separately
-    lastActivity: new Date(conv.last_activity)
-  }))
-
-  const transformedMessages = messages.map(msg => ({
-    id: msg.id,
-    role: msg.role as 'user' | 'assistant',
-    content: msg.content,
-    timestamp: new Date(msg.timestamp)
-  }))
-
-  const transformedFiles = files.map(file => ({
-    id: file.id,
-    name: file.name,
-    size: file.size,
-    type: file.type,
-    uploadDate: new Date(file.upload_date)
-  }))
-
-  const currentConversation = activeConversation ? {
-    id: activeConversation.id,
-    name: activeConversation.name,
-    messages: transformedMessages,
-    lastActivity: new Date(activeConversation.last_activity)
-  } : undefined
+  // Cleanup WebSocket on unmount
+  useEffect(() => {
+    return () => {
+      if (websocket) {
+        websocket.close()
+      }
+    }
+  }, [websocket])
 
   return (
     <div className="flex h-full">
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <Button
-          onClick={() => setIsMobileSidebarOpen(true)}
-          size="sm"
-          variant="outline"
-          className="bg-[color:var(--card)] border-[color:var(--border)]"
-        >
-          <FontAwesomeIcon icon={faBars} />
-        </Button>
-      </div>
-
       {/* Desktop Conversation Sidebar */}
       <div className="hidden md:block w-80 border-r border-[color:var(--border)]">
         <ConversationSidebar
-          conversations={transformedConversations}
-          activeConversationId={activeConversation?.id || ''}
+          conversations={state.conversations}
+          activeConversationId={state.activeConversationId || ''}
           onSelectConversation={handleSelectConversation}
           onCreateConversation={handleCreateConversation}
           onUpdateConversationName={handleUpdateConversationName}
@@ -461,16 +459,28 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         <ChatInterface
-          conversation={currentConversation}
+          conversations={state.conversations}
+          activeConversationId={state.activeConversationId}
+          messages={state.messages}
+          isLoading={state.isLoading}
+          isTyping={state.isTyping}
+          error={state.error}
           onSendMessage={handleSendMessage}
-          translations={translations}
+          onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          translations={{
+            welcomeTitle: translations.welcomeTitle,
+            welcomeDescription: translations.welcomeDescription,
+            noMessages: translations.noMessages,
+            startConversation: translations.startConversation,
+            typeMessage: translations.typeMessage
+          }}
         />
       </div>
 
       {/* Desktop File Sidebar */}
       <div className="hidden lg:block w-80 border-l border-[color:var(--border)]">
         <FileSidebar
-          uploadedFiles={transformedFiles}
+          uploadedFiles={state.uploadedFiles}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
           translations={{
@@ -487,13 +497,13 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       <MobileSidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
-        conversations={transformedConversations}
-        activeConversationId={activeConversation?.id || ''}
+        conversations={state.conversations}
+        activeConversationId={state.activeConversationId || ''}
         onSelectConversation={handleSelectConversation}
         onCreateConversation={handleCreateConversation}
         onUpdateConversationName={handleUpdateConversationName}
         onDeleteConversation={handleDeleteConversation}
-        uploadedFiles={transformedFiles}
+        uploadedFiles={state.uploadedFiles}
         onDeleteFile={handleDeleteFile}
         onUploadFiles={handleUploadFiles}
         translations={{
@@ -511,19 +521,6 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           delete: translations.delete
         }}
       />
-
-      {/* Connection Status */}
-      {error && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          {error}
-        </div>
-      )}
-      
-      {!isConnected && activeConversation && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          Connecting to chat service...
-        </div>
-      )}
     </div>
   )
 }

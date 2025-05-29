@@ -2,7 +2,7 @@ import type {
   WebSocketOptions, 
   WebSocketResponse, 
   ChatWebSocketMessage, 
-  PingWebSocketMessage 
+  PingWebSocketMessage,
 } from '@/types/chat.type'
 
 export class ChatWebSocket {
@@ -14,6 +14,7 @@ export class ChatWebSocket {
   private reconnectDelay = 1000
   private pingInterval: NodeJS.Timeout | null = null
   private isManualClose = false
+  private isConnecting = false
 
   constructor(options: WebSocketOptions) {
     this.options = options
@@ -22,71 +23,105 @@ export class ChatWebSocket {
 
   private buildWebSocketUrl(conversationId: string, token: string): string {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const host = process.env.NEXT_PUBLIC_WS_HOST || 'localhost:8000'
-    return `${protocol}//${host}/api/v1/chat/ws/${conversationId}?token=${encodeURIComponent(token)}`
+    const basePath = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('http://', '').replace('https://', '').replace('/api', '') || 'localhost:8000'
+    
+    // Match the backend WebSocket route: /api/v1/chat/ws/{conversation_id}
+    return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?token=${encodeURIComponent(token)}`
   }
 
-  connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.ws = new WebSocket(this.url)
+  async connect(): Promise<void> {
+    if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
+      return
+    }
 
-        this.ws.onopen = (event) => {
-          console.log('WebSocket connected')
-          this.reconnectAttempts = 0
-          this.startPingInterval()
-          this.options.onOpen?.(event)
-          resolve()
+    this.isConnecting = true
+    
+    try {
+      console.log(`[ChatWebSocket] Connecting to: ${this.url}`)
+      
+      this.ws = new WebSocket(this.url)
+      
+      this.ws.onopen = (event) => {
+        console.log('[ChatWebSocket] Connection opened')
+        this.isConnecting = false
+        this.reconnectAttempts = 0
+        this.startPingInterval()
+        
+        if (this.options.onOpen) {
+          this.options.onOpen(event)
         }
-
-        this.ws.onmessage = (event) => {
-          try {
-            const data: WebSocketResponse = JSON.parse(event.data)
-            console.log('WebSocket message received:', data)
-            this.options.onMessage?.(data)
-          } catch (error) {
-            console.error('Error parsing WebSocket message:', error)
-          }
-        }
-
-        this.ws.onclose = (event) => {
-          console.log('WebSocket closed:', event.code, event.reason)
-          this.stopPingInterval()
-          this.options.onClose?.(event)
-
-          // Auto-reconnect unless manually closed
-          if (!this.isManualClose && this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.scheduleReconnect()
-          }
-        }
-
-        this.ws.onerror = (event) => {
-          console.error('WebSocket error:', event)
-          this.options.onError?.(event)
-          reject(new Error('WebSocket connection failed'))
-        }
-
-      } catch (error) {
-        console.error('Error creating WebSocket:', error)
-        reject(error)
       }
-    })
+
+      this.ws.onmessage = (event) => {
+        try {
+          const data: WebSocketResponse = JSON.parse(event.data)
+          console.log('[ChatWebSocket] Message received:', data.type)
+          
+          if (this.options.onMessage) {
+            this.options.onMessage(data)
+          }
+        } catch (error) {
+          console.error('[ChatWebSocket] Error parsing message:', error)
+        }
+      }
+
+      this.ws.onclose = (event) => {
+        console.log(`[ChatWebSocket] Connection closed. Code: ${event.code}, Reason: ${event.reason}`)
+        this.isConnecting = false
+        this.stopPingInterval()
+        
+        if (this.options.onClose) {
+          this.options.onClose(event)
+        }
+
+        // Auto-reconnect if not manually closed
+        if (!this.isManualClose && this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.scheduleReconnect()
+        }
+      }
+
+      this.ws.onerror = (event) => {
+        console.error('[ChatWebSocket] WebSocket error:', event)
+        this.isConnecting = false
+        
+        if (this.options.onError) {
+          this.options.onError(event)
+        }
+      }
+
+    } catch (error) {
+      console.error('[ChatWebSocket] Failed to create WebSocket connection:', error)
+      this.isConnecting = false
+      throw error
+    }
   }
 
   private scheduleReconnect(): void {
+    this.reconnectAttempts++
+    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1) // Exponential backoff
+    
+    console.log(`[ChatWebSocket] Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`)
+    
     setTimeout(() => {
-      this.reconnectAttempts++
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
-      this.connect().catch(() => {
-        // Reconnect failed, will try again if attempts < max
-      })
-    }, this.reconnectDelay * Math.pow(2, this.reconnectAttempts)) // Exponential backoff
+      if (!this.isManualClose) {
+        this.connect().catch(error => {
+          console.error('[ChatWebSocket] Reconnect attempt failed:', error)
+        })
+      }
+    }, delay)
   }
 
   private startPingInterval(): void {
+    this.stopPingInterval()
+    
+    // Send ping every 30 seconds to keep connection alive
     this.pingInterval = setInterval(() => {
-      this.ping()
-    }, 30000) // Send ping every 30 seconds
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.sendPing()
+      }
+    }, 30000)
   }
 
   private stopPingInterval(): void {
@@ -97,22 +132,23 @@ export class ChatWebSocket {
   }
 
   sendMessage(content: string, apiKey?: string): void {
-    if (!this.isConnected()) {
-      console.error('WebSocket is not connected')
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.error('[ChatWebSocket] Cannot send message: WebSocket not connected')
       return
     }
 
     const message: ChatWebSocketMessage = {
       type: 'chat_message',
-      content,
+      content: content.trim(),
       ...(apiKey && { api_key: apiKey })
     }
 
-    this.send(message)
+    console.log('[ChatWebSocket] Sending message:', { type: message.type, contentLength: content.length })
+    this.ws.send(JSON.stringify(message))
   }
 
-  ping(): void {
-    if (!this.isConnected()) {
+  sendPing(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       return
     }
 
@@ -120,77 +156,59 @@ export class ChatWebSocket {
       type: 'ping'
     }
 
-    this.send(pingMessage)
+    console.log('[ChatWebSocket] Sending ping')
+    this.ws.send(JSON.stringify(pingMessage))
   }
 
-  private send(message: object): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message))
+  close(): void {
+    console.log('[ChatWebSocket] Manually closing connection')
+    this.isManualClose = true
+    this.stopPingInterval()
+    
+    if (this.ws) {
+      this.ws.close(1000, 'Manual close')
+      this.ws = null
     }
+  }
+
+  getConnectionState(): number {
+    return this.ws ? this.ws.readyState : WebSocket.CLOSED
   }
 
   isConnected(): boolean {
     return this.ws !== null && this.ws.readyState === WebSocket.OPEN
   }
 
-  disconnect(): void {
-    this.isManualClose = true
-    this.stopPingInterval()
+  updateToken(newToken: string): void {
+    console.log('[ChatWebSocket] Updating token and reconnecting')
+    this.options.token = newToken
+    this.url = this.buildWebSocketUrl(this.options.conversationId, newToken)
     
-    if (this.ws) {
-      this.ws.close(1000, 'Manual disconnect')
-      this.ws = null
-    }
-  }
-
-  // Update options (useful for changing handlers)
-  updateOptions(newOptions: Partial<WebSocketOptions>): void {
-    this.options = { ...this.options, ...newOptions }
-  }
-}
-
-// WebSocket Manager for handling multiple connections
-export class WebSocketManager {
-  private connections: Map<string, ChatWebSocket> = new Map()
-
-  createConnection(connectionId: string, options: WebSocketOptions): ChatWebSocket {
-    // Close existing connection if any
-    this.closeConnection(connectionId)
-
-    const ws = new ChatWebSocket(options)
-    this.connections.set(connectionId, ws)
-    return ws
-  }
-
-  getConnection(connectionId: string): ChatWebSocket | undefined {
-    return this.connections.get(connectionId)
-  }
-
-  closeConnection(connectionId: string): void {
-    const connection = this.connections.get(connectionId)
-    if (connection) {
-      connection.disconnect()
-      this.connections.delete(connectionId)
-    }
-  }
-
-  closeAllConnections(): void {
-    this.connections.forEach((connection, id) => {
-      connection.disconnect()
-    })
-    this.connections.clear()
-  }
-
-  isConnected(connectionId: string): boolean {
-    const connection = this.connections.get(connectionId)
-    return connection ? connection.isConnected() : false
+    // Reconnect with new token
+    this.close()
+    this.isManualClose = false
+    setTimeout(() => {
+      this.connect().catch(error => {
+        console.error('[ChatWebSocket] Failed to reconnect with new token:', error)
+      })
+    }, 1000)
   }
 }
 
-// Singleton instance
-export const webSocketManager = new WebSocketManager()
+// WebSocket connection states for reference
+export const WebSocketStates = {
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSING: 2,
+  CLOSED: 3
+} as const
 
-// Hook-like function for easier integration with React components
+// Helper function to create and manage WebSocket connection
 export function createChatWebSocket(options: WebSocketOptions): ChatWebSocket {
   return new ChatWebSocket(options)
+}
+
+// Helper function to check if browser supports WebSocket
+export function isWebSocketSupported(): boolean {
+  return typeof WebSocket !== 'undefined'
 }

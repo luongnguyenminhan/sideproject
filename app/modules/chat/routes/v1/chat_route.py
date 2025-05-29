@@ -2,6 +2,7 @@ import json
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.enums.base_enums import BaseErrorCode
 from app.modules.chat.repository.chat_repo import ChatRepo
 from app.modules.chat.schemas.chat_request import SendMessageRequest
 from app.modules.chat.schemas.chat_response import SendMessageResponse

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.api_key_repo import ApiKeyRepo
 from app.modules.chat.schemas.api_key_request import SaveApiKeyRequest

@@ -1,175 +1,125 @@
-import { CommonResponse, FilterableRequestSchema, Pagination } from './common.type'
+import type { RequestSchema, FilterableRequestSchema } from './common.type'
 
-// Base Message interface
-export interface Message {
+// ============================================
+// MESSAGE TYPES
+// ============================================
+
+export interface MessageResponse {
   id: string
   conversation_id: string
-  user_id: string
-  role: 'user' | 'assistant'
+  role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: string
   model_used?: string
   tokens_used?: string
   response_time_ms?: string
-  create_date: string
-  update_date: string
+  file_attachments: string[]
 }
 
-// Conversation interface
-export interface Conversation {
-  id: string
-  name: string
-  user_id: string
-  message_count: number
-  last_activity: string
-  create_date: string
-  update_date: string
+export interface MessageListRequest extends FilterableRequestSchema {
+  before_message_id?: string
+  limit?: number
 }
 
-// File interface
-export interface ChatFile {
-  id: string
-  name: string
-  original_name: string
-  size: number
-  formatted_size: string
-  type: string
-  upload_date: string
-  download_count: number
-  is_public: boolean
-  is_image: boolean
-  is_video: boolean
-  is_audio: boolean
-  is_document: boolean
-  file_extension: string
-}
-
-// API Key interface
-export interface ApiKey {
-  id: string
-  provider: string
-  masked_key: string
-  is_default: boolean
-  key_name: string
-  create_date: string
-}
-
-// Request interfaces
-export interface SendMessageRequest {
+export interface SendMessageRequest extends RequestSchema {
   conversation_id: string
   content: string
+  file_ids?: string[]
   api_key?: string
 }
 
-export interface CreateConversationRequest {
-  name: string
-  initial_message?: string
+export interface SendMessageResponse {
+  user_message: MessageResponse
+  ai_message: MessageResponse
 }
 
-export interface UpdateConversationRequest {
-  name?: string
+// ============================================
+// CONVERSATION TYPES
+// ============================================
+
+export interface ConversationResponse {
+  id: string
+  name: string
+  message_count: number
+  last_activity: string
+  create_date: string
+  update_date?: string
 }
 
 export interface ConversationListRequest extends FilterableRequestSchema {
   search?: string
   order_by?: string
-  order_direction?: string
+  order_direction?: 'asc' | 'desc'
 }
 
-export interface SaveApiKeyRequest {
+export interface CreateConversationRequest extends RequestSchema {
+  name: string
+  initial_message?: string
+}
+
+export interface UpdateConversationRequest extends RequestSchema {
+  name?: string
+}
+
+// ============================================
+// FILE TYPES
+// ============================================
+
+export interface FileResponse {
+  id: string
+  name: string
+  original_name: string
+  size: number
+  type: string
+  upload_date: string
+  download_url: string
+  is_public: boolean
+}
+
+export interface UploadFileResponse {
+  uploaded_files: FileResponse[]
+  failed_files: string[]
+}
+
+export interface FileListRequest extends FilterableRequestSchema {
+  file_type?: string
+  search?: string
+}
+
+// ============================================
+// API KEY TYPES
+// ============================================
+
+export interface ApiKeyRequest extends RequestSchema {
   provider: string
   api_key: string
   is_default?: boolean
   key_name?: string
 }
 
-export interface FileListRequest extends FilterableRequestSchema {
-  file_type?: string
-  search?: string
+export interface ApiKeyResponse {
+  id: string
+  provider: string
+  masked_key: string
+  is_default: boolean
+  create_date: string
+  key_name?: string
+}
+
+// ============================================
+// WEBSOCKET TYPES
+// ============================================
+
+export interface WebSocketTokenRequest extends RequestSchema {
   conversation_id?: string
 }
 
-// Response interfaces
-export interface SendMessageResponse {
-  user_message: Message
-  ai_message: Message
+export interface WebSocketTokenResponse {
+  ws_token: string
+  expires_in: number
+  ws_url: string
 }
 
-export interface ConversationListResponse extends Pagination<Conversation> {}
-
-export interface FileListResponse extends Pagination<ChatFile> {}
-
-export interface ApiKeyListResponse extends Pagination<ApiKey> {}
-
-// WebSocket message types
-export interface WebSocketMessage {
-  type: string
-  [key: string]: unknown
-}
-
-export interface ChatWebSocketMessage extends WebSocketMessage {
-  type: 'chat_message'
-  content: string
-  api_key?: string
-}
-
-export interface PingWebSocketMessage extends WebSocketMessage {
-  type: 'ping'
-}
-
-export interface UserMessageResponse extends WebSocketMessage {
-  type: 'user_message'
-  message: Message
-}
-
-export interface AssistantTypingResponse extends WebSocketMessage {
-  type: 'assistant_typing'
-  status: boolean
-}
-
-export interface AssistantMessageChunkResponse extends WebSocketMessage {
-  type: 'assistant_message_chunk'
-  chunk: string
-  is_final: boolean
-}
-
-export interface AssistantMessageCompleteResponse extends WebSocketMessage {
-  type: 'assistant_message_complete'
-  message: Message
-}
-
-export interface ErrorWebSocketResponse extends WebSocketMessage {
-  type: 'error'
-  message: string
-}
-
-export interface PongWebSocketResponse extends WebSocketMessage {
-  type: 'pong'
-}
-
-// Union type for all possible WebSocket responses
-export type WebSocketResponse = 
-  | UserMessageResponse
-  | AssistantTypingResponse
-  | AssistantMessageChunkResponse
-  | AssistantMessageCompleteResponse
-  | ErrorWebSocketResponse
-  | PongWebSocketResponse
-
-// Chat state interface for frontend
-export interface ChatState {
-  conversations: Conversation[]
-  activeConversation: Conversation | null
-  messages: Message[]
-  isLoading: boolean
-  isConnected: boolean
-  typingStatus: boolean
-  error: string | null
-  files: ChatFile[]
-  apiKeys: ApiKey[]
-}
-
-// WebSocket connection options
 export interface WebSocketOptions {
   conversationId: string
   token: string
@@ -179,21 +129,139 @@ export interface WebSocketOptions {
   onOpen?: (event: Event) => void
 }
 
-// File upload progress
-export interface FileUploadProgress {
-  fileId: string
-  fileName: string
-  progress: number
-  status: 'uploading' | 'completed' | 'error'
+export interface WebSocketResponse {
+  type: 'user_message' | 'assistant_message_chunk' | 'assistant_message_complete' | 'assistant_typing' | 'error' | 'pong'
+  message?: {
+    id?: string
+    content: string
+    role?: string
+    timestamp?: string
+    model_used?: string
+    response_time_ms?: string
+  }
+  chunk?: string
+  is_final?: boolean
+  status?: boolean
   error?: string
 }
 
-// Chat API response types
-export type ConversationResponse = CommonResponse<Conversation>
-export type ConversationListApiResponse = CommonResponse<ConversationListResponse>
-export type SendMessageApiResponse = CommonResponse<SendMessageResponse>
-export type FileListApiResponse = CommonResponse<FileListResponse>
-export type FileUploadApiResponse = CommonResponse<ChatFile[]>
-export type ApiKeyApiResponse = CommonResponse<ApiKey>
-export type ApiKeyListApiResponse = CommonResponse<ApiKey[]>
-export type DeleteResponse = CommonResponse<{ deleted: boolean }>
+export interface ChatWebSocketMessage extends RequestSchema {
+  type: 'chat_message'
+  content: string
+  api_key?: string
+}
+
+export interface PingWebSocketMessage extends RequestSchema {
+  type: 'ping'
+}
+
+export type WebSocketMessage = ChatWebSocketMessage | PingWebSocketMessage
+
+// ============================================
+// STATISTICS TYPES
+// ============================================
+
+export interface ConversationStatsResponse {
+  total_messages: number
+  user_messages: number
+  assistant_messages: number
+  total_tokens_used: number
+  total_cost: number
+  avg_response_time_ms: number
+  most_used_model?: string
+  first_message_date?: string
+  last_activity_date?: string
+}
+
+// ============================================
+// UI STATE TYPES FOR CHATCLIENTWRAPPER
+// ============================================
+
+export interface Conversation {
+  id: string
+  name: string
+  messages: Message[]
+  lastActivity: Date
+  messageCount: number
+}
+
+export interface Message {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: Date
+  isStreaming?: boolean
+  model_used?: string
+  response_time_ms?: string
+  file_attachments?: string[]
+}
+
+export interface UploadedFile {
+  id: string
+  name: string
+  originalName: string
+  size: number
+  type: string
+  uploadDate: Date
+  downloadUrl?: string
+}
+
+export interface ChatState {
+  conversations: Conversation[]
+  activeConversationId: string | null
+  messages: Message[]
+  isLoading: boolean
+  isTyping: boolean
+  error: string | null
+  uploadedFiles: UploadedFile[]
+  apiKeys: ApiKeyResponse[]
+  wsToken: string | null
+}
+
+// ============================================
+// HELPER FUNCTIONS FOR TYPE CONVERSION
+// ============================================
+
+export function convertToUIConversation(apiConversation: ConversationResponse): Conversation {
+  return {
+    id: apiConversation.id,
+    name: apiConversation.name,
+    messages: [], // Will be loaded separately
+    lastActivity: new Date(apiConversation.last_activity),
+    messageCount: apiConversation.message_count
+  }
+}
+
+export function convertToUIMessage(apiMessage: MessageResponse): Message {
+  return {
+    id: apiMessage.id,
+    role: apiMessage.role,
+    content: apiMessage.content,
+    timestamp: new Date(apiMessage.timestamp),
+    model_used: apiMessage.model_used,
+    response_time_ms: apiMessage.response_time_ms,
+    file_attachments: apiMessage.file_attachments
+  }
+}
+
+export function convertToUIFile(apiFile: FileResponse): UploadedFile {
+  return {
+    id: apiFile.id,
+    name: apiFile.name,
+    originalName: apiFile.original_name,
+    size: apiFile.size,
+    type: apiFile.type,
+    uploadDate: new Date(apiFile.upload_date),
+    downloadUrl: apiFile.download_url
+  }
+}
+
+// ============================================
+// ERROR TYPES
+// ============================================
+
+export interface ChatError {
+  code: string
+  message: string
+  details?: string
+}

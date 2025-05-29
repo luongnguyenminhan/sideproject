@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.conversation_repo import ConversationRepo
 from app.modules.chat.schemas.conversation_request import (

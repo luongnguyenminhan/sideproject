@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.file_repo import FileRepo
 from app.modules.chat.schemas.file_request import FileListRequest
