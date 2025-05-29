@@ -110,13 +110,13 @@ const authApi = {
 
   /**
    * Refresh an expired authentication token
-   * GET /auth/refresh
+   * POST /auth/refresh
    */
   refreshToken: async (tokenData: RefreshTokenRequest): Promise<UserResponse | null> => {
     console.log('API Call: refreshToken');
     
     return handleApiCall<UserResponse>(() => 
-      axiosInstance.get('/auth/refresh', { params: tokenData })
+      axiosInstance.post('/auth/refresh', { params: tokenData })
     );
   },
 

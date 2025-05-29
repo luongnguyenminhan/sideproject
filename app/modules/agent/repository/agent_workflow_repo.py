@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.core.database import get_db
-from app.modules.chat.agent.dal.agent_dal import AgentDAL
-from app.modules.chat.agent.dal.agent_config_dal import AgentConfigDAL
-from app.modules.chat.agent.dal.agent_memory_dal import AgentMemoryDAL
-from app.modules.chat.agent.models.agent import Agent
-from app.modules.chat.agent.models.agent_config import AgentConfig
-from app.modules.chat.agent.models.agent_memory import MemoryType
+from app.modules.agent.dal.agent_dal import AgentDAL
+from app.modules.agent.dal.agent_config_dal import AgentConfigDAL
+from app.modules.agent.dal.agent_memory_dal import AgentMemoryDAL
+from app.modules.agent.models.agent import Agent
+from app.modules.agent.models.agent_config import AgentConfig
+from app.modules.agent.models.agent_memory import MemoryType
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 from typing import Dict, Any, List, Optional, AsyncGenerator
@@ -58,7 +58,7 @@ class AgentWorkflowRepo:
         
         try:
             # Execute workflow using LangGraph service
-            from app.modules.chat.agent.services.langgraph_service import LangGraphService
+            from app.modules.agent.services.langgraph_service import LangGraphService
             
             langgraph_service = LangGraphService()
             response = await langgraph_service.execute_workflow(
@@ -112,7 +112,7 @@ class AgentWorkflowRepo:
         self._store_user_message_memory(agent_id, conversation_id, user_message)
         
         # Execute streaming workflow
-        from app.modules.chat.agent.services.langgraph_service import LangGraphService
+        from app.modules.agent.services.langgraph_service import LangGraphService
         
         langgraph_service = LangGraphService()
         
@@ -241,7 +241,7 @@ class AgentWorkflowRepo:
         )
     
     def _store_ai_response_memory(self, agent_id: str, conversation_id: str, 
-                                response: str, metadata: Dict[str, Any]):
+                                response: str, meta_data: Dict[str, Any]):
         """Store AI response in memory"""
         self.memory_dal.create_memory(
             agent_id=agent_id,
@@ -250,7 +250,7 @@ class AgentWorkflowRepo:
             content={
                 'role': 'assistant',
                 'content': response,
-                'metadata': metadata,
+                'meta_data': meta_data,
                 'timestamp': str(uuid.uuid4())
             },
             importance_score=0.6

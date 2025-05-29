@@ -60,10 +60,14 @@ export async function handleApiCall<T>(
         }
         
         // If it's a standard HTTP error
+        let customMessage = error.response.statusText || 'HTTP Error';
+        if (error.response.status === 405) {
+          customMessage = 'Method Not Allowed: Bạn đang gọi sai method (GET/POST/PUT/DELETE) cho endpoint này';
+        }
         throw new ApiException(
           error.response.status,
           1, // Default error code
-          error.response.statusText || 'HTTP Error',
+          customMessage,
           undefined
         );
       } else if (error.request) {
@@ -132,10 +136,14 @@ export async function handleApiCallNoData(
         }
         
         // If it's a standard HTTP error
+        let customMessage = error.response.statusText || 'HTTP Error';
+        if (error.response.status === 405) {
+          customMessage = 'Method Not Allowed: Bạn đang gọi sai method (GET/POST/PUT/DELETE) cho endpoint này';
+        }
         throw new ApiException(
           error.response.status,
           1, // Default error code
-          error.response.statusText || 'HTTP Error',
+          customMessage,
           undefined
         );
       } else if (error.request) {

@@ -1,6 +1,6 @@
 from typing import Dict, Any, AsyncGenerator
-from app.modules.chat.agent.workflows.base_workflow import BaseWorkflow
-from app.modules.chat.agent.services.langgraph_service import LangGraphService
+from app.modules.agent.workflows.base_workflow import BaseWorkflow
+from app.modules.agent.services.langgraph_service import LangGraphService
 
 
 class ChatWorkflow(BaseWorkflow):

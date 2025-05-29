@@ -52,9 +52,6 @@ USER appuser
 # Create an entrypoint script within the Dockerfile
 ENTRYPOINT ["/bin/bash", "-c", "\
 if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
-    echo \"Waiting for MongoDB to be ready...\" && \
-    while ! nc -z mongodb 27017; do sleep 1; done && \
-    echo \"MongoDB is ready. Starting Celery worker...\" && \
     python -m celery -A app.jobs.celery_worker worker --concurrency=${CELERY_WORKER_CONCURRENCY:-4}; \
 else \
     if [ \"$ENV\" = \"development\" ]; then \

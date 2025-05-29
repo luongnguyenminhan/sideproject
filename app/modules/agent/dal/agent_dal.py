@@ -1,6 +1,6 @@
+from app.modules.agent.models.agent import Agent, AgentType
 from sqlalchemy.orm import Session
 from app.core.base_dal import BaseDAL
-from app.modules.chat.agent.models.agent import Agent, AgentType
 from typing import List, Optional
 
 

@@ -1,9 +1,9 @@
 from typing import Dict, Any, Optional, AsyncGenerator
 from sqlalchemy.orm import Session
-from app.modules.chat.agent.repository.agent_repo import AgentRepo
-from app.modules.chat.agent.repository.agent_workflow_repo import AgentWorkflowRepo
-from app.modules.chat.agent.services.workflow_manager import WorkflowManager
-from app.modules.chat.agent.models.agent import Agent, AgentType
+from app.modules.agent.repository.agent_repo import AgentRepo
+from app.modules.agent.repository.agent_workflow_repo import AgentWorkflowRepo
+from app.modules.agent.services.workflow_manager import WorkflowManager
+from app.modules.agent.models.agent import Agent, AgentType
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 import time

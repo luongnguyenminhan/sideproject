@@ -23,7 +23,7 @@ class AgentMemory(BaseEntity):
     content = Column(JSON, nullable=False)  # Stores memory content as JSON
     importance_score = Column(Float, nullable=False, default=0.5)
     session_id = Column(String(255), nullable=True)  # For grouping related memories
-    metadata = Column(JSON, nullable=True)  # Additional metadata
+    meta_data = Column(JSON, nullable=True)  # Đổi tên từ metadata sang meta_data
     
     # Relationships
     agent = relationship('Agent', back_populates='memories')

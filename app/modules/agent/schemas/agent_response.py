@@ -2,9 +2,9 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 from app.core.base_model import ResponseSchema, APIResponse
-from app.modules.chat.agent.models.agent import AgentType
-from app.modules.chat.agent.models.agent_config import ModelProvider
-from app.modules.chat.agent.models.agent_memory import MemoryType
+from app.modules.agent.models.agent import AgentType
+from app.modules.agent.models.agent_config import ModelProvider
+from app.modules.agent.models.agent_memory import MemoryType
 
 
 class AgentConfigResponse(ResponseSchema):

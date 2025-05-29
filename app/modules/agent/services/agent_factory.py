@@ -1,7 +1,7 @@
 from typing import Dict, Any, List
-from app.modules.chat.agent.models.agent import Agent, AgentType
-from app.modules.chat.agent.models.agent_config import AgentConfig, ModelProvider
-from app.modules.chat.agent.repository.agent_repo import AgentRepo
+from app.modules.agent.models.agent import Agent, AgentType
+from app.modules.agent.models.agent_config import AgentConfig, ModelProvider
+from app.modules.agent.repository.agent_repo import AgentRepo
 from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 

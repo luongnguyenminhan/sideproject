@@ -1,8 +1,8 @@
 from pydantic import BaseModel, validator
 from typing import Optional, Dict, Any, List
 from app.core.base_model import RequestSchema, FilterableRequestSchema
-from app.modules.chat.agent.models.agent import AgentType
-from app.modules.chat.agent.models.agent_config import ModelProvider
+from app.modules.agent.models.agent import AgentType
+from app.modules.agent.models.agent_config import ModelProvider
 
 
 class CreateAgentRequest(RequestSchema):

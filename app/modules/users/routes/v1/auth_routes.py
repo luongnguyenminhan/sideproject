@@ -461,7 +461,7 @@ async def revoke_google_access(
 	)
 
 
-@route.get('/refresh', response_model=APIResponse)
+@route.post('/refresh', response_model=APIResponse)
 @handle_exceptions
 async def refresh_token(token_data: RefreshTokenRequest, repo: AuthenRepo = Depends()):
 	"""Refresh token endpoint: Validate refresh token and issue a new access token"""

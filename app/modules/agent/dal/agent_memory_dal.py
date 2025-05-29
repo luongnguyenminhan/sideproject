@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, and_
 from app.core.base_dal import BaseDAL
-from app.modules.chat.agent.models.agent_memory import AgentMemory, MemoryType
+from app.modules.agent.models.agent_memory import AgentMemory, MemoryType
 from typing import List, Optional, Dict, Any
 
 
@@ -51,7 +51,7 @@ class AgentMemoryDAL(BaseDAL[AgentMemory]):
     
     def create_memory(self, agent_id: str, memory_type: MemoryType, content: Dict[str, Any],
                      conversation_id: str = None, session_id: str = None, 
-                     importance_score: float = 0.5, metadata: Dict[str, Any] = None) -> AgentMemory:
+                     importance_score: float = 0.5, meta_data: Dict[str, Any] = None) -> AgentMemory:
         """Create new memory entry"""
         memory = AgentMemory(
             agent_id=agent_id,
@@ -60,7 +60,7 @@ class AgentMemoryDAL(BaseDAL[AgentMemory]):
             content=content,
             importance_score=importance_score,
             session_id=session_id,
-            metadata=metadata or {}
+            meta_data=meta_data or {}
         )
         
         self.db.add(memory)

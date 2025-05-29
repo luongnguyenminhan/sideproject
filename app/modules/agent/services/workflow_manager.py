@@ -1,9 +1,9 @@
 from typing import Dict, Any, Optional, AsyncGenerator
 import asyncio
 import time
-from app.modules.chat.agent.models.agent import Agent, AgentType
-from app.modules.chat.agent.models.agent_config import AgentConfig
-from app.modules.chat.agent.services.langgraph_service import LangGraphService
+from app.modules.agent.models.agent import Agent, AgentType
+from app.modules.agent.models.agent_config import AgentConfig
+from app.modules.agent.services.langgraph_service import LangGraphService
 from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 

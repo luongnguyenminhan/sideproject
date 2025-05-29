@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, AsyncGenerator, Optional
-from app.modules.chat.agent.models.agent_config import AgentConfig
+from app.modules.agent.models.agent_config import AgentConfig
 
 
 class BaseWorkflow(ABC):

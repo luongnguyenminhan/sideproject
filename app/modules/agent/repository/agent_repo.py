@@ -1,12 +1,13 @@
+from app.modules.agent.dal.agent_config_dal import AgentConfigDAL
+from app.modules.agent.dal.agent_dal import AgentDAL
+from app.modules.agent.dal.agent_memory_dal import AgentMemoryDAL
+from app.modules.agent.models.agent import Agent, AgentType
+from app.modules.agent.models.agent_config import AgentConfig
+from app.modules.agent.models.agent_memory import MemoryType
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.core.database import get_db
-from app.modules.chat.agent.dal.agent_dal import AgentDAL
-from app.modules.chat.agent.dal.agent_config_dal import AgentConfigDAL
-from app.modules.chat.agent.dal.agent_memory_dal import AgentMemoryDAL
-from app.modules.chat.agent.models.agent import Agent, AgentType
-from app.modules.chat.agent.models.agent_config import AgentConfig
-from app.modules.chat.agent.models.agent_memory import AgentMemory, MemoryType
+
 from app.exceptions.exception import NotFoundException, ValidationException, ForbiddenException
 from app.middleware.translation_manager import _
 from typing import List, Optional, Dict, Any
@@ -146,5 +147,5 @@ class AgentRepo:
             memory_type=MemoryType.WORKFLOW_STATE,
             content=initial_state,
             importance_score=1.0,
-            metadata={'type': 'initialization'}
+            meta_data={'type': 'initialization'}
         )

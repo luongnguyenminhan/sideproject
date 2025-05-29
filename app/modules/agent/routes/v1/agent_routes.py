@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
-from app.modules.chat.agent.repository.agent_repo import AgentRepo
-from app.modules.chat.agent.repository.agent_workflow_repo import AgentWorkflowRepo
-from app.modules.chat.agent.services.agent_factory import AgentFactory
-from app.modules.chat.agent.services.workflow_manager import WorkflowManager
-from app.modules.chat.agent.schemas.agent_request import *
-from app.modules.chat.agent.schemas.agent_response import *
-from app.modules.chat.agent.models.agent import AgentType
-from app.modules.chat.agent.models.agent_memory import MemoryType
+from app.modules.agent.repository.agent_repo import AgentRepo
+from app.modules.agent.repository.agent_workflow_repo import AgentWorkflowRepo
+from app.modules.agent.services.agent_factory import AgentFactory
+from app.modules.agent.services.workflow_manager import WorkflowManager
+from app.modules.agent.schemas.agent_request import *
+from app.modules.agent.schemas.agent_response import *
+from app.modules.agent.models.agent import AgentType
+from app.modules.agent.models.agent_memory import MemoryType
 from app.exceptions.handlers import handle_exceptions
 from app.middleware.translation_manager import _
 from typing import List
