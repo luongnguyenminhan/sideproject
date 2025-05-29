@@ -13,7 +13,7 @@ class AgentFactory:
 		AgentType.CHAT: {
 			'name': 'Default Chat Agent',
 			'description': 'General-purpose conversational AI assistant',
-			'model_provider': ModelProvider.OPENAI,
+			'model_provider': ModelProvider.GOOGLE,
 			'model_name': 'gpt-3.5-turbo',
 			'temperature': 0.7,
 			'max_tokens': 2048,
@@ -25,7 +25,7 @@ You maintain context throughout the conversation and adapt your responses to the
 		AgentType.ANALYSIS: {
 			'name': 'Data Analysis Agent',
 			'description': 'Specialized AI for data analysis and insights',
-			'model_provider': ModelProvider.OPENAI,
+			'model_provider': ModelProvider.GOOGLE,
 			'model_name': 'gpt-4',
 			'temperature': 0.3,
 			'max_tokens': 4096,
@@ -37,7 +37,7 @@ and provide analytical recommendations. You focus on accuracy and clarity in you
 		AgentType.TASK: {
 			'name': 'Task Assistant Agent',
 			'description': 'AI assistant for task management and productivity',
-			'model_provider': ModelProvider.OPENAI,
+			'model_provider': ModelProvider.GOOGLE,
 			'model_name': 'gpt-3.5-turbo',
 			'temperature': 0.5,
 			'max_tokens': 2048,
@@ -95,11 +95,7 @@ and complete tasks efficiently. You provide structured and actionable guidance."
 	def list_available_models(cls) -> Dict[str, List[str]]:
 		"""List available models by provider"""
 		return {
-			ModelProvider.OPENAI.value: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'],
-			ModelProvider.ANTHROPIC.value: ['claude-3-sonnet-20240229', 'claude-3-opus-20240229', 'claude-3-haiku-20240307', 'claude-3-5-sonnet-20240620'],
-			ModelProvider.GOOGLE.value: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-pro'],
-			ModelProvider.GROQ.value: ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768'],
-			ModelProvider.OLLAMA.value: ['llama2', 'llama3', 'mistral', 'codellama'],
+			ModelProvider.GOOGLE.value: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash'],
 		}
 
 	@classmethod

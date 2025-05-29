@@ -106,13 +106,14 @@ class ChatRepo:
 		# Get user's API key if not provided
 		if not api_key:
 			print(f"\033[94m[ChatRepo.get_ai_response] No API key provided, getting user's default key\033[0m")
-			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='openai')
+			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='google')
 			if default_key:
 				api_key = default_key.get_api_key()
-				print(f'\033[92m[ChatRepo.get_ai_response] Found default API key for OpenAI\033[0m')
+				print(f'\033[92m[ChatRepo.get_ai_response] Found default API key for GOOGLE\033[0m')
 
 		try:
 			print(f'\033[94m[ChatRepo.get_ai_response] Calling Agent Integration Service\033[0m')
+			print(f'\033[96m[ChatRepo.get_ai_response] Using API key: {api_key}... (truncated for security)\033[0m')
 			result = await self.agent_integration.get_ai_response(conversation_id=conversation_id, user_message=user_message, user_id=user_id, api_key=api_key)
 			print(f'\033[92m[ChatRepo.get_ai_response] Agent response received, agent: {result.get("agent_name", "unknown")}, response_time: {result.get("response_time_ms", 0)}ms\033[0m')
 			return result
@@ -147,10 +148,10 @@ class ChatRepo:
 		# Get user's API key if not provided
 		if not api_key:
 			print(f"\033[94m[ChatRepo.get_ai_response_streaming] No API key provided, getting user's default key\033[0m")
-			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='openai')
+			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='google')
 			if default_key:
 				api_key = default_key.get_api_key()
-				print(f'\033[92m[ChatRepo.get_ai_response_streaming] Found default API key for OpenAI\033[0m')
+				print(f'\033[92m[ChatRepo.get_ai_response_streaming] Found default API key for Google\033[0m')
 
 		try:
 			print(f'\033[94m[ChatRepo.get_ai_response_streaming] Calling Agent Integration Service for streaming\033[0m')

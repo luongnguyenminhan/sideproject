@@ -7,11 +7,7 @@ import enum
 class ModelProvider(str, enum.Enum):
 	"""Model provider enumeration"""
 
-	OPENAI = 'openai'
-	ANTHROPIC = 'anthropic'
 	GOOGLE = 'google'
-	GROQ = 'groq'
-	OLLAMA = 'ollama'
 
 
 class AgentConfig(BaseEntity):
@@ -22,7 +18,7 @@ class AgentConfig(BaseEntity):
 	name = Column(String(255), nullable=False)
 	description = Column(String(500), nullable=True)
 	agent_type = Column(String(50), nullable=False)
-	model_provider = Column(Enum(ModelProvider), nullable=False, default=ModelProvider.OPENAI)
+	model_provider = Column(Enum(ModelProvider), nullable=False, default=ModelProvider.GOOGLE)
 	model_name = Column(String(100), nullable=False)
 	temperature = Column(Float, nullable=False, default=0.7)
 	max_tokens = Column(Integer, nullable=True, default=2048)

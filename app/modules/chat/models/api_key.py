@@ -7,10 +7,7 @@ import enum
 
 
 class ApiProvider(str, enum.Enum):
-	OPENAI = 'openai'
-	ANTHROPIC = 'anthropic'
 	GOOGLE = 'google'
-	AZURE = 'azure'
 
 
 class ApiKey(BaseEntity):

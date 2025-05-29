@@ -41,7 +41,7 @@ class MessageDAL(BaseDAL[Message]):
 
 		# Order by timestamp descending (newest first)
 		print(f'\033[94m[MessageDAL.get_conversation_messages] Ordering by timestamp descending\033[0m')
-		query = query.order_by(desc(self.model.timestamp))
+		query = query.order_by(self.model.timestamp)
 
 		# Count total records
 		total_count = query.count()

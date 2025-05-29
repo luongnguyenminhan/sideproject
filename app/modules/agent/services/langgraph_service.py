@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Any, AsyncGenerator, Optional
 import asyncio
 import json
@@ -28,7 +29,8 @@ class LangGraphService:
 
 	def _get_llm(self, agent_config: AgentConfig, google_api_key: str):
 		from langchain_google_genai import ChatGoogleGenerativeAI
-
+		if not google_api_key:
+			api_key = os.getenv('GOOGLE_API_KEY')
 		return ChatGoogleGenerativeAI(model=agent_config.model_name, temperature=agent_config.temperature, max_tokens=agent_config.max_tokens, google_api_key=google_api_key)
 
 	async def execute_workflow(self, agent_config: AgentConfig, context: dict, user_id: str) -> dict:
@@ -50,10 +52,9 @@ class LangGraphService:
 		except Exception as e:
 			raise Exception(f'Lỗi workflow: {str(e)}')
 
-	async def execute_streaming_workflow(self, agent_config: AgentConfig, context: dict, user_id: str):
+	async def execute_streaming_workflow(self, agent_config: AgentConfig, context: dict, apikey: str):
 		try:
-			google_api_key = self._get_google_api_key(user_id)
-			llm = self._get_llm(agent_config, google_api_key)
+			llm = self._get_llm(agent_config, apikey)
 			workflow = self._create_workflow(agent_config, llm)
 			workflow_input = self._prepare_workflow_input(context)
 			async for chunk in self._execute_streaming_langgraph_workflow(workflow, workflow_input):
