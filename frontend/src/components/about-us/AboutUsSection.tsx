@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FacebookPageInfo } from '@/types/facebook.type';
 import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import getDictionary, { createTranslator } from '@/utils/translation';
+import Image from 'next/image';
 
 interface AboutUsSectionProps {
   pageInfo: FacebookPageInfo;
@@ -15,25 +16,16 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
   const t = createTranslator(dictionary);
 
   return (
-    <section className="py-16 px-6 sm:px-8 lg:px-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
-            {t('aboutUs.title')}
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {t('aboutUs.subtitle')}
-          </p>
-        </div>
+    <section className="">
+      <div className="max-w-screen mx-auto">
 
         {/* Facebook Page Info Card */}
         {pageInfo && (
           <div className="mb-12">
-            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300">
+            <Card className="bg-[color:var(--card)] border-[color:var(--border)] shadow-lg hover:shadow-[var(--card-hover-shadow)] transition-all duration-300">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {t('aboutUs.social.pageInfo')}
+                <CardTitle className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
+                  {t('aboutUs.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -42,10 +34,12 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
                   {/* Profile Picture */}
                   {pageInfo.picture?.data?.url && (
                     <div className="flex-shrink-0">
-                      <img
+                      <Image
                         src={pageInfo.picture.data.url}
                         alt={pageInfo.name || 'Facebook Page'}
                         className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[color:var(--feature-blue)] shadow-lg object-cover"
+                        width={1920}
+                        height={1920}
                       />
                     </div>
                   )}
@@ -67,6 +61,9 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
                         <span className="text-lg font-semibold text-[color:var(--feature-blue-text)]">
                           {pageInfo.followers_count?.toLocaleString()} {t('aboutUs.social.followers')}
                         </span>
+                        <span className='text-lg font-semibold text-[color:var(--feature-blue-text)]'>|</span>
+                        {/* email */}
+                        <span className="text-lg font-semibold text-[color:var(--feature-blue-text)]">Email: {pageInfo.emails?.[0]}</span>
                       </div>
                     )}
                     
@@ -86,35 +83,45 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
 
                 {/* Additional Page Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-600">
-                  {pageInfo.posts?.data && (
-                    <div className="text-center p-4 bg-[color:var(--feature-blue)] rounded-xl">
-                      <div className="text-2xl font-bold text-[color:var(--feature-blue-text)]">
-                        {pageInfo.posts.data.length}
-                      </div>
-                      <div className="text-sm text-[color:var(--feature-blue-text)] opacity-80">
-                        {t('home.facebookPostsTitle')}
+                  
+                  {/* Facebook Link */}
+                  <div className="text-center p-4 bg-[color:var(--feature-blue)] rounded-xl group relative">
+                    <a 
+                      href="https://www.facebook.com/cangiuocschoolmedia" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      <svg className="w-8 h-8 text-[color:var(--feature-blue-text)] mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </a>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                      Facebook
+                    </div>
+                  </div>
+
+                  {/* Address */}
+                  {pageInfo.single_line_address && (
+                    <div className="text-center p-4 bg-[color:var(--feature-yellow)] rounded-xl group relative">
+                      <svg className="w-8 h-8 text-[color:var(--feature-yellow-text)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                        {pageInfo.single_line_address}
                       </div>
                     </div>
                   )}
-                  
-                  {pageInfo.website && (
-                    <div className="text-center p-4 bg-[color:var(--feature-green)] rounded-xl">
-                      <svg className="w-8 h-8 text-[color:var(--feature-green-text)] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+
+                  {/* Email */}
+                  {pageInfo.emails && pageInfo.emails.length > 0 && (
+                    <div className="text-center p-4 bg-[color:var(--feature-green)] rounded-xl group relative">
+                      <svg className="w-8 h-8 text-[color:var(--feature-green-text)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
-                      <div className="text-sm text-[color:var(--feature-green-text)]">
-                        Website
-                      </div>
-                    </div>
-                  )}
-                  
-                  {pageInfo.phone && (
-                    <div className="text-center p-4 bg-[color:var(--feature-purple)] rounded-xl">
-                      <svg className="w-8 h-8 text-[color:var(--feature-purple-text)] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <div className="text-sm text-[color:var(--feature-purple-text)]">
-                        Contact
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                        {pageInfo.emails[0]}
                       </div>
                     </div>
                   )}
@@ -160,72 +167,6 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
           </Card>
         </div>
 
-        {/* Values Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-[color:var(--feature-blue-text)]">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-[color:var(--feature-blue)]">
-                <svg className="w-6 h-6 text-[color:var(--feature-blue-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('aboutUs.values.innovation')}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                {t('aboutUs.values.innovationDesc')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-[color:var(--feature-green-text)]">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-[color:var(--feature-green)]">
-                <svg className="w-6 h-6 text-[color:var(--feature-green-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('aboutUs.values.quality')}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                {t('aboutUs.values.qualityDesc')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-[color:var(--feature-purple-text)]">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-[color:var(--feature-purple)]">
-                <svg className="w-6 h-6 text-[color:var(--feature-purple-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('aboutUs.values.collaboration')}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                {t('aboutUs.values.collaborationDesc')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-[color:var(--feature-yellow-text)]">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-[color:var(--feature-yellow)]">
-                <svg className="w-6 h-6 text-[color:var(--feature-yellow-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('aboutUs.values.integrity')}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                {t('aboutUs.values.integrityDesc')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </section>
   );

@@ -90,48 +90,48 @@
   },
   "aboutUs": {
     "title": "About Us",
-    "subtitle": "Learn more about our story, mission, and the team behind our platform.",
+    "subtitle": "The Facebook page 'Can Giuoc School Media' is the official media platform of Can Giuoc High School, Long An, Vietnam. This page was created to connect the school with students, parents, and the community through creative and modern media activities.",
     "mission": {
       "title": "Our Mission",
-      "description": "We strive to create innovative solutions that connect people and enhance digital experiences through cutting-edge technology and user-centered design."
+      "description": "Quickly update information about events, academic and extracurricular activities, and student achievements.\nCreate a media playground for students to develop skills in photography, content writing, and social media management.\nBuild a dynamic, creative, and friendly image of the school in the eyes of the community."
     },
     "vision": {
-      "title": "Our Vision",
-      "description": "To become a leading platform that empowers businesses and individuals to achieve their goals through seamless digital transformation and social connectivity."
+      "title": "Highlighted Activities",
+      "description": "'CG’s School Got Talent' – a program where students showcase their talents and love for their homeland through a youthful and creative lens.\nDocumentaries and short videos capturing memorable school moments, produced and performed by the students themselves."
     },
     "story": {
-      "title": "Our Story",
-      "paragraph1": "Founded with a passion for innovation and excellence, our company began as a small team of dedicated developers and designers who shared a common vision: to create digital solutions that make a real difference.",
-      "paragraph2": "Today, we continue to grow and evolve, always staying true to our core values of quality, innovation, and customer satisfaction. Our platform serves thousands of users worldwide, helping them connect, share, and achieve their goals."
+      "title": "Message",
+      "paragraph1": "We believe that school media is not only a tool for connection but also an experiential educational environment, helping students develop comprehensively in both skills and creative thinking.",
+      "paragraph2": "Follow our page to accompany and spread positive values from Can Giuoc High School!"
     },
     "team": {
-      "title": "Our Team",
-      "description": "A diverse group of passionate professionals"
+      "title": "Contact",
+      "description": "📧 Email: cgs1412.thptcangiuoc@gmail.com\n📞 Head Committee Hotline: 0385 683 763"
     },
     "values": {
-      "title": "Our Values",
-      "subtitle": "The principles that guide everything we do",
-      "innovation": "Innovation",
-      "innovationDesc": "Constantly pushing boundaries and exploring new possibilities",
-      "quality": "Quality", 
-      "qualityDesc": "Delivering excellence in every product and service we provide",
+      "title": "Connect With Us",
+      "subtitle": "Stay updated with the latest news and connect with our community",
+      "innovation": "Creativity",
+      "innovationDesc": "Constantly innovating and being creative in school media activities.",
+      "quality": "Quality",
+      "qualityDesc": "Ensuring accurate, useful, and inspiring media content.",
       "collaboration": "Collaboration",
-      "collaborationDesc": "Working together to achieve shared goals and success",
+      "collaborationDesc": "Connecting students, teachers, parents, and the community.",
       "integrity": "Integrity",
-      "integrityDesc": "Building trust through transparency and ethical practices"
+      "integrityDesc": "Spreading positive values, transparency, and responsibility."
     },
     "social": {
-      "title": "Connect With Us",
-      "subtitle": "Follow our latest updates and connect with our community",
+      "title": "Media Channels",
+      "subtitle": "Facebook: Can Giuoc School Media",
       "pageInfo": "Facebook Page Information",
       "followers": "Followers",
       "about": "About this page"
     },
     "cta": {
-      "title": "Ready to Get Started?",
-      "description": "Join thousands of users who trust our platform for their digital needs.",
-      "getStarted": "Get Started",
-      "contactUs": "Contact Us"
+      "title": "Join Us!",
+      "description": "Follow our page to not miss out on information, activities, and positive values from Can Giuoc High School.",
+      "getStarted": "Follow now",
+      "contactUs": "Contact"
     }
   },
   "navigation": {

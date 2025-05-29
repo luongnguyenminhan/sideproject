@@ -90,47 +90,47 @@
   },
   "aboutUs": {
     "title": "Giới thiệu",
-    "subtitle": "Tìm hiểu thêm về câu chuyện, sứ mệnh và đội ngũ đằng sau nền tảng của chúng tôi.",
+    "subtitle": "Trang Facebook “Cần Giuộc School Media” là nền tảng truyền thông chính thức của Trường THPT Cần Giuộc, tỉnh Long An, Việt Nam. Trang này được tạo ra nhằm kết nối nhà trường với học sinh, phụ huynh và cộng đồng thông qua các hoạt động truyền thông sáng tạo và hiện đại.",
     "mission": {
       "title": "Sứ mệnh của chúng tôi",
-      "description": "Chúng tôi phấn đấu tạo ra những giải pháp sáng tạo kết nối con người và nâng cao trải nghiệm kỹ thuật số thông qua công nghệ tiên tiến và thiết kế lấy người dùng làm trung tâm."
+      "description": "Cập nhật thông tin nhanh chóng về các sự kiện, hoạt động học thuật, ngoại khóa và thành tích của học sinh.\nTạo sân chơi truyền thông cho học sinh phát triển kỹ năng làm hình ảnh viết nội dung và quản lý mạng xã hội.\nXây dựng hình ảnh năng động, sáng tạo và thân thiện của nhà trường trong mắt cộng đồng."
     },
     "vision": {
-      "title": "Tầm nhìn của chúng tôi",
-      "description": "Trở thành nền tảng hàng đầu trao quyền cho các doanh nghiệp và cá nhân đạt được mục tiêu thông qua chuyển đổi số liền mạch và kết nối xã hội."
+      "title": "Một số hoạt động nổi bật",
+      "description": "Chương trình “CG’s School Got Talent” – nơi học sinh thể hiện tài năng và tình yêu quê hương qua lăng kính trẻ trung và sáng tạo.\nCác phóng sự, video ngắn ghi lại khoảnh khắc đáng nhớ trong học đường, do chính học sinh sản xuất và thực hiện."
     },
     "story": {
-      "title": "Câu chuyện của chúng tôi",
-      "paragraph1": "Được thành lập với niềm đam mê đổi mới và xuất sắc, công ty chúng tôi bắt đầu như một nhóm nhỏ các nhà phát triển và thiết kế tận tâm chia sẻ tầm nhìn chung: tạo ra các giải pháp kỹ thuật số tạo nên sự khác biệt thực sự.",
-      "paragraph2": "Ngày nay, chúng tôi tiếp tục phát triển và tiến hóa, luôn trung thành với các giá trị cốt lõi về chất lượng, đổi mới và sự hài lòng của khách hàng. Nền tảng của chúng tôi phục vụ hàng nghìn người dùng trên toàn thế giới, giúp họ kết nối, chia sẻ và đạt được mục tiêu."
+      "title": "Thông điệp",
+      "paragraph1": "Chúng tôi tin rằng truyền thông học đường không chỉ là công cụ kết nối, mà còn là môi trường giáo dục trải nghiệm, giúp học sinh phát triển toàn diện cả về kỹ năng lẫn tư duy sáng tạo.",
+      "paragraph2": "Hãy theo dõi trang để cùng đồng hành và lan tỏa những giá trị tích cực từ mái trường THPT Cần Giuộc!"
     },
     "team": {
-      "title": "Đội ngũ của chúng tôi",
-      "description": "Một nhóm đa dạng các chuyên gia đầy đam mê"
+      "title": "Liên hệ",
+      "description": "📧 Email: cgs1412.thptcangiuoc@gmail.com\n📞 Hotline Ban Chủ nhiệm: 0385 683 763"
     },
     "values": {
-      "title": "Giá trị của chúng tôi",
-      "subtitle": "Những nguyên tắc hướng dẫn mọi việc chúng tôi làm",
-      "innovation": "Đổi mới",
-      "innovationDesc": "Liên tục vượt qua ranh giới và khám phá những khả năng mới",
-      "quality": "Chất lượng",
-      "qualityDesc": "Mang lại sự xuất sắc trong mọi sản phẩm và dịch vụ chúng tôi cung cấp",
-      "collaboration": "Hợp tác",
-      "collaborationDesc": "Làm việc cùng nhau để đạt được mục tiêu và thành công chung",
-      "integrity": "Chính trực",
-      "integrityDesc": "Xây dựng niềm tin thông qua tính minh bạch và thực hành đạo đức"
-    },
-    "social": {
       "title": "Kết nối với chúng tôi",
       "subtitle": "Theo dõi những cập nhật mới nhất và kết nối với cộng đồng của chúng tôi",
+      "innovation": "Sáng tạo",
+      "innovationDesc": "Liên tục đổi mới, sáng tạo trong hoạt động truyền thông học đường.",
+      "quality": "Chất lượng",
+      "qualityDesc": "Đảm bảo nội dung truyền thông chính xác, hữu ích và truyền cảm hứng.",
+      "collaboration": "Hợp tác",
+      "collaborationDesc": "Gắn kết học sinh, giáo viên, phụ huynh và cộng đồng.",
+      "integrity": "Chính trực",
+      "integrityDesc": "Lan tỏa giá trị tích cực, minh bạch và trách nhiệm."
+    },
+    "social": {
+      "title": "Kênh truyền thông",
+      "subtitle": "Facebook: Cần Giuộc School Media",
       "pageInfo": "Thông tin trang Facebook",
       "followers": "Người theo dõi",
       "about": "Về trang này"
     },
     "cta": {
-      "title": "Sẵn sàng bắt đầu?",
-      "description": "Tham gia cùng hàng nghìn người dùng tin tưởng nền tảng của chúng tôi cho nhu cầu kỹ thuật số của họ.",
-      "getStarted": "Bắt đầu",
+      "title": "Đồng hành cùng chúng tôi!",
+      "description": "Hãy theo dõi trang để không bỏ lỡ những thông tin, hoạt động và giá trị tích cực từ mái trường THPT Cần Giuộc.",
+      "getStarted": "Theo dõi ngay",
       "contactUs": "Liên hệ"
     }
   },

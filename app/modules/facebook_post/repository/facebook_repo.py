@@ -82,7 +82,7 @@ class FacebookRepo(BaseRepo):
         # If not in cache, fetch from API
         print(f"\033[94mINFO: No valid cache found, fetching from Facebook API\033[0m")
         try:
-            fields = f"name,picture{{url}},about,followers_count,emails,website,single_line_address,posts.limit({limit}){{message,full_picture,created_time,reactions.summary(true)}}"
+            fields = f"name,picture.width(1920).height(1920){{url}},about,followers_count,emails,website,single_line_address,posts.limit({limit}){{message,full_picture,created_time,reactions.summary(true)}}"
 
             url = f"{self.base_url}/{self.page_id}"
             params = {"fields": fields, "access_token": self.access_token}
