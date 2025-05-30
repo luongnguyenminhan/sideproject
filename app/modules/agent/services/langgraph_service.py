@@ -29,6 +29,7 @@ class LangGraphService:
 
 	def _get_llm(self, agent_config: AgentConfig, google_api_key: str):
 		from langchain_google_genai import ChatGoogleGenerativeAI
+
 		if not google_api_key:
 			api_key = os.getenv('GOOGLE_API_KEY')
 		return ChatGoogleGenerativeAI(model=agent_config.model_name, temperature=agent_config.temperature, max_tokens=agent_config.max_tokens, google_api_key=google_api_key)

@@ -65,7 +65,7 @@ class FileRepo:
 					'type': file.content_type or file_service.get_content_type(file.filename),
 					'user_id': user_id,
 					'conversation_id': conversation_id,
-					'upload_date': datetime.now(timezone("Asia/Ho_Chi_Minh")).isoformat(),
+					'upload_date': datetime.now(timezone('Asia/Ho_Chi_Minh')).isoformat(),
 					'checksum': checksum,
 					'minio_bucket': 'default',
 				}

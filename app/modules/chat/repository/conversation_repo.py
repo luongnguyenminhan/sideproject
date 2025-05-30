@@ -51,7 +51,7 @@ class ConversationRepo:
 			'name': name,
 			'user_id': user_id,
 			'message_count': 0,
-			'last_activity': datetime.now(timezone("Asia/Ho_Chi_Minh")).isoformat(),
+			'last_activity': datetime.now(timezone('Asia/Ho_Chi_Minh')).isoformat(),
 		}
 		print(f'\033[96m[ConversationRepo.create_conversation] Created conversation_data: {conversation_data}\033[0m')
 

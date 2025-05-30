@@ -4,6 +4,7 @@ from app.modules.agent.dal.agent_memory_dal import AgentMemoryDAL
 from app.modules.agent.models.agent import Agent, AgentType
 from app.modules.agent.models.agent_config import AgentConfig
 from app.modules.agent.models.agent_memory import MemoryType
+from app.modules.agent.services.agent_factory import AgentFactory
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.core.database import get_db
@@ -87,17 +88,28 @@ class AgentRepo:
 
 	def get_or_create_default_agent(self, user_id: str) -> Agent:
 		"""Get user's default agent or create one if none exists"""
-		agent = self.agent_dal.get_default_agent_for_user(user_id)
+		try:
+			# First try to get existing default agent
+			agent = self.agent_dal.get_default_agent_for_user(user_id)
 
-		if not agent:
-			# Create default agent with default config
-			default_config = self.config_dal.get_default_config_for_type('chat')
-			if not default_config:
-				raise ValidationException(_('no_default_config_available'))
+			if agent:
+				return agent
 
-			agent = self.create_agent(user_id=user_id, name=f'Default Assistant', agent_type=AgentType.CHAT, config_id=default_config.id, description='Default AI assistant for conversations')
+			# No existing agent found, create one using AgentFactory
+			# This will automatically create default config if it doesn't exist
+			agent = AgentFactory.create_default_agent(agent_type=AgentType.CHAT, user_id=user_id, agent_repo=self, custom_name='Default Assistant')
 
-		return agent
+			if not agent:
+				raise ValidationException(_('failed_to_create_default_agent'))
+
+			return agent
+
+		except ValidationException:
+			# Re-raise validation exceptions
+			raise
+		except Exception as e:
+			# Handle unexpected errors
+			raise ValidationException(f'{_("error_getting_or_creating_default_agent")}: {str(e)}')
 
 	def get_agent_with_config(self, agent_id: str, user_id: str) -> tuple[Agent, AgentConfig]:
 		"""Get agent with its configuration"""
@@ -123,3 +135,65 @@ class AgentRepo:
 		initial_state = {'initialized': True, 'conversation_count': 0, 'last_interaction': None, 'preferences': {}}
 
 		self.memory_dal.create_memory(agent_id=agent_id, memory_type=MemoryType.WORKFLOW_STATE, content=initial_state, importance_score=1.0, meta_data={'type': 'initialization'})
+
+	def initialize_user_agents(self, user_id: str) -> Dict[str, Agent]:
+		"""Initialize default agents for a new user"""
+		agents = {}
+
+		try:
+			# Ensure default configs exist
+			self.ensure_default_configs_exist()
+
+			# Create default chat agent (primary)
+			chat_agent = AgentFactory.create_default_agent(agent_type=AgentType.CHAT, user_id=user_id, agent_repo=self, custom_name=f'Default Assistant')
+			agents['chat'] = chat_agent
+
+			# Optionally create other default agents
+			# analysis_agent = AgentFactory.create_default_agent(
+			#     agent_type=AgentType.ANALYSIS,
+			#     user_id=user_id,
+			#     agent_repo=self,
+			#     custom_name=f'Data Analyst'
+			# )
+			# agents['analysis'] = analysis_agent
+
+			return agents
+
+		except Exception as e:
+			raise ValidationException(f'{_("failed_to_initialize_user_agents")}: {str(e)}')
+
+	def ensure_default_configs_exist(self) -> bool:
+		"""Ensure default configurations exist for all agent types"""
+		try:
+			for agent_type in [AgentType.CHAT, AgentType.ANALYSIS, AgentType.TASK]:
+				config_name = f'default_{agent_type.value}_config'
+				existing_config = self.config_dal.get_config_by_name(config_name)
+
+				if not existing_config:
+					# Use AgentFactory to create missing default config
+					default_config = AgentFactory.get_default_config_template(agent_type)
+					AgentFactory._get_or_create_default_config(agent_type, default_config, self)
+
+			return True
+		except Exception as e:
+			# Log error but don't fail completely
+			print(f'Warning: Could not ensure all default configs exist: {e}')
+			return False
+
+	def create_agent_with_default_config(self, user_id: str, agent_type: AgentType, name: str = None, description: str = None) -> Agent:
+		"""Create agent with automatic default config creation if needed"""
+		try:
+			# Ensure default config exists for this agent type
+			self.ensure_default_configs_exist()
+
+			# Use AgentFactory to create agent with default settings
+			agent = AgentFactory.create_default_agent(agent_type=agent_type, user_id=user_id, agent_repo=self, custom_name=name or f'Default {agent_type.value.title()} Agent')
+
+			# Update description if provided
+			if description and description != agent.description:
+				agent = self.agent_dal.update(agent.id, {'description': description})
+
+			return agent
+
+		except Exception as e:
+			raise ValidationException(f'{_("failed_to_create_agent_with_default_config")}: {str(e)}')

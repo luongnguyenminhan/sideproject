@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
+from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
 from app.modules.agent.repository.agent_repo import AgentRepo
 from app.modules.agent.repository.agent_workflow_repo import AgentWorkflowRepo
@@ -27,7 +28,7 @@ async def create_agent(
 	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Create new agent"""
-	user_id = current_user_payload["user_id"]
+	user_id = current_user_payload['user_id']
 	agent_repo = AgentRepo(db)
 
 	# Use default config if none provided
@@ -38,11 +39,27 @@ async def create_agent(
 			# Create default config using factory
 			agent = AgentFactory.create_default_agent(request.agent_type, user_id, agent_repo, request.name)
 		else:
-			agent = agent_repo.create_agent(user_id=user_id, name=request.name, agent_type=request.agent_type, config_id=default_config.id, description=request.description)
+			agent = agent_repo.create_agent(
+				user_id=user_id,
+				name=request.name,
+				agent_type=request.agent_type,
+				config_id=default_config.id,
+				description=request.description,
+			)
 	else:
-		agent = agent_repo.create_agent(user_id=user_id, name=request.name, agent_type=request.agent_type, config_id=config_id, description=request.description)
+		agent = agent_repo.create_agent(
+			user_id=user_id,
+			name=request.name,
+			agent_type=request.agent_type,
+			config_id=config_id,
+			description=request.description,
+		)
 
-	return APIResponse(error_code=0, message=_('agent_created_successfully'), data=AgentResponse.model_validate(agent))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('agent_created_successfully'),
+		data=AgentResponse.model_validate(agent),
+	)
 
 
 @route.get('/', response_model=ListAgentsResponse)
@@ -55,7 +72,7 @@ async def list_agents(
 	"""List user's agents"""
 	agent_repo = AgentRepo(db)
 
-	agents = agent_repo.get_user_agents(current_user_payload["user_id"], request.is_active)
+	agents = agent_repo.get_user_agents(current_user_payload['user_id'], request.is_active)
 
 	# Apply filters
 	if request.agent_type:
@@ -74,9 +91,17 @@ async def list_agents(
 	agent_responses = [AgentResponse.model_validate(agent) for agent in paginated_agents]
 
 	return APIResponse(
-		error_code=0,
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('success'),
-		data=PaginatedResponse(items=agent_responses, paging=PagingInfo(total=total, total_pages=(total + request.page_size - 1) // request.page_size, page=request.page, page_size=request.page_size)),
+		data=PaginatedResponse(
+			items=agent_responses,
+			paging=PagingInfo(
+				total=total,
+				total_pages=(total + request.page_size - 1) // request.page_size,
+				page=request.page,
+				page_size=request.page_size,
+			),
+		),
 	)
 
 
@@ -90,12 +115,16 @@ async def get_agent(
 	"""Get agent by ID"""
 	agent_repo = AgentRepo(db)
 
-	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload["user_id"])
+	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload['user_id'])
 
 	agent_response = AgentResponse.model_validate(agent)
 	agent_response.config = AgentConfigResponse.model_validate(config)
 
-	return APIResponse(error_code=0, message=_('success'), data=agent_response)
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('success'),
+		data=agent_response,
+	)
 
 
 @route.put('/{agent_id}', response_model=UpdateAgentResponse)
@@ -110,9 +139,13 @@ async def update_agent(
 	agent_repo = AgentRepo(db)
 
 	updates = request.model_dump(exclude_unset=True)
-	agent = agent_repo.update_agent(agent_id, current_user_payload["user_id"], updates)
+	agent = agent_repo.update_agent(agent_id, current_user_payload['user_id'], updates)
 
-	return APIResponse(error_code=0, message=_('agent_updated_successfully'), data=AgentResponse.model_validate(agent))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('agent_updated_successfully'),
+		data=AgentResponse.model_validate(agent),
+	)
 
 
 @route.delete('/{agent_id}', response_model=DeleteAgentResponse)
@@ -125,9 +158,13 @@ async def delete_agent(
 	"""Delete agent"""
 	agent_repo = AgentRepo(db)
 
-	success = agent_repo.delete_agent(agent_id, current_user_payload["user_id"])
+	success = agent_repo.delete_agent(agent_id, current_user_payload['user_id'])
 
-	return APIResponse(error_code=0, message=_('agent_deleted_successfully'), data={'deleted': success})
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('agent_deleted_successfully'),
+		data={'deleted': success},
+	)
 
 
 @route.post('/{agent_id}/toggle', response_model=UpdateAgentResponse)
@@ -140,9 +177,13 @@ async def toggle_agent_status(
 	"""Toggle agent active status"""
 	agent_repo = AgentRepo(db)
 
-	agent = agent_repo.toggle_agent_status(agent_id, current_user_payload["user_id"])
+	agent = agent_repo.toggle_agent_status(agent_id, current_user_payload['user_id'])
 
-	return APIResponse(error_code=0, message=_('agent_status_updated'), data=AgentResponse.model_validate(agent))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('agent_status_updated'),
+		data=AgentResponse.model_validate(agent),
+	)
 
 
 @route.post('/{agent_id}/chat', response_model=ChatExecutionResponse)
@@ -160,10 +201,16 @@ async def execute_chat(
 		# For streaming, we should use WebSocket
 		raise HTTPException(status_code=400, detail=_('use_websocket_for_streaming'))
 
-	result = await workflow_repo.execute_chat_workflow(agent_id=agent_id, user_id=current_user_payload["user_id"], conversation_id=request.conversation_id, user_message=request.message, api_key=request.api_key)
+	result = await workflow_repo.execute_chat_workflow(
+		agent_id=agent_id,
+		user_id=current_user_payload['user_id'],
+		conversation_id=request.conversation_id,
+		user_message=request.message,
+		api_key=request.api_key,
+	)
 
 	return APIResponse(
-		error_code=0,
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('chat_executed_successfully'),
 		data=AgentChatResponse(
 			content=result['content'],
@@ -190,12 +237,16 @@ async def get_agent_memory(
 
 	# Verify user owns agent
 	agent_repo = AgentRepo(db)
-	agent_repo.get_agent_by_id(agent_id, current_user_payload["user_id"])
+	agent_repo.get_agent_by_id(agent_id, current_user_payload['user_id'])
 
-	context = workflow_repo.get_agent_memory_context(agent_id=agent_id, conversation_id=request.conversation_id, limit=request.limit or 20)
+	context = workflow_repo.get_agent_memory_context(
+		agent_id=agent_id,
+		conversation_id=request.conversation_id,
+		limit=request.limit or 20,
+	)
 
 	return APIResponse(
-		error_code=0,
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('success'),
 		data=AgentMemoryContext(
 			conversation_memories=context['conversation_memories'],
@@ -229,9 +280,13 @@ async def clear_agent_memory(
 		cleared = workflow_repo.memory_dal.clear_conversation_memories(agent_id, request.conversation_id)
 	else:
 		# Clear by type or all
-		cleared = workflow_repo.clear_agent_memory(agent_id, current_user_payload["user_id"], memory_type)
+		cleared = workflow_repo.clear_agent_memory(agent_id, current_user_payload['user_id'], memory_type)
 
-	return APIResponse(error_code=0, message=_('memory_cleared_successfully'), data={'cleared_count': cleared})
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('memory_cleared_successfully'),
+		data={'cleared_count': cleared},
+	)
 
 
 @route.post('/{agent_id}/test', response_model=TestAgentResponseWrapper)
@@ -247,7 +302,7 @@ async def test_agent(
 	workflow_manager = WorkflowManager()
 
 	# Get agent and config
-	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload["user_id"])
+	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload['user_id'])
 
 	# Prepare test context
 	context = {
@@ -271,16 +326,29 @@ async def test_agent(
 		result = await workflow_manager.execute_workflow(agent=agent, config=config, context=context, api_key=request.api_key)
 
 		return APIResponse(
-			error_code=0,
+			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 			message=_('test_executed_successfully'),
 			data=AgentTestResponse(
-				test_message=request.test_message, response=result['content'], metadata=result['metadata'], execution_time_ms=result['metadata'].get('execution_time_ms', 0), success=True
+				test_message=request.test_message,
+				response=result['content'],
+				metadata=result['metadata'],
+				execution_time_ms=result['metadata'].get('execution_time_ms', 0),
+				success=True,
 			),
 		)
 
 	except Exception as e:
 		return APIResponse(
-			error_code=0, message=_('test_completed_with_error'), data=AgentTestResponse(test_message=request.test_message, response='', metadata={}, execution_time_ms=0, success=False, error=str(e))
+			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+			message=_('test_completed_with_error'),
+			data=AgentTestResponse(
+				test_message=request.test_message,
+				response='',
+				metadata={},
+				execution_time_ms=0,
+				success=False,
+				error=str(e),
+			),
 		)
 
 
@@ -295,10 +363,14 @@ async def get_agent_capabilities(
 	agent_repo = AgentRepo(db)
 	workflow_manager = WorkflowManager()
 
-	agent = agent_repo.get_agent_by_id(agent_id, current_user_payload["user_id"])
+	agent = agent_repo.get_agent_by_id(agent_id, current_user_payload['user_id'])
 	capabilities = workflow_manager.get_workflow_capabilities(agent.agent_type)
 
-	return APIResponse(error_code=0, message=_('success'), data=AgentCapabilities(**capabilities))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('success'),
+		data=AgentCapabilities(**capabilities),
+	)
 
 
 @route.post('/create-default', response_model=CreateAgentResponse)
@@ -311,9 +383,18 @@ async def create_default_agent(
 	"""Create default agent for type"""
 	agent_repo = AgentRepo(db)
 
-	agent = AgentFactory.create_default_agent(agent_type=request.agent_type, user_id=current_user_payload["user_id"], agent_repo=agent_repo, custom_name=request.custom_name)
+	agent = AgentFactory.create_default_agent(
+		agent_type=request.agent_type,
+		user_id=current_user_payload['user_id'],
+		agent_repo=agent_repo,
+		custom_name=request.custom_name,
+	)
 
-	return APIResponse(error_code=0, message=_('default_agent_created_successfully'), data=AgentResponse.model_validate(agent))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('default_agent_created_successfully'),
+		data=AgentResponse.model_validate(agent),
+	)
 
 
 @route.post('/create-custom', response_model=CreateAgentResponse)
@@ -338,9 +419,19 @@ async def create_custom_agent(
 		'workflow_config': request.workflow_config,
 	}
 
-	agent = AgentFactory.create_custom_agent(agent_type=request.agent_type, user_id=current_user_payload["user_id"], agent_repo=agent_repo, custom_config=custom_config, agent_name=request.name)
+	agent = AgentFactory.create_custom_agent(
+		agent_type=request.agent_type,
+		user_id=current_user_payload['user_id'],
+		agent_repo=agent_repo,
+		custom_config=custom_config,
+		agent_name=request.name,
+	)
 
-	return APIResponse(error_code=0, message=_('custom_agent_created_successfully'), data=AgentResponse.model_validate(agent))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('custom_agent_created_successfully'),
+		data=AgentResponse.model_validate(agent),
+	)
 
 
 @route.get('/models/available', response_model=GetModelsResponse)
@@ -351,7 +442,11 @@ async def get_available_models():
 
 	model_info = [ModelInfo(provider=provider, models=model_list) for provider, model_list in models.items()]
 
-	return APIResponse(error_code=0, message=_('success'), data=AvailableModelsResponse(providers=model_info))
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('success'),
+		data=AvailableModelsResponse(providers=model_info),
+	)
 
 
 @route.get('/templates/{agent_type}', response_model=GetDefaultTemplateResponse)
@@ -363,13 +458,22 @@ async def get_default_template(agent_type: AgentType):
 
 	use_cases = {
 		AgentType.CHAT: ['General conversation', 'Customer support', 'Q&A assistance'],
-		AgentType.ANALYSIS: ['Data analysis', 'Report generation', 'Pattern recognition'],
+		AgentType.ANALYSIS: [
+			'Data analysis',
+			'Report generation',
+			'Pattern recognition',
+		],
 		AgentType.TASK: ['Task management', 'Scheduling', 'Productivity assistance'],
 		AgentType.CUSTOM: ['Specialized workflows', 'Custom business logic'],
 	}
 
 	return APIResponse(
-		error_code=0,
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('success'),
-		data=DefaultConfigTemplate(agent_type=agent_type, template=template, description=template.get('description', ''), recommended_use_cases=use_cases.get(agent_type, [])),
+		data=DefaultConfigTemplate(
+			agent_type=agent_type,
+			template=template,
+			description=template.get('description', ''),
+			recommended_use_cases=use_cases.get(agent_type, []),
+		),
 	)
