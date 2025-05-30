@@ -14,18 +14,18 @@ class AgentConfigResponse(ResponseSchema):
 
 	id: str
 	name: str
-	description: Optional[str]
+	description: Optional[str] = None
 	agent_type: str
 	model_provider: ModelProvider
 	model_name: str
 	temperature: float
-	max_tokens: Optional[int]
-	system_prompt: Optional[str]
-	tools_config: Optional[Dict[str, Any]]
-	workflow_config: Optional[Dict[str, Any]]
-	memory_config: Optional[Dict[str, Any]]
-	create_date: str
-	update_date: str
+	max_tokens: Optional[int] = None
+	system_prompt: Optional[str] = None
+	tools_config: Optional[Dict[str, Any]] = None
+	workflow_config: Optional[Dict[str, Any]] = None
+	memory_config: Optional[Dict[str, Any]] = None
+	create_date: Optional[datetime] | Optional[str] = None
+	update_date: Optional[datetime] | Optional[str] = None
 
 
 class AgentResponse(ResponseSchema):
@@ -35,14 +35,14 @@ class AgentResponse(ResponseSchema):
 
 	id: str
 	name: str
-	description: Optional[str]
+	description: Optional[str] = None
 	agent_type: AgentType
 	config_id: str
 	user_id: str
 	is_active: bool
 	created_by: str
-	create_date: str
-	update_date: str
+	create_date: Optional[datetime] | Optional[str] = None
+	update_date: Optional[datetime] | Optional[str] = None
 
 	# Related data
 	config: Optional[AgentConfigResponse] = None
@@ -55,13 +55,13 @@ class AgentMemoryResponse(ResponseSchema):
 
 	id: str
 	agent_id: str
-	conversation_id: Optional[str]
+	conversation_id: Optional[str] = None
 	memory_type: MemoryType
 	content: Dict[str, Any]
 	importance_score: float
-	session_id: Optional[str]
-	metadata: Optional[Dict[str, Any]]
-	create_date: str
+	session_id: Optional[str] = None
+	metadata: Optional[Dict[str, Any]] = None
+	create_date: Optional[datetime] | Optional[str] = None
 
 
 class AgentChatResponse(BaseModel):
