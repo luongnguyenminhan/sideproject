@@ -1,3 +1,4 @@
+from pytz import timezone
 from app.modules.agent.services.agent_integration_service import AgentIntegrationService
 from sqlalchemy.orm import Session
 from fastapi import Depends
@@ -54,7 +55,7 @@ class ChatRepo:
 		conversation = self.get_conversation_by_id(conversation_id, user_id)
 		print(f'\033[94m[ChatRepo.create_message] Conversation verified: {conversation.name}\033[0m')
 
-		message_timestamp = datetime.utcnow()
+		message_timestamp = datetime.now(timezone("Asia/Ho_Chi_Minh")).isoformat()
 		print(f'\033[96m[ChatRepo.create_message] Message timestamp: {message_timestamp}\033[0m')
 
 		# Create message in MySQL only
