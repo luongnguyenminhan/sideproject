@@ -29,7 +29,7 @@ class AgentRepo:
 	def create_agent(self, user_id: str, name: str, agent_type: AgentType, config_id: str, description: str = None) -> Agent:
 		"""Create new agent with validation"""
 		print('\033[92m[DEBUG] AgentRepo.create_agent() - ENTRY\033[0m')
-		
+
 		# Verify config exists
 		print('\033[93m[DEBUG] Verifying config exists\033[0m')
 		config = self.config_dal.get_by_id(config_id)
@@ -69,10 +69,10 @@ class AgentRepo:
 		"""Get all agents for user"""
 		print('\033[92m[DEBUG] AgentRepo.get_user_agents() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: user_id={user_id}, is_active={is_active}\033[0m')
-		
+
 		agents = self.agent_dal.get_agents_by_user(user_id, is_active)
 		print(f'\033[96m[DEBUG] Found {len(agents)} agents for user\033[0m')
-		
+
 		print('\033[92m[DEBUG] AgentRepo.get_user_agents() - EXIT\033[0m')
 		return agents
 
@@ -80,12 +80,12 @@ class AgentRepo:
 		"""Get agent by ID with user validation"""
 		print('\033[92m[DEBUG] AgentRepo.get_agent_by_id() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}, user_id={user_id}\033[0m')
-		
+
 		agent = self.agent_dal.get_agent_by_user_and_id(user_id, agent_id)
 		if not agent:
 			print('\033[91m[DEBUG] Agent not found, raising NotFoundException\033[0m')
 			raise NotFoundException(_('agent_not_found'))
-		
+
 		print(f'\033[96m[DEBUG] Agent found: {agent.id}, name: {agent.name}\033[0m')
 		print('\033[92m[DEBUG] AgentRepo.get_agent_by_id() - EXIT\033[0m')
 		return agent
@@ -94,7 +94,7 @@ class AgentRepo:
 		"""Update agent with validation"""
 		print('\033[92m[DEBUG] AgentRepo.update_agent() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}, user_id={user_id}, updates={updates}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Getting agent for validation\033[0m')
 		agent = self.get_agent_by_id(agent_id, user_id)
 		print(f'\033[96m[DEBUG] Agent retrieved: {agent.id}\033[0m')
@@ -120,7 +120,7 @@ class AgentRepo:
 		print('\033[93m[DEBUG] Calling agent_dal.update()\033[0m')
 		updated_agent = self.agent_dal.update(agent_id, updates)
 		print(f'\033[96m[DEBUG] Agent updated successfully\033[0m')
-		
+
 		print('\033[92m[DEBUG] AgentRepo.update_agent() - EXIT\033[0m')
 		return updated_agent
 
@@ -128,7 +128,7 @@ class AgentRepo:
 		"""Delete agent with validation"""
 		print('\033[92m[DEBUG] AgentRepo.delete_agent() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}, user_id={user_id}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Getting agent for validation\033[0m')
 		agent = self.get_agent_by_id(agent_id, user_id)
 		print(f'\033[96m[DEBUG] Agent retrieved: {agent.id}\033[0m')
@@ -148,7 +148,7 @@ class AgentRepo:
 		print('\033[93m[DEBUG] Calling agent_dal.delete()\033[0m')
 		result = self.agent_dal.delete(agent_id)
 		print(f'\033[96m[DEBUG] Agent deletion result: {result}\033[0m')
-		
+
 		print('\033[92m[DEBUG] AgentRepo.delete_agent() - EXIT\033[0m')
 		return result
 
@@ -156,7 +156,7 @@ class AgentRepo:
 		"""Get user's default agent or create one if none exists"""
 		print('\033[92m[DEBUG] AgentRepo.get_or_create_default_agent() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: user_id={user_id}\033[0m')
-		
+
 		try:
 			# First try to get existing default agent
 			print('\033[93m[DEBUG] Trying to get existing default agent\033[0m')
@@ -194,17 +194,17 @@ class AgentRepo:
 		"""Get agent with its configuration"""
 		print('\033[92m[DEBUG] AgentRepo.get_agent_with_config() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}, user_id={user_id}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Getting agent\033[0m')
 		agent = self.get_agent_by_id(agent_id, user_id)
 		print(f'\033[96m[DEBUG] Agent retrieved: {agent.id}, config_id: {agent.config_id}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Getting agent config\033[0m')
 		config = self.config_dal.get_by_id(agent.config_id)
 		if not config:
 			print('\033[91m[DEBUG] Config not found, raising NotFoundException\033[0m')
 			raise NotFoundException(_('agent_config_not_found'))
-		
+
 		print(f'\033[96m[DEBUG] Config retrieved: {config.id}\033[0m')
 		print('\033[92m[DEBUG] AgentRepo.get_agent_with_config() - EXIT\033[0m')
 		return agent, config
@@ -213,14 +213,14 @@ class AgentRepo:
 		"""Toggle agent active status"""
 		print('\033[92m[DEBUG] AgentRepo.toggle_agent_status() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}, user_id={user_id}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Getting agent for status toggle\033[0m')
 		agent = self.get_agent_by_id(agent_id, user_id)
 		print(f'\033[96m[DEBUG] Agent retrieved: {agent.id}, current status: {agent.is_active}\033[0m')
-		
+
 		new_status = not agent.is_active
 		print(f'\033[94m[DEBUG] Toggling status to: {new_status}\033[0m')
-		
+
 		print('\033[93m[DEBUG] Calling agent_dal.update_agent_status()\033[0m')
 		success = self.agent_dal.update_agent_status(agent_id, new_status)
 		if not success:
@@ -232,7 +232,7 @@ class AgentRepo:
 		print('\033[93m[DEBUG] Refreshing agent data\033[0m')
 		updated_agent = self.agent_dal.get_by_id(agent_id)
 		print(f'\033[96m[DEBUG] Agent refreshed: status={updated_agent.is_active}\033[0m')
-		
+
 		print('\033[92m[DEBUG] AgentRepo.toggle_agent_status() - EXIT\033[0m')
 		return updated_agent
 
@@ -240,7 +240,7 @@ class AgentRepo:
 		"""Initialize default memory for new agent"""
 		print('\033[92m[DEBUG] AgentRepo._initialize_agent_memory() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: agent_id={agent_id}\033[0m')
-		
+
 		# Create initial workflow state memory
 		print('\033[93m[DEBUG] Creating initial workflow state memory\033[0m')
 		initial_state = {'initialized': True, 'conversation_count': 0, 'last_interaction': None, 'preferences': {}}
@@ -249,14 +249,14 @@ class AgentRepo:
 		print('\033[93m[DEBUG] Calling memory_dal.create_memory()\033[0m')
 		memory = self.memory_dal.create_memory(agent_id=agent_id, memory_type=MemoryType.WORKFLOW_STATE, content=initial_state, importance_score=1.0, meta_data={'type': 'initialization'})
 		print(f'\033[96m[DEBUG] Memory created: {memory.id if memory else "None"}\033[0m')
-		
+
 		print('\033[92m[DEBUG] AgentRepo._initialize_agent_memory() - EXIT\033[0m')
 
 	def initialize_user_agents(self, user_id: str) -> Dict[str, Agent]:
 		"""Initialize default agents for a new user"""
 		print('\033[92m[DEBUG] AgentRepo.initialize_user_agents() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: user_id={user_id}\033[0m')
-		
+
 		agents = {}
 
 		try:
@@ -291,16 +291,16 @@ class AgentRepo:
 	def ensure_default_configs_exist(self) -> bool:
 		"""Ensure default configurations exist for all agent types"""
 		print('\033[92m[DEBUG] AgentRepo.ensure_default_configs_exist() - ENTRY\033[0m')
-		
+
 		try:
 			agent_types = [AgentType.CHAT, AgentType.ANALYSIS, AgentType.TASK]
 			print(f'\033[94m[DEBUG] Checking agent types: {[t.value for t in agent_types]}\033[0m')
-			
+
 			for agent_type in agent_types:
 				print(f'\033[93m[DEBUG] Processing agent type: {agent_type.value}\033[0m')
 				config_name = f'default_{agent_type.value}_config'
 				print(f'\033[94m[DEBUG] Looking for config: {config_name}\033[0m')
-				
+
 				existing_config = self.config_dal.get_config_by_name(config_name)
 
 				if not existing_config:
@@ -308,7 +308,7 @@ class AgentRepo:
 					# Use AgentFactory to create missing default config
 					default_config = AgentFactory.get_default_config_template(agent_type)
 					print(f'\033[94m[DEBUG] Default config template: {list(default_config.keys())}\033[0m')
-					
+
 					print('\033[93m[DEBUG] Calling AgentFactory._get_or_create_default_config()\033[0m')
 					config = AgentFactory._get_or_create_default_config(agent_type, default_config, self)
 					print(f'\033[96m[DEBUG] Config created: {config.id if config else "None"}\033[0m')
@@ -328,7 +328,7 @@ class AgentRepo:
 		"""Create agent with automatic default config creation if needed"""
 		print('\033[92m[DEBUG] AgentRepo.create_agent_with_default_config() - ENTRY\033[0m')
 		print(f'\033[94m[DEBUG] Parameters: user_id={user_id}, agent_type={agent_type}, name={name}, description={description}\033[0m')
-		
+
 		try:
 			# Ensure default config exists for this agent type
 			print('\033[93m[DEBUG] Ensuring default configs exist\033[0m')
@@ -338,7 +338,7 @@ class AgentRepo:
 			# Use AgentFactory to create agent with default settings
 			default_name = name or f'Default {agent_type.value.title()} Agent'
 			print(f'\033[94m[DEBUG] Using agent name: {default_name}\033[0m')
-			
+
 			print('\033[93m[DEBUG] Calling AgentFactory.create_default_agent()\033[0m')
 			agent = AgentFactory.create_default_agent(agent_type=agent_type, user_id=user_id, agent_repo=self, custom_name=default_name)
 			print(f'\033[96m[DEBUG] Agent created: {agent.id}\033[0m')
