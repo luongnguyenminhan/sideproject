@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -76,6 +76,8 @@ export function ChatInterface({
   const [apiKeyProvider, setApiKeyProvider] = useState('google')
   const [showApiKeyInput, setShowApiKeyInput] = useState(false)
   const [keyName, setKeyName] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,6 +119,24 @@ export function ChatInterface({
   const canSendMessage = () => {
     return apiKeyStatus === 'valid' && activeConversationId && !isLoading
   }
+
+  // Auto scroll to bottom when new messages arrive
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Auto scroll when messages change
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, isTyping])
+
+  // Auto scroll when conversation changes
+  useEffect(() => {
+    if (activeConversationId) {
+      // Small delay to ensure messages are rendered
+      setTimeout(scrollToBottom, 100)
+    }
+  }, [activeConversationId])
 
   if (!conversation && !activeConversationId) {
     return (
@@ -249,7 +269,10 @@ export function ChatInterface({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+      >
         {error && (
           <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-4">
             {error}
@@ -352,6 +375,9 @@ export function ChatInterface({
             )}
           </>
         )}
+        
+        {/* Scroll anchor */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}

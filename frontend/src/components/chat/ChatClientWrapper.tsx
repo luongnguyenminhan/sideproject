@@ -92,18 +92,9 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     
     switch (message.type) {
       case 'user_message':
-        if (message.message) {
-          const newMessage: Message = {
-            id: message.message.id || '',
-            role: 'user',
-            content: message.message.content,
-            timestamp: new Date(message.message.timestamp || Date.now())
-          }
-          setState(prev => ({
-            ...prev,
-            messages: [...prev.messages, newMessage]
-          }))
-        }
+        // Skip processing user messages since we already added them locally
+        // This prevents duplicate user messages
+        console.log('[ChatClientWrapper] Skipping user_message - already added locally')
         break
 
       case 'assistant_typing':
@@ -128,7 +119,7 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
             } else {
               // Create new streaming message
               const streamingMessage: Message = {
-                id: `streaming-${Date.now()}`,
+                id: `assistant-streaming-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 role: 'assistant',
                 content: message.chunk || '',
                 timestamp: new Date(),
@@ -426,9 +417,9 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       // Clear any previous errors
       setState(prev => ({ ...prev, error: null }))
       
-      // Add user message immediately to UI
+      // Add user message immediately to UI with unique ID
       const userMessage: Message = {
-        id: `temp-${Date.now()}`,
+        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         role: 'user',
         content,
         timestamp: new Date()
