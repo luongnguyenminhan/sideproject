@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
+from app.http.oauth2 import get_current_user
 from app.modules.agent.repository.agent_repo import AgentRepo
 from app.modules.agent.repository.agent_workflow_repo import AgentWorkflowRepo
 from app.modules.agent.services.agent_factory import AgentFactory
@@ -23,9 +24,10 @@ route = APIRouter(prefix='/agents', tags=['agents'])
 async def create_agent(
 	request: CreateAgentRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Create new agent"""
+	user_id = current_user_payload["user_id"]
 	agent_repo = AgentRepo(db)
 
 	# Use default config if none provided
@@ -48,12 +50,12 @@ async def create_agent(
 async def list_agents(
 	request: SearchAgentsRequest = Depends(),
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""List user's agents"""
 	agent_repo = AgentRepo(db)
 
-	agents = agent_repo.get_user_agents(user_id, request.is_active)
+	agents = agent_repo.get_user_agents(current_user_payload["user_id"], request.is_active)
 
 	# Apply filters
 	if request.agent_type:
@@ -83,12 +85,12 @@ async def list_agents(
 async def get_agent(
 	agent_id: str,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Get agent by ID"""
 	agent_repo = AgentRepo(db)
 
-	agent, config = agent_repo.get_agent_with_config(agent_id, user_id)
+	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload["user_id"])
 
 	agent_response = AgentResponse.model_validate(agent)
 	agent_response.config = AgentConfigResponse.model_validate(config)
@@ -102,13 +104,13 @@ async def update_agent(
 	agent_id: str,
 	request: UpdateAgentRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Update agent"""
 	agent_repo = AgentRepo(db)
 
 	updates = request.model_dump(exclude_unset=True)
-	agent = agent_repo.update_agent(agent_id, user_id, updates)
+	agent = agent_repo.update_agent(agent_id, current_user_payload["user_id"], updates)
 
 	return APIResponse(error_code=0, message=_('agent_updated_successfully'), data=AgentResponse.model_validate(agent))
 
@@ -118,12 +120,12 @@ async def update_agent(
 async def delete_agent(
 	agent_id: str,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Delete agent"""
 	agent_repo = AgentRepo(db)
 
-	success = agent_repo.delete_agent(agent_id, user_id)
+	success = agent_repo.delete_agent(agent_id, current_user_payload["user_id"])
 
 	return APIResponse(error_code=0, message=_('agent_deleted_successfully'), data={'deleted': success})
 
@@ -133,12 +135,12 @@ async def delete_agent(
 async def toggle_agent_status(
 	agent_id: str,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Toggle agent active status"""
 	agent_repo = AgentRepo(db)
 
-	agent = agent_repo.toggle_agent_status(agent_id, user_id)
+	agent = agent_repo.toggle_agent_status(agent_id, current_user_payload["user_id"])
 
 	return APIResponse(error_code=0, message=_('agent_status_updated'), data=AgentResponse.model_validate(agent))
 
@@ -149,7 +151,7 @@ async def execute_chat(
 	agent_id: str,
 	request: AgentChatRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Execute chat with agent"""
 	workflow_repo = AgentWorkflowRepo(db)
@@ -158,7 +160,7 @@ async def execute_chat(
 		# For streaming, we should use WebSocket
 		raise HTTPException(status_code=400, detail=_('use_websocket_for_streaming'))
 
-	result = await workflow_repo.execute_chat_workflow(agent_id=agent_id, user_id=user_id, conversation_id=request.conversation_id, user_message=request.message, api_key=request.api_key)
+	result = await workflow_repo.execute_chat_workflow(agent_id=agent_id, user_id=current_user_payload["user_id"], conversation_id=request.conversation_id, user_message=request.message, api_key=request.api_key)
 
 	return APIResponse(
 		error_code=0,
@@ -181,14 +183,14 @@ async def get_agent_memory(
 	agent_id: str,
 	request: GetAgentMemoryRequest = Depends(),
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Get agent memory"""
 	workflow_repo = AgentWorkflowRepo(db)
 
 	# Verify user owns agent
 	agent_repo = AgentRepo(db)
-	agent_repo.get_agent_by_id(agent_id, user_id)
+	agent_repo.get_agent_by_id(agent_id, current_user_payload["user_id"])
 
 	context = workflow_repo.get_agent_memory_context(agent_id=agent_id, conversation_id=request.conversation_id, limit=request.limit or 20)
 
@@ -210,7 +212,7 @@ async def clear_agent_memory(
 	agent_id: str,
 	request: ClearAgentMemoryRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Clear agent memory"""
 	workflow_repo = AgentWorkflowRepo(db)
@@ -227,7 +229,7 @@ async def clear_agent_memory(
 		cleared = workflow_repo.memory_dal.clear_conversation_memories(agent_id, request.conversation_id)
 	else:
 		# Clear by type or all
-		cleared = workflow_repo.clear_agent_memory(agent_id, user_id, memory_type)
+		cleared = workflow_repo.clear_agent_memory(agent_id, current_user_payload["user_id"], memory_type)
 
 	return APIResponse(error_code=0, message=_('memory_cleared_successfully'), data={'cleared_count': cleared})
 
@@ -238,14 +240,14 @@ async def test_agent(
 	agent_id: str,
 	request: TestAgentRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Test agent with a message"""
 	agent_repo = AgentRepo(db)
 	workflow_manager = WorkflowManager()
 
 	# Get agent and config
-	agent, config = agent_repo.get_agent_with_config(agent_id, user_id)
+	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload["user_id"])
 
 	# Prepare test context
 	context = {
@@ -287,13 +289,13 @@ async def test_agent(
 async def get_agent_capabilities(
 	agent_id: str,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Get agent capabilities"""
 	agent_repo = AgentRepo(db)
 	workflow_manager = WorkflowManager()
 
-	agent = agent_repo.get_agent_by_id(agent_id, user_id)
+	agent = agent_repo.get_agent_by_id(agent_id, current_user_payload["user_id"])
 	capabilities = workflow_manager.get_workflow_capabilities(agent.agent_type)
 
 	return APIResponse(error_code=0, message=_('success'), data=AgentCapabilities(**capabilities))
@@ -304,12 +306,12 @@ async def get_agent_capabilities(
 async def create_default_agent(
 	request: CreateDefaultAgentRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Create default agent for type"""
 	agent_repo = AgentRepo(db)
 
-	agent = AgentFactory.create_default_agent(agent_type=request.agent_type, user_id=user_id, agent_repo=agent_repo, custom_name=request.custom_name)
+	agent = AgentFactory.create_default_agent(agent_type=request.agent_type, user_id=current_user_payload["user_id"], agent_repo=agent_repo, custom_name=request.custom_name)
 
 	return APIResponse(error_code=0, message=_('default_agent_created_successfully'), data=AgentResponse.model_validate(agent))
 
@@ -319,7 +321,7 @@ async def create_default_agent(
 async def create_custom_agent(
 	request: CreateCustomAgentRequest,
 	db: Session = Depends(get_db),
-	user_id: str = 'default_user',  # TODO: Get from auth
+	current_user_payload: dict = Depends(get_current_user),
 ):
 	"""Create custom agent with inline configuration"""
 	agent_repo = AgentRepo(db)
@@ -336,7 +338,7 @@ async def create_custom_agent(
 		'workflow_config': request.workflow_config,
 	}
 
-	agent = AgentFactory.create_custom_agent(agent_type=request.agent_type, user_id=user_id, agent_repo=agent_repo, custom_config=custom_config, agent_name=request.name)
+	agent = AgentFactory.create_custom_agent(agent_type=request.agent_type, user_id=current_user_payload["user_id"], agent_repo=agent_repo, custom_config=custom_config, agent_name=request.name)
 
 	return APIResponse(error_code=0, message=_('custom_agent_created_successfully'), data=AgentResponse.model_validate(agent))
 
