@@ -217,5 +217,62 @@
       "title": "Tầm nhìn của chúng tôi",
       "description": "Trở thành một tổ chức giáo dục hàng đầu nuôi dưỡng sự sáng tạo, tư duy phản biện và phát triển nhân cách. Chúng tôi hình dung một tương lai nơi học sinh của chúng tôi trở thành những người đóng góp tự tin, có trách nhiệm và thành công cho xã hội."
     }
+  },
+  "agents": {
+    "title": "AI Agents",
+    "createNew": "Tạo Agent Mới", 
+    "agentName": "Tên Agent",
+    "agentType": "Loại Agent",
+    "description": "Mô tả",
+    "configId": "ID Cấu hình",
+    "createAgent": "Tạo Agent",
+    "cancel": "Hủy",
+    "creating": "Đang tạo...",
+    "types": {
+      "chat": "Chat",
+      "analysis": "Phân tích", 
+      "task": "Nhiệm vụ",
+      "custom": "Tùy chỉnh"
+    },
+    "typeDescriptions": {
+      "chat": "Trợ lý AI cho cuộc trò chuyện thông thường",
+      "analysis": "Agent chuyên về phân tích dữ liệu và báo cáo",
+      "task": "Agent quản lý và thực hiện các tác vụ cụ thể", 
+      "custom": "Agent tùy chỉnh với cấu hình linh hoạt"
+    },
+    "form": {
+      "agentNameRequired": "Tên agent là bắt buộc",
+      "agentNameMinLength": "Tên agent phải có ít nhất 2 ký tự",
+      "agentTypeRequired": "Vui lòng chọn loại agent",
+      "agentNamePlaceholder": "Nhập tên cho agent của bạn",
+      "descriptionPlaceholder": "Mô tả về agent này và cách sử dụng",
+      "configIdPlaceholder": "Để trống để sử dụng cấu hình mặc định",
+      "configIdHelp": "Để trống để sử dụng cấu hình mặc định cho loại agent đã chọn"
+    },
+    "template": {
+      "defaultConfig": "Cấu hình mặc định",
+      "loadingConfig": "Đang tải thông tin cấu hình...",
+      "model": "Mô hình",
+      "temperature": "Nhiệt độ", 
+      "maxTokens": "Tối đa tokens",
+      "recommendedUseCases": "Ứng dụng được đề xuất"
+    },
+    "guide": {
+      "title": "Hướng dẫn tạo Agent",
+      "agentTypes": "Loại Agent",
+      "notes": "Lưu ý",
+      "nameNote": "Tên agent nên mô tả rõ chức năng",
+      "configNote": "Để trống Config ID sẽ dùng cấu hình mặc định",
+      "editNote": "Bạn có thể chỉnh sửa agent sau khi tạo",
+      "activeNote": "Agent mặc định sẽ được kích hoạt ngay"
+    },
+    "success": {
+      "created": "đã được tạo thành công!",
+      "redirecting": "Đang chuyển hướng đến trang chi tiết agent..."
+    },
+    "errors": {
+      "createFailed": "Có lỗi xảy ra khi tạo agent. Vui lòng thử lại.",
+      "loadTemplateFailed": "Không thể tải thông tin cấu hình"
+    }
   }
 }

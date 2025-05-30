@@ -217,5 +217,62 @@
       "title": "Our Vision", 
       "description": "To be a leading educational institution that nurtures creativity, critical thinking, and character development. We envision a future where our students become confident, responsible, and successful contributors to society."
     }
+  },
+  "agents": {
+    "title": "AI Agents",
+    "createNew": "Create New Agent",
+    "agentName": "Agent Name", 
+    "agentType": "Agent Type",
+    "description": "Description",
+    "configId": "Configuration ID",
+    "createAgent": "Create Agent",
+    "cancel": "Cancel",
+    "creating": "Creating...",
+    "types": {
+      "chat": "Chat",
+      "analysis": "Analysis",
+      "task": "Task", 
+      "custom": "Custom"
+    },
+    "typeDescriptions": {
+      "chat": "AI assistant for general conversations",
+      "analysis": "Agent specialized in data analysis and reporting",
+      "task": "Agent for managing and executing specific tasks",
+      "custom": "Custom agent with flexible configuration"
+    },
+    "form": {
+      "agentNameRequired": "Agent name is required",
+      "agentNameMinLength": "Agent name must be at least 2 characters",
+      "agentTypeRequired": "Please select an agent type",
+      "agentNamePlaceholder": "Enter a name for your agent",
+      "descriptionPlaceholder": "Describe this agent and how to use it",
+      "configIdPlaceholder": "Leave blank to use default configuration",
+      "configIdHelp": "Leave blank to use default configuration for selected agent type"
+    },
+    "template": {
+      "defaultConfig": "Default Configuration",
+      "loadingConfig": "Loading configuration info...",
+      "model": "Model",
+      "temperature": "Temperature",
+      "maxTokens": "Max Tokens", 
+      "recommendedUseCases": "Recommended Use Cases"
+    },
+    "guide": {
+      "title": "Agent Creation Guide",
+      "agentTypes": "Agent Types",
+      "notes": "Notes",
+      "nameNote": "Agent name should clearly describe functionality",
+      "configNote": "Leaving Config ID blank will use default configuration",
+      "editNote": "You can edit the agent after creation",
+      "activeNote": "Default agents will be activated immediately"
+    },
+    "success": {
+      "created": "has been created successfully!",
+      "redirecting": "Redirecting to agent details page..."
+    },
+    "errors": {
+      "createFailed": "An error occurred while creating the agent. Please try again.",
+      "loadTemplateFailed": "Unable to load configuration information"
+    }
   }
 }
