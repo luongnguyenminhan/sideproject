@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faKey, faRobot, faUser, faBars } from '@fortawesome/free-solid-svg-icons'
+import { AgentSelector, type Agent, mockAgents } from './AgentSelector'
 
 interface Message {
   id: string
@@ -53,6 +54,18 @@ interface ChatInterfaceProps {
     typing: string
     sending: string
     openMenu: string
+    loading: string
+    change: string
+    fix: string
+    invalidApiKey: string
+    keyNameOptional: string
+    pleaseSetupApiKey: string
+    agentSelection: {
+      selectAgent: string
+      currentAgent: string
+      changeAgent: string
+      agentDescription: string
+    }
   }
 }
 
@@ -67,15 +80,15 @@ export function ChatInterface({
   apiKeyStatus,
   onSendMessage,
   onSaveApiKey,
-  onDeleteApiKey,
   onOpenMobileSidebar,
   translations 
 }: ChatInterfaceProps) {
   const [input, setInput] = useState('')
   const [apiKey, setApiKey] = useState('')
-  const [apiKeyProvider, setApiKeyProvider] = useState('google')
+  const [apiKeyProvider,] = useState('google')
   const [showApiKeyInput, setShowApiKeyInput] = useState(false)
   const [keyName, setKeyName] = useState('')
+  const [selectedAgent, setSelectedAgent] = useState<Agent>(mockAgents[0])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -102,9 +115,6 @@ export function ChatInterface({
     setShowApiKeyInput(false)
   }
 
-  const handleDeleteApiKey = async (keyId: string) => {
-    await onDeleteApiKey(keyId)
-  }
 
   // Get display status for API key
   const getApiKeyDisplay = () => {
@@ -191,28 +201,12 @@ export function ChatInterface({
             {apiKeyStatus === 'loading' && (
               <div className="flex items-center gap-2">
                 <span className="animate-spin">⟳</span>
-                <span className="text-sm text-[color:var(--muted-foreground)]">Loading...</span>
+                <span className="text-sm text-[color:var(--muted-foreground)]">{translations.loading}</span>
               </div>
             )}
             
             {showApiKeyInput && (
-              <div className="flex items-center gap-2">
-                <select
-                  value={apiKeyProvider}
-                  onChange={(e) => setApiKeyProvider(e.target.value)}
-                  className="px-2 py-1 text-xs bg-[color:var(--background)] border border-[color:var(--border)] rounded text-[color:var(--foreground)]"
-                >
-                  <option value="google">Google</option>
-                  <option value="openai">OpenAI</option>
-                  <option value="anthropic">Anthropic</option>
-                </select>
-                <input
-                  type="text"
-                  value={keyName}
-                  onChange={(e) => setKeyName(e.target.value)}
-                  placeholder="Key name (optional)"
-                  className="px-2 py-1 text-xs bg-[color:var(--background)] border border-[color:var(--border)] rounded text-[color:var(--foreground)] w-24"
-                />
+              <div className="flex items-center gap-2 ">
                 <input
                   type="password"
                   value={apiKey}
@@ -224,10 +218,10 @@ export function ChatInterface({
                     if (e.key === 'Escape') handleApiKeyReset()
                   }}
                 />
-                <Button onClick={handleApiKeySubmit} size="sm" disabled={apiKeyStatus === 'loading'}>
-                  {apiKeyStatus === 'loading' ? '...' : 'Set'}
+                <Button onClick={handleApiKeySubmit} size="sm" disabled={apiKeyStatus === 'loading'} className='text-[color:var(--foreground)]'>
+                  {apiKeyStatus === 'loading' ? '...' : "ok"}
                 </Button>
-                <Button onClick={handleApiKeyReset} size="sm" variant="ghost">
+                <Button onClick={handleApiKeyReset} size="sm" variant="ghost" className="text-[color:var(--foreground)]">
                   ×
                 </Button>
               </div>
@@ -242,9 +236,9 @@ export function ChatInterface({
                   onClick={() => setShowApiKeyInput(true)}
                   size="sm"
                   variant="ghost"
-                  className="text-xs"
+                  className="text-xs text-[color:var(--foreground)]"
                 >
-                  Change
+                  {translations.change}
                 </Button>
               </div>
             )}
@@ -252,7 +246,7 @@ export function ChatInterface({
             {apiKeyStatus === 'invalid' && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-red-600 bg-red-100 dark:bg-red-900 px-2 py-1 rounded">
-                  ⚠ Invalid API Key
+                  ⚠ {translations.invalidApiKey}
                 </span>
                 <Button
                   onClick={() => setShowApiKeyInput(true)}
@@ -260,10 +254,20 @@ export function ChatInterface({
                   variant="outline"
                   className="border-red-300 text-red-600 hover:bg-red-50"
                 >
-                  Fix
+                  {translations.fix}
                 </Button>
               </div>
             )}
+          </div>
+          
+          {/* Agent Selector */}
+          <div className="flex items-center gap-2">
+            <AgentSelector
+              agents={mockAgents}
+              selectedAgent={selectedAgent}
+              onSelectAgent={setSelectedAgent}
+              translations={translations.agentSelection}
+            />
           </div>
         </div>
       </div>
@@ -284,7 +288,7 @@ export function ChatInterface({
           <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-3 rounded mb-4">
             <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faKey} />
-              <span>Please set up your API key to start chatting</span>
+              <span>{translations.pleaseSetupApiKey}</span>
               {!showApiKeyInput && (
                 <Button
                   onClick={() => setShowApiKeyInput(true)}
@@ -292,7 +296,7 @@ export function ChatInterface({
                   variant="outline"
                   className="ml-2"
                 >
-                  Add API Key
+                  {translations.addApiKey}
                 </Button>
               )}
             </div>
@@ -388,14 +392,14 @@ export function ChatInterface({
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={canSendMessage() ? translations.typeMessage : 'Set up API key to start chatting'}
+              placeholder={canSendMessage() ? translations.typeMessage : translations.pleaseSetupApiKey}
               disabled={!canSendMessage()}
               className="flex-1 px-4 py-3 bg-[color:var(--background)] border border-[color:var(--border)] rounded-xl text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none transition-all duration-200 disabled:opacity-50"
             />
             <Button
               type="submit"
               disabled={!input.trim() || !canSendMessage()}
-              className="px-6 py-3 bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-gradient-to-r text-white from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="animate-spin">⟳</span>

@@ -21,7 +21,7 @@ export default async function ChatPage() {
     startConversation: t('chat.startConversation'),
     typeMessage: t('chat.typeMessage'),
     conversations: t('chat.conversations'),
-    newConversation: t('chat.new'),
+    newConversation: t('chat.newConversation'),
     noConversationsYet: t('chat.noConversationsYet'),
     createFirstChat: t('chat.createFirstChat'),
     messages: t('chat.messages'),
@@ -30,12 +30,32 @@ export default async function ChatPage() {
     uploadFilesDescription: t('chat.uploadFilesDescription'),
     chats: t('chat.chats'),
     files: t('chat.files'),
-    download: t('chat.download'),
-    delete: t('chat.delete'),
-    // Add missing translations for mobile sidebar
+    download: t('common.download'),
+    delete: t('common.delete'),
+    // Add missing translations
     openMenu: t('chat.openMenu'),
     typing: t('chat.typing'),
-    sending: t('chat.sending')
+    sending: t('chat.sending'),
+    loading: t('common.loading'),
+    save: t('common.save'),
+    cancel: t('common.cancel'),
+    edit: t('common.edit'),
+    change: t('common.change'),
+    fix: t('common.fix'),
+    invalidApiKey: t('chat.invalidApiKey'),
+    keyNameOptional: t('chat.keyNameOptional'),
+    pleaseSetupApiKey: t('chat.pleaseSetupApiKey'),
+    thisConversation: t('chat.thisConversation'),
+    fileCount: t('chat.fileCount'),
+    fileCount_plural: t('chat.fileCount_plural'),
+    filesAssociated: t('chat.filesAssociated'),
+    uploadFiles: t('common.upload'),
+    agentSelection: {
+      selectAgent: t('chat.agentSelection.selectAgent'),
+      currentAgent: t('chat.agentSelection.currentAgent'),
+      changeAgent: t('chat.agentSelection.changeAgent'),
+      agentDescription: t('chat.agentSelection.agentDescription')
+    }
   }
 
   return (

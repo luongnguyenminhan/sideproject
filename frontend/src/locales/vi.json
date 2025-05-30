@@ -1,179 +1,221 @@
 {
   "common": {
-    "branding": "CGSEM - Phòng truyền thông Trường THPT Cần Giuộc",
-    "hello": "Xin chào",
-    "welcome": "Chào mừng",
-    "language": "Ngôn ngữ",
-    "theme": "Giao diện",
-    "light": "Sáng",
-    "dark": "Tối",
-    "system": "Hệ thống",
     "loading": "Đang tải...",
-    "error": "Có lỗi xảy ra",
+    "branding": "Trang web AnLNM",
+    "error": "Lỗi",
     "success": "Thành công",
     "cancel": "Hủy",
-    "confirm": "Xác nhận",    "save": "Lưu",
+    "save": "Lưu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "menu": "Menu",
     "close": "Đóng",
-    "yes": "Có",
-    "no": "Không"
-  },
-  "theme": {
-    "toggle": "Chuyển đổi giao diện",
-    "light": "Sáng",
-    "dark": "Tối",
-    "system": "Theo hệ thống"
-  },
-  "language": {
-    "switch": "Chuyển đổi ngôn ngữ",
-    "vietnamese": "Tiếng Việt",
-    "english": "English"
-  },
-  "auth": {
-    "login": "Đăng nhập",
-    "loginDescription": "Đăng nhập vào tài khoản của bạn",
-    "loginWithGoogle": "Đăng nhập với tài khoản Google của bạn",
-    "signInWithGoogle": "Đăng nhập với Google",
-    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với Điều khoản và Chính sách Bảo mật của chúng tôi",
+    "open": "Mở",
+    "change": "Thay đổi",
+    "fix": "Sửa",
+    "retry": "Thử lại",
+    "send": "Gửi",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "clear": "Xóa",
+    "settings": "Cài đặt",
+    "profile": "Hồ sơ",
     "logout": "Đăng xuất",
-    "signOut": "Đăng xuất",
-    "welcome": "Chào mừng bạn trở lại!",
-    "authenticationError": "Có lỗi xác thực xảy ra. Vui lòng thử lại.",
-    "loginSuccess": "Đăng nhập thành công!",
-    "logoutSuccess": "Đăng xuất thành công!",
-    "sessionExpired": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",    "unauthorized": "Bạn không có quyền truy cập trang này.",
-    "termsAndPrivacy": "Điều khoản và Chính sách Bảo mật",
-    "privacyPolicy": "Chính sách Bảo mật",
-    "termsOfService": "Điều khoản Dịch vụ",
-    "connectingToGoogle": "Đang kết nối tới Google...",
-    "pleaseWait": "Quá trình này sẽ diễn ra tự động, vui lòng chờ một chút.",
-    "unableToConnect": "Không thể kết nối tới dịch vụ đăng nhập Google. Vui lòng thử lại sau.",
-    "openingGoogleLogin": "Đang mở cửa sổ đăng nhập Google...",
-    "allowPopups": "Vui lòng cho phép popup và thử lại"
+    "login": "Đăng nhập",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "home": "Trang chủ",
+    "refresh": "Làm mới"
   },
-  "home": {
-    "title": "Chào mừng đến với Next.js",
-    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",    "welcomeBack": "Chào mừng bạn trở lại",
-    "authenticatedDescription": "Bạn đã đăng nhập thành công và có thể truy cập tất cả các tính năng của ứng dụng. Khám phá bảng điều khiển và quản lý nội dung của bạn.",
-    "userInformation": "Thông tin người dùng",
-    "email": "Email",
-    "username": "Tên người dùng",
-    "confirmed": "Đã xác nhận",
-    "getStarted": "Bắt đầu",
-    "learnMore": "Tìm hiểu thêm",
-    "serverComponentDemo": "Demo Server Component",
-    "copyright": "© 2025 Next.js Internationalization Demo. Được tạo với ❤️",
-    "facebookPostsTitle": "Bài viết Facebook mới nhất",
-    "facebookPostCountPrefix": "Hiển thị",
-    "facebookPostCountSuffix": "bài viết từ trang này.",
-    "facebookErrorTitle": "Lỗi khi tải bài viết Facebook",
-    "noPostsTitle": "Không có bài viết Facebook",
-    "noPostsDescription": "Hiện tại không có bài viết nào từ trang Facebook này.",
-    "unknownTime": "Thời gian không xác định",
-    "post": "Bài viết Facebook",    "features": {
-      "fastPerformance": {
-        "title": "Hiệu suất nhanh",
-        "description": "Được xây dựng với tâm lý hiệu suất, mang lại trải nghiệm người dùng siêu nhanh"
+  "chat": {
+    "welcomeTitle": "Chào mừng đến với AI Chat",
+    "welcomeDescription": "Chọn cuộc trò chuyện hoặc tạo mới để bắt đầu chat",
+    "addApiKey": "Thêm API Key",
+    "enterApiKey": "Nhập API key của bạn",
+    "apiKeySet": "Đã thiết lập API Key",
+    "resetApiKey": "Đặt lại API Key",
+    "noMessages": "Chưa có tin nhắn nào",
+    "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
+    "typeMessage": "Nhập tin nhắn của bạn...",
+    "conversations": "Cuộc trò chuyện",
+    "newConversation": "Mới",
+    "noConversationsYet": "Chưa có cuộc trò chuyện nào",
+    "createFirstChat": "Tạo cuộc trò chuyện đầu tiên để bắt đầu",
+    "messages": "tin nhắn",
+    "uploadedFiles": "File đã tải lên",
+    "noFilesUploaded": "Chưa có file nào được tải lên",
+    "uploadFilesDescription": "Tải file lên để đính kèm vào cuộc trò chuyện",
+    "chats": "Chat",
+    "files": "File",
+    "openMenu": "Mở Menu",
+    "typing": "AI đang trả lời...",
+    "sending": "Đang gửi...",
+    "invalidApiKey": "API Key không hợp lệ",
+    "thisConversation": "Cuộc trò chuyện này",
+    "keyNameOptional": "Tên key (tùy chọn)",
+    "pleaseSetupApiKey": "Vui lòng thiết lập API key để bắt đầu chat",
+    "websocketNotConnected": "WebSocket chưa kết nối. Vui lòng thử lại.",
+    "noDefaultApiKey": "Không tìm thấy API key mặc định",
+    "filesAssociated": "File tải lên ở đây sẽ được liên kết với cuộc trò chuyện này",
+    "fileCount": "{{count}} file",
+    "fileCount_plural": "{{count}} file",
+    "agentSelection": {
+      "selectAgent": "Chọn AI Agent",
+      "currentAgent": "Agent hiện tại",
+      "changeAgent": "Đổi Agent",
+      "agentDescription": "Chọn AI agent phù hợp nhất với nhu cầu của bạn"
+    },
+    "agents": {
+      "chatGPT": {
+        "name": "ChatGPT",
+        "description": "Trợ lý AI đa mục đích cho nhiều tác vụ khác nhau",
+        "provider": "OpenAI"
       },
-      "globalReady": {
-        "title": "Sẵn sàng toàn cầu",
-        "description": "Hỗ trợ đa ngôn ngữ đầy đủ với khả năng chuyển đổi ngôn ngữ mượt mà"
+      "claude": {
+        "name": "Claude",
+        "description": "Trợ lý AI của Anthropic, xuất sắc trong phân tích và viết",
+        "provider": "Anthropic"
       },
-      "modernStack": {
-        "title": "Công nghệ hiện đại",
-        "description": "Được xây dựng với các tính năng React mới nhất và công cụ phát triển hiện đại"
+      "gemini": {
+        "name": "Gemini",
+        "description": "Mô hình AI của Google với khả năng đa phương tiện",
+        "provider": "Google"
       },
-      "darkMode": {
-        "title": "Chế độ tối",
-        "description": "Hỗ trợ chế độ sáng/tối với tự động phát hiện tùy chọn hệ thống"
+      "codeLlama": {
+        "name": "Code Llama",
+        "description": "Mô hình ngôn ngữ chuyên về lập trình của Meta",
+        "provider": "Meta"
+      },
+      "gpt4Turbo": {
+        "name": "GPT-4 Turbo",
+        "description": "Phiên bản mới nhất của GPT-4 với khả năng nâng cao",
+        "provider": "OpenAI"
       }
     }
   },
-  "aboutUs": {
-    "title": "Giới thiệu",
-    "subtitle": "Trang Facebook “Cần Giuộc School Media” là nền tảng truyền thông chính thức của Trường THPT Cần Giuộc, tỉnh Long An, Việt Nam. Trang này được tạo ra nhằm kết nối nhà trường với học sinh, phụ huynh và cộng đồng thông qua các hoạt động truyền thông sáng tạo và hiện đại.",
-    "mission": {
-      "title": "Sứ mệnh của chúng tôi",
-      "description": "Cập nhật thông tin nhanh chóng về các sự kiện, hoạt động học thuật, ngoại khóa và thành tích của học sinh.\nTạo sân chơi truyền thông cho học sinh phát triển kỹ năng làm hình ảnh viết nội dung và quản lý mạng xã hội.\nXây dựng hình ảnh năng động, sáng tạo và thân thiện của nhà trường trong mắt cộng đồng."
-    },
-    "vision": {
-      "title": "Một số hoạt động nổi bật",
-      "description": "Chương trình “CG’s School Got Talent” – nơi học sinh thể hiện tài năng và tình yêu quê hương qua lăng kính trẻ trung và sáng tạo.\nCác phóng sự, video ngắn ghi lại khoảnh khắc đáng nhớ trong học đường, do chính học sinh sản xuất và thực hiện."
-    },
-    "story": {
-      "title": "Thông điệp",
-      "paragraph1": "Chúng tôi tin rằng truyền thông học đường không chỉ là công cụ kết nối, mà còn là môi trường giáo dục trải nghiệm, giúp học sinh phát triển toàn diện cả về kỹ năng lẫn tư duy sáng tạo.",
-      "paragraph2": "Hãy theo dõi trang để cùng đồng hành và lan tỏa những giá trị tích cực từ mái trường THPT Cần Giuộc!"
-    },
-    "team": {
-      "title": "Liên hệ",
-      "description": "📧 Email: cgs1412.thptcangiuoc@gmail.com\n📞 Hotline Ban Chủ nhiệm: 0385 683 763"
-    },
-    "values": {
-      "title": "Kết nối với chúng tôi",
-      "subtitle": "Theo dõi những cập nhật mới nhất và kết nối với cộng đồng của chúng tôi",
-      "innovation": "Sáng tạo",
-      "innovationDesc": "Liên tục đổi mới, sáng tạo trong hoạt động truyền thông học đường.",
-      "quality": "Chất lượng",
-      "qualityDesc": "Đảm bảo nội dung truyền thông chính xác, hữu ích và truyền cảm hứng.",
-      "collaboration": "Hợp tác",
-      "collaborationDesc": "Gắn kết học sinh, giáo viên, phụ huynh và cộng đồng.",
-      "integrity": "Chính trực",
-      "integrityDesc": "Lan tỏa giá trị tích cực, minh bạch và trách nhiệm."
-    },
-    "social": {
-      "title": "Kênh truyền thông",
-      "subtitle": "Facebook: Cần Giuộc School Media",
-      "pageInfo": "Thông tin trang Facebook",
-      "followers": "Người theo dõi",
-      "about": "Về trang này"
-    },
-    "cta": {
-      "title": "Đồng hành cùng chúng tôi!",
-      "description": "Hãy theo dõi trang để không bỏ lỡ những thông tin, hoạt động và giá trị tích cực từ mái trường THPT Cần Giuộc.",
-      "getStarted": "Theo dõi ngay",
-      "contactUs": "Liên hệ"
-    }
+  "errors": {
+    "apiKeyRequired": "Cần có API key",
+    "conversationRequired": "Vui lòng chọn cuộc trò chuyện trước",
+    "websocketError": "Lỗi kết nối WebSocket",
+    "failedToSendMessage": "Không thể gửi tin nhắn",
+    "failedToLoadConversations": "Không thể tải cuộc trò chuyện",
+    "failedToLoadFiles": "Không thể tải file",
+    "failedToUploadFiles": "Không thể tải file lên",
+    "failedToDeleteFile": "Không thể xóa file",
+    "failedToSaveApiKey": "Không thể lưu API key",
+    "failedToDeleteApiKey": "Không thể xóa API key",
+    "networkError": "Lỗi mạng",
+    "fileNotFound": "Không tìm thấy file",
+    "fileTooLarge": "File quá lớn",
+    "unsupportedFileType": "Loại file không được hỗ trợ",
+    "accessDenied": "Không có quyền truy cập",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn"
   },
   "navigation": {
-    "home": "Trang chủ",
-    "about": "Giới thiệu",
-    "contact": "Liên hệ",
-    "services": "Dịch vụ",
-    "blog": "Blog",
-    "login": "Đăng nhập",
-    "profile": "Hồ sơ",
-    "dashboard": "Bảng điều khiển"
-  },
-  "server": {
-    "currentTime": "Thời gian hiện tại",
-    "serverRendered": "Được render từ server",
-    "locale": "Ngôn ngữ hiện tại",
-    "theme": "Theme hiện tại"
-  },
-  "chat": {
-    "welcomeTitle": "Chào mừng đến với Chat",
-    "welcomeDescription": "Chọn một cuộc trò chuyện từ thanh bên để bắt đầu chat.",
-    "addApiKey": "Thêm API Key",
-    "enterApiKey": "Nhập API key...",
-    "apiKeySet": "Đã thiết lập API Key",
-    "resetApiKey": "Đặt lại API Key",
-    "noMessages": "Chưa có tin nhắn",
-    "startConversation": "Bắt đầu cuộc trò chuyện!",
-    "typeMessage": "Nhập tin nhắn của bạn...",
+    "dashboard": "Bảng điều khiển",
     "conversations": "Cuộc trò chuyện",
-    "new": "Mới",
-    "newConversation": "Cuộc trò chuyện mới",
-    "noConversationsYet": "Chưa có cuộc trò chuyện",
-    "createFirstChat": "Tạo chat đầu tiên của bạn",
-    "messages": "tin nhắn",
-    "uploadedFiles": "Tệp đã tải lên",
-    "noFilesUploaded": "Chưa có tệp nào được tải lên",
-    "uploadFilesDescription": "Tải tệp lên trong chat để xem chúng ở đây",
-    "chats": "Chat",
-    "files": "Tệp",
-    "download": "Tải xuống",
-    "delete": "Xóa",
-    "file": "tệp",
-    "filesPlural": "tệp"
+    "files": "File",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp",
+    "about": "Giới thiệu"
+  },
+  "settings": {
+    "apiKeys": "API Key",
+    "theme": "Giao diện",
+    "language": "Ngôn ngữ",
+    "notifications": "Thông báo",
+    "privacy": "Quyền riêng tư",
+    "general": "Chung",
+    "advanced": "Nâng cao"
+  },
+  "notifications": {
+    "messageSent": "Đã gửi tin nhắn",
+    "fileUploaded": "Đã tải file lên thành công",
+    "fileDeleted": "Đã xóa file",
+    "apiKeyAdded": "Đã thêm API key",
+    "apiKeyRemoved": "Đã xóa API key",
+    "settingsSaved": "Đã lưu cài đặt"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "loginWithGoogle": "Đăng nhập bằng tài khoản Google của bạn để bắt đầu",
+    "signInWithGoogle": "Đăng nhập với Google",
+    "bySigningIn": "Bằng cách đăng nhập, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Bảo mật của chúng tôi",
+    "signingIn": "Đang đăng nhập...",
+    "loginSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
+    "connectingToGoogle": "Đang kết nối với Google",
+    "pleaseWait": "Vui lòng đợi trong khi chúng tôi kết nối bạn với Google...",
+    "unableToConnect": "Không thể kết nối với Google. Vui lòng thử lại.",
+    "openingGoogleLogin": "Đang mở trang đăng nhập Google...",
+    "allowPopups": "Vui lòng cho phép popup và thử lại",
+    "signInWithFacebook": "Đăng nhập với Facebook",
+    "loginWithFacebook": "Đăng nhập bằng tài khoản Facebook của bạn để bắt đầu",
+    "connectingToFacebook": "Đang kết nối với Facebook",
+    "unableToConnectFacebook": "Không thể kết nối với Facebook. Vui lòng thử lại.",
+    "openingFacebookLogin": "Đang mở trang đăng nhập Facebook...",
+    "facebookLoginFailed": "Đăng nhập Facebook thất bại",
+    "termsOfService": "Điều khoản Dịch vụ",
+    "privacyPolicy": "Chính sách Bảo mật",
+    "authenticationFailed": "Xác thực thất bại",
+    "popupBlocked": "Popup đã bị chặn bởi trình duyệt của bạn",
+    "authenticationCancelled": "Xác thực đã bị hủy",
+    "sessionMaintenance": "Đang duy trì phiên...",
+    "redirecting": "Đang chuyển hướng..."
+  },
+  "home": {
+    "unknownTime": "Thời gian không xác định",
+    "post": "Bài viết Facebook",
+    "facebookPostCountPrefix": "Hiển thị",
+    "facebookPostCountSuffix": "bài viết từ trang này.",
+    "welcomeBack": "Chào mừng trở lại",
+    "title": "Chào mừng đến với Trang web AnLNM",
+    "authenticatedDescription": "Khám phá tất cả các tính năng có sẵn cho bạn với tư cách người dùng đã đăng nhập.",
+    "description": "Một ứng dụng web hiện đại, nhanh chóng và có thể mở rộng được xây dựng với Next.js 14, có tính năng render phía máy chủ, quốc tế hóa và các thành phần giao diện người dùng đẹp mắt.",
+    "features": {
+      "fastPerformance": {
+        "title": "Hiệu suất Cực nhanh",
+        "description": "Được xây dựng với Next.js 14 và tối ưu hóa tốc độ với render phía máy chủ và tạo trang tĩnh."
+      },
+      "globalReady": {
+        "title": "Sẵn sàng Toàn cầu",
+        "description": "Hỗ trợ quốc tế hóa đầy đủ với nhiều ngôn ngữ và định dạng theo địa phương."
+      },
+      "modernStack": {
+        "title": "Công nghệ Hiện đại",
+        "description": "Được hỗ trợ bởi React 18, TypeScript, Tailwind CSS và các công nghệ web mới nhất."
+      },
+      "darkMode": {
+        "title": "Hỗ trợ Chế độ Tối",
+        "description": "Giao diện tối và sáng đẹp mắt với chuyển đổi mượt mà và phát hiện tùy chọn hệ thống."
+      }
+    },
+    "serverComponentDemo": "Demo Server Component",
+    "getStarted": "Bắt đầu",
+    "learnMore": "Tìm hiểu thêm"
+  },
+  "facebook": {
+    "noPostsTitle": "Không có bài viết Facebook",
+    "noPostsDescription": "Hiện tại không có bài viết Facebook nào để hiển thị."
+  },
+  "aboutUs": {
+    "title": "Về chúng tôi",
+    "social": {
+      "followers": "người theo dõi",
+      "about": "Giới thiệu"
+    },
+    "mission": {
+      "title": "Sứ mệnh của chúng tôi",
+      "description": "Chúng tôi cam kết cung cấp giáo dục chất lượng và tạo ra một môi trường học tập hỗ trợ cho tất cả học sinh. Sứ mệnh của chúng tôi là truyền cảm hứng, giáo dục và trao quyền cho thế hệ tiếp theo thông qua các phương pháp giảng dạy sáng tạo và sự tham gia của cộng đồng."
+    },
+    "vision": {
+      "title": "Tầm nhìn của chúng tôi",
+      "description": "Trở thành một tổ chức giáo dục hàng đầu nuôi dưỡng sự sáng tạo, tư duy phản biện và phát triển nhân cách. Chúng tôi hình dung một tương lai nơi học sinh của chúng tôi trở thành những người đóng góp tự tin, có trách nhiệm và thành công cho xã hội."
+    }
   }
 }

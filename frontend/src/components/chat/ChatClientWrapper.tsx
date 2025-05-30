@@ -44,6 +44,26 @@ interface ChatClientWrapperProps {
     openMenu?: string
     typing?: string
     sending?: string
+    loading?: string
+    save?: string
+    cancel?: string
+    edit?: string
+    change?: string
+    fix?: string
+    invalidApiKey?: string
+    keyNameOptional?: string
+    pleaseSetupApiKey?: string
+    thisConversation?: string
+    fileCount?: string
+    fileCount_plural?: string
+    filesAssociated?: string
+    uploadFiles?: string
+    agentSelection?: {
+      selectAgent: string
+      currentAgent: string
+      changeAgent: string
+      agentDescription: string
+    }
   }
 }
 
@@ -620,7 +640,11 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
             newConversation: translations.newConversation,
             noConversationsYet: translations.noConversationsYet,
             createFirstChat: translations.createFirstChat,
-            messages: translations.messages
+            messages: translations.messages,
+            save: translations.save,
+            cancel: translations.cancel,
+            edit: translations.edit,
+            delete: translations.delete
           }}
         />
       </div>
@@ -652,7 +676,19 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
             typeMessage: translations.typeMessage,
             typing: translations.typing || 'AI is typing...',
             sending: translations.sending || 'Sending...',
-            openMenu: translations.openMenu || 'Menu'
+            openMenu: translations.openMenu || 'Menu',
+            loading: translations.loading || 'Loading...',
+            change: translations.change || 'Change',
+            fix: translations.fix || 'Fix',
+            invalidApiKey: translations.invalidApiKey || 'Invalid API Key',
+            keyNameOptional: translations.keyNameOptional || 'Key name (optional)',
+            pleaseSetupApiKey: translations.pleaseSetupApiKey || 'Please set up your API key to start chatting',
+            agentSelection: translations.agentSelection || {
+              selectAgent: 'Select AI Agent',
+              currentAgent: 'Current Agent',
+              changeAgent: 'Change Agent',
+              agentDescription: 'Choose the AI agent that best fits your needs'
+            }
           }}
         />
       </div>
@@ -670,7 +706,13 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
             noFilesUploaded: translations.noFilesUploaded,
             uploadFilesDescription: translations.uploadFilesDescription,
             download: translations.download,
-            delete: translations.delete
+            delete: translations.delete,
+            loading: translations.loading,
+            thisConversation: translations.thisConversation,
+            fileCount: translations.fileCount,
+            fileCount_plural: translations.fileCount_plural,
+            filesAssociated: translations.filesAssociated,
+            uploadFiles: translations.uploadFiles
           }}
         />
       </div>

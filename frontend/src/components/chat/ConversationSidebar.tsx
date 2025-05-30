@@ -33,6 +33,10 @@ interface ConversationSidebarProps {
     noConversationsYet: string
     createFirstChat: string
     messages: string
+    save?: string
+    cancel?: string
+    edit?: string
+    delete?: string
   }
 }
 
@@ -82,8 +86,8 @@ export function ConversationSidebar({
             size="sm"
             className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
           >
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            {translations.newConversation}
+            <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
+            <span className="text-white">{translations.newConversation}</span>
           </Button>
         </div>
       </div>
@@ -152,9 +156,6 @@ export function ConversationSidebar({
                       <h3 className="font-medium text-sm text-[color:var(--foreground)] truncate">
                         {conversation.name}
                       </h3>
-                      <p className="text-xs text-[color:var(--muted-foreground)]">
-                        {conversation.messages.length} {translations.messages}
-                      </p>
                       <p className="text-xs text-[color:var(--muted-foreground)]">
                         {conversation.lastActivity.toLocaleDateString()}
                       </p>

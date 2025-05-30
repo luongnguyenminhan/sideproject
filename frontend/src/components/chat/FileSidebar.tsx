@@ -27,6 +27,11 @@ interface FileSidebarProps {
     download: string
     delete: string
     uploadFiles?: string
+    loading?: string
+    thisConversation?: string
+    fileCount?: string
+    fileCount_plural?: string
+    filesAssociated?: string
   }
 }
 
@@ -86,23 +91,23 @@ export function FileSidebar({
             onClick={() => fileInputRef.current?.click()}
             className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
           >
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            Upload
+            <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
+            <span className="text-white">{translations.uploadFiles || 'Upload'}</span>
           </Button>
         </div>
         
         <div className="flex items-center gap-2">
           <p className="text-sm text-[color:var(--muted-foreground)]">
-            {uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'}
+            {uploadedFiles.length === 1 ? translations.fileCount?.replace('{{count}}', '1') || 'file' : translations.fileCount_plural?.replace('{{count}}', uploadedFiles.length.toString()) || 'files'}
           </p>
           {conversationId && (
             <span className="text-xs text-[color:var(--muted-foreground)] bg-[color:var(--muted)] px-2 py-1 rounded">
-              This conversation
+              {translations.thisConversation || 'This conversation'}
             </span>
           )}
           {isLoading && (
             <span className="text-xs text-[color:var(--muted-foreground)]">
-              Loading...
+              {translations.loading || 'Loading...'}
             </span>
           )}
         </div>
@@ -134,7 +139,7 @@ export function FileSidebar({
             <p className="text-sm">{translations.uploadFilesDescription}</p>
             {conversationId && (
               <p className="text-xs mt-2 text-[color:var(--muted-foreground)]">
-                Files uploaded here will be associated with this conversation
+                {translations.filesAssociated || 'Files uploaded here will be associated with this conversation'}
               </p>
             )}
           </div>
