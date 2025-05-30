@@ -80,10 +80,8 @@ class FacebookRepo(BaseRepo):
 			url = f'{self.base_url}/{self.page_id}'
 			params = {'fields': fields, 'access_token': self.access_token}
 
-
 			async with httpx.AsyncClient(timeout=30.0) as client:
 				response = await client.get(url, params=params)
-
 
 				if response.status_code == 404:
 					raise NotFoundException(_('facebook_page_not_found'))

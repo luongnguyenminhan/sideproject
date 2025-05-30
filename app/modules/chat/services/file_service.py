@@ -65,8 +65,10 @@ class FileService:
 				file_type='chat_files',
 			)
 
+			url = minio_handler.get_file_url(object_path, expires=3600)
+
 			logger.info(f'File uploaded to MinIO: {object_path}')
-			return object_path
+			return object_path, url
 
 		except Exception as e:
 			logger.error(f'Error uploading file to storage: {e}')

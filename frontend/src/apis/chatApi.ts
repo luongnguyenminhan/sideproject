@@ -99,7 +99,19 @@ class ChatApi {
     page_size?: number
     file_type?: string
     search?: string
+    conversation_id?: string
   } = {}) {
+    // If conversation_id is provided, use conversation-specific endpoint
+    if (params.conversation_id) {
+      const { conversation_id, ...otherParams } = params
+      return handleApiCall<Pagination<FileResponse>>(() =>
+        axiosInstance.get<CommonResponse<Pagination<FileResponse>>>(
+          `/files/conversation/${conversation_id}`, 
+          { params: otherParams }
+        )
+      )
+    }
+    
     return handleApiCall<Pagination<FileResponse>>(() =>
       axiosInstance.get<CommonResponse<Pagination<FileResponse>>>('/files/', { params })
     )

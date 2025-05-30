@@ -16,6 +16,8 @@ interface UploadedFile {
 
 interface FileSidebarProps {
   uploadedFiles: UploadedFile[]
+  isLoading?: boolean
+  conversationId?: string | null
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
   translations: {
@@ -28,7 +30,14 @@ interface FileSidebarProps {
   }
 }
 
-export function FileSidebar({ uploadedFiles, onDeleteFile, onUploadFiles, translations }: FileSidebarProps) {
+export function FileSidebar({ 
+  uploadedFiles, 
+  isLoading = false,
+  conversationId,
+  onDeleteFile, 
+  onUploadFiles, 
+  translations 
+}: FileSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const formatFileSize = (bytes: number) => {
@@ -82,9 +91,21 @@ export function FileSidebar({ uploadedFiles, onDeleteFile, onUploadFiles, transl
           </Button>
         </div>
         
-        <p className="text-sm text-[color:var(--muted-foreground)]">
-          {uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-[color:var(--muted-foreground)]">
+            {uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'}
+          </p>
+          {conversationId && (
+            <span className="text-xs text-[color:var(--muted-foreground)] bg-[color:var(--muted)] px-2 py-1 rounded">
+              This conversation
+            </span>
+          )}
+          {isLoading && (
+            <span className="text-xs text-[color:var(--muted-foreground)]">
+              Loading...
+            </span>
+          )}
+        </div>
 
         {/* Hidden File Input */}
         <input
@@ -98,13 +119,24 @@ export function FileSidebar({ uploadedFiles, onDeleteFile, onUploadFiles, transl
 
       {/* Files List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {uploadedFiles.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-16 bg-[color:var(--muted)] rounded animate-pulse"></div>
+            ))}
+          </div>
+        ) : uploadedFiles.length === 0 ? (
           <div className="text-center text-[color:var(--muted-foreground)] mt-8">
             <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
               <FontAwesomeIcon icon={faFile} className="text-2xl" />
             </div>
             <p>{translations.noFilesUploaded}</p>
             <p className="text-sm">{translations.uploadFilesDescription}</p>
+            {conversationId && (
+              <p className="text-xs mt-2 text-[color:var(--muted-foreground)]">
+                Files uploaded here will be associated with this conversation
+              </p>
+            )}
           </div>
         ) : (
           uploadedFiles.map((file) => (
@@ -128,6 +160,10 @@ export function FileSidebar({ uploadedFiles, onDeleteFile, onUploadFiles, transl
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-[color:var(--accent)]"
                     title={translations.download}
+                    onClick={() => {
+                      // Download logic will be implemented
+                      console.log('Download file:', file.id)
+                    }}
                   >
                     <FontAwesomeIcon icon={faDownload} className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)]" />
                   </Button>

@@ -48,6 +48,7 @@ class WebSocketManager:
 		else:
 			pass  # Connection not found, ignore
 
+
 # Global WebSocket manager instance
 websocket_manager = WebSocketManager()
 
@@ -146,7 +147,6 @@ async def websocket_chat_endpoint(
 				if message_data.get('type') == 'chat_message':
 					content = message_data.get('content', '').strip()
 					api_key = message_data.get('api_key')
-
 
 					if not content:
 						await websocket_manager.send_message(
@@ -269,7 +269,6 @@ async def send_message(
 	chat_repo = ChatRepo(db)
 	user_id = current_user.get('user_id')
 
-
 	# Verify user has access to conversation
 	try:
 		conversation = chat_repo.get_conversation_by_id(request.conversation_id, user_id)
@@ -283,6 +282,7 @@ async def send_message(
 			user_id=user_id,
 			content=request.content,
 			role='user',
+			file_ids=request.file_ids,
 		)
 	except Exception as e:
 		raise
@@ -318,3 +318,25 @@ async def send_message(
 	except Exception as e:
 		logger.error(f'Error sending message: {e}')
 		raise ValidationException(_('failed_to_send_message'))
+
+
+@route.get('/files/{file_id}/download', response_model=APIResponse)
+@handle_exceptions
+async def get_file_download_url(
+	file_id: str,
+	expires: int = 3600,
+	db: Session = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
+):
+	"""Get temporary download URL for file in chat context"""
+	from app.modules.chat.repository.file_repo import FileRepo
+
+	file_repo = FileRepo(db)
+	user_id = current_user.get('user_id')
+	download_url = file_repo.get_file_download_url(file_id, user_id, expires)
+
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('download_url_generated'),
+		data={'download_url': download_url, 'expires_in': expires},
+	)

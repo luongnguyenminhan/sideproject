@@ -79,7 +79,6 @@ class WorkflowManager:
 
 				yield chunk
 
-
 		except Exception as e:
 			yield {'type': 'error', 'message': f'{_("streaming_workflow_failed")}: {str(e)}'}
 
@@ -137,7 +136,6 @@ class WorkflowManager:
 		if config.system_prompt:
 			enhanced_context['system_enhancement'] = 'Focus on maintaining natural conversation flow and context awareness. Provide helpful, engaging responses.'
 
-
 		result = await self.langgraph_service.execute_workflow(config, enhanced_context, api_key)
 		return result
 
@@ -150,7 +148,6 @@ class WorkflowManager:
 		# Add analytical prompts
 		if config.system_prompt:
 			enhanced_context['system_enhancement'] = 'Focus on data analysis, pattern recognition, and insight generation. Provide structured, evidence-based responses with clear reasoning.'
-
 
 		result = await self.langgraph_service.execute_workflow(config, enhanced_context, api_key)
 		return result
@@ -165,7 +162,6 @@ class WorkflowManager:
 		if config.system_prompt:
 			enhanced_context['system_enhancement'] = 'Focus on task management, organization, and actionable guidance. Provide structured, step-by-step responses.'
 
-
 		result = await self.langgraph_service.execute_workflow(config, enhanced_context, api_key)
 		return result
 
@@ -178,7 +174,6 @@ class WorkflowManager:
 		# Use custom workflow config if available
 		workflow_config = config.workflow_config or {}
 		enhanced_context['custom_config'] = workflow_config
-
 
 		result = await self.langgraph_service.execute_workflow(config, enhanced_context, api_key)
 		return result
@@ -214,7 +209,6 @@ class WorkflowManager:
 		tokens_valid = config.max_tokens >= 512
 		prompt_valid = 'conversational' in config.system_prompt.lower() if config.system_prompt else True
 
-
 		result = temp_valid and tokens_valid and prompt_valid
 		return result
 
@@ -225,7 +219,6 @@ class WorkflowManager:
 		tokens_valid = config.max_tokens >= 1024
 		prompt_valid = 'analys' in config.system_prompt.lower() if config.system_prompt else True
 
-
 		result = temp_valid and tokens_valid and prompt_valid
 		return result
 
@@ -235,7 +228,6 @@ class WorkflowManager:
 		temp_valid = config.temperature <= 0.7
 		tokens_valid = config.max_tokens >= 512
 		prompt_valid = 'task' in config.system_prompt.lower() if config.system_prompt else True
-
 
 		result = temp_valid and tokens_valid and prompt_valid
 		return result

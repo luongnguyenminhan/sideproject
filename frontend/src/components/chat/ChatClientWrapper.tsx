@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -59,6 +60,14 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     wsToken: null
   })
 
+  // Enhanced state for API key management
+  const [apiKeyStatus, setApiKeyStatus] = useState<'none' | 'loading' | 'valid' | 'invalid'>('none')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [conversationFiles, setConversationFiles] = useState<Record<string, any[]>>({})
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [editingConversation, setEditingConversation] = useState<string | null>(null)
+  const [fileLoadingStates, setFileLoadingStates] = useState<Record<string, boolean>>({})
+
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
@@ -67,7 +76,15 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     loadConversations()
     loadFiles()
     loadApiKeys()
+    checkApiKeyStatus()
   }, [])
+
+  // Load files when active conversation changes
+  useEffect(() => {
+    if (state.activeConversationId) {
+      loadConversationFiles(state.activeConversationId)
+    }
+  }, [state.activeConversationId])
 
   // Handle WebSocket messages
   const handleWebSocketMessage = useCallback((message: WebSocketResponse) => {
@@ -208,12 +225,62 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
   // Load API keys
   const loadApiKeys = async () => {
     try {
+      setApiKeyStatus('loading')
       const apiKeys = await chatApi.getApiKeys()
       if (apiKeys) {
         setState(prev => ({ ...prev, apiKeys }))
+        setApiKeyStatus(apiKeys.length > 0 ? 'valid' : 'none')
       }
     } catch (error) {
       console.error('Failed to load API keys:', error)
+      setApiKeyStatus('invalid')
+    }
+  }
+
+  // Check API key status
+  const checkApiKeyStatus = async () => {
+    const hasDefaultKey = state.apiKeys.some(key => key.is_default)
+    setApiKeyStatus(hasDefaultKey ? 'valid' : 'none')
+  }
+
+  // Load files for specific conversation
+  const loadConversationFiles = async (conversationId: string) => {
+    if (conversationFiles[conversationId]) {
+      // Files already loaded for this conversation
+      setState(prev => ({ 
+        ...prev, 
+        uploadedFiles: conversationFiles[conversationId] 
+      }))
+      return
+    }
+
+    try {
+      setFileLoadingStates(prev => ({ ...prev, [conversationId]: true }))
+      
+      // Call API to get files by conversation
+      const response = await chatApi.getFiles({ 
+        conversation_id: conversationId,
+        page_size: 50 
+      })
+      
+      if (response && response.items) {
+        const files = response.items.map(convertToUIFile)
+        
+        // Cache files for this conversation
+        setConversationFiles(prev => ({ 
+          ...prev, 
+          [conversationId]: files 
+        }))
+        
+        setState(prev => ({ 
+          ...prev, 
+          uploadedFiles: files 
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to load conversation files:', error)
+    } finally {
+      setFileLoadingStates(prev => ({ ...prev, [conversationId]: false }))
     }
   }
 
@@ -328,34 +395,60 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     }
   }
 
-  // Send message
+  // Send message with validation flow
   const handleSendMessage = async (content: string) => {
-    if (!state.activeConversationId) return
+    // Validation chain
+    if (apiKeyStatus !== 'valid') {
+      setState(prev => ({ 
+        ...prev, 
+        error: 'Please set up your API key first' 
+      }))
+      return
+    }
+
+    if (!state.activeConversationId) {
+      setState(prev => ({ 
+        ...prev, 
+        error: 'Please select a conversation first' 
+      }))
+      return
+    }
+
+    if (!websocket || !websocket.isConnected()) {
+      setState(prev => ({ 
+        ...prev, 
+        error: 'WebSocket not connected. Please try again.' 
+      }))
+      return
+    }
 
     try {
-      setState(prev => ({ ...prev, isLoading: true }))
+      // Clear any previous errors
+      setState(prev => ({ ...prev, error: null }))
+      
+      // Add user message immediately to UI
+      const userMessage: Message = {
+        id: `temp-${Date.now()}`,
+        role: 'user',
+        content,
+        timestamp: new Date()
+      }
+      
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, userMessage],
+        isLoading: false
+      }))
 
-      if (websocket && websocket.isConnected()) {
-        // Send via WebSocket for real-time streaming
-        const defaultApiKey = state.apiKeys.find(key => key.is_default)
-        websocket.sendMessage(content, defaultApiKey?.masked_key)
+      // Send via WebSocket for real-time streaming
+      const defaultApiKey = state.apiKeys.find(key => key.is_default)
+      if (defaultApiKey) {
+        websocket.sendMessage(content, defaultApiKey.masked_key)
       } else {
-        // Fallback to HTTP API
-        const response = await chatApi.sendMessage({
-          conversation_id: state.activeConversationId,
-          content,
-          api_key: state.apiKeys.find(key => key.is_default)?.masked_key
-        })
-
-        if (response) {
-          const userMessage = convertToUIMessage(response.user_message)
-          const aiMessage = convertToUIMessage(response.ai_message)
-          
-          setState(prev => ({
-            ...prev,
-            messages: [...prev.messages, userMessage, aiMessage]
-          }))
-        }
+        setState(prev => ({ 
+          ...prev, 
+          error: 'No default API key found' 
+        }))
       }
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -363,24 +456,34 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
         ...prev, 
         error: getErrorMessage(error)
       }))
-    } finally {
-      setState(prev => ({ ...prev, isLoading: false }))
     }
   }
 
-  // Update conversation name
+  // Update conversation name with optimistic UI
   const handleUpdateConversationName = async (id: string, name: string) => {
+    setEditingConversation(id)
+    
+    // Optimistic update
+    const originalConversations = state.conversations
+    setState(prev => ({
+      ...prev,
+      conversations: prev.conversations.map(conv =>
+        conv.id === id ? { ...conv, name } : conv
+      )
+    }))
+
     try {
       await chatApi.updateConversation(id, { name })
-      setState(prev => ({
-        ...prev,
-        conversations: prev.conversations.map(conv =>
-          conv.id === id ? { ...conv, name } : conv
-        )
-      }))
     } catch (error) {
       console.error('Failed to update conversation:', error)
-      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
+      // Revert optimistic update
+      setState(prev => ({ 
+        ...prev, 
+        conversations: originalConversations,
+        error: getErrorMessage(error) 
+      }))
+    } finally {
+      setEditingConversation(null)
     }
   }
 
@@ -405,12 +508,24 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     }
   }
 
-  // Upload files
+  // Upload files with conversation association
   const handleUploadFiles = async (files: File[]) => {
     try {
       const response = await chatApi.uploadFiles(files, state.activeConversationId || undefined)
       if (response && response.uploaded_files) {
         const newFiles = response.uploaded_files.map(convertToUIFile)
+        
+        // Update conversation-specific file cache
+        if (state.activeConversationId) {
+          setConversationFiles(prev => ({
+            ...prev,
+            [state.activeConversationId!]: [
+              ...(prev[state.activeConversationId!] || []),
+              ...newFiles
+            ]
+          }))
+        }
+        
         setState(prev => ({
           ...prev,
           uploadedFiles: [...prev.uploadedFiles, ...newFiles]
@@ -422,16 +537,69 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     }
   }
 
-  // Delete file
+  // Delete file with UI updates
   const handleDeleteFile = async (id: string) => {
     try {
       await chatApi.deleteFile(id)
+      
+      // Update conversation file cache
+      setConversationFiles(prev => {
+        const updated = { ...prev }
+        Object.keys(updated).forEach(convId => {
+          updated[convId] = updated[convId].filter(file => file.id !== id)
+        })
+        return updated
+      })
+      
       setState(prev => ({
         ...prev,
         uploadedFiles: prev.uploadedFiles.filter(file => file.id !== id)
       }))
     } catch (error) {
       console.error('Failed to delete file:', error)
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
+    }
+  }
+
+  // Save API key
+  const handleSaveApiKey = async (provider: string, apiKey: string, isDefault: boolean = true, keyName?: string) => {
+    try {
+      setApiKeyStatus('loading')
+      const savedKey = await chatApi.saveApiKey({
+        provider,
+        api_key: apiKey,
+        is_default: isDefault,
+        key_name: keyName
+      })
+      
+      if (savedKey) {
+        setState(prev => ({
+          ...prev,
+          apiKeys: [...prev.apiKeys.filter(k => k.provider !== provider), savedKey]
+        }))
+        setApiKeyStatus('valid')
+      }
+    } catch (error) {
+      console.error('Failed to save API key:', error)
+      setApiKeyStatus('invalid')
+      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
+    }
+  }
+
+  // Delete API key
+  const handleDeleteApiKey = async (keyId: string) => {
+    try {
+      await chatApi.deleteApiKey(keyId)
+      setState(prev => ({
+        ...prev,
+        apiKeys: prev.apiKeys.filter(key => key.id !== keyId)
+      }))
+      
+      // Check if we still have valid keys
+      const remainingKeys = state.apiKeys.filter(key => key.id !== keyId)
+      setApiKeyStatus(remainingKeys.length > 0 ? 'valid' : 'none')
+    } catch (error) {
+      console.error('Failed to delete API key:', error)
       setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
@@ -475,7 +643,11 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           isLoading={state.isLoading}
           isTyping={state.isTyping}
           error={state.error}
+          apiKeys={state.apiKeys}
+          apiKeyStatus={apiKeyStatus}
           onSendMessage={handleSendMessage}
+          onSaveApiKey={handleSaveApiKey}
+          onDeleteApiKey={handleDeleteApiKey}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
           translations={{
             welcomeTitle: translations.welcomeTitle,
@@ -498,6 +670,8 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       <div className="hidden lg:block w-80 border-l border-[color:var(--border)]">
         <FileSidebar
           uploadedFiles={state.uploadedFiles}
+          isLoading={fileLoadingStates[state.activeConversationId || ''] || false}
+          conversationId={state.activeConversationId}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
           translations={{

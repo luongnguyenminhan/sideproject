@@ -41,13 +41,14 @@ class FileRepo:
 					continue
 
 				# Upload to MinIO
-				file_path = await file_service.upload_to_storage(file, user_id, conversation_id)
+				file_path, url = await file_service.upload_to_storage(file, user_id, conversation_id)
 
 				# Create file record in database
 				file_data = {
 					'name': file.filename,
 					'original_name': file.filename,
 					'file_path': file_path,
+					'file_url': url,
 					'size': file.size or 0,
 					'type': file.content_type or file_service.get_content_type(file.filename),
 					'user_id': user_id,
@@ -89,6 +90,25 @@ class FileRepo:
 			file_type=request.file_type,
 			search=request.search,
 			conversation_id=request.conversation_id,
+		)
+		return files
+
+	def get_files_by_conversation(self, user_id: str, conversation_id: str, request: FileListRequest):
+		"""Get files for a specific conversation with pagination and filtering"""
+		print(
+			f'\033[93m[FileRepo.get_files_by_conversation] Getting files for conversation: {conversation_id}, user: {user_id}, page: {request.page}, page_size: {request.page_size}, file_type: {request.file_type}, search: {request.search}\033[0m'
+		)
+
+		# Ensure conversation_id is set in request
+		request.conversation_id = conversation_id
+
+		files = self.file_dal.get_conversation_files(
+			user_id=user_id,
+			conversation_id=conversation_id,
+			page=request.page,
+			page_size=request.page_size,
+			file_type=request.file_type,
+			search=request.search,
 		)
 		return files
 

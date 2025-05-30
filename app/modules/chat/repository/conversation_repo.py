@@ -78,7 +78,6 @@ class ConversationRepo:
 			# Soft delete conversation in MySQL
 			self.conversation_dal.delete(conversation_id)
 
-
 	def get_conversation_messages(
 		self,
 		conversation_id: str,

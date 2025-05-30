@@ -57,7 +57,6 @@ and complete tasks efficiently. You provide structured and actionable guidance."
 		if agent_type not in cls.DEFAULT_CONFIGS:
 			raise ValidationException(_('unsupported_agent_type'))
 
-
 		# Get default config for agent type
 		default_config = cls.DEFAULT_CONFIGS[agent_type].copy()
 
@@ -133,7 +132,6 @@ and complete tasks efficiently. You provide structured and actionable guidance."
 			if existing_config:
 				return existing_config
 
-
 			# Create new default config
 			config_data = {
 				'name': f'default_{agent_type.value}_config',
@@ -148,7 +146,6 @@ and complete tasks efficiently. You provide structured and actionable guidance."
 				'workflow_config': default_config['workflow_config'],
 				'memory_config': {'short_term_limit': 100, 'long_term_limit': 500, 'importance_threshold': 0.7},
 			}
-
 
 			created_config = agent_repo.config_dal.create(config_data)
 
@@ -177,7 +174,6 @@ and complete tasks efficiently. You provide structured and actionable guidance."
 			'workflow_config': custom_config.get('workflow_config', {}),
 			'memory_config': custom_config.get('memory_config', {'short_term_limit': 100, 'long_term_limit': 500, 'importance_threshold': 0.7}),
 		}
-
 
 		config = agent_repo.config_dal.create(config_data)
 

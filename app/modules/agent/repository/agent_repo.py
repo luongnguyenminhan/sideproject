@@ -162,7 +162,6 @@ class AgentRepo:
 
 		memory = self.memory_dal.create_memory(agent_id=agent_id, memory_type=MemoryType.WORKFLOW_STATE, content=initial_state, importance_score=1.0, meta_data={'type': 'initialization'})
 
-
 	def initialize_user_agents(self, user_id: str) -> Dict[str, Agent]:
 		"""Initialize default agents for a new user"""
 
@@ -208,7 +207,7 @@ class AgentRepo:
 					config = AgentFactory._get_or_create_default_config(agent_type, default_config, self)
 				else:
 					pass
-					
+
 			return True
 		except Exception as e:
 			# Log error but don't fail completely

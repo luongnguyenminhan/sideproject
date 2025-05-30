@@ -6,7 +6,7 @@ from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
 from app.modules.chat.repository.file_repo import FileRepo
 from app.modules.chat.schemas.file_request import FileListRequest
-from app.modules.chat.schemas.file_response import FileResponse
+from app.modules.chat.schemas.file_response import FileResponse, UploadFileResponse
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
 from app.exceptions.handlers import handle_exceptions
 from app.middleware.auth_middleware import verify_token
@@ -32,7 +32,10 @@ async def upload_files(
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('files_uploaded_successfully'),
-		data=[FileResponse.model_validate(file) for file in uploaded_files],
+		data=UploadFileResponse(
+			uploaded_files=[FileResponse.model_validate(file) for file in uploaded_files],
+			failed_files=[],  # Handle failed files in repo if needed
+		),
 	)
 
 
@@ -50,6 +53,46 @@ async def get_files(
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('files_retrieved_successfully'),
+		data=PaginatedResponse(
+			items=[FileResponse.model_validate(file) for file in result.items],
+			paging=PagingInfo(
+				total=result.total_count,
+				total_pages=result.total_pages,
+				page=result.page,
+				page_size=result.page_size,
+			),
+		),
+	)
+
+
+@route.get('/conversation/{conversation_id}', response_model=APIResponse)
+@handle_exceptions
+async def get_files_by_conversation(
+	conversation_id: str,
+	page: int = 1,
+	page_size: int = 10,
+	file_type: Optional[str] = None,
+	search: Optional[str] = None,
+	repo: FileRepo = Depends(),
+	current_user: dict = Depends(get_current_user),
+):
+	"""Get files for a specific conversation with pagination and filtering"""
+	user_id = current_user.get('user_id')
+
+	# Create request object with conversation_id
+	request = FileListRequest(
+		page=page,
+		page_size=page_size,
+		file_type=file_type,
+		search=search,
+		conversation_id=conversation_id,
+	)
+
+	result = repo.get_files_by_conversation(user_id, conversation_id, request)
+
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('conversation_files_retrieved_successfully'),
 		data=PaginatedResponse(
 			items=[FileResponse.model_validate(file) for file in result.items],
 			paging=PagingInfo(

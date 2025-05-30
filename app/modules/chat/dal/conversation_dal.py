@@ -42,7 +42,6 @@ class ConversationDAL(BaseDAL[Conversation]):
 		# Apply pagination
 		conversations = query.offset((page - 1) * page_size).limit(page_size).all()
 
-
 		paginated_result = Pagination(items=conversations, total_count=total_count, page=page, page_size=page_size)
 		return paginated_result
 

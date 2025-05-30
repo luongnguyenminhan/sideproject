@@ -1,6 +1,7 @@
-from pydantic import ConfigDict
+from pydantic import ConfigDict, Field
 from app.core.base_model import ResponseSchema
 from datetime import datetime
+from typing import List, Optional
 
 
 class FileResponse(ResponseSchema):
@@ -21,3 +22,11 @@ class FileResponse(ResponseSchema):
 	is_audio: bool
 	is_document: bool
 	file_extension: str
+	download_url: Optional[str] = Field(default=None, description='Temporary download URL')
+
+
+class UploadFileResponse(ResponseSchema):
+	"""Response schema for file upload"""
+
+	uploaded_files: List[FileResponse]
+	failed_files: List[str] = Field(default_factory=list, description='List of failed file names')
