@@ -35,8 +35,8 @@ class UpdateSystemAgentRequest(RequestSchema):
 
 	@validator('max_tokens')
 	def max_tokens_range(cls, v):
-		if v is not None and not 1 <= v <= 32000:
-			raise ValueError('Max tokens must be between 1 and 32000')
+		if v is not None and not 1 <= v <= 1000000:
+			v = 1000000  # Cap max tokens to a reasonable limit
 		return v
 
 

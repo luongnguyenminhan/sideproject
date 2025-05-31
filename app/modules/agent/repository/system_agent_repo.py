@@ -46,8 +46,11 @@ class SystemAgentRepo:
 				raise ValidationException(_('model_provider_incompatible'))
 
 		# Update agent configuration
+		print(f'Updating agent {agent.id} with config: {config_updates}')
 		updated_agent = self.agent_dal.update_agent_config(agent.id, config_updates)
-
+		self.db.commit()
+		self.db.refresh(updated_agent)
+		print(f'Agent after update: {updated_agent}')
 		logger.info('System agent config updated successfully')
 		return updated_agent
 
