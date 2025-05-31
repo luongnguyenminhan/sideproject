@@ -151,9 +151,7 @@ class ChatRepo:
 			# For now, return a simulated streaming response
 			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Simulating streaming AI response (Agent Integration pending)\033[0m')
 			result = await self._simulate_streaming_ai_response_fallback(user_message, api_key, websocket_manager, user_id)
-			logger.info(
-				f'\033[92m[ChatRepo.get_ai_response_streaming] Streaming response completed, response_time: {result.get("response_time_ms", 0)}ms\033[0m'
-			)
+			logger.info(f'\033[92m[ChatRepo.get_ai_response_streaming] Streaming response completed, response_time: {result.get("response_time_ms", 0)}ms\033[0m')
 			return result
 
 		except Exception as e:
