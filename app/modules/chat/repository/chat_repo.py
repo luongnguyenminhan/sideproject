@@ -1,11 +1,9 @@
 from pytz import timezone
-from app.modules.agent.services.agent_integration_service import AgentIntegrationService
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.core.database import get_db
 from app.modules.chat.dal.conversation_dal import ConversationDAL
 from app.modules.chat.dal.message_dal import MessageDAL
-from app.modules.chat.dal.api_key_dal import ApiKeyDAL
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 from datetime import datetime
@@ -23,9 +21,7 @@ class ChatRepo:
 		self.db = db
 		self.conversation_dal = ConversationDAL(db)
 		self.message_dal = MessageDAL(db)
-		self.api_key_dal = ApiKeyDAL(db)
-		self.agent_integration = AgentIntegrationService(db)
-		logger.info(f'\033[92m[ChatRepo.__init__] ChatRepo initialized successfully with Agent Integration\033[0m')
+		logger.info(f'\033[92m[ChatRepo.__init__] ChatRepo initialized successfully\033[0m')
 
 	def get_conversation_by_id(self, conversation_id: str, user_id: str):
 		"""Get conversation by ID and verify user access"""
@@ -55,7 +51,7 @@ class ChatRepo:
 		conversation = self.get_conversation_by_id(conversation_id, user_id)
 		logger.info(f'\033[94m[ChatRepo.create_message] Conversation verified: {conversation.name}\033[0m')
 
-		message_timestamp = datetime.now(timezone('Asia/Ho_Chi_Minh')).isoformat()
+		message_timestamp = datetime.now(timezone('Asia/Ho_Chi_Minh'))
 		logger.info(f'\033[96m[ChatRepo.create_message] Message timestamp: {message_timestamp}\033[0m')
 
 		# Create message in MySQL only
@@ -103,40 +99,141 @@ class ChatRepo:
 		logger.info(
 			f'\033[93m[ChatRepo.get_ai_response] Getting AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_api_key: {api_key is not None}\033[0m'
 		)
-
 		# Get user_id from conversation if not provided
 		if not user_id:
 			conversation = self.get_conversation_by_id(conversation_id, '')
 			user_id = conversation.user_id
 			logger.info(f'\033[94m[ChatRepo.get_ai_response] Retrieved user_id from conversation: {user_id}\033[0m')
 
-		# Get user's API key if not provided
+		# Validate API key is provided
 		if not api_key:
-			logger.info(f"\033[94m[ChatRepo.get_ai_response] No API key provided, getting user's default key\033[0m")
-			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='google')
-			if default_key:
-				api_key = default_key.get_api_key()
-				logger.info(f'\033[92m[ChatRepo.get_ai_response] Found default API key for GOOGLE\033[0m')
+			logger.error(f'\033[91m[ChatRepo.get_ai_response] No API key provided\033[0m')
+			raise ValidationException(_('api_key_required'))
 
 		try:
-			logger.info(f'\033[94m[ChatRepo.get_ai_response] Calling Agent Integration Service\033[0m')
-			logger.info(f'\033[96m[ChatRepo.get_ai_response] Using API key: {api_key}... (truncated for security)\033[0m')
-			result = await self.agent_integration.get_ai_response(
-				conversation_id=conversation_id,
-				user_message=user_message,
-				user_id=user_id,
-				api_key=api_key,
-			)
-			logger.info(f'\033[92m[ChatRepo.get_ai_response] Agent response received, agent: {result.get("agent_name", "unknown")}, response_time: {result.get("response_time_ms", 0)}ms\033[0m')
+			# TODO: Implement Agent Integration Service call
+			# For now, return a simulated response
+			logger.info(f'\033[94m[ChatRepo.get_ai_response] Simulating AI response (Agent Integration pending)\033[0m')
+			result = await self._simulate_ai_response_fallback(user_message, api_key)
+			logger.info(f'\033[92m[ChatRepo.get_ai_response] AI response completed, response_time: {result.get("response_time_ms", 0)}ms\033[0m')
 			return result
 
 		except Exception as e:
-			logger.info(f'\033[91m[ChatRepo.get_ai_response] Error getting Agent response: {e}\033[0m')
-			logger.error(f'Error getting Agent response: {e}')
+			logger.error(f'\033[91m[ChatRepo.get_ai_response] Error getting AI response: {e}\033[0m')
+			raise ValidationException(_('ai_response_failed'))
 
-			# Fallback to simulation if agent system fails
-			logger.info(f'\033[93m[ChatRepo.get_ai_response] Falling back to simulation\033[0m')
-			return await self._simulate_ai_response_fallback(user_message, api_key)
+	async def get_ai_response_streaming(
+		self,
+		conversation_id: str,
+		user_message: str,
+		api_key: str = None,
+		websocket_manager=None,
+		user_id: str = None,
+	) -> dict:
+		"""Get AI response using Agent system with streaming support"""
+		logger.info(
+			f'\033[93m[ChatRepo.get_ai_response_streaming] Getting streaming AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_websocket: {websocket_manager is not None}\033[0m'
+		)
+
+		# Get user_id from conversation if not provided
+		if not user_id:
+			conversation = self.get_conversation_by_id(conversation_id, user_id)
+			user_id = conversation.user_id
+			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Retrieved user_id from conversation: {user_id}\033[0m')
+
+		# Validate API key is provided
+		if not api_key:
+			logger.error(f'\033[91m[ChatRepo.get_ai_response_streaming] No API key provided\033[0m')
+			raise ValidationException(_('api_key_required'))
+
+		try:
+			# TODO: Implement Agent Integration Service streaming call
+			# For now, return a simulated streaming response
+			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Simulating streaming AI response (Agent Integration pending)\033[0m')
+			result = await self._simulate_streaming_ai_response_fallback(user_message, api_key, websocket_manager, user_id)
+			logger.info(
+				f'\033[92m[ChatRepo.get_ai_response_streaming] Streaming response completed, response_time: {result.get("response_time_ms", 0)}ms\033[0m'
+			)
+			return result
+
+		except Exception as e:
+			logger.error(f'\033[91m[ChatRepo.get_ai_response_streaming] Error getting streaming AI response: {e}\033[0m')
+			raise ValidationException(_('ai_response_failed'))
+
+	async def _simulate_ai_response_fallback(self, message: str, api_key: str) -> dict:
+		"""
+		Fallback AI response simulation when agent system fails
+		"""
+		logger.info(f'\033[93m[ChatRepo._simulate_ai_response_fallback] Running fallback simulation for message_length: {len(message)}\033[0m')
+		start_time = time.time()
+
+		# Simulate processing delay
+		await asyncio.sleep(0.5)
+
+		# Simple fallback response
+		response_content = f"[Fallback Mode] I received your message: '{message}'. The AI agent system is temporarily unavailable, but I'm here to help! "
+
+		if 'hello' in message.lower():
+			response_content += 'Hello! How can I help you today?'
+		elif 'how are you' in message.lower():
+			response_content += "I'm doing well, thank you for asking!"
+		else:
+			response_content += 'Please try again in a moment when the full AI system is restored.'
+
+		response_time = int((time.time() - start_time) * 1000)
+
+		return {
+			'content': response_content,
+			'model_used': 'fallback-simulation',
+			'usage': {
+				'prompt_tokens': len(message.split()),
+				'completion_tokens': len(response_content.split()),
+				'total_tokens': len(message.split()) + len(response_content.split()),
+			},
+			'response_time_ms': response_time,
+		}
+
+	async def _simulate_streaming_ai_response_fallback(
+		self,
+		message: str,
+		api_key: str,
+		websocket_manager=None,
+		user_id: str = None,
+	) -> dict:
+		"""
+		Fallback streaming AI response simulation when agent system fails
+		"""
+		logger.info(f'\033[93m[ChatRepo._simulate_streaming_ai_response_fallback] Running fallback streaming simulation for user: {user_id}\033[0m')
+		start_time = time.time()
+
+		# Get the full response first
+		full_response = await self._simulate_ai_response_fallback(message, api_key)
+		response_text = full_response['content']
+
+		if websocket_manager and user_id:
+			logger.info(f'\033[94m[ChatRepo._simulate_streaming_ai_response_fallback] Starting fallback streaming\033[0m')
+			# Simulate streaming by sending chunks
+			words = response_text.split()
+
+			for i, word in enumerate(words):
+				chunk = word + ' '
+
+				# Send chunk every word for fallback (faster)
+				if i % 2 == 0 or i == len(words) - 1:
+					await websocket_manager.send_message(
+						user_id,
+						{
+							'type': 'assistant_message_chunk',
+							'chunk': chunk.strip(),
+							'is_final': i == len(words) - 1,
+							'fallback_mode': True,
+						},
+					)
+					await asyncio.sleep(0.05)  # Faster for fallback
+
+		response_time = int((time.time() - start_time) * 1000)
+		full_response['response_time_ms'] = response_time
+		return full_response
 
 	async def get_ai_response_streaming(
 		self,
