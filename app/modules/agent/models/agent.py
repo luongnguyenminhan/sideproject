@@ -1,4 +1,15 @@
-from sqlalchemy import Column, String, Boolean, Float, Integer, JSON, Enum, Text
+from sqlalchemy import (
+	Column,
+	String,
+	Boolean,
+	Float,
+	Integer,
+	JSON,
+	Enum,
+	Text,
+	ForeignKey,
+)
+from sqlalchemy.orm import relationship
 from app.core.base_model import BaseEntity
 import enum
 
@@ -19,6 +30,9 @@ class Agent(BaseEntity):
 	description = Column(String(500), nullable=True, default='AI Assistant for conversations')
 	is_active = Column(Boolean, nullable=False, default=True)
 
+	# User ownership (optional - remove if agents are global)
+	user_id = Column(String(36), ForeignKey('users.id'), nullable=True)
+
 	# Embedded LLM Configuration (no separate config table)
 	model_provider = Column(Enum(ModelProvider), nullable=False, default=ModelProvider.GOOGLE)
 	model_name = Column(String(100), nullable=False, default='gemini-2.0-flash')
@@ -30,6 +44,9 @@ class Agent(BaseEntity):
 	# Embedded API Key (no separate api_keys table)
 	api_key = Column(String(500), nullable=True)  # Encrypted API key
 	api_provider = Column(String(50), nullable=False, default='google')
+
+	# Relationships
+	user = relationship('User', back_populates='agents')  # Remove if agents are global
 
 	def __repr__(self):
 		return f'<Agent(id={self.id}, name={self.name}, provider={self.model_provider})>'

@@ -25,4 +25,5 @@ class Message(BaseEntity):
 
 	# Relationships
 	user = relationship('User', back_populates='messages')
+	conversation = relationship('Conversation', back_populates='messages')
 	message_files = relationship('MessageFile', back_populates='message', cascade='all, delete-orphan')

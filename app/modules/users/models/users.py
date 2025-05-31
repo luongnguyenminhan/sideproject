@@ -28,7 +28,12 @@ class User(BaseEntity):
 	conversations = relationship('Conversation', back_populates='user', cascade='all, delete-orphan')
 	messages = relationship('Message', back_populates='user', cascade='all, delete-orphan')
 	files = relationship('File', back_populates='user', cascade='all, delete-orphan')
-	api_keys = relationship('ApiKey', back_populates='user', cascade='all, delete-orphan')
+
+	# User logs relationship
+	user_logs = relationship('UserLog', back_populates='user', cascade='all, delete-orphan')
+
+	# Agent relationship (if users can own agents)
+	agents = relationship('Agent', back_populates='user', cascade='all, delete-orphan')
 
 	@validates('email')
 	def validate_email(self, key, address):
