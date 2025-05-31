@@ -5,6 +5,9 @@ from fastapi import Depends
 from app.core.database import get_db
 from app.modules.chat.dal.conversation_dal import ConversationDAL
 from app.modules.chat.dal.message_dal import MessageDAL
+from app.modules.agent.repository.conversation_workflow_repo import (
+	ConversationWorkflowRepo,
+)
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 from datetime import datetime
@@ -12,6 +15,7 @@ import time
 import asyncio
 import json
 import logging
+from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +26,7 @@ class ChatRepo:
 		self.db = db
 		self.conversation_dal = ConversationDAL(db)
 		self.message_dal = MessageDAL(db)
+		self.conversation_workflow_repo = ConversationWorkflowRepo(db)
 		logger.info(f'\033[92m[ChatRepo.__init__] ChatRepo initialized successfully\033[0m')
 
 	def get_conversation_by_id(self, conversation_id: str, user_id: str):
@@ -33,6 +38,29 @@ class ChatRepo:
 			raise NotFoundException(_('conversation_not_found'))
 		logger.info(f'\033[92m[ChatRepo.get_conversation_by_id] Conversation found: {conversation.name}\033[0m')
 		return conversation
+
+	def get_conversation_history(self, conversation_id: str, user_id: str, limit: int = 50) -> List[Dict[str, Any]]:
+		"""Get conversation message history for context"""
+		logger.info(f'\033[93m[ChatRepo.get_conversation_history] Getting history for conversation: {conversation_id}, limit: {limit}\033[0m')
+
+		# Verify conversation access
+		conversation = self.get_conversation_by_id(conversation_id, user_id)
+
+		# Get messages from database using conversation_history method for better performance
+		messages = self.message_dal.get_conversation_history(conversation_id, limit=limit)
+
+		# Format messages for agent context (reverse to chronological order)
+		history = []
+		for message in reversed(messages):  # Messages come in desc order, reverse for chronological
+			history.append({
+				'role': message.role,
+				'content': message.content,
+				'timestamp': (message.timestamp.isoformat() if message.timestamp else None),
+				'model_used': message.model_used,
+			})
+
+		logger.info(f'\033[92m[ChatRepo.get_conversation_history] Retrieved {len(history)} messages\033[0m')
+		return history
 
 	def create_message(
 		self,
@@ -114,16 +142,38 @@ class ChatRepo:
 			logger.info(f'\033[94m[ChatRepo.get_ai_response] Using default API key: {api_key}\033[0m')
 
 		try:
-			# TODO: Implement Agent Integration Service call
-			# For now, return a simulated response
-			logger.info(f'\033[94m[ChatRepo.get_ai_response] Simulating AI response (Agent Integration pending)\033[0m')
-			result = await self._simulate_ai_response_fallback(user_message, api_key)
+			# Get conversation history for context
+			conversation_history = self.get_conversation_history(conversation_id, user_id)
+			logger.info(f'\033[94m[ChatRepo.get_ai_response] Retrieved {len(conversation_history)} messages for context\033[0m')
+
+			# Get conversation for system prompt
+			conversation = self.get_conversation_by_id(conversation_id, user_id)
+			conversation_system_prompt = getattr(conversation, 'system_prompt', None)
+
+			# Call agent workflow system
+			logger.info(f'\033[94m[ChatRepo.get_ai_response] Calling ConversationWorkflowRepo for AI response\033[0m')
+			result = await self.conversation_workflow_repo.execute_chat_workflow(
+				conversation_id=conversation_id,
+				user_message=user_message,
+				conversation_system_prompt=conversation_system_prompt,
+				conversation_history=conversation_history,
+			)
+
 			logger.info(f'\033[92m[ChatRepo.get_ai_response] AI response completed, response_time: {result.get("response_time_ms", 0)}ms\033[0m')
 			return result
 
 		except Exception as e:
-			logger.error(f'\033[91m[ChatRepo.get_ai_response] Error getting AI response: {e}\033[0m')
-			raise ValidationException(_('ai_response_failed'))
+			logger.error(f'\033[91m[ChatRepo.get_ai_response] Error getting AI response from agent system: {e}\033[0m')
+			logger.info(f'\033[93m[ChatRepo.get_ai_response] Falling back to simulation\033[0m')
+
+			# Fallback to simulation if agent system fails
+			try:
+				result = await self._simulate_ai_response_fallback(user_message, api_key)
+				logger.info(f'\033[92m[ChatRepo.get_ai_response] Fallback response completed\033[0m')
+				return result
+			except Exception as fallback_error:
+				logger.error(f'\033[91m[ChatRepo.get_ai_response] Fallback also failed: {fallback_error}\033[0m')
+				raise ValidationException(_('ai_response_failed'))
 
 	async def get_ai_response_streaming(
 		self,
@@ -140,31 +190,79 @@ class ChatRepo:
 
 		# Get user_id from conversation if not provided
 		if not user_id:
-			conversation = self.get_conversation_by_id(conversation_id, user_id)
+			conversation = self.get_conversation_by_id(conversation_id, '')  # Fix: use empty string for user_id check
 			user_id = conversation.user_id
 			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Retrieved user_id from conversation: {user_id}\033[0m')
 
 		# Get user's API key if not provided
 		if not api_key:
-			logger.info(f"\033[94m[ChatRepo.get_ai_response_streaming] No API key provided, getting user's default key\033[0m")
-			default_key = self.api_key_dal.get_user_default_api_key(user_id=user_id, provider='google')
-			if default_key:
-				api_key = default_key.get_api_key()
-				logger.info(f'\033[92m[ChatRepo.get_ai_response_streaming] Found default API key for Google\033[0m')
+			logger.error(f'\033[91m[ChatRepo.get_ai_response_streaming] No API key provided\033[0m')
+			# Use environment variable as fallback
+			api_key = os.getenv('GOOGLE_API_KEY')
+			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Using default API key from environment\033[0m')
 
 		try:
-			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Calling Agent Integration Service for streaming\033[0m')
-			result = await self.agent_integration.get_ai_response_streaming(
+			# Get conversation history for context
+			conversation_history = self.get_conversation_history(conversation_id, user_id)
+			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Retrieved {len(conversation_history)} messages for context\033[0m')
+
+			# Get conversation for system prompt
+			conversation = self.get_conversation_by_id(conversation_id, user_id)
+			conversation_system_prompt = getattr(conversation, 'system_prompt', None)
+
+			# Call agent workflow system for streaming
+			logger.info(f'\033[94m[ChatRepo.get_ai_response_streaming] Calling ConversationWorkflowRepo for streaming AI response\033[0m')
+
+			# Collect streaming response
+			result_content = ''
+			result_data = {}
+
+			async for chunk in self.conversation_workflow_repo.execute_streaming_chat_workflow(
 				conversation_id=conversation_id,
 				user_message=user_message,
-				user_id=user_id,
-				api_key=api_key,
-				websocket_manager=websocket_manager,
-			)
+				conversation_system_prompt=conversation_system_prompt,
+				conversation_history=conversation_history,
+			):
+				if chunk.get('type') == 'content':
+					result_content += chunk.get('content', '')
+
+					# Send websocket update if available
+					if websocket_manager and user_id:
+						await websocket_manager.send_message(
+							user_id,
+							{
+								'type': 'assistant_message_chunk',
+								'chunk': chunk.get('content', ''),
+								'is_final': False,
+							},
+						)
+				elif chunk.get('type') == 'final':
+					result_data = chunk
+
+					# Send final websocket update
+					if websocket_manager and user_id:
+						await websocket_manager.send_message(
+							user_id,
+							{
+								'type': 'assistant_message_chunk',
+								'chunk': '',
+								'is_final': True,
+							},
+						)
+
+			# Prepare final result
+			final_result = {
+				'content': result_content,
+				'model_used': result_data.get('model_used', 'agent-workflow'),
+				'usage': result_data.get('usage', {}),
+				'response_time_ms': result_data.get('response_time_ms', 0),
+				'agent_name': result_data.get('agent_name', 'conversation-workflow'),
+			}
+
 			logger.info(
-				f'\033[92m[ChatRepo.get_ai_response_streaming] Agent streaming response completed, agent: {result.get("agent_name", "unknown")}, response_time: {result.get("response_time_ms", 0)}ms\033[0m'
+				f'\033[92m[ChatRepo.get_ai_response_streaming] Agent streaming response completed, agent: {final_result.get("agent_name", "unknown")}, response_time: {final_result.get("response_time_ms", 0)}ms\033[0m'
 			)
-			return result
+			return final_result
 
 		except Exception as e:
 			logger.info(f'\033[91m[ChatRepo.get_ai_response_streaming] Error getting Agent streaming response: {e}\033[0m')

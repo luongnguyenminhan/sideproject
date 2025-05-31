@@ -76,7 +76,7 @@ async def update_system_agent_config(
 ):
 	"""Update system agent configuration (admin only)"""
 	agent_repo = SystemAgentRepo(db)
-	print(f"Received updates: {request.model_dump(exclude_unset=True)}")
+	print(f'Received updates: {request.model_dump(exclude_unset=True)}')
 
 	updates = request.model_dump(exclude_unset=True)
 	agent = agent_repo.update_system_agent_config(updates)

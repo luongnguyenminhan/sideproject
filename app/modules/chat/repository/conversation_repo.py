@@ -125,7 +125,11 @@ class ConversationRepo:
 
 			# Soft delete conversation in MySQL
 			logger.info(f'\033[94m[ConversationRepo.delete_conversation] Performing soft delete in MySQL\033[0m')
-			self.conversation_dal.delete(conversation_id)
+			update_data = {
+				'is_deleted': True,
+				'update_date': datetime.now(timezone('Asia/Ho_Chi_Minh')).isoformat(),
+			}
+			self.conversation_dal.update(conversation_id, update_data)
 			logger.info(f'\033[92m[ConversationRepo.delete_conversation] Conversation soft deleted in MySQL\033[0m')
 
 		logger.info(f'\033[92m[ConversationRepo.delete_conversation] Conversation deletion completed\033[0m')
