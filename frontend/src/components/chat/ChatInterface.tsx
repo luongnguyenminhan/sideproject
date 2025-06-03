@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { DotsTypingIndicator } from '@/components/ui/TypingIndicator'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faRobot, faUser, faBars, faCopy, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane, faUser, faBars, faCopy, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Image from 'next/image'
@@ -53,6 +55,7 @@ export function ChatInterface({
   onOpenMobileSidebar
 }: ChatInterfaceProps) {
   const { t } = useTranslation()
+  const { user } = useSelector((state: RootState) => state.auth)
   const [input, setInput] = useState('')
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [copiedCodeBlocks, setCopiedCodeBlocks] = useState<Set<string>>(new Set())
@@ -164,8 +167,14 @@ export function ChatInterface({
         
         {messages.length === 0 ? (
           <div className="text-center text-[color:var(--muted-foreground)] mt-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
-              <FontAwesomeIcon icon={faRobot} className="text-2xl" />
+            <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center overflow-hidden">
+              <Image
+                src={"/Logo CLB 2023.png"}
+                alt="Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <p className="text-lg">{t('chat.noMessages')}</p>
             <p className="text-sm">{t('chat.startConversation')}</p>
@@ -178,10 +187,29 @@ export function ChatInterface({
                   <div className="flex justify-end">
                     <Card className="max-w-[80%] p-4 backdrop-blur-sm transition-all duration-300 hover:shadow-[var(--card-hover-shadow)] bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-[color:var(--primary-foreground)] border-[color:var(--primary)]">
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20 overflow-hidden">
+                          {user?.profile_picture ? (
+                            <Image
+                              src={user.profile_picture}
+                              alt="User Avatar"
+                              width={32}
+                              height={32}
+                              className="w-8 h-8 object-cover rounded-full"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                // Show fallback icon if image fails to load
+                                const fallback = target.parentElement?.querySelector('.fallback-icon');
+                                if (fallback) {
+                                  (fallback as HTMLElement).style.display = 'flex';
+                                }
+                              }}
+                            />
+                          ) : null}
                           <FontAwesomeIcon 
                             icon={faUser} 
-                            className="text-sm text-white" 
+                            className={`text-sm text-white ${user?.profile_picture ? 'fallback-icon hidden' : ''}`}
+                            style={{ display: user?.profile_picture ? 'none' : 'block' }}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -198,10 +226,15 @@ export function ChatInterface({
                   <div className="space-y-2">
                     {/* Bot Avatar and Timestamp */}
                     <div className="flex items-center gap-3 px-2">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10">
-                        <FontAwesomeIcon 
-                          icon={faRobot} 
-                          className="text-sm text-[color:var(--primary)]" 
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 overflow-hidden">
+                        <Image
+                          src={
+                            "/Logo CLB 2023.png"
+                          }
+                          alt="Assistant Logo"
+                          width={24}
+                          height={24}
+                          className="w-6 h-6 object-contain"
                         />
                       </div>
                       <span className="text-sm font-medium text-[color:var(--foreground)]">
@@ -432,10 +465,13 @@ export function ChatInterface({
             {isTyping && (
               <div className="space-y-2">
                 <div className="flex items-center gap-3 px-2">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 animate-pulse">
-                    <FontAwesomeIcon 
-                      icon={faRobot} 
-                      className="text-sm text-[color:var(--primary)] animate-pulse" 
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 animate-pulse overflow-hidden">
+                    <Image
+                      src={"/Logo CLB 2023.png"}
+                      alt="Assistant Logo"
+                      width={24}
+                      height={24}
+                      className="w-6 h-6 object-contain animate-pulse"
                     />
                   </div>
                   <span className="text-sm font-medium text-[color:var(--foreground)]">
