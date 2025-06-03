@@ -14,7 +14,7 @@ class WorkflowConfig:
 
 	# Model settings
 	model_name: str = 'gemini-2.0-flash'
-	temperature: float = 0
+	temperature: float = 1.0
 	max_tokens: int = 2048
 	api_key: Optional[str] = None
 

@@ -55,14 +55,7 @@ export function SystemPromptEditor({
     if (percentage >= 70) return 'text-yellow-600'
     return 'text-[color:var(--muted-foreground)]'
   }
-
-  const activePrompt = prompt.trim() || agentSystemPrompt || ''
-  const promptSource = prompt.trim() 
-    ? t('chat.systemPrompt.conversationPrompt')
-    : agentSystemPrompt 
-      ? t('chat.systemPrompt.agentPrompt')
-      : t('chat.systemPrompt.noAgentPrompt')
-
+ 
   if (!isOpen) return null
 
   return (
@@ -107,9 +100,6 @@ export function SystemPromptEditor({
                   {t('chat.systemPrompt.promptSource')}
                 </span>
               </div>
-              <p className="text-sm text-[color:var(--muted-foreground)]">
-                {promptSource}
-              </p>
             </div>
 
 
@@ -127,15 +117,6 @@ export function SystemPromptEditor({
               {isPreviewMode ? (
                 <div className="min-h-[200px] p-4 bg-[color:var(--background)] border border-[color:var(--border)] rounded-lg">
                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                    {activePrompt ? (
-                      <p className="whitespace-pre-wrap text-[color:var(--foreground)]">
-                        {activePrompt}
-                      </p>
-                    ) : (
-                      <p className="text-[color:var(--muted-foreground)] italic">
-                        {t('chat.systemPrompt.placeholder')}
-                      </p>
-                    )}
                   </div>
                 </div>
               ) : (

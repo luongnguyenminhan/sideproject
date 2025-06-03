@@ -67,7 +67,7 @@ class FileService:
 
 			url = minio_handler.get_file_url(object_path, expires=3600)
 
-			logger.info(f'File uploaded to MinIO: {object_path}')
+			pass  # logger.info(f'File uploaded to MinIO: {object_path}')
 			return object_path, url
 
 		except Exception as e:
@@ -80,7 +80,7 @@ class FileService:
 		try:
 			success = minio_handler.remove_file(file_path)
 			if success:
-				logger.info(f'File deleted from MinIO: {file_path}')
+				pass  # logger.info(f'File deleted from MinIO: {file_path}')
 			return success
 		except Exception as e:
 			logger.error(f'Error deleting file from storage: {e}')

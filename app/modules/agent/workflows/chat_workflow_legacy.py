@@ -318,6 +318,7 @@ async def call_model(state: AgentState, config: Dict) -> Dict[str, Any]:
         """
 
 		system_prompt = config.get('system_prompt', default_system_prompt)
+		print(f"📝 [Agent] Using system prompt: '{config.get('system_prompt')}...'")
 
 		# Enhance với RAG context nếu có
 		rag_context = state.get('rag_context', [])

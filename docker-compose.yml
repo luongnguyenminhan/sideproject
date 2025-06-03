@@ -74,47 +74,6 @@ services:
     networks:
       - cgsem-network
     restart: always
-  celery:
-    build:  
-      context: .
-      dockerfile: Dockerfile
-    image: cgsem-api:latest
-    command: ["/app/startup.sh"]  # Explicitly set command to use startup.sh
-    volumes:
-      - .:/app
-      - audio_data:/data/audio  # Add shared volume for audio files
-    environment:
-      - ENV=development
-      - SERVICE_TYPE=celery_worker
-      - CELERY_BROKER_URL=redis://redis-cgsem:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis-cgsem:6379/0
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
-      - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-cgsem-ai}
-      - MINIO_SECURE=false
-      # QdrantDB Configuration
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
-      - QDRANT_PATH=/app/qdrant_storage
-      # AI APIs
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - CELERY_WORKER_CONCURRENCY=4  # Set concurrency for Celery workers
-    env_file:
-      - .env
-    networks:
-      - cgsem-network
-    depends_on:
-      - redis-cgsem
-      - minio
-      - qdrant
-      - api
-    restart: always
   redis-cgsem:
     image: redis:latest
     container_name: redis
@@ -124,24 +83,6 @@ services:
       - cgsem-network
     restart: always
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.frontend
-  #   image: cgsem-frontend:latest
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   environment:
-  #     - NODE_ENV=development
-  #     - NEXT_PUBLIC_API_URL=http://localhost:8000
-  #   networks:
-  #     - cgsem-network
-  #   depends_on:
-  #     - api
-  #   restart: always
 
 networks:
   cgsem-network:
