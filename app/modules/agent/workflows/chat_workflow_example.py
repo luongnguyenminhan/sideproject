@@ -7,8 +7,8 @@ import asyncio
 import logging
 from sqlalchemy.orm import Session
 
+from app.core.database import get_db
 from app.modules.agent.workflows.chat_workflow import ChatWorkflow, WorkflowConfig, create_chat_workflow
-from app.database.database import get_db
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
