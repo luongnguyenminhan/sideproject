@@ -184,8 +184,8 @@ export function ChatInterface({
                             className="text-sm text-white" 
                           />
                         </div>
-                        <div className="flex-1">
-                          <p className="mb-2 leading-relaxed whitespace-pre-wrap">
+                        <div className="flex-1 min-w-0">
+                          <p className="mb-2 leading-relaxed whitespace-pre-wrap break-words">
                             {message.content}
                           </p>
                           <p className="text-xs mt-2 text-white/70">
@@ -212,7 +212,7 @@ export function ChatInterface({
                       </span>
                     </div>
                     
-                    {/* Bot Message Content - Using ReactMarkdown without bubble */}
+                    {/* Bot Message Content - Enhanced responsive markdown */}
                     <div className="ml-11 space-y-3">
                       <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
                         <ReactMarkdown
