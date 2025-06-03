@@ -62,7 +62,7 @@ export interface AuthState {
     email: string;
     username: string;
     confirmed: boolean;
-    role_id?: string;
+    profile_picture?: string;
   };
   error: string | null;
 }

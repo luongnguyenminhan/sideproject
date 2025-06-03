@@ -223,29 +223,72 @@ export function ChatInterface({
                               const match = /language-(\w+)/.exec(className || '')
                               const codeContent = String(children).replace(/\n$/, '')
                               const blockId = `${message.id}-${Math.random().toString(36).substr(2, 9)}`
+                              const language = match ? match[1] : 'text'
                               
                               return !inline && match ? (
-                                <div className="relative group lg:max-w-[1200px] md:max-w-[600px] min-w-0">
-                                  <pre className="bg-[color:var(--muted)] p-3 rounded-lg overflow-x-auto border border-[color:var(--border)] my-2">
-                                    <code className={className} {...rest}>
-                                      {codeContent}
-                                    </code>
-                                  </pre>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyCodeBlock(codeContent, blockId)}
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs bg-[color:var(--background)]/80 backdrop-blur-sm border border-[color:var(--border)] hover:bg-[color:var(--muted)]"
-                                  >
-                                    <FontAwesomeIcon 
-                                      icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
-                                      className="mr-1" 
-                                    />
-                                    {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
-                                  </Button>
+                                // CODE BLOCK EXAMPLE 1: ChatGPT-style code block with header and actions
+                                <div className="contain-inline-size rounded-md border-[0.5px] border-[color:var(--border)] relative bg-[color:var(--card)] my-4 w-full max-w-full overflow-hidden">
+                                  {/* Header with language and actions */}
+                                  <div className="flex items-center text-[color:var(--muted-foreground)] px-4 py-2 text-xs font-sans justify-between h-9 bg-[color:var(--card)] dark:bg-[color:var(--muted)] select-none rounded-t-[5px] border-b border-[color:var(--border)]">
+                                    <span className="font-medium">{language}</span>
+                                    <div className="flex items-center gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleCopyCodeBlock(codeContent, blockId)}
+                                        className="flex gap-1 items-center select-none px-3 py-1 h-auto text-xs hover:bg-[color:var(--accent)] transition-colors"
+                                      >
+                                        <FontAwesomeIcon 
+                                          icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
+                                          className="w-3 h-3" 
+                                        />
+                                        {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Code content */}
+                                  <div className="overflow-y-auto p-4" dir="ltr">
+                                    <pre className="whitespace-pre overflow-x-auto">
+                                      <code className={className} {...rest}>
+                                        {codeContent}
+                                      </code>
+                                    </pre>
+                                  </div>
+                                </div>
+                              ) : !inline ? (
+                                // CODE BLOCK EXAMPLE 2: Simplified code block without language header
+                                <div className="contain-inline-size rounded-md border border-[color:var(--border)] relative bg-[color:var(--muted)] my-4 w-full max-w-full overflow-hidden group">
+                                  <div className="relative">
+                                    <pre className="overflow-x-auto p-4">
+                                      <code className={className} {...rest}>
+                                        {codeContent}
+                                      </code>
+                                    </pre>
+                                    
+                                    {/* Floating copy button */}
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleCopyCodeBlock(codeContent, blockId)}
+                                        className="text-xs bg-[color:var(--background)]/90 backdrop-blur-sm border border-[color:var(--border)] hover:bg-[color:var(--muted)] px-2 py-1 h-auto"
+                                      >
+                                        <FontAwesomeIcon 
+                                          icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
+                                          className="w-3 h-3 mr-1" 
+                                        />
+                                        {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
+                                      </Button>
+                                    </div>
+                                  </div>
                                 </div>
                               ) : (
-                                <code className="bg-[color:var(--muted)] px-1 py-0.5 rounded text-sm border border-[color:var(--border)]" {...rest}>
+                                // INLINE CODE EXAMPLE 1: Highlighted inline code
+                                <code 
+                                  className="bg-[color:var(--muted)] text-[color:var(--foreground)] px-1.5 py-0.5 rounded text-sm font-mono border border-[color:var(--border)]/50 shadow-sm" 
+                                  {...rest}
+                                >
                                   {children}
                                 </code>
                               )
@@ -272,8 +315,13 @@ export function ChatInterface({
                               </div>
                             ),
                             blockquote: (props: any) => (
-                              <blockquote className="border-l-4 border-[color:var(--border)] pl-4 italic text-[color:var(--muted-foreground)] my-2" {...props}>
-                                {props.children}
+                              <blockquote className="border-l-4 border-[color:var(--primary)] bg-[color:var(--muted)]/30 p-4 my-4 rounded-r-lg">
+                                <div className="text-[color:var(--muted-foreground)] text-sm mb-2 font-medium">
+                                  System Prompt
+                                </div>
+                                <div className="text-[color:var(--foreground)] italic">
+                                  {props.children}
+                                </div>
                               </blockquote>
                             ),
                             h1: (props: any) => (

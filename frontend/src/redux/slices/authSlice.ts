@@ -6,6 +6,8 @@ interface LoginSuccessPayload {
     id: string;
     email: string;
     username: string;
+    name?: string;
+    profile_picture?: string;
     confirmed: boolean;
     role_id?: string;
   };
@@ -47,8 +49,12 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setUser: (state, action: PayloadAction<LoginSuccessPayload['user']>) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+    },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout, clearError } = authSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logout, clearError, setUser } = authSlice.actions;
 export default authSlice.reducer;
