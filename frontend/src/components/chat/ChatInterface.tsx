@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -5,8 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { DotsTypingIndicator } from '@/components/ui/TypingIndicator'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faRobot, faUser, faBars } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane, faRobot, faUser, faBars, faCopy, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import Image from 'next/image'
 
 interface Message {
   id: string
@@ -50,6 +54,8 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const { t } = useTranslation()
   const [input, setInput] = useState('')
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
+  const [copiedCodeBlocks, setCopiedCodeBlocks] = useState<Set<string>>(new Set())
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -83,6 +89,32 @@ export function ChatInterface({
       setTimeout(scrollToBottom, 100)
     }
   }, [activeConversationId])
+
+  const handleCopyMessage = async (messageId: string, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopiedMessageId(messageId)
+      setTimeout(() => setCopiedMessageId(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy message:', err)
+    }
+  }
+
+  const handleCopyCodeBlock = async (code: string, blockId: string) => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopiedCodeBlocks(prev => new Set(prev).add(blockId))
+      setTimeout(() => {
+        setCopiedCodeBlocks(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(blockId)
+          return newSet
+        })
+      }, 2000)
+    } catch (err) {
+      console.error('Failed to copy code block:', err)
+    }
+  }
 
   if (!conversation && !activeConversationId) {
     return (
@@ -141,67 +173,229 @@ export function ChatInterface({
         ) : (
           <>
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <Card className={`max-w-[80%] p-4 backdrop-blur-sm transition-all duration-300 hover:shadow-[var(--card-hover-shadow)] ${
-                  message.role === 'user' 
-                    ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-[color:var(--primary-foreground)] border-[color:var(--primary)]' 
-                    : 'bg-[color:var(--card)] border-[color:var(--border)] text-[color:var(--card-foreground)]'
-                }`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.role === 'user' 
-                        ? 'bg-white/20' 
-                        : 'bg-[color:var(--primary)]/10'
-                    }`}>
-                      <FontAwesomeIcon 
-                        icon={message.role === 'user' ? faUser : faRobot} 
-                        className={`text-sm ${
-                          message.role === 'user' 
-                            ? 'text-white' 
-                            : 'text-[color:var(--primary)]'
-                        }`} 
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className={`prose prose-sm max-w-none ${
-                        message.role === 'user' 
-                          ? 'prose-invert' 
-                          : 'prose-gray dark:prose-invert'
-                      }`}>
-                        <p className="mb-2 leading-relaxed whitespace-pre-wrap">
-                          {message.content}
-                          {message.isStreaming && (
-                            <span className="inline-flex items-center ml-1">
-                              <span className="w-1 h-4 bg-[color:var(--primary)] animate-pulse"></span>
-                            </span>
-                          )}
-                        </p>
+              <div key={message.id} className="space-y-2">
+                {message.role === 'user' ? (
+                  <div className="flex justify-end">
+                    <Card className="max-w-[80%] p-4 backdrop-blur-sm transition-all duration-300 hover:shadow-[var(--card-hover-shadow)] bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-[color:var(--primary-foreground)] border-[color:var(--primary)]">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20">
+                          <FontAwesomeIcon 
+                            icon={faUser} 
+                            className="text-sm text-white" 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="mb-2 leading-relaxed whitespace-pre-wrap">
+                            {message.content}
+                          </p>
+                          <p className="text-xs mt-2 text-white/70">
+                            {message.timestamp.toLocaleTimeString()}
+                          </p>
+                        </div>
                       </div>
-                      <p className={`text-xs mt-2 ${
-                        message.role === 'user' 
-                          ? 'text-white/70' 
-                          : 'text-[color:var(--muted-foreground)]'
-                      }`}>
+                    </Card>
+                  </div>                ) : (
+                  <div className="space-y-2">
+                    {/* Bot Avatar and Timestamp */}
+                    <div className="flex items-center gap-3 px-2">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10">
+                        <FontAwesomeIcon 
+                          icon={faRobot} 
+                          className="text-sm text-[color:var(--primary)]" 
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-[color:var(--foreground)]">
+                        Assistant
+                      </span>
+                      <span className="text-xs text-[color:var(--muted-foreground)]">
                         {message.timestamp.toLocaleTimeString()}
-                      </p>
+                      </span>
+                    </div>
+                    
+                    {/* Bot Message Content - Using ReactMarkdown without bubble */}
+                    <div className="ml-11 space-y-3">
+                      <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code: (props: any) => {
+                              const { inline, className, children, ...rest } = props
+                              const match = /language-(\w+)/.exec(className || '')
+                              const codeContent = String(children).replace(/\n$/, '')
+                              const blockId = `${message.id}-${Math.random().toString(36).substr(2, 9)}`
+                              
+                              return !inline && match ? (
+                                <div className="relative group lg:max-w-[1200px] md:max-w-[600px] min-w-0">
+                                  <pre className="bg-[color:var(--muted)] p-3 rounded-lg overflow-x-auto border border-[color:var(--border)] my-2">
+                                    <code className={className} {...rest}>
+                                      {codeContent}
+                                    </code>
+                                  </pre>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyCodeBlock(codeContent, blockId)}
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs bg-[color:var(--background)]/80 backdrop-blur-sm border border-[color:var(--border)] hover:bg-[color:var(--muted)]"
+                                  >
+                                    <FontAwesomeIcon 
+                                      icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
+                                      className="mr-1" 
+                                    />
+                                    {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
+                                  </Button>
+                                </div>
+                              ) : (
+                                <code className="bg-[color:var(--muted)] px-1 py-0.5 rounded text-sm border border-[color:var(--border)]" {...rest}>
+                                  {children}
+                                </code>
+                              )
+                            },
+                            img: (props: any) => (
+                              <div className="my-4">
+                                <Image
+                                  {...props}
+                                  alt={props.alt || 'Image'}
+                                  className="max-w-full h-auto rounded-lg border border-[color:var(--border)] shadow-sm hover:shadow-md transition-shadow duration-200"
+                                  style={{ maxHeight: '500px', objectFit: 'contain' }}
+                                  width={props.width || 600}
+                                  height={props.height || 400}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                  }}
+                                />
+                                {props.alt && (
+                                  <p className="text-sm text-[color:var(--muted-foreground)] mt-2 italic text-center">
+                                    {props.alt}
+                                  </p>
+                                )}
+                              </div>
+                            ),
+                            blockquote: (props: any) => (
+                              <blockquote className="border-l-4 border-[color:var(--border)] pl-4 italic text-[color:var(--muted-foreground)] my-2" {...props}>
+                                {props.children}
+                              </blockquote>
+                            ),
+                            h1: (props: any) => (
+                              <h1 className="text-2xl font-bold mb-4 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </h1>
+                            ),
+                            h2: (props: any) => (
+                              <h2 className="text-xl font-semibold mb-3 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </h2>
+                            ),
+                            h3: (props: any) => (
+                              <h3 className="text-lg font-medium mb-2 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </h3>
+                            ),
+                            ul: (props: any) => (
+                              <ul className="list-disc pl-6 mb-4 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </ul>
+                            ),
+                            ol: (props: any) => (
+                              <ol className="list-decimal pl-6 mb-4 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </ol>
+                            ),
+                            li: (props: any) => (
+                              <li className="mb-1 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </li>
+                            ),
+                            p: (props: any) => (
+                              <p className="mb-3 leading-relaxed text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </p>
+                            ),
+                            a: (props: any) => (
+                              <a 
+                                href={props.href} 
+                                className="text-[color:var(--primary)] hover:underline" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                {...props}
+                              >
+                                {props.children}
+                              </a>
+                            ),
+                            table: (props: any) => (
+                              <div className="overflow-x-auto mb-4">
+                                <table className="min-w-full border border-[color:var(--border)] rounded-lg" {...props}>
+                                  {props.children}
+                                </table>
+                              </div>
+                            ),
+                            th: (props: any) => (
+                              <th className="border border-[color:var(--border)] px-3 py-2 bg-[color:var(--muted)] font-medium text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </th>
+                            ),
+                            td: (props: any) => (
+                              <td className="border border-[color:var(--border)] px-3 py-2 text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </td>
+                            ),
+                            strong: (props: any) => (
+                              <strong className="font-semibold text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </strong>
+                            ),
+                            em: (props: any) => (
+                              <em className="italic text-[color:var(--foreground)]" {...props}>
+                                {props.children}
+                              </em>
+                            )
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                      
+                      {/* Copy Button */}
+                      <div className="flex justify-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopyMessage(message.id, message.content)}
+                          className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)] transition-colors"
+                        >
+                          <FontAwesomeIcon 
+                            icon={copiedMessageId === message.id ? faCheck : faCopy} 
+                            className="mr-1" 
+                          />
+                          {copiedMessageId === message.id ? 'Copied!' : 'Copy'}
+                        </Button>
+                      </div>
+                      
+                      {/* Optional: Message metadata */}
+                      {(message.model_used || message.response_time_ms) && (
+                        <div className="text-xs text-[color:var(--muted-foreground)] flex gap-4">
+                        </div>
+                      )}
                     </div>
                   </div>
-                </Card>
+                )}
               </div>
             ))}
             {isTyping && (
-              <div className="flex justify-start">
-                <Card className="p-4 bg-[color:var(--card)] border-[color:var(--border)] backdrop-blur-sm animate-fadeIn">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 animate-pulse">
-                      <FontAwesomeIcon 
-                        icon={faRobot} 
-                        className="text-sm text-[color:var(--primary)] animate-pulse" 
-                      />
-                    </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 px-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 animate-pulse">
+                    <FontAwesomeIcon 
+                      icon={faRobot} 
+                      className="text-sm text-[color:var(--primary)] animate-pulse" 
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-[color:var(--foreground)]">
+                    Assistant
+                  </span>
+                </div>
+                <div className="ml-11">
+                  <div className="bg-[color:var(--card)]/50 border border-[color:var(--border)] rounded-lg p-4 backdrop-blur-sm animate-fadeIn">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-[color:var(--muted-foreground)]">
                         {t('chat.typing')}
@@ -209,7 +403,7 @@ export function ChatInterface({
                       <DotsTypingIndicator />
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
             )}
           </>
