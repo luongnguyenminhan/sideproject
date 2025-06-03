@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFile, faTrash, faDownload, faFolder, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 interface UploadedFile {
   id: string
@@ -20,14 +21,6 @@ interface FileSidebarProps {
   conversationId?: string | null
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
-  translations: {
-    uploadedFiles: string
-    noFilesUploaded: string
-    uploadFilesDescription: string
-    download: string
-    delete: string
-    uploadFiles?: string
-  }
 }
 
 export function FileSidebar({ 
@@ -35,9 +28,9 @@ export function FileSidebar({
   isLoading = false,
   conversationId,
   onDeleteFile, 
-  onUploadFiles, 
-  translations 
+  onUploadFiles
 }: FileSidebarProps) {
+  const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const formatFileSize = (bytes: number) => {
@@ -77,7 +70,7 @@ export function FileSidebar({
             <div className="w-8 h-8 bg-gradient-to-r from-[color:var(--gradient-text-from)] to-[color:var(--gradient-text-to)] rounded-lg flex items-center justify-center">
               <FontAwesomeIcon icon={faFolder} className="text-white text-sm" />
             </div>
-            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{translations.uploadedFiles}</h2>
+            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{t('chat.uploadedFiles')}</h2>
           </div>
           
           {/* Upload Button */}
@@ -86,23 +79,23 @@ export function FileSidebar({
             onClick={() => fileInputRef.current?.click()}
             className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
           >
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            Upload
+            <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
+            <span className="text-white">{t('common.upload')}</span>
           </Button>
         </div>
         
         <div className="flex items-center gap-2">
           <p className="text-sm text-[color:var(--muted-foreground)]">
-            {uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'}
+            {uploadedFiles.length} {t('chat.files')}
           </p>
           {conversationId && (
             <span className="text-xs text-[color:var(--muted-foreground)] bg-[color:var(--muted)] px-2 py-1 rounded">
-              This conversation
+              {t('chat.thisConversation')}
             </span>
           )}
           {isLoading && (
             <span className="text-xs text-[color:var(--muted-foreground)]">
-              Loading...
+              {t('common.loading')}
             </span>
           )}
         </div>
@@ -130,11 +123,11 @@ export function FileSidebar({
             <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
               <FontAwesomeIcon icon={faFile} className="text-2xl" />
             </div>
-            <p>{translations.noFilesUploaded}</p>
-            <p className="text-sm">{translations.uploadFilesDescription}</p>
+            <p>{t('chat.noFilesUploaded')}</p>
+            <p className="text-sm">{t('chat.uploadFilesDescription')}</p>
             {conversationId && (
               <p className="text-xs mt-2 text-[color:var(--muted-foreground)]">
-                Files uploaded here will be associated with this conversation
+                {t('chat.filesAssociated')}
               </p>
             )}
           </div>
@@ -159,7 +152,7 @@ export function FileSidebar({
                     size="sm"
                     variant="ghost"
                     className="h-6 w-6 p-0 hover:bg-[color:var(--accent)]"
-                    title={translations.download}
+                    title={t('common.download')}
                     onClick={() => {
                       // Download logic will be implemented
                       console.log('Download file:', file.id)
@@ -172,7 +165,7 @@ export function FileSidebar({
                     variant="ghost"
                     onClick={() => onDeleteFile(file.id)}
                     className="h-6 w-6 p-0 hover:bg-[color:var(--destructive)]/10"
-                    title={translations.delete}
+                    title={t('common.delete')}
                   >
                     <FontAwesomeIcon icon={faTrash} className="text-xs text-[color:var(--destructive)]" />
                   </Button>

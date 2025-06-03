@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '@/components/layout/header'
 import { withAuth } from '@/hoc/withAuth'
 import type { UserResponse } from '@/types/auth.type'
 import { getCurrentLocale } from '@/utils/getCurrentLocale'
@@ -16,7 +15,6 @@ async function HomePage({ user }: HomePageProps) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-      <Header />
       <div className="p-8">
         <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
           {t('home.welcomeBack')}, {user.name || user.username}!

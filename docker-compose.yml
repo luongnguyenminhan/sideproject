@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: meobeo-api:latest
+    image: cgsem-api:latest
     ports:
       - "8000:8000"
     volumes:
@@ -26,8 +26,14 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-cgsem-ai}
       - MINIO_SECURE=${MINIO_SECURE:-False}
+      # QdrantDB Configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_PATH=/app/qdrant_storage
+      # AI APIs
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
 
       - PYTHONDONTWRITEBYTECODE=1
     env_file:
@@ -37,9 +43,10 @@ services:
       - "host.docker.internal:host-gateway"
     restart: always
     networks:
-      - meobeo-network
+      - cgsem-network
     depends_on:
       - minio
+      - qdrant
 
   minio:
     image: minio/minio
@@ -53,12 +60,25 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-minioadmin}
     command: server /data --console-address ":9001"
     networks:
-      - meobeo-network
+      - cgsem-network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    environment:
+      - QDRANT__LOG_LEVEL=INFO
+    networks:
+      - cgsem-network
+    restart: always
   celery:
     build:  
       context: .
       dockerfile: Dockerfile
-    image: meobeo-api:latest
+    image: cgsem-api:latest
     command: ["/app/startup.sh"]  # Explicitly set command to use startup.sh
     volumes:
       - .:/app
@@ -66,8 +86,8 @@ services:
     environment:
       - ENV=development
       - SERVICE_TYPE=celery_worker
-      - CELERY_BROKER_URL=redis://redis-meobeo:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis-meobeo:6379/0
+      - CELERY_BROKER_URL=redis://redis-cgsem:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis-cgsem:6379/0
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
@@ -76,32 +96,39 @@ services:
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-meobeo-ai}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-cgsem-ai}
       - MINIO_SECURE=false
+      # QdrantDB Configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_PATH=/app/qdrant_storage
+      # AI APIs
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - CELERY_WORKER_CONCURRENCY=4  # Set concurrency for Celery workers
     env_file:
       - .env
     networks:
-      - meobeo-network
+      - cgsem-network
     depends_on:
-      - redis-meobeo
+      - redis-cgsem
       - minio
+      - qdrant
       - api
     restart: always
-  redis-meobeo:
+  redis-cgsem:
     image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"
     networks:
-      - meobeo-network
+      - cgsem-network
     restart: always
 
   # frontend:
   #   build:
   #     context: ./frontend
   #     dockerfile: Dockerfile.frontend
-  #   image: meobeo-frontend:latest
+  #   image: cgsem-frontend:latest
   #   ports:
   #     - "3000:3000"
   #   volumes:
@@ -111,16 +138,17 @@ services:
   #     - NODE_ENV=development
   #     - NEXT_PUBLIC_API_URL=http://localhost:8000
   #   networks:
-  #     - meobeo-network
+  #     - cgsem-network
   #   depends_on:
   #     - api
   #   restart: always
 
 networks:
-  meobeo-network:
+  cgsem-network:
     driver: bridge
 
 volumes:
   minio-data:
   audio_data:  # Add new volume for audio files
+  qdrant-data:  # Add volume for QdrantDB storage
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Operator enum matching the Python Operator enum
 export enum Operator {
   Eq = "eq",
@@ -26,7 +27,6 @@ export interface RequestSchema {
 export interface FilterItem {
   field: string;
   operator: Operator;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: string | number | boolean | Array<any> | null;
 }
 

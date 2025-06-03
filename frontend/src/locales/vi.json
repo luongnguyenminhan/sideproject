@@ -1,179 +1,205 @@
 {
-  "common": {
-    "branding": "CGSEM - Phòng truyền thông Trường THPT Cần Giuộc",
-    "hello": "Xin chào",
-    "welcome": "Chào mừng",
-    "language": "Ngôn ngữ",
-    "theme": "Giao diện",
-    "light": "Sáng",
-    "dark": "Tối",
-    "system": "Hệ thống",
-    "loading": "Đang tải...",
-    "error": "Có lỗi xảy ra",
-    "success": "Thành công",
-    "cancel": "Hủy",
-    "confirm": "Xác nhận",    "save": "Lưu",
-    "close": "Đóng",
-    "yes": "Có",
-    "no": "Không"
-  },
-  "theme": {
-    "toggle": "Chuyển đổi giao diện",
-    "light": "Sáng",
-    "dark": "Tối",
-    "system": "Theo hệ thống"
-  },
-  "language": {
-    "switch": "Chuyển đổi ngôn ngữ",
-    "vietnamese": "Tiếng Việt",
-    "english": "English"
-  },
-  "auth": {
-    "login": "Đăng nhập",
-    "loginDescription": "Đăng nhập vào tài khoản của bạn",
-    "loginWithGoogle": "Đăng nhập với tài khoản Google của bạn",
-    "signInWithGoogle": "Đăng nhập với Google",
-    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với Điều khoản và Chính sách Bảo mật của chúng tôi",
-    "logout": "Đăng xuất",
-    "signOut": "Đăng xuất",
-    "welcome": "Chào mừng bạn trở lại!",
-    "authenticationError": "Có lỗi xác thực xảy ra. Vui lòng thử lại.",
-    "loginSuccess": "Đăng nhập thành công!",
-    "logoutSuccess": "Đăng xuất thành công!",
-    "sessionExpired": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.",    "unauthorized": "Bạn không có quyền truy cập trang này.",
-    "termsAndPrivacy": "Điều khoản và Chính sách Bảo mật",
-    "privacyPolicy": "Chính sách Bảo mật",
-    "termsOfService": "Điều khoản Dịch vụ",
-    "connectingToGoogle": "Đang kết nối tới Google...",
-    "pleaseWait": "Quá trình này sẽ diễn ra tự động, vui lòng chờ một chút.",
-    "unableToConnect": "Không thể kết nối tới dịch vụ đăng nhập Google. Vui lòng thử lại sau.",
-    "openingGoogleLogin": "Đang mở cửa sổ đăng nhập Google...",
-    "allowPopups": "Vui lòng cho phép popup và thử lại"
-  },
-  "home": {
-    "title": "Chào mừng đến với Next.js",
-    "description": "Một framework React mạnh mẽ để xây dựng ứng dụng web hiện đại với hỗ trợ đa ngôn ngữ và theme tùy chỉnh",    "welcomeBack": "Chào mừng bạn trở lại",
-    "authenticatedDescription": "Bạn đã đăng nhập thành công và có thể truy cập tất cả các tính năng của ứng dụng. Khám phá bảng điều khiển và quản lý nội dung của bạn.",
-    "userInformation": "Thông tin người dùng",
-    "email": "Email",
-    "username": "Tên người dùng",
-    "confirmed": "Đã xác nhận",
-    "getStarted": "Bắt đầu",
-    "learnMore": "Tìm hiểu thêm",
-    "serverComponentDemo": "Demo Server Component",
-    "copyright": "© 2025 Next.js Internationalization Demo. Được tạo với ❤️",
-    "facebookPostsTitle": "Bài viết Facebook mới nhất",
-    "facebookPostCountPrefix": "Hiển thị",
-    "facebookPostCountSuffix": "bài viết từ trang này.",
-    "facebookErrorTitle": "Lỗi khi tải bài viết Facebook",
-    "noPostsTitle": "Không có bài viết Facebook",
-    "noPostsDescription": "Hiện tại không có bài viết nào từ trang Facebook này.",
-    "unknownTime": "Thời gian không xác định",
-    "post": "Bài viết Facebook",    "features": {
-      "fastPerformance": {
-        "title": "Hiệu suất nhanh",
-        "description": "Được xây dựng với tâm lý hiệu suất, mang lại trải nghiệm người dùng siêu nhanh"
-      },
-      "globalReady": {
-        "title": "Sẵn sàng toàn cầu",
-        "description": "Hỗ trợ đa ngôn ngữ đầy đủ với khả năng chuyển đổi ngôn ngữ mượt mà"
-      },
-      "modernStack": {
-        "title": "Công nghệ hiện đại",
-        "description": "Được xây dựng với các tính năng React mới nhất và công cụ phát triển hiện đại"
-      },
-      "darkMode": {
-        "title": "Chế độ tối",
-        "description": "Hỗ trợ chế độ sáng/tối với tự động phát hiện tùy chọn hệ thống"
-      }
-    }
-  },
   "aboutUs": {
-    "title": "Giới thiệu",
-    "subtitle": "Trang Facebook “Cần Giuộc School Media” là nền tảng truyền thông chính thức của Trường THPT Cần Giuộc, tỉnh Long An, Việt Nam. Trang này được tạo ra nhằm kết nối nhà trường với học sinh, phụ huynh và cộng đồng thông qua các hoạt động truyền thông sáng tạo và hiện đại.",
     "mission": {
-      "title": "Sứ mệnh của chúng tôi",
-      "description": "Cập nhật thông tin nhanh chóng về các sự kiện, hoạt động học thuật, ngoại khóa và thành tích của học sinh.\nTạo sân chơi truyền thông cho học sinh phát triển kỹ năng làm hình ảnh viết nội dung và quản lý mạng xã hội.\nXây dựng hình ảnh năng động, sáng tạo và thân thiện của nhà trường trong mắt cộng đồng."
-    },
-    "vision": {
-      "title": "Một số hoạt động nổi bật",
-      "description": "Chương trình “CG’s School Got Talent” – nơi học sinh thể hiện tài năng và tình yêu quê hương qua lăng kính trẻ trung và sáng tạo.\nCác phóng sự, video ngắn ghi lại khoảnh khắc đáng nhớ trong học đường, do chính học sinh sản xuất và thực hiện."
-    },
-    "story": {
-      "title": "Thông điệp",
-      "paragraph1": "Chúng tôi tin rằng truyền thông học đường không chỉ là công cụ kết nối, mà còn là môi trường giáo dục trải nghiệm, giúp học sinh phát triển toàn diện cả về kỹ năng lẫn tư duy sáng tạo.",
-      "paragraph2": "Hãy theo dõi trang để cùng đồng hành và lan tỏa những giá trị tích cực từ mái trường THPT Cần Giuộc!"
-    },
-    "team": {
-      "title": "Liên hệ",
-      "description": "📧 Email: cgs1412.thptcangiuoc@gmail.com\n📞 Hotline Ban Chủ nhiệm: 0385 683 763"
-    },
-    "values": {
-      "title": "Kết nối với chúng tôi",
-      "subtitle": "Theo dõi những cập nhật mới nhất và kết nối với cộng đồng của chúng tôi",
-      "innovation": "Sáng tạo",
-      "innovationDesc": "Liên tục đổi mới, sáng tạo trong hoạt động truyền thông học đường.",
-      "quality": "Chất lượng",
-      "qualityDesc": "Đảm bảo nội dung truyền thông chính xác, hữu ích và truyền cảm hứng.",
-      "collaboration": "Hợp tác",
-      "collaborationDesc": "Gắn kết học sinh, giáo viên, phụ huynh và cộng đồng.",
-      "integrity": "Chính trực",
-      "integrityDesc": "Lan tỏa giá trị tích cực, minh bạch và trách nhiệm."
+      "description": "Chúng tôi nỗ lực tạo ra những giải pháp sáng tạo giúp công nghệ trở nên dễ tiếp cận và có ý nghĩa cho mọi người.",
+      "title": "Sứ Mệnh Của Chúng Tôi"
     },
     "social": {
-      "title": "Kênh truyền thông",
-      "subtitle": "Facebook: Cần Giuộc School Media",
-      "pageInfo": "Thông tin trang Facebook",
-      "followers": "Người theo dõi",
-      "about": "Về trang này"
+      "about": "Giới thiệu",
+      "followers": "người theo dõi"
     },
-    "cta": {
-      "title": "Đồng hành cùng chúng tôi!",
-      "description": "Hãy theo dõi trang để không bỏ lỡ những thông tin, hoạt động và giá trị tích cực từ mái trường THPT Cần Giuộc.",
-      "getStarted": "Theo dõi ngay",
-      "contactUs": "Liên hệ"
+    "title": "Về Chúng Tôi",
+    "vision": {
+      "description": "Xây dựng một thế giới nơi công nghệ phục vụ nhân loại, thúc đẩy kết nối, sáng tạo và thay đổi tích cực.",
+      "title": "Tầm Nhìn Của Chúng Tôi"
     }
   },
-  "navigation": {
-    "home": "Trang chủ",
-    "about": "Giới thiệu",
-    "contact": "Liên hệ",
-    "services": "Dịch vụ",
-    "blog": "Blog",
+  "auth": {
+    "allowPopups": "Vui lòng cho phép popup và thử lại",
+    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Quyền riêng tư của chúng tôi",
+    "connectingToGoogle": "Đang kết nối với Google",
+    "email": "Email",
     "login": "Đăng nhập",
-    "profile": "Hồ sơ",
-    "dashboard": "Bảng điều khiển"
-  },
-  "server": {
-    "currentTime": "Thời gian hiện tại",
-    "serverRendered": "Được render từ server",
-    "locale": "Ngôn ngữ hiện tại",
-    "theme": "Theme hiện tại"
+    "loginSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
+    "loginWithGoogle": "Đăng nhập bằng tài khoản Google của bạn để bắt đầu",
+    "logout": "Đăng xuất",
+    "name": "Tên",
+    "openingGoogleLogin": "Đang mở đăng nhập Google...",
+    "pleaseWait": "Vui lòng đợi trong khi chúng tôi kết nối bạn với Google...",
+    "role": "Vai trò",
+    "signingIn": "Đang đăng nhập...",
+    "signInWithGoogle": "Đăng nhập bằng Google",
+    "unableToConnect": "Không thể kết nối với Google. Vui lòng thử lại.",
+    "username": "Tên người dùng"
   },
   "chat": {
-    "welcomeTitle": "Chào mừng đến với Chat",
-    "welcomeDescription": "Chọn một cuộc trò chuyện từ thanh bên để bắt đầu chat.",
-    "addApiKey": "Thêm API Key",
-    "enterApiKey": "Nhập API key...",
-    "apiKeySet": "Đã thiết lập API Key",
-    "resetApiKey": "Đặt lại API Key",
-    "noMessages": "Chưa có tin nhắn",
-    "startConversation": "Bắt đầu cuộc trò chuyện!",
-    "typeMessage": "Nhập tin nhắn của bạn...",
+    "agentManagement": {
+      "agentConfig": "Cấu Hình Agent",
+      "agentError": "Lỗi Agent",
+      "agentLoading": "Đang tải agent...",
+      "agentTab": "Agent",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Nhập API key của bạn tại đây...",
+        "currentKey": "API Key Hiện Tại",
+        "description": "Quản lý API key của bạn cho các nhà cung cấp AI khác nhau",
+        "enterApiKey": "Nhập API Key",
+        "hideKey": "Ẩn Key",
+        "keyUpdated": "API key đã được cập nhật thành công",
+        "noKeySet": "Chưa có API key nào được thiết lập",
+        "selectProvider": "Chọn Nhà Cung Cấp",
+        "showKey": "Hiện Key",
+        "title": "Quản Lý API Key",
+        "update": "Cập nhật",
+        "updateFailed": "Cập nhật API key thất bại"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Agent Hiện Tại",
+      "manage": "Quản lý",
+      "maxTokens": "Số Token Tối Đa",
+      "modelName": "Tên Model",
+      "noAgentConfigured": "Chưa có agent nào được cấu hình",
+      "provider": "Nhà Cung Cấp",
+      "selectModel": "Chọn Model",
+      "selectProvider": "Chọn Nhà Cung Cấp",
+      "subtitle": "Cấu hình và quản lý cài đặt AI agent của bạn",
+      "temperature": "Nhiệt độ",
+      "testMessage": "Kiểm tra cấu hình agent của bạn với một tin nhắn mẫu.",
+      "title": "Quản Lý Agent",
+      "updateAgent": "Cập Nhật Agent",
+      "validateAgent": "Xác Thực Agent",
+      "validationCompleted": "Xác thực hoàn tất",
+      "validationFailed": "Xác Thực Thất Bại",
+      "validationSuccess": "Xác Thực Thành Công",
+      "validationTab": "Xác Thực"
+    },
+    "chats": "Trò chuyện",
     "conversations": "Cuộc trò chuyện",
-    "new": "Mới",
-    "newConversation": "Cuộc trò chuyện mới",
-    "noConversationsYet": "Chưa có cuộc trò chuyện",
-    "createFirstChat": "Tạo chat đầu tiên của bạn",
+    "createFirstChat": "Tạo cuộc trò chuyện đầu tiên để bắt đầu",
+    "defaultChatTitle": "Trò chuyện",
+    "fileCount": "{{count}} tập tin",
+    "files": "Tập tin",
+    "filesAssociated": "Các tập tin được tải lên ở đây sẽ được liên kết với cuộc trò chuyện này",
     "messages": "tin nhắn",
-    "uploadedFiles": "Tệp đã tải lên",
-    "noFilesUploaded": "Chưa có tệp nào được tải lên",
-    "uploadFilesDescription": "Tải tệp lên trong chat để xem chúng ở đây",
-    "chats": "Chat",
-    "files": "Tệp",
-    "download": "Tải xuống",
+    "newConversation": "Mới",
+    "noConversationsYet": "Chưa có cuộc trò chuyện nào",
+    "noFilesUploaded": "Chưa có tập tin nào được tải lên",
+    "noMessages": "Chưa có tin nhắn nào",
+    "sending": "Đang gửi...",
+    "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
+    "systemPrompt": {
+      "agentPrompt": "Lời Nhắc Agent",
+      "conversationPrompt": "Lời Nhắc Cuộc Trò Chuyện",
+      "description": "Cấu hình lời nhắc hệ thống cho cuộc trò chuyện này",
+      "edit": "Chỉnh sửa",
+      "noAgentPrompt": "Chưa có lời nhắc agent nào được thiết lập",
+      "placeholder": "Nhập lời nhắc hệ thống...",
+      "preview": "Xem trước",
+      "promptSource": "Nguồn Lời Nhắc",
+      "title": "Lời Nhắc Hệ Thống"
+    },
+    "thisConversation": "Cuộc trò chuyện này",
+    "tooltips": {
+      "deleteConversation": "Xóa cuộc trò chuyện",
+      "editName": "Chỉnh sửa tên",
+      "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
+      "hasCustomSystemPrompt": "Có lời nhắc hệ thống tùy chỉnh"
+    },
+    "typeMessage": "Nhập tin nhắn của bạn...",
+    "typing": "AI đang nhập...",
+    "uploadedFiles": "Tập Tin Đã Tải Lên",
+    "uploadFilesDescription": "Tải lên tập tin để đính kèm vào cuộc trò chuyện của bạn",
+    "welcomeDescription": "Chọn một cuộc trò chuyện hoặc tạo mới để bắt đầu trò chuyện",
+    "welcomeTitle": "Chào Mừng Đến Với AI Chat"
+  },
+  "common": {
+    "branding": "Website AnLNM",
+    "cancel": "Hủy",
+    "close": "Đóng",
     "delete": "Xóa",
-    "file": "tệp",
-    "filesPlural": "tệp"
+    "download": "Tải xuống",
+    "loading": "Đang tải...",
+    "no": "Không",
+    "save": "Lưu",
+    "upload": "Tải lên",
+    "yes": "Có"
+  },
+  "home": {
+    "authenticatedDescription": "Khám phá tất cả các tính năng có sẵn cho bạn với tư cách là người dùng đã đăng nhập.",
+    "confirmed": "Đã xác nhận",
+    "description": "Một ứng dụng web hiện đại, nhanh chóng và có thể mở rộng được xây dựng với Next.js 14, tích hợp server-side rendering, đa ngôn ngữ và các thành phần UI đẹp mắt.",
+    "email": "Email",
+    "facebookPostCountPrefix": "Hiển thị",
+    "facebookPostCountSuffix": "bài viết từ trang này.",
+    "features": {
+      "darkMode": {
+        "description": "Chế độ sáng và tối đẹp mắt với hiệu ứng chuyển đổi mượt mà",
+        "title": "Hỗ Trợ Chế Độ Tối"
+      },
+      "fastPerformance": {
+        "description": "Hiệu suất nhanh như chớp với server-side rendering và tối ưu hóa",
+        "title": "Hiệu Suất Nhanh"
+      },
+      "globalReady": {
+        "description": "Hỗ trợ đa ngôn ngữ tích hợp sẵn cho nhiều ngôn ngữ",
+        "title": "Sẵn Sàng Toàn Cầu"
+      },
+      "modernStack": {
+        "description": "Được xây dựng với các công nghệ và phương pháp tốt nhất mới nhất",
+        "title": "Ngăn Xếp Công Nghệ Hiện Đại"
+      }
+    },
+    "getStarted": "Bắt Đầu",
+    "learnMore": "Tìm Hiểu Thêm",
+    "post": "Bài Viết Facebook",
+    "serverComponentDemo": "Demo Server Component",
+    "title": "Chào Mừng Đến Với Website AnLNM",
+    "unknownTime": "Thời gian không xác định",
+    "userInformation": "Thông Tin Người Dùng",
+    "username": "Tên người dùng",
+    "welcomeBack": "Chào mừng trở lại"
+  },
+  "navigation": {
+    "about": "Giới thiệu",
+    "chat": "Trò chuyện",
+    "conversations": "Cuộc trò chuyện",
+    "dashboard": "Bảng điều khiển",
+    "files": "Tập tin",
+    "help": "Trợ giúp",
+    "home": "Trang chủ",
+    "menu": "Menu",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
+  },
+  "profile": {
+    "changePassword": "Đổi Mật Khẩu",
+    "changePhoto": "Đổi Ảnh",
+    "editProfile": "Chỉnh Sửa Hồ Sơ",
+    "title": "Hồ Sơ"
+  },
+  "server": {
+    "currentTime": "Thời Gian Hiện Tại",
+    "locale": "Ngôn ngữ",
+    "serverRendered": "Được Render Từ Server"
+  },
+  "settings": {
+    "account": "Cài Đặt Tài Khoản",
+    "appearance": "Giao Diện",
+    "changePassword": "Đổi Mật Khẩu",
+    "currentUser": "Hiện đang đăng nhập với tư cách",
+    "deleteAccount": "Xóa Tài Khoản",
+    "downloadData": "Tải Xuống Dữ Liệu Của Tôi",
+    "emailNotifications": "Thông Báo Email",
+    "emailNotificationsDescription": "Nhận thông báo qua email",
+    "enableTwoFactor": "Bật Xác Thực Hai Yếu Tố",
+    "language": "Ngôn ngữ",
+    "languageDescription": "Chọn ngôn ngữ ưa thích của bạn",
+    "notifications": "Thông Báo",
+    "pushNotifications": "Thông Báo Đẩy",
+    "pushNotificationsDescription": "Nhận thông báo đẩy trong trình duyệt của bạn",
+    "security": "Bảo Mật",
+    "theme": "Chủ đề",
+    "themeDescription": "Chọn chủ đề ưa thích của bạn",
+    "title": "Cài Đặt",
+    "updateAccount": "Cập Nhật Tài Khoản"
   }
 }

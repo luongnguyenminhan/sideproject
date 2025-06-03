@@ -1,179 +1,206 @@
 {
-  "common": {
-    "branding": "CGSEM - Media department of Can Giuoc High School",
-    "hello": "Hello",
-    "welcome": "Welcome",
-    "language": "Language",
-    "theme": "Theme",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System",
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "success": "Success",
-    "cancel": "Cancel",
-    "confirm": "Confirm",    "save": "Save",
-    "close": "Close",
-    "yes": "Yes",
-    "no": "No"
-  },
-  "theme": {
-    "toggle": "Toggle theme",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
-  },
-  "language": {
-    "switch": "Switch language",
-    "vietnamese": "Tiếng Việt",
-    "english": "English"
-  },
-  "auth": {
-    "login": "Login",
-    "loginDescription": "Sign in to your account",
-    "loginWithGoogle": "Sign in with your Google account",
-    "signInWithGoogle": "Sign in with Google",
-    "bySigningIn": "By signing in, you agree to our Terms and Privacy Policy",
-    "logout": "Logout",
-    "signOut": "Sign Out",
-    "welcome": "Welcome back!",
-    "authenticationError": "Authentication error occurred. Please try again.",
-    "loginSuccess": "Successfully signed in!",
-    "logoutSuccess": "Successfully signed out!",
-    "sessionExpired": "Your session has expired. Please sign in again.",    "unauthorized": "You are not authorized to access this page.",
-    "termsAndPrivacy": "Terms and Privacy Policy",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
-    "connectingToGoogle": "Connecting to Google...",
-    "pleaseWait": "This process will happen automatically, please wait a moment.",
-    "unableToConnect": "Unable to connect to Google login service. Please try again later.",
-    "openingGoogleLogin": "Opening Google login window...",
-    "allowPopups": "Please allow pop-ups and try again"
-  },
-  "home": {
-    "title": "Welcome to Next.js",
-    "description": "A powerful React framework for building modern web applications with internationalization and custom theme support",    "welcomeBack": "Welcome back",
-    "authenticatedDescription": "You are now logged in and can access all features of our application. Explore the dashboard and manage your content.",
-    "userInformation": "User Information",
-    "email": "Email",
-    "username": "Username", 
-    "confirmed": "Confirmed",
-    "getStarted": "Get Started",
-    "learnMore": "Learn More",
-    "serverComponentDemo": "Server Component Demo",
-    "copyright": "© 2025 Next.js Internationalization Demo. Made with ❤️",
-    "facebookPostsTitle": "Latest Facebook Posts",
-    "facebookPostCountPrefix": "Showing",
-    "facebookPostCountSuffix": "posts from this page.",
-    "facebookErrorTitle": "Error Fetching Facebook Posts",
-    "noPostsTitle": "No Facebook Posts Available",
-    "noPostsDescription": "There are currently no posts available from this Facebook page.",
-    "unknownTime": "Unknown time",
-    "post": "Facebook Post",    "features": {
-      "fastPerformance": {
-        "title": "Fast Performance",
-        "description": "Built with performance in mind, delivering lightning-fast user experiences"
-      },
-      "globalReady": {
-        "title": "Global Ready",
-        "description": "Full internationalization support with seamless language switching"
-      },
-      "modernStack": {
-        "title": "Modern Stack",
-        "description": "Built with the latest React features and modern development tools"
-      },
-      "darkMode": {
-        "title": "Dark Mode",
-        "description": "Light/dark mode support with automatic system preference detection"
-      }
-    }
-  },
   "aboutUs": {
-    "title": "About Us",
-    "subtitle": "The Facebook page 'Can Giuoc School Media' is the official media platform of Can Giuoc High School, Long An, Vietnam. This page was created to connect the school with students, parents, and the community through creative and modern media activities.",
     "mission": {
-      "title": "Our Mission",
-      "description": "Quickly update information about events, academic and extracurricular activities, and student achievements.\nCreate a media playground for students to develop skills in photography, content writing, and social media management.\nBuild a dynamic, creative, and friendly image of the school in the eyes of the community."
-    },
-    "vision": {
-      "title": "Highlighted Activities",
-      "description": "'CG’s School Got Talent' – a program where students showcase their talents and love for their homeland through a youthful and creative lens.\nDocumentaries and short videos capturing memorable school moments, produced and performed by the students themselves."
-    },
-    "story": {
-      "title": "Message",
-      "paragraph1": "We believe that school media is not only a tool for connection but also an experiential educational environment, helping students develop comprehensively in both skills and creative thinking.",
-      "paragraph2": "Follow our page to accompany and spread positive values from Can Giuoc High School!"
-    },
-    "team": {
-      "title": "Contact",
-      "description": "📧 Email: cgs1412.thptcangiuoc@gmail.com\n📞 Head Committee Hotline: 0385 683 763"
-    },
-    "values": {
-      "title": "Connect With Us",
-      "subtitle": "Stay updated with the latest news and connect with our community",
-      "innovation": "Creativity",
-      "innovationDesc": "Constantly innovating and being creative in school media activities.",
-      "quality": "Quality",
-      "qualityDesc": "Ensuring accurate, useful, and inspiring media content.",
-      "collaboration": "Collaboration",
-      "collaborationDesc": "Connecting students, teachers, parents, and the community.",
-      "integrity": "Integrity",
-      "integrityDesc": "Spreading positive values, transparency, and responsibility."
+      "description": "We strive to create innovative solutions that make technology accessible and meaningful for everyone.",
+      "title": "Our Mission"
     },
     "social": {
-      "title": "Media Channels",
-      "subtitle": "Facebook: Can Giuoc School Media",
-      "pageInfo": "Facebook Page Information",
-      "followers": "Followers",
-      "about": "About this page"
+      "about": "About",
+      "followers": "followers"
     },
-    "cta": {
-      "title": "Join Us!",
-      "description": "Follow our page to not miss out on information, activities, and positive values from Can Giuoc High School.",
-      "getStarted": "Follow now",
-      "contactUs": "Contact"
+    "title": "About Us",
+    "vision": {
+      "description": "To build a world where technology serves humanity, fostering connection, creativity, and positive change.",
+      "title": "Our Vision"
     }
   },
-  "navigation": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact",
-    "services": "Services",
-    "blog": "Blog",
+  "auth": {
+    "allowPopups": "Please allow popups and try again",
+    "bySigningIn": "By signing in, you agree to our Terms of Service and Privacy Policy",
+    "connectingToGoogle": "Connecting to Google",
+    "email": "Email",
     "login": "Login",
+    "loginSuccess": "Login successful! Welcome back.",
+    "loginWithGoogle": "Sign in with your Google account to get started",
+    "logout": "Logout",
+    "name": "Name",
+    "openingGoogleLogin": "Opening Google login...",
+    "pleaseWait": "Please wait while we connect you to Google...",
+    "role": "Role",
+    "signingIn": "Signing in...",
+    "signInWithGoogle": "Sign in with Google",
+    "unableToConnect": "Unable to connect to Google. Please try again.",
+    "username": "Username"
+  },
+  "chat": {
+    "agentManagement": {
+      "agentConfig": "Agent Configuration",
+      "agentError": "Agent Error",
+      "agentLoading": "Loading agent...",
+      "agentTab": "Agent",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Enter your API key here...",
+        "currentKey": "Current API Key",
+        "description": "Manage your API keys for different AI providers",
+        "enterApiKey": "Enter API Key",
+        "hideKey": "Hide Key",
+        "keyUpdated": "API key updated successfully",
+        "noKeySet": "No API key set",
+        "selectProvider": "Select Provider",
+        "showKey": "Show Key",
+        "title": "API Key Management",
+        "update": "Update",
+        "updateFailed": "Failed to update API key"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Current Agent",
+      "manage": "Manage",
+      "maxTokens": "Max Tokens",
+      "modelName": "Model Name",
+      "noAgentConfigured": "No agent configured",
+      "provider": "Provider",
+      "selectModel": "Select Model",
+      "selectProvider": "Select Provider",
+      "subtitle": "Configure and manage your AI agent settings",
+      "temperature": "Temperature",
+      "testMessage": "Test your agent configuration with a sample message.",
+      "title": "Agent Management",
+      "updateAgent": "Update Agent",
+      "validateAgent": "Validate Agent",
+      "validationCompleted": "Validation completed",
+      "validationFailed": "Validation Failed",
+      "validationSuccess": "Validation Successful",
+      "validationTab": "Validation"
+    },
+    "chats": "Chats",
+    "conversations": "Conversations",
+    "createFirstChat": "Create your first conversation to get started",
+    "defaultChatTitle": "Chat",
+    "fileCount": "{{count}} file",
+    "fileCount_plural": "{{count}} files",
+    "files": "Files",
+    "filesAssociated": "Files uploaded here will be associated with this conversation",
+    "messages": "messages",
+    "newConversation": "New",
+    "noConversationsYet": "No conversations yet",
+    "noFilesUploaded": "No files uploaded",
+    "noMessages": "No messages yet",
+    "sending": "Sending...",
+    "startConversation": "Send a message to start the conversation",
+    "systemPrompt": {
+      "agentPrompt": "Agent Prompt",
+      "conversationPrompt": "Conversation Prompt",
+      "description": "Configure the system prompt for this conversation",
+      "edit": "Edit",
+      "noAgentPrompt": "No agent prompt set",
+      "placeholder": "Enter system prompt...",
+      "preview": "Preview",
+      "promptSource": "Prompt Source",
+      "title": "System Prompt"
+    },
+    "thisConversation": "This conversation",
+    "tooltips": {
+      "deleteConversation": "Delete conversation",
+      "editName": "Edit name",
+      "editSystemPrompt": "Edit system prompt",
+      "hasCustomSystemPrompt": "Has custom system prompt"
+    },
+    "typeMessage": "Type your message...",
+    "typing": "AI is typing...",
+    "uploadedFiles": "Uploaded Files",
+    "uploadFilesDescription": "Upload files to attach to your conversations",
+    "welcomeDescription": "Select a conversation or create a new one to start chatting",
+    "welcomeTitle": "Welcome to AI Chat"
+  },
+  "common": {
+    "branding": "AnLNM Website",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "download": "Download",
+    "loading": "Loading...",
+    "no": "No",
+    "save": "Save",
+    "upload": "Upload",
+    "yes": "Yes"
+  },
+  "home": {
+    "authenticatedDescription": "Explore all the features available to you as a logged-in user.",
+    "confirmed": "Confirmed",
+    "description": "A modern, fast, and scalable web application built with Next.js 14, featuring server-side rendering, internationalization, and beautiful UI components.",
+    "email": "Email",
+    "facebookPostCountPrefix": "Showing",
+    "facebookPostCountSuffix": "posts from this page.",
+    "features": {
+      "darkMode": {
+        "description": "Beautiful dark and light themes with smooth transitions",
+        "title": "Dark Mode Support"
+      },
+      "fastPerformance": {
+        "description": "Lightning-fast performance with server-side rendering and optimization",
+        "title": "Fast Performance"
+      },
+      "globalReady": {
+        "description": "Built-in internationalization support for multiple languages",
+        "title": "Global Ready"
+      },
+      "modernStack": {
+        "description": "Built with the latest technologies and best practices",
+        "title": "Modern Tech Stack"
+      }
+    },
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "post": "Facebook Post",
+    "serverComponentDemo": "Server Component Demo",
+    "title": "Welcome to AnLNM Website",
+    "unknownTime": "Unknown time",
+    "userInformation": "User Information",
+    "username": "Username",
+    "welcomeBack": "Welcome back"
+  },
+  "navigation": {
+    "about": "About",
+    "chat": "Chat",
+    "conversations": "Conversations",
+    "dashboard": "Dashboard",
+    "files": "Files",
+    "help": "Help",
+    "home": "Home",
+    "menu": "Menu",
     "profile": "Profile",
-    "dashboard": "Dashboard"
+    "settings": "Settings"
+  },
+  "profile": {
+    "changePassword": "Change Password",
+    "changePhoto": "Change Photo",
+    "editProfile": "Edit Profile",
+    "title": "Profile"
   },
   "server": {
     "currentTime": "Current Time",
-    "serverRendered": "Server Rendered",
-    "locale": "Current Locale",
-    "theme": "Current Theme"
+    "locale": "Locale",
+    "serverRendered": "Server Rendered"
   },
-  "chat": {
-    "welcomeTitle": "Welcome to Chat",
-    "welcomeDescription": "Select a conversation from the sidebar to start chatting.",
-    "addApiKey": "Add API Key",
-    "enterApiKey": "Enter API key...",
-    "apiKeySet": "API Key Set",
-    "resetApiKey": "Reset API Key",
-    "noMessages": "No messages yet",
-    "startConversation": "Start a conversation!",
-    "typeMessage": "Type your message...",
-    "conversations": "Conversations",
-    "new": "New",
-    "newConversation": "New Conversation",
-    "noConversationsYet": "No conversations yet",
-    "createFirstChat": "Create your first chat",
-    "messages": "messages",
-    "uploadedFiles": "Uploaded Files",
-    "noFilesUploaded": "No files uploaded yet",
-    "uploadFilesDescription": "Upload files in the chat to see them here",
-    "chats": "Chats",
-    "files": "Files",
-    "download": "Download",
-    "delete": "Delete",
-    "file": "file",
-    "filesPlural": "files"
+  "settings": {
+    "account": "Account Settings",
+    "appearance": "Appearance",
+    "changePassword": "Change Password",
+    "currentUser": "Currently signed in as",
+    "deleteAccount": "Delete Account",
+    "downloadData": "Download My Data",
+    "emailNotifications": "Email Notifications",
+    "emailNotificationsDescription": "Receive notifications via email",
+    "enableTwoFactor": "Enable Two-Factor Authentication",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language",
+    "notifications": "Notifications",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDescription": "Receive push notifications in your browser",
+    "security": "Security",
+    "theme": "Theme",
+    "themeDescription": "Choose your preferred theme",
+    "title": "Settings",
+    "updateAccount": "Update Account"
   }
 }

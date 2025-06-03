@@ -11,6 +11,7 @@ from app.middleware.translation_manager import _
 from app.modules.users.models.users import User
 from app.modules.users.schemas.users import OAuthUserInfo, RefreshTokenRequest
 from app.modules.users.auth.auth_utils import generate_auth_tokens, log_user_action, verify_refresh_token
+from app.core.events import EventHooks
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +117,16 @@ class OAuthService:
 
 			with self.user_logs_dal.transaction():
 				log_user_action(self.user_logs_dal, str(user.id), action, message)
+
+			# Trigger user_created event for new users only
+			if is_new_user:
+				try:
+					event_hooks = EventHooks()
+					event_hooks.trigger('user_created', user_id=str(user.id), email=user.email, username=user.username)
+					logger.info(f'Triggered user_created event for new user {user.id}')
+				except Exception as e:
+					logger.error(f'Failed to trigger user_created event for user {user.id}: {e}')
+					# Don't let event system failure affect user creation
 
 			return user_dict
 

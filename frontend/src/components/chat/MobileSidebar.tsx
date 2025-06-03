@@ -6,6 +6,7 @@ import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faComments, faFile } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 interface Message {
   id: string
@@ -41,20 +42,6 @@ interface MobileSidebarProps {
   uploadedFiles: UploadedFile[]
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
-  translations: {
-    conversations: string
-    newConversation: string
-    noConversationsYet: string
-    createFirstChat: string
-    messages: string
-    uploadedFiles: string
-    noFilesUploaded: string
-    uploadFilesDescription: string
-    chats: string
-    files: string
-    download: string
-    delete: string
-  }
 }
 
 export function MobileSidebar({
@@ -68,9 +55,9 @@ export function MobileSidebar({
   onDeleteConversation,
   uploadedFiles,
   onDeleteFile,
-  onUploadFiles,
-  translations
+  onUploadFiles
 }: MobileSidebarProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<'conversations' | 'files'>('conversations')
 
   if (!isOpen) return null
@@ -104,7 +91,7 @@ export function MobileSidebar({
               }`}
             >
               <FontAwesomeIcon icon={faComments} className="mr-2" />
-              {translations.chats}
+              {t('chat.chats')}
             </Button>
             <Button
               variant={activeTab === 'files' ? 'default' : 'outline'}
@@ -117,7 +104,7 @@ export function MobileSidebar({
               }`}
             >
               <FontAwesomeIcon icon={faFile} className="mr-2" />
-              {translations.files}
+              {t('chat.files')}
             </Button>
           </div>
         </div>
@@ -132,26 +119,12 @@ export function MobileSidebar({
               onCreateConversation={onCreateConversation}
               onUpdateConversationName={onUpdateConversationName}
               onDeleteConversation={onDeleteConversation}
-              translations={{
-                conversations: translations.conversations,
-                newConversation: translations.newConversation,
-                noConversationsYet: translations.noConversationsYet,
-                createFirstChat: translations.createFirstChat,
-                messages: translations.messages
-              }}
             />
           ) : (
             <FileSidebar
               uploadedFiles={uploadedFiles}
               onDeleteFile={onDeleteFile}
               onUploadFiles={onUploadFiles}
-              translations={{
-                uploadedFiles: translations.uploadedFiles,
-                noFilesUploaded: translations.noFilesUploaded,
-                uploadFilesDescription: translations.uploadFilesDescription,
-                download: translations.download,
-                delete: translations.delete
-              }}
             />
           )}
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
@@ -6,6 +7,8 @@ import { ChatInterface } from './ChatInterface'
 import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
+import { AgentManagement } from './AgentManagement'
+import { SystemPromptEditor } from './SystemPromptEditor'
 import chatApi from '@/apis/chatApi'
 import { createChatWebSocket, ChatWebSocket } from '@/utils/websocket'
 import { 
@@ -17,37 +20,13 @@ import {
   convertToUIConversation
 } from '@/types/chat.type'
 import { getErrorMessage } from '@/utils/apiHandler'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/contexts/TranslationContext'
 
-interface ChatClientWrapperProps {
-  translations: {
-    welcomeTitle: string
-    welcomeDescription: string
-    addApiKey: string
-    enterApiKey: string
-    apiKeySet: string
-    resetApiKey: string
-    noMessages: string
-    startConversation: string
-    typeMessage: string
-    conversations: string
-    newConversation: string
-    noConversationsYet: string
-    createFirstChat: string
-    messages: string
-    uploadedFiles: string
-    noFilesUploaded: string
-    uploadFilesDescription: string
-    chats: string
-    files: string
-    download: string
-    delete: string
-    openMenu?: string
-    typing?: string
-    sending?: string
-  }
-}
-
-export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
+export function ChatClientWrapper() {
+  const { t } = useTranslation()
   const [state, setState] = useState<ChatState>({
     conversations: [],
     activeConversationId: null,
@@ -56,29 +35,37 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     isTyping: false,
     error: null,
     uploadedFiles: [],
-    apiKeys: [],
     wsToken: null
   })
 
   // Enhanced state for API key management
-  const [apiKeyStatus, setApiKeyStatus] = useState<'none' | 'loading' | 'valid' | 'invalid'>('none')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [conversationFiles, setConversationFiles] = useState<Record<string, any[]>>({})
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [editingConversation, setEditingConversation] = useState<string | null>(null)
+  const [, setEditingConversation] = useState<string | null>(null)
   const [fileLoadingStates, setFileLoadingStates] = useState<Record<string, boolean>>({})
 
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
+  // Agent management state
+  const [currentAgent, setCurrentAgent] = useState<{
+    model_name: string;
+    provider: string;
+    temperature: number;
+    max_tokens: number;
+    system_prompt?: string;
+  } | null>(null)
+  const [agentStatus, setAgentStatus] = useState<'loading' | 'error' | 'success' | 'none'>('none')
+  const [isAgentManagementOpen, setIsAgentManagementOpen] = useState(false)
+  const [isSystemPromptEditorOpen, setIsSystemPromptEditorOpen] = useState(false)
+  const [editingConversationSystemPrompt, setEditingConversationSystemPrompt] = useState<string | null>(null)
+
   // Load initial data
   useEffect(() => {
     loadConversations()
     loadFiles()
-    loadApiKeys()
-    checkApiKeyStatus()
+    loadCurrentAgent()
   }, [])
-
+  
   // Load files when active conversation changes
   useEffect(() => {
     if (state.activeConversationId) {
@@ -92,18 +79,9 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     
     switch (message.type) {
       case 'user_message':
-        if (message.message) {
-          const newMessage: Message = {
-            id: message.message.id || '',
-            role: 'user',
-            content: message.message.content,
-            timestamp: new Date(message.message.timestamp || Date.now())
-          }
-          setState(prev => ({
-            ...prev,
-            messages: [...prev.messages, newMessage]
-          }))
-        }
+        // Skip processing user messages since we already added them locally
+        // This prevents duplicate user messages
+        console.log('[ChatClientWrapper] Skipping user_message - already added locally')
         break
 
       case 'assistant_typing':
@@ -124,17 +102,25 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
                 ...lastMessage,
                 content: lastMessage.content + message.chunk
               }
-              return { ...prev, messages: updatedMessages }
+              return { 
+                ...prev, 
+                messages: updatedMessages,
+                isTyping: false // Hide typing indicator when we start receiving actual content
+              }
             } else {
               // Create new streaming message
               const streamingMessage: Message = {
-                id: `streaming-${Date.now()}`,
+                id: `assistant-streaming-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 role: 'assistant',
                 content: message.chunk || '',
                 timestamp: new Date(),
                 isStreaming: true
               }
-              return { ...prev, messages: [...prev.messages, streamingMessage] }
+              return { 
+                ...prev, 
+                messages: [...prev.messages, streamingMessage],
+                isTyping: false // Hide typing indicator when we start receiving actual content
+              }
             }
           })
         }
@@ -222,25 +208,26 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     }
   }
 
-  // Load API keys
-  const loadApiKeys = async () => {
+  // Load current agent configuration
+  const loadCurrentAgent = async () => {
     try {
-      setApiKeyStatus('loading')
-      const apiKeys = await chatApi.getApiKeys()
-      if (apiKeys) {
-        setState(prev => ({ ...prev, apiKeys }))
-        setApiKeyStatus(apiKeys.length > 0 ? 'valid' : 'none')
+      setAgentStatus('loading')
+      const response = await chatApi.getCurrentAgent()
+      if (response) {
+        const agentConfig = {
+          model_name: response.model_name,
+          provider: response.model_provider,
+          temperature: response.temperature,
+          max_tokens: response.max_tokens,
+          system_prompt: response.default_system_prompt
+        }
+        setCurrentAgent(agentConfig)
+        setAgentStatus('success')
       }
     } catch (error) {
-      console.error('Failed to load API keys:', error)
-      setApiKeyStatus('invalid')
+      console.error('Failed to load current agent:', error)
+      setAgentStatus('error')
     }
-  }
-
-  // Check API key status
-  const checkApiKeyStatus = async () => {
-    const hasDefaultKey = state.apiKeys.some(key => key.is_default)
-    setApiKeyStatus(hasDefaultKey ? 'valid' : 'none')
   }
 
   // Load files for specific conversation
@@ -366,7 +353,8 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
             console.error('[ChatClientWrapper] WebSocket error:', error)
             setState(prev => ({ 
               ...prev, 
-              error: 'WebSocket connection error'
+              error: 'WebSocket connection error',
+              isTyping: false
             }))
           },
           onClose: (event) => {
@@ -383,14 +371,16 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
         console.error('[setupWebSocket] No token received or token is undefined:', tokenResponse)
         setState(prev => ({ 
           ...prev, 
-          error: 'Failed to get WebSocket authentication token'
+          error: 'Failed to get WebSocket authentication token',
+          isTyping: false
         }))
       }
     } catch (error) {
       console.error('Failed to setup WebSocket:', error)
       setState(prev => ({ 
         ...prev, 
-        error: getErrorMessage(error)
+        error: getErrorMessage(error),
+        isTyping: false
       }))
     }
   }
@@ -398,14 +388,6 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
   // Send message with validation flow
   const handleSendMessage = async (content: string) => {
     // Validation chain
-    if (apiKeyStatus !== 'valid') {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Please set up your API key first' 
-      }))
-      return
-    }
-
     if (!state.activeConversationId) {
       setState(prev => ({ 
         ...prev, 
@@ -423,12 +405,16 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
     }
 
     try {
-      // Clear any previous errors
-      setState(prev => ({ ...prev, error: null }))
+      // Clear any previous errors and set loading state
+      setState(prev => ({ 
+        ...prev, 
+        error: null,
+        isLoading: true
+      }))
       
-      // Add user message immediately to UI
+      // Add user message immediately to UI with unique ID
       const userMessage: Message = {
-        id: `temp-${Date.now()}`,
+        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         role: 'user',
         content,
         timestamp: new Date()
@@ -437,24 +423,21 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
       setState(prev => ({
         ...prev,
         messages: [...prev.messages, userMessage],
-        isLoading: false
+        isLoading: false,
+        isTyping: true // Show typing indicator immediately after user sends message
       }))
 
       // Send via WebSocket for real-time streaming
-      const defaultApiKey = state.apiKeys.find(key => key.is_default)
-      if (defaultApiKey) {
-        websocket.sendMessage(content, defaultApiKey.masked_key)
-      } else {
-        setState(prev => ({ 
-          ...prev, 
-          error: 'No default API key found' 
-        }))
-      }
+      console.log('[ChatClientWrapper] Sending WebSocket message:', content)
+      websocket.sendMessage(content)
+      
     } catch (error) {
       console.error('Failed to send message:', error)
       setState(prev => ({ 
         ...prev, 
-        error: getErrorMessage(error)
+        error: getErrorMessage(error),
+        isLoading: false,
+        isTyping: false
       }))
     }
   }
@@ -562,46 +545,48 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
   }
 
   // Save API key
-  const handleSaveApiKey = async (provider: string, apiKey: string, isDefault: boolean = true, keyName?: string) => {
+
+  // Handle agent updates from AgentManagement component
+  const handleAgentUpdate = useCallback((updatedAgent: {
+    model_name: string;
+    provider: string;
+    temperature: number;
+    max_tokens: number;
+    system_prompt?: string;
+  }) => {
+    setCurrentAgent(updatedAgent)
+    setAgentStatus('success')
+  }, [])
+
+  // Handle system prompt updates for conversations
+  const handleUpdateConversationSystemPrompt = async (conversationId: string, systemPrompt: string) => {
     try {
-      setApiKeyStatus('loading')
-      const savedKey = await chatApi.saveApiKey({
-        provider,
-        api_key: apiKey,
-        is_default: isDefault,
-        key_name: keyName
-      })
-      
-      if (savedKey) {
-        setState(prev => ({
-          ...prev,
-          apiKeys: [...prev.apiKeys.filter(k => k.provider !== provider), savedKey]
-        }))
-        setApiKeyStatus('valid')
-      }
+      await chatApi.updateConversation(conversationId, { system_prompt: systemPrompt })
+      setState(prev => ({
+        ...prev,
+        conversations: prev.conversations.map(conv =>
+          conv.id === conversationId ? { ...conv, systemPrompt } : conv
+        )
+      }))
+      setIsSystemPromptEditorOpen(false)
+      setEditingConversationSystemPrompt(null)
     } catch (error) {
-      console.error('Failed to save API key:', error)
-      setApiKeyStatus('invalid')
+      console.error('Failed to update conversation system prompt:', error)
       setState(prev => ({ ...prev, error: getErrorMessage(error) }))
     }
   }
 
-  // Delete API key
-  const handleDeleteApiKey = async (keyId: string) => {
-    try {
-      await chatApi.deleteApiKey(keyId)
-      setState(prev => ({
-        ...prev,
-        apiKeys: prev.apiKeys.filter(key => key.id !== keyId)
-      }))
-      
-      // Check if we still have valid keys
-      const remainingKeys = state.apiKeys.filter(key => key.id !== keyId)
-      setApiKeyStatus(remainingKeys.length > 0 ? 'valid' : 'none')
-    } catch (error) {
-      console.error('Failed to delete API key:', error)
-      setState(prev => ({ ...prev, error: getErrorMessage(error) }))
-    }
+  // Handle opening system prompt editor
+  const handleOpenSystemPromptEditor = (conversationId: string) => {
+    setEditingConversationSystemPrompt(conversationId)
+    setIsSystemPromptEditorOpen(true)
+  }
+
+  // Get current conversation system prompt
+  const getCurrentConversationSystemPrompt = () => {
+    if (!editingConversationSystemPrompt) return ''
+    const conversation = state.conversations.find(c => c.id === editingConversationSystemPrompt)
+    return conversation?.systemPrompt || ''
   }
 
   // Cleanup WebSocket on unmount
@@ -624,13 +609,10 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           onCreateConversation={handleCreateConversation}
           onUpdateConversationName={handleUpdateConversationName}
           onDeleteConversation={handleDeleteConversation}
-          translations={{
-            conversations: translations.conversations,
-            newConversation: translations.newConversation,
-            noConversationsYet: translations.noConversationsYet,
-            createFirstChat: translations.createFirstChat,
-            messages: translations.messages
-          }}
+          onOpenSystemPromptEditor={handleOpenSystemPromptEditor}
+          currentAgent={currentAgent}
+          agentStatus={agentStatus === 'none' ? undefined : agentStatus}
+          onOpenAgentManagement={() => setIsAgentManagementOpen(true)}
         />
       </div>
 
@@ -643,26 +625,8 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           isLoading={state.isLoading}
           isTyping={state.isTyping}
           error={state.error}
-          apiKeys={state.apiKeys}
-          apiKeyStatus={apiKeyStatus}
           onSendMessage={handleSendMessage}
-          onSaveApiKey={handleSaveApiKey}
-          onDeleteApiKey={handleDeleteApiKey}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
-          translations={{
-            welcomeTitle: translations.welcomeTitle,
-            welcomeDescription: translations.welcomeDescription,
-            addApiKey: translations.addApiKey,
-            enterApiKey: translations.enterApiKey,
-            apiKeySet: translations.apiKeySet,
-            resetApiKey: translations.resetApiKey,
-            noMessages: translations.noMessages,
-            startConversation: translations.startConversation,
-            typeMessage: translations.typeMessage,
-            typing: translations.typing || 'AI is typing...',
-            sending: translations.sending || 'Sending...',
-            openMenu: translations.openMenu || 'Menu'
-          }}
         />
       </div>
 
@@ -674,13 +638,6 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
           conversationId={state.activeConversationId}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
-          translations={{
-            uploadedFiles: translations.uploadedFiles,
-            noFilesUploaded: translations.noFilesUploaded,
-            uploadFilesDescription: translations.uploadFilesDescription,
-            download: translations.download,
-            delete: translations.delete
-          }}
         />
       </div>
 
@@ -697,21 +654,49 @@ export function ChatClientWrapper({ translations }: ChatClientWrapperProps) {
         uploadedFiles={state.uploadedFiles}
         onDeleteFile={handleDeleteFile}
         onUploadFiles={handleUploadFiles}
-        translations={{
-          conversations: translations.conversations,
-          newConversation: translations.newConversation,
-          noConversationsYet: translations.noConversationsYet,
-          createFirstChat: translations.createFirstChat,
-          messages: translations.messages,
-          uploadedFiles: translations.uploadedFiles,
-          noFilesUploaded: translations.noFilesUploaded,
-          uploadFilesDescription: translations.uploadFilesDescription,
-          chats: translations.chats,
-          files: translations.files,
-          download: translations.download,
-          delete: translations.delete
-        }}
       />
+
+      {/* Agent Management Modal */}
+      {isAgentManagementOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[color:var(--card)] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[color:var(--border)]">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faRobot} className="text-[color:var(--primary)]" />
+                <h2 className="text-lg font-semibold text-[color:var(--foreground)]">
+                  {t('chat.agentManagement.title')}
+                </h2>
+              </div>
+              <Button
+                onClick={() => setIsAgentManagementOpen(false)}
+                variant="outline"
+                className="text-[color:var(--foreground)] hover:bg-[color:var(--accent)]"
+                size="sm"
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </Button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[80vh] min-w-[80%] justify-center items-center">
+              <AgentManagement onAgentUpdate={handleAgentUpdate} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* System Prompt Editor Modal */}
+      {isSystemPromptEditorOpen && editingConversationSystemPrompt && (
+        <SystemPromptEditor
+          conversationId={editingConversationSystemPrompt}
+          currentPrompt={getCurrentConversationSystemPrompt()}
+          agentSystemPrompt={currentAgent?.system_prompt}
+          onSave={handleUpdateConversationSystemPrompt}
+          onCancel={() => {
+            setIsSystemPromptEditorOpen(false)
+            setEditingConversationSystemPrompt(null)
+          }}
+          isOpen={isSystemPromptEditorOpen}
+        />
+      )}
     </div>
   )
 }

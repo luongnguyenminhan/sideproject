@@ -1,6 +1,7 @@
 """Main init"""
 
 import os
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,7 @@ from app.exceptions.handlers import setup_exception_handlers
 from app.middleware.localization_middleware import LocalizationMiddleware
 from app.middleware.translation_manager import _
 from app.modules import route as api_routers
+from app.modules.agent.events import register_agent_event_handlers
 
 
 def custom_openapi(app: FastAPI):
@@ -77,5 +79,14 @@ def create_app():
 	app.include_router(api_routers, prefix='/api')
 	custom_openapi(app)
 	setup_exception_handlers(app)
+
+	# Register event handlers
+	try:
+		register_agent_event_handlers()
+		logger = logging.getLogger(__name__)
+		logger.info('Event handlers registered successfully')
+	except Exception as e:
+		logger = logging.getLogger(__name__)
+		logger.error(f'Failed to register event handlers: {e}')
 
 	return app

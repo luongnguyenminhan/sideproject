@@ -2,12 +2,12 @@ import ServerComponent from "@/components/server-components"
 import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
 import React from "react"
-import Header from '@/components/layout/header';
 import { withAuthState } from '@/hoc/withAuth';
 import type { UserResponse } from '@/types/auth.type';
 import { FacebookPostCarousel } from '@/components/facebook';
 import facebookPostApi from "@/apis/facebookPost";
 import AboutUsSection from '@/components/about-us/AboutUsSection';
+import Header from "@/components/layout/header";
 
 interface HomeProps {
   user: UserResponse | null;
@@ -20,35 +20,33 @@ async function Home({ user, isAuthenticated }: HomeProps) {
   const t = createTranslator(dictionary)
 
     const postInformation = await facebookPostApi.getPageInfoWithPosts({ limit: 9 })  || null;
-    console.log('Post Information:', postInformation)
-
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
-        <Header />
-        
-        {/* Facebook Posts Carousel - Top of page */}
-        <div className="pt-10 pb-8 px-6 sm:px-8 lg:px-12">
-          <div className="max-w-[80%] mx-auto">
-            <FacebookPostCarousel 
-              limit={9} 
-              autoPlay={true} 
-              truncateMessage={true}
-              maxMessageLength={120}
-              pageInfo={postInformation}
-              locale={locale}
-            />
+        <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
+          <Header />
+          
+          {/* Facebook Posts Carousel - Top of page */}
+          <div className="pt-10 pb-8 px-6 sm:px-8 lg:px-12">
+            <div className="max-w-[80%] mx-auto">
+              <FacebookPostCarousel 
+                limit={9} 
+                autoPlay={true} 
+                truncateMessage={true}
+                maxMessageLength={120}
+                pageInfo={postInformation}
+                locale={locale}
+              />
+            </div>
           </div>
-        </div>
-        {/* About Us Section - Below Facebook Carousel */}
-        <div className="pt-4 pb-8 px-6 sm:px-8 lg:px-12">
-          <div className="max-w-[80%] mx-auto">
-            {/* AboutUsSection expects pageInfo as prop */}
-            {postInformation && (
-              <AboutUsSection pageInfo={postInformation}/>
-            )}
+          {/* About Us Section - Below Facebook Carousel */}
+          <div className="pt-4 pb-8 px-6 sm:px-8 lg:px-12">
+            <div className="max-w-[80%] mx-auto">
+              {/* AboutUsSection expects pageInfo as prop */}
+              {postInformation && (
+                <AboutUsSection pageInfo={postInformation}/>
+              )}
+            </div>
           </div>
-        </div>
         <main className="flex flex-col items-center justify-center px-6 sm:px-8 lg:px-12 pb-20">
           <div className="max-w-6xl mx-auto text-center space-y-12">
             <div className="space-y-6">
@@ -162,7 +160,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
             </div>
           </div>
         </main>
-      </div>
+        </div>
     )
 }
 

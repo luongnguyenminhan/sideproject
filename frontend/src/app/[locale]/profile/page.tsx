@@ -14,7 +14,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
   const t = createTranslator(dictionary);
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-[color:var(--gradient-bg-from)] to-[color:var(--gradient-bg-to)]">
+      <div className="min-h-screen p-8 bg-gradient-to-br from-[color:var(--gradient-bg-from)] to-[color:var(--gradient-bg-to)]">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-xl p-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
@@ -102,7 +102,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 

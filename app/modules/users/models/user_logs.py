@@ -1,6 +1,7 @@
 """User logs model"""
 
 from sqlalchemy import Column, ForeignKey, String, Text
+from sqlalchemy.orm import relationship
 
 from app.core.base_model import BaseEntity
 
@@ -15,3 +16,6 @@ class UserLog(BaseEntity):
 	details = Column(Text, nullable=True)
 	ip_address = Column(String(50), nullable=True)
 	user_agent = Column(Text, nullable=True)
+
+	# Relationships
+	user = relationship('User', back_populates='user_logs')

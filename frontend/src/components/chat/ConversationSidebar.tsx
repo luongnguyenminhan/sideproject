@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash, faCheck, faTimes, faComments } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faTrash, faCheck, faTimes, faComments, faRobot, faCog, faSpinner, faFileText } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from '@/contexts/TranslationContext'
 
 interface Message {
   id: string
@@ -18,6 +19,8 @@ interface Conversation {
   name: string
   messages: Message[]
   lastActivity: Date
+  messageCount?: number
+  systemPrompt?: string
 }
 
 interface ConversationSidebarProps {
@@ -27,13 +30,16 @@ interface ConversationSidebarProps {
   onCreateConversation: () => void
   onUpdateConversationName: (id: string, name: string) => void
   onDeleteConversation: (id: string) => void
-  translations: {
-    conversations: string
-    newConversation: string
-    noConversationsYet: string
-    createFirstChat: string
-    messages: string
-  }
+  onOpenSystemPromptEditor?: (conversationId: string) => void
+  currentAgent?: {
+    model_name: string
+    provider: string
+    temperature: number
+    max_tokens: number
+    system_prompt?: string
+  } | null
+  agentStatus?: 'loading' | 'error' | 'success' | 'none'
+  onOpenAgentManagement?: () => void
 }
 
 export function ConversationSidebar({
@@ -43,8 +49,12 @@ export function ConversationSidebar({
   onCreateConversation,
   onUpdateConversationName,
   onDeleteConversation,
-  translations
+  onOpenSystemPromptEditor,
+  currentAgent,
+  agentStatus,
+  onOpenAgentManagement
 }: ConversationSidebarProps) {
+  const { t } = useTranslation()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
 
@@ -75,17 +85,74 @@ export function ConversationSidebar({
             <div className="w-8 h-8 bg-gradient-to-r from-[color:var(--gradient-text-from)] to-[color:var(--gradient-text-to)] rounded-lg flex items-center justify-center">
               <FontAwesomeIcon icon={faComments} className="text-white text-sm" />
             </div>
-            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{translations.conversations}</h2>
+            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{t('chat.conversations')}</h2>
           </div>
           <Button
             onClick={onCreateConversation}
             size="sm"
             className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
           >
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            {translations.newConversation}
+            <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
+            <span className="text-white">{t('chat.newConversation')}</span>
           </Button>
         </div>
+
+        {/* Agent Status Section */}
+        <Card className="bg-[color:var(--card)]/30 border border-[color:var(--border)]">
+          <div className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faRobot} className="text-[color:var(--primary)] text-sm" />
+                <span className="text-sm font-medium text-[color:var(--foreground)]">
+                  {t('chat.agentManagement.currentAgent')}
+                </span>
+              </div>
+              {onOpenAgentManagement && (
+                <Button
+                  onClick={onOpenAgentManagement}
+                  size="sm"
+                  variant="default"
+                  className="h-7 px-2 text-xs text-[color:var(--foreground)] bg-[color:var(--accent)] hover:bg-[color:var(--accent)]/80 transition-all duration-200 cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faCog} className="mr-1 text-[color:var(--foreground)]" />
+                  {t('chat.agentManagement.manage')}
+                </Button>
+              )}
+            </div>
+            
+            <div className="text-xs text-[color:var(--muted-foreground)]">
+              {agentStatus === 'loading' && (
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                  <span>{t('chat.agentManagement.agentLoading')}</span>
+                </div>
+              )}
+              
+              {agentStatus === 'error' && (
+                <div className="text-red-500">
+                  {t('chat.agentManagement.agentError')}
+                </div>
+              )}
+              
+              {agentStatus === 'success' && currentAgent && (
+                <div>
+                  <div className="font-medium text-[color:var(--foreground)]">
+                    {currentAgent.model_name}
+                  </div>
+                  <div className="text-[color:var(--muted-foreground)]">
+                    {currentAgent.provider} • T:{currentAgent.temperature} • Max:{currentAgent.max_tokens}
+                  </div>
+                </div>
+              )}
+              
+              {(!agentStatus || agentStatus === 'none') && !currentAgent && (
+                <div className="text-[color:var(--muted-foreground)]">
+                  {t('chat.agentManagement.noAgentConfigured')}
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Conversations List */}
@@ -95,8 +162,8 @@ export function ConversationSidebar({
             <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
               <FontAwesomeIcon icon={faComments} className="text-2xl" />
             </div>
-            <p>{translations.noConversationsYet}</p>
-            <p className="text-sm">{translations.createFirstChat}</p>
+            <p>{t('chat.noConversationsYet')}</p>
+            <p className="text-sm">{t('chat.createFirstChat')}</p>
           </div>
         ) : (
           conversations.map((conversation) => (
@@ -149,15 +216,32 @@ export function ConversationSidebar({
                 ) : (
                   <>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm text-[color:var(--foreground)] truncate">
-                        {conversation.name}
-                      </h3>
-                      <p className="text-xs text-[color:var(--muted-foreground)]">
-                        {conversation.messages.length} {translations.messages}
-                      </p>
-                      <p className="text-xs text-[color:var(--muted-foreground)]">
-                        {conversation.lastActivity.toLocaleDateString()}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-sm text-[color:var(--foreground)] truncate">
+                          {conversation.name}
+                        </h3>
+                        {conversation.systemPrompt && (
+                          <div 
+                            className="w-2 h-2 bg-[color:var(--primary)] rounded-full flex-shrink-0"
+                            title={t('chat.tooltips.hasCustomSystemPrompt')}
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-[color:var(--muted-foreground)]">
+                          {conversation.lastActivity.toLocaleDateString()}
+                        </p>
+                        {conversation.messageCount !== undefined && (
+                          <span className="text-xs text-[color:var(--muted-foreground)]">
+                            • {conversation.messageCount} {t('chat.messages')}
+                          </span>
+                        )}
+                      </div>
+                      {conversation.systemPrompt && (
+                        <p className="text-xs text-[color:var(--muted-foreground)] italic truncate mt-1">
+                          &ldquo;{conversation.systemPrompt.substring(0, 50)}...&rdquo;
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-col gap-1 ml-2">
                       <Button
@@ -168,9 +252,24 @@ export function ConversationSidebar({
                           startEditing(conversation)
                         }}
                         className="h-6 w-6 p-0 hover:bg-[color:var(--accent)]"
+                        title={t('chat.tooltips.editName')}
                       >
                         <FontAwesomeIcon icon={faEdit} className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)]" />
                       </Button>
+                      {onOpenSystemPromptEditor && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onOpenSystemPromptEditor(conversation.id)
+                          }}
+                          className="h-6 w-6 p-0 hover:bg-[color:var(--accent)]"
+                          title={t('chat.tooltips.editSystemPrompt')}
+                        >
+                          <FontAwesomeIcon icon={faFileText} className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)]" />
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="ghost"
@@ -179,6 +278,7 @@ export function ConversationSidebar({
                           onDeleteConversation(conversation.id)
                         }}
                         className="h-6 w-6 p-0 hover:bg-[color:var(--destructive)]/10"
+                        title={t('chat.tooltips.deleteConversation')}
                       >
                         <FontAwesomeIcon icon={faTrash} className="text-xs text-[color:var(--destructive)]" />
                       </Button>

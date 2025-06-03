@@ -1,222 +1,44 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
+from app.core.base_model import APIResponse
 from app.enums.base_enums import BaseErrorCode
 from app.http.oauth2 import get_current_user
-from app.modules.agent.repository.agent_repo import AgentRepo
-from app.modules.agent.repository.agent_workflow_repo import AgentWorkflowRepo
-from app.modules.agent.services.agent_factory import AgentFactory
-from app.modules.agent.services.workflow_manager import WorkflowManager
+from app.modules.agent.repository.system_agent_repo import SystemAgentRepo
+from app.modules.agent.repository.conversation_workflow_repo import (
+	ConversationWorkflowRepo,
+)
 from app.modules.agent.schemas.agent_request import *
 from app.modules.agent.schemas.agent_response import *
-from app.modules.agent.models.agent import AgentType
-from app.modules.agent.models.agent_memory import MemoryType
 from app.exceptions.handlers import handle_exceptions
 from app.middleware.translation_manager import _
-from typing import List
-import asyncio
 
-route = APIRouter(prefix='/agents', tags=['agents'])
+route = APIRouter(prefix='/chat', tags=['chat'])
 
 
-@route.post('/', response_model=CreateAgentResponse)
+@route.post('/', response_model=ConversationChatExecutionResponse)
 @handle_exceptions
-async def create_agent(
-	request: CreateAgentRequest,
+async def execute_conversation_chat(
+	request: ConversationChatRequest,
 	db: Session = Depends(get_db),
 	current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Create new agent"""
-	user_id = current_user_payload['user_id']
-	agent_repo = AgentRepo(db)
-
-	# Use default config if none provided
-	config_id = request.config_id
-	if not config_id:
-		default_config = agent_repo.config_dal.get_default_config_for_type(request.agent_type.value)
-		if not default_config:
-			# Create default config using factory
-			agent = AgentFactory.create_default_agent(request.agent_type, user_id, agent_repo, request.name)
-		else:
-			agent = agent_repo.create_agent(
-				user_id=user_id,
-				name=request.name,
-				agent_type=request.agent_type,
-				config_id=default_config.id,
-				description=request.description,
-			)
-	else:
-		agent = agent_repo.create_agent(
-			user_id=user_id,
-			name=request.name,
-			agent_type=request.agent_type,
-			config_id=config_id,
-			description=request.description,
-		)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('agent_created_successfully'),
-		data=AgentResponse.model_validate(agent),
-	)
-
-
-@route.get('/', response_model=ListAgentsResponse)
-@handle_exceptions
-async def list_agents(
-	request: SearchAgentsRequest = Depends(),
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""List user's agents"""
-	agent_repo = AgentRepo(db)
-
-	agents = agent_repo.get_user_agents(current_user_payload['user_id'], request.is_active)
-
-	# Apply filters
-	if request.agent_type:
-		agents = [a for a in agents if a.agent_type == request.agent_type]
-
-	if request.search_term:
-		search_lower = request.search_term.lower()
-		agents = [a for a in agents if search_lower in a.name.lower() or (a.description and search_lower in a.description.lower())]
-
-	# Apply pagination
-	total = len(agents)
-	start = (request.page - 1) * request.page_size
-	end = start + request.page_size
-	paginated_agents = agents[start:end]
-
-	agent_responses = [AgentResponse.model_validate(agent) for agent in paginated_agents]
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('success'),
-		data=PaginatedResponse(
-			items=agent_responses,
-			paging=PagingInfo(
-				total=total,
-				total_pages=(total + request.page_size - 1) // request.page_size,
-				page=request.page,
-				page_size=request.page_size,
-			),
-		),
-	)
-
-
-@route.get('/{agent_id}', response_model=GetAgentResponse)
-@handle_exceptions
-async def get_agent(
-	agent_id: str,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Get agent by ID"""
-	agent_repo = AgentRepo(db)
-
-	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload['user_id'])
-
-	agent_response = AgentResponse.model_validate(agent)
-	agent_response.config = AgentConfigResponse.model_validate(config)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('success'),
-		data=agent_response,
-	)
-
-
-@route.put('/{agent_id}', response_model=UpdateAgentResponse)
-@handle_exceptions
-async def update_agent(
-	agent_id: str,
-	request: UpdateAgentRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Update agent"""
-	agent_repo = AgentRepo(db)
-
-	updates = request.model_dump(exclude_unset=True)
-	agent = agent_repo.update_agent(agent_id, current_user_payload['user_id'], updates)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('agent_updated_successfully'),
-		data=AgentResponse.model_validate(agent),
-	)
-
-
-@route.delete('/{agent_id}', response_model=DeleteAgentResponse)
-@handle_exceptions
-async def delete_agent(
-	agent_id: str,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Delete agent"""
-	agent_repo = AgentRepo(db)
-
-	success = agent_repo.delete_agent(agent_id, current_user_payload['user_id'])
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('agent_deleted_successfully'),
-		data={'deleted': success},
-	)
-
-
-@route.post('/{agent_id}/toggle', response_model=UpdateAgentResponse)
-@handle_exceptions
-async def toggle_agent_status(
-	agent_id: str,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Toggle agent active status"""
-	agent_repo = AgentRepo(db)
-
-	agent = agent_repo.toggle_agent_status(agent_id, current_user_payload['user_id'])
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('agent_status_updated'),
-		data=AgentResponse.model_validate(agent),
-	)
-
-
-@route.post('/{agent_id}/chat', response_model=ChatExecutionResponse)
-@handle_exceptions
-async def execute_chat(
-	agent_id: str,
-	request: AgentChatRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Execute chat with agent"""
-	workflow_repo = AgentWorkflowRepo(db)
-
-	if request.streaming:
-		# For streaming, we should use WebSocket
-		raise HTTPException(status_code=400, detail=_('use_websocket_for_streaming'))
+	"""Execute chat with system agent (embedded config and API key)"""
+	workflow_repo = ConversationWorkflowRepo(db)
 
 	result = await workflow_repo.execute_chat_workflow(
-		agent_id=agent_id,
-		user_id=current_user_payload['user_id'],
 		conversation_id=request.conversation_id,
 		user_message=request.message,
-		api_key=request.api_key,
+		conversation_system_prompt=request.system_prompt,
 	)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('chat_executed_successfully'),
-		data=AgentChatResponse(
+		data=ConversationChatResponse(
 			content=result['content'],
 			metadata=result['metadata'],
 			conversation_id=request.conversation_id,
-			agent_id=agent_id,
 			execution_time_ms=result['metadata'].get('execution_time_ms', 0),
 			tokens_used=result['metadata'].get('tokens_used'),
 			model_used=result['metadata'].get('model_used', ''),
@@ -224,221 +46,79 @@ async def execute_chat(
 	)
 
 
-@route.get('/{agent_id}/memory', response_model=GetMemoryResponse)
+@route.get('/agent', response_model=GetSystemAgentResponse)
 @handle_exceptions
-async def get_agent_memory(
-	agent_id: str,
-	request: GetAgentMemoryRequest = Depends(),
+async def get_system_agent(
 	db: Session = Depends(get_db),
 	current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Get agent memory"""
-	workflow_repo = AgentWorkflowRepo(db)
+	"""Get system agent with embedded configuration"""
+	agent_repo = SystemAgentRepo(db)
+	agent = agent_repo.get_system_agent()
 
-	# Verify user owns agent
-	agent_repo = AgentRepo(db)
-	agent_repo.get_agent_by_id(agent_id, current_user_payload['user_id'])
-
-	context = workflow_repo.get_agent_memory_context(
-		agent_id=agent_id,
-		conversation_id=request.conversation_id,
-		limit=request.limit or 20,
-	)
+	# Create response with API key status but not actual key
+	response_data = SystemAgentResponse.model_validate(agent)
+	response_data.has_api_key = bool(agent.api_key)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('success'),
-		data=AgentMemoryContext(
-			conversation_memories=context['conversation_memories'],
-			important_memories=context['important_memories'],
-			workflow_state=context['workflow_state'],
-			memory_count=len(context['conversation_memories']) + len(context['important_memories']),
-		),
+		data=response_data,
 	)
 
 
-@route.post('/{agent_id}/memory/clear', response_model=ClearMemoryResponse)
+@route.put('/agent/config', response_model=UpdateSystemAgentResponse)
 @handle_exceptions
-async def clear_agent_memory(
-	agent_id: str,
-	request: ClearAgentMemoryRequest,
+async def update_system_agent_config(
+	request: UpdateSystemAgentRequest,
 	db: Session = Depends(get_db),
 	current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Clear agent memory"""
-	workflow_repo = AgentWorkflowRepo(db)
+	"""Update system agent configuration (admin only)"""
+	agent_repo = SystemAgentRepo(db)
+	print(f'Received updates: {request.model_dump(exclude_unset=True)}')
 
-	memory_type = None
-	if request.memory_type:
-		try:
-			memory_type = MemoryType(request.memory_type)
-		except ValueError:
-			raise HTTPException(status_code=400, detail=_('invalid_memory_type'))
+	updates = request.model_dump(exclude_unset=True)
+	agent = agent_repo.update_system_agent_config(updates)
 
-	if request.conversation_id and memory_type is None:
-		# Clear conversation-specific memory
-		cleared = workflow_repo.memory_dal.clear_conversation_memories(agent_id, request.conversation_id)
-	else:
-		# Clear by type or all
-		cleared = workflow_repo.clear_agent_memory(agent_id, current_user_payload['user_id'], memory_type)
+	response_data = SystemAgentResponse.model_validate(agent)
+	response_data.has_api_key = bool(agent.api_key)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('memory_cleared_successfully'),
-		data={'cleared_count': cleared},
+		message=_('system_agent_updated_successfully'),
+		data=response_data,
 	)
 
 
-@route.post('/{agent_id}/test', response_model=TestAgentResponseWrapper)
+@route.put('/agent/api-key', response_model=UpdateSystemAgentApiKeyResponse)
 @handle_exceptions
-async def test_agent(
-	agent_id: str,
-	request: TestAgentRequest,
+async def update_system_agent_api_key(
+	request: UpdateSystemAgentApiKeyRequest,
 	db: Session = Depends(get_db),
 	current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Test agent with a message"""
-	agent_repo = AgentRepo(db)
-	workflow_manager = WorkflowManager()
+	"""Update system agent API key (admin only)"""
+	agent_repo = SystemAgentRepo(db)
 
-	# Get agent and config
-	agent, config = agent_repo.get_agent_with_config(agent_id, current_user_payload['user_id'])
+	agent = agent_repo.update_system_agent_api_key(api_key=request.api_key, api_provider=request.api_provider)
 
-	# Prepare test context
-	context = {
-		'agent': {'id': agent.id, 'name': agent.name, 'type': agent.agent_type.value},
-		'config': {
-			'model_provider': config.model_provider.value,
-			'model_name': config.model_name,
-			'temperature': config.temperature,
-			'max_tokens': config.max_tokens,
-			'system_prompt': config.system_prompt,
-			'tools_config': config.tools_config or {},
-			'workflow_config': config.workflow_config or {},
-		},
-		'user_message': request.test_message,
-		'conversation_history': [],
-		'important_context': [],
-		'is_test': True,
-	}
-
-	try:
-		result = await workflow_manager.execute_workflow(agent=agent, config=config, context=context, api_key=request.api_key)
-
-		return APIResponse(
-			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-			message=_('test_executed_successfully'),
-			data=AgentTestResponse(
-				test_message=request.test_message,
-				response=result['content'],
-				metadata=result['metadata'],
-				execution_time_ms=result['metadata'].get('execution_time_ms', 0),
-				success=True,
-			),
-		)
-
-	except Exception as e:
-		return APIResponse(
-			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-			message=_('test_completed_with_error'),
-			data=AgentTestResponse(
-				test_message=request.test_message,
-				response='',
-				metadata={},
-				execution_time_ms=0,
-				success=False,
-				error=str(e),
-			),
-		)
-
-
-@route.get('/{agent_id}/capabilities', response_model=GetCapabilitiesResponse)
-@handle_exceptions
-async def get_agent_capabilities(
-	agent_id: str,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Get agent capabilities"""
-	agent_repo = AgentRepo(db)
-	workflow_manager = WorkflowManager()
-
-	agent = agent_repo.get_agent_by_id(agent_id, current_user_payload['user_id'])
-	capabilities = workflow_manager.get_workflow_capabilities(agent.agent_type)
+	response_data = SystemAgentResponse.model_validate(agent)
+	response_data.has_api_key = bool(agent.api_key)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('success'),
-		data=AgentCapabilities(**capabilities),
+		message=_('api_key_updated_successfully'),
+		data=response_data,
 	)
 
 
-@route.post('/create-default', response_model=CreateAgentResponse)
-@handle_exceptions
-async def create_default_agent(
-	request: CreateDefaultAgentRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Create default agent for type"""
-	agent_repo = AgentRepo(db)
-
-	agent = AgentFactory.create_default_agent(
-		agent_type=request.agent_type,
-		user_id=current_user_payload['user_id'],
-		agent_repo=agent_repo,
-		custom_name=request.custom_name,
-	)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('default_agent_created_successfully'),
-		data=AgentResponse.model_validate(agent),
-	)
-
-
-@route.post('/create-custom', response_model=CreateAgentResponse)
-@handle_exceptions
-async def create_custom_agent(
-	request: CreateCustomAgentRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
-):
-	"""Create custom agent with inline configuration"""
-	agent_repo = AgentRepo(db)
-
-	custom_config = {
-		'name': f'custom_config_for_{request.name}',
-		'description': request.description or f'Custom configuration for {request.name}',
-		'model_provider': request.model_provider.value,
-		'model_name': request.model_name,
-		'temperature': request.temperature,
-		'max_tokens': request.max_tokens,
-		'system_prompt': request.system_prompt,
-		'tools_config': request.tools_config,
-		'workflow_config': request.workflow_config,
-	}
-
-	agent = AgentFactory.create_custom_agent(
-		agent_type=request.agent_type,
-		user_id=current_user_payload['user_id'],
-		agent_repo=agent_repo,
-		custom_config=custom_config,
-		agent_name=request.name,
-	)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('custom_agent_created_successfully'),
-		data=AgentResponse.model_validate(agent),
-	)
-
-
-@route.get('/models/available', response_model=GetModelsResponse)
+@route.get('/models', response_model=GetModelsResponse)
 @handle_exceptions
 async def get_available_models():
-	"""Get available models by provider"""
-	models = AgentFactory.list_available_models()
+	"""Get available AI models by provider"""
+	agent_repo = SystemAgentRepo()
+	models = agent_repo.get_available_models()
 
 	model_info = [ModelInfo(provider=provider, models=model_list) for provider, model_list in models.items()]
 
@@ -449,31 +129,51 @@ async def get_available_models():
 	)
 
 
-@route.get('/templates/{agent_type}', response_model=GetDefaultTemplateResponse)
+@route.post('/validate', response_model=ValidateSystemAgentResponse)
 @handle_exceptions
-async def get_default_template(agent_type: AgentType):
-	"""Get default configuration template for agent type"""
+async def validate_system_agent(
+	request: ValidateSystemAgentRequest,
+	db: Session = Depends(get_db),
+	current_user_payload: dict = Depends(get_current_user),
+):
+	"""Validate system agent with test message"""
+	import time
 
-	template = AgentFactory.get_default_config_template(agent_type)
+	workflow_repo = ConversationWorkflowRepo(db)
 
-	use_cases = {
-		AgentType.CHAT: ['General conversation', 'Customer support', 'Q&A assistance'],
-		AgentType.ANALYSIS: [
-			'Data analysis',
-			'Report generation',
-			'Pattern recognition',
-		],
-		AgentType.TASK: ['Task management', 'Scheduling', 'Productivity assistance'],
-		AgentType.CUSTOM: ['Specialized workflows', 'Custom business logic'],
-	}
+	try:
+		start_time = time.time()
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('success'),
-		data=DefaultConfigTemplate(
-			agent_type=agent_type,
-			template=template,
-			description=template.get('description', ''),
-			recommended_use_cases=use_cases.get(agent_type, []),
-		),
-	)
+		# Use a simple test conversation ID
+		test_conversation_id = f'validation_{int(time.time())}'
+
+		# Execute simple validation without API key override
+		result = await workflow_repo.execute_chat_workflow(
+			conversation_id=test_conversation_id,
+			user_message=request.test_message,
+		)
+
+		execution_time = int((time.time() - start_time) * 1000)
+
+		return APIResponse(
+			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+			message=_('agent_validation_successful'),
+			data=SystemAgentValidationResponse(
+				is_valid=True,
+				test_response=result['content'],
+				execution_time_ms=execution_time,
+			),
+		)
+
+	except Exception as e:
+		execution_time = int((time.time() - start_time) * 1000)
+
+		return APIResponse(
+			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+			message=_('agent_validation_completed'),
+			data=SystemAgentValidationResponse(
+				is_valid=False,
+				error_message=str(e),
+				execution_time_ms=execution_time,
+			),
+		)

@@ -56,7 +56,12 @@ async def create_conversation(
 ):
 	"""Create a new conversation"""
 	user_id = current_user.get('user_id')
-	conversation = repo.create_conversation(user_id=user_id, name=request.name, initial_message=request.initial_message)
+	conversation = repo.create_conversation(
+		user_id=user_id,
+		name=request.name,
+		initial_message=request.initial_message,
+		system_prompt=request.system_prompt,
+	)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
@@ -93,7 +98,12 @@ async def update_conversation(
 ):
 	"""Update conversation details"""
 	user_id = current_user.get('user_id')
-	conversation = repo.update_conversation(conversation_id=conversation_id, user_id=user_id, name=request.name)
+	conversation = repo.update_conversation(
+		conversation_id=conversation_id,
+		user_id=user_id,
+		name=request.name,
+		system_prompt=request.system_prompt,
+	)
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,

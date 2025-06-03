@@ -23,8 +23,6 @@ export class ChatWebSocket {
 
   private buildWebSocketUrl(conversationId: string, token: string): string {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const host = process.env.NEXT_PUBLIC_WS_HOST || 'localhost:8000'
     const basePath = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('http://', '').replace('https://', '').replace('/api', '') || 'localhost:8000'
     
     // Match the backend WebSocket route: /api/v1/chat/ws/{conversation_id}

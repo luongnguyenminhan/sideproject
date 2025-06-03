@@ -37,7 +37,8 @@ RUN python -m venv venv
 # Install uv and use it for dependencies
 COPY requirements.txt .
 RUN pip install uv && \
-    uv pip install --system -r requirements.txt
+    uv pip install --system -r requirements.txt && \
+    uv pip install --system --upgrade langgraph           
 
 # Copy the backend code, excluding the frontend folder
 COPY --chown=appuser:appuser . .
@@ -56,7 +57,7 @@ if [ \"$SERVICE_TYPE\" = \"celery_worker\" ]; then \
 else \
     if [ \"$ENV\" = \"development\" ]; then \
         echo \"Starting API in local mode (with hot reload)\" && \
-        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app; \
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app --log-level debug; \
     else \
         echo \"Starting API in production mode\" && \
         uvicorn main:app --host 0.0.0.0 --port 8000 --workers ${WORKER_CONCURRENCY:-4}; \

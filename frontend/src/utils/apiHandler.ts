@@ -32,12 +32,7 @@ export async function handleApiCall<T>(
 
     // Check if API returned an error (error_code = 1 means error, error_code = 0 means success)
     if (data.error_code !== 0) {
-      throw new ApiException(
-        response.status,
-        data.error_code,
-        data.message || 'API Error',
-        undefined
-      );
+      console.log(`Error: ${data.message || 'API Error'}`);
     }
 
     // Return the data if successful (can be null)
@@ -51,12 +46,7 @@ export async function handleApiCall<T>(
         
         // If the response follows our CommonResponse format
         if (responseData && typeof responseData.error_code === 'number') {
-          throw new ApiException(
-            error.response.status,
-            responseData.error_code,
-            responseData.message || 'API Error',
-            responseData.errors
-          );
+          console.log(`Error: ${responseData.message || 'API Error'}`);
         }
         
         // If it's a standard HTTP error
@@ -64,32 +54,17 @@ export async function handleApiCall<T>(
         if (error.response.status === 405) {
           customMessage = 'Method Not Allowed: Bạn đang gọi sai method (GET/POST/PUT/DELETE) cho endpoint này';
         }
-        throw new ApiException(
-          error.response.status,
-          1, // Default error code
-          customMessage,
-          undefined
-        );
+        console.log(`Error: ${customMessage}`);
       } else if (error.request) {
         // Network error
-        throw new ApiException(
-          0,
-          1,
-          'Network Error: Unable to reach server',
-          undefined
-        );
+        console.log(`Network Error: Unable to reach server. Please check your internet connection.`);
       }
     } else if (error instanceof ApiException) {
       // Re-throw our custom API exceptions
       throw error;
     } else {
       // Other errors
-      throw new ApiException(
-        0,
-        1,
-        error instanceof Error ? error.message : 'Unknown Error',
-        undefined
-      );
+      console.log(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown Error'}`);
     }
   }
   
@@ -111,12 +86,7 @@ export async function handleApiCallNoData(
 
     // Check if API returned an error (error_code = 1 means error, error_code = 0 means success)
     if (data.error_code !== 0) {
-      throw new ApiException(
-        response.status,
-        data.error_code,
-        data.message || 'API Error',
-        undefined
-      );
+      console.log(`Error: ${data.message || 'API Error'}`);
     }
   } catch (error: unknown) {
     // Handle axios errors (network errors, HTTP errors, etc.)
@@ -127,12 +97,7 @@ export async function handleApiCallNoData(
         
         // If the response follows our CommonResponse format
         if (responseData && typeof responseData.error_code === 'number') {
-          throw new ApiException(
-            error.response.status,
-            responseData.error_code,
-            responseData.message || 'API Error',
-            responseData.errors
-          );
+          console.log(`Error: ${responseData.message || 'API Error'}`);
         }
         
         // If it's a standard HTTP error
@@ -140,32 +105,17 @@ export async function handleApiCallNoData(
         if (error.response.status === 405) {
           customMessage = 'Method Not Allowed: Bạn đang gọi sai method (GET/POST/PUT/DELETE) cho endpoint này';
         }
-        throw new ApiException(
-          error.response.status,
-          1, // Default error code
-          customMessage,
-          undefined
-        );
+        console.log(`Error: ${customMessage}`);
       } else if (error.request) {
         // Network error
-        throw new ApiException(
-          0,
-          1,
-          'Network Error: Unable to reach server',
-          undefined
-        );
+        console.log(`Network Error: Unable to reach server. Please check your internet connection.`);
       }
     } else if (error instanceof ApiException) {
       // Re-throw our custom API exceptions
       throw error;
     } else {
       // Other errors
-      throw new ApiException(
-        0,
-        1,
-        error instanceof Error ? error.message : 'Unknown Error',
-        undefined
-      );
+      console.log(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown Error'}`);
     }
   }
 }

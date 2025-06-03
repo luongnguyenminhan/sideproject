@@ -15,3 +15,4 @@ class ConversationResponse(ResponseSchema):
 	last_activity: datetime
 	create_date: datetime
 	update_date: Optional[datetime]
+	system_prompt: Optional[str]

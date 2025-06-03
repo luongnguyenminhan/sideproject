@@ -19,7 +19,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ 
   children, 
   fallback = <div>Loading...</div>, 
-  redirectTo = '/auth' 
+  redirectTo = '/' 
 }: ProtectedRouteProps) {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);

@@ -1,0 +1,910 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+## Frontend Architecture Overview
+This Next.js 15 project follows a strict component-based architecture with:
+- **App Router Structure** (`app/[locale]/`) - Internationalized routing with server components
+- **Server Components** - Default for data fetching and translation
+- **Client Components** - Only when necessary for interactivity
+- **Component Library** (`components/`) - Reusable UI components
+- **Utilities** (`utils/`) - Helper functions and configurations
+- **Redux Store** (`redux/`) - Global state management
+- **API Integration** (`apis/`) - Centralized API calls with axios
+- **Type Definitions** (`types/`) - TypeScript interfaces and types
+- **HOCs** (`hoc/`) - Higher-Order Components for authentication
+
+## Translation System Rules
+
+### Server Components Translation (MANDATORY)
+- **MUST use server-side translation** with `getDictionary` and `createTranslator` from `utils/translation.ts`
+- **NEVER use client-side translation hooks** in server components
+- **ALWAYS pass translations as props** to client components
+- **Use 'server-only' import** to ensure server-side execution
+
+```tsx
+// ✅ CORRECT - Server Component Translation
+import { getDictionary, createTranslator } from '@/utils/translation';
+import { getCurrentLocale } from '@/utils/getCurrentLocale';
+
+async function ServerPage() {
+  const locale = await getCurrentLocale();
+  const dictionary = await getDictionary(locale);
+  const t = createTranslator(dictionary);
+
+  const translations = {
+    title: t('profile.title') || 'Profile',
+    editButton: t('profile.editProfile') || 'Edit Profile',
+    changePassword: t('profile.changePassword') || 'Change Password'
+  };
+
+  return (
+    <div>
+      <h1>{translations.title}</h1>
+      <ClientComponent {...translations} />
+    </div>
+  );
+}
+
+// ❌ WRONG - Don't use client translation in server components
+// import { useTranslation } from '@/contexts/TranslationContext'; // NEVER in server components
+```
+
+### Client Components Translation
+- **MUST use `TranslationProvider`** for client-side translations
+- **MUST use `useTranslation` hook** in client components
+- **NEVER mix server and client translation methods**
+- **Wrap client components with `TranslationProvider`** when needed
+
+```tsx
+// ✅ CORRECT - Client Component Translation Setup
+'use client';
+import { TranslationProvider, useTranslation } from '@/contexts/TranslationContext';
+
+// Provider wrapper (usually in layout or parent component)
+function ClientPageWrapper({ dictionary, locale, children }: {
+  dictionary: Dictionary;
+  locale: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <TranslationProvider dictionary={dictionary} locale={locale}>
+      {children}
+    </TranslationProvider>
+  );
+}
+
+// Client component using translation
+function InteractiveForm() {
+  const { t, locale } = useTranslation();
+  
+  return (
+    <form>
+      <button type="submit">
+        {t('form.submit') || 'Submit'}
+      </button>
+      <p>Current locale: {locale}</p>
+    </form>
+  );
+}
+```
+
+### Translation Props Passing Rules
+- **MUST pass translated strings as props** to client components
+- **NEVER pass translation function `t` as props**
+- **ALWAYS provide fallback values** using `||` operator
+- **Use object destructuring** for multiple translations
+
+```tsx
+// ✅ CORRECT - Passing translations as props
+interface ClientComponentProps {
+  title: string;
+  submitText: string;
+  cancelText: string;
+  errorMessages: {
+    required: string;
+    invalid: string;
+  };
+}
+
+// Server Component preparing translations
+async function ParentServer() {
+  const locale = await getCurrentLocale();
+  const dictionary = await getDictionary(locale);
+  const t = createTranslator(dictionary);
+
+  const translations = {
+    title: t('form.title') || 'Form Title',
+    submitText: t('form.submit') || 'Submit',
+    cancelText: t('form.cancel') || 'Cancel',
+    errorMessages: {
+      required: t('validation.required') || 'This field is required',
+      invalid: t('validation.invalid') || 'Invalid input'
+    }
+  };
+
+  return <ClientForm {...translations} />;
+}
+
+// ❌ WRONG - Don't pass translation function
+return <ClientForm t={t} dictionary={dictionary} />; // NEVER DO THIS
+```
+
+## Dark Mode and CSS Rules (MANDATORY)
+
+### CSS Custom Properties Usage
+- **MUST use CSS custom properties** from globals.css
+- **NEVER use hardcoded colors** in Tailwind classes
+- **ALWAYS support both light and dark modes**
+- **Use `data-theme` attribute** for theme switching
+
+```tsx
+// ✅ CORRECT - Using CSS custom properties
+<div className="bg-[color:var(--background)] text-[color:var(--foreground)]">
+  <div className="bg-gradient-to-br from-[color:var(--gradient-bg-from)] to-[color:var(--gradient-bg-to)]">
+    <h1 className="bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent">
+      Gradient Text
+    </h1>
+  </div>
+</div>
+
+// ❌ WRONG - Hardcoded colors
+<div className="bg-white text-black dark:bg-gray-900 dark:text-white">
+<div className="bg-blue-500 text-white"> // No dark mode support
+```
+
+### Feature Card Color System
+- **Use predefined feature colors** for consistent theming
+- **Apply appropriate text colors** based on background
+
+```tsx
+// ✅ CORRECT - Feature card colors
+<div className="bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)]">
+  <div className="bg-[color:var(--feature-green)] text-[color:var(--feature-green-text)]">
+    <div className="bg-[color:var(--feature-purple)] text-[color:var(--feature-purple-text)]">
+      <div className="bg-[color:var(--feature-yellow)] text-[color:var(--feature-yellow-text)]">
+```
+
+### Auth Page Styling
+- **Use auth-specific variables** for login/register pages
+- **Apply proper backdrop and floating elements**
+
+```tsx
+// ✅ CORRECT - Auth page styling
+<div className="min-h-screen bg-gradient-to-br from-[color:var(--auth-bg-from)] via-[color:var(--auth-bg-via)] to-[color:var(--auth-bg-to)]">
+  <div className="bg-[color:var(--auth-card-bg)] border border-[color:var(--auth-card-border)] backdrop-blur-sm">
+    <div className="absolute top-20 left-10 w-32 h-32 bg-[color:var(--auth-floating-blue)] rounded-full blur-xl opacity-70" />
+    <div className="absolute bottom-20 right-10 w-24 h-24 bg-[color:var(--auth-floating-purple)] rounded-full blur-xl opacity-60" />
+  </div>
+</div>
+```
+
+## File and Component Naming Rules
+
+### File Structure Convention
+```
+src/
+├── app/[locale]/
+│   ├── layout.tsx           # Root layout with ThemeProvider
+│   ├── page.tsx            # Home page (server component)
+│   ├── profile/page.tsx    # Profile page (server component)
+│   └── globals.css         # Global styles with CSS variables
+├── components/
+│   ├── ui/                 # Reusable UI components
+│   │   ├── button.tsx      # Base button component
+│   │   ├── input.tsx       # Base input component
+│   │   ├── card.tsx        # Base card component
+│   │   └── loading-screen.tsx # Loading component
+│   ├── layout/             # Layout components
+│   │   ├── header.tsx      # Site header
+│   │   ├── auth-header.tsx # Auth page header
+│   │   └── page-wrapper.tsx # Page wrapper
+│   ├── auth/               # Authentication components
+│   │   ├── login-modal.tsx # Login modal
+│   │   └── protected-route.tsx # Route protection
+│   ├── chat/               # Chat feature components
+│   ├── facebook/           # Facebook integration
+│   └── global/             # Global components
+│       ├── language-swapper.tsx # Language switcher
+│       └── theme-swapper.tsx    # Theme switcher
+├── apis/                   # API integration
+│   ├── axios-instance.ts   # Axios configuration
+│   ├── auth-api.ts         # Auth API calls
+│   ├── user-api.ts         # User API calls
+│   └── chat-api.ts         # Chat API calls
+├── types/                  # TypeScript definitions
+│   ├── auth.type.ts        # Auth-related types
+│   ├── chat.type.ts        # Chat-related types
+│   ├── common.type.ts      # Common types
+│   └── agent-types.ts      # Agent-related types
+├── redux/                  # Redux store
+│   ├── store.ts            # Store configuration
+│   ├── provider.tsx        # Redux provider
+│   ├── hooks.ts            # Typed hooks
+│   └── slices/             # Redux slices
+│       ├── auth-slice.ts   # Auth state
+│       ├── theme-slice.ts  # Theme state
+│       └── locale-slice.ts # Locale state
+├── hoc/                    # Higher-Order Components
+│   └── with-auth.tsx       # Authentication HOC
+├── utils/                  # Utility functions
+│   ├── translation.ts      # Server translation utilities
+│   ├── translation-helpers.ts # Shared translation helpers
+│   └── get-current-locale.ts # Locale utilities
+└── contexts/               # React contexts
+    └── translation-context.tsx # Client translation context
+```
+
+### Naming Conventions
+- **Files**: Use `kebab-case` for files: `user-profile.tsx`, `login-modal.tsx`
+- **Components**: Use `PascalCase` for component names: `UserProfile`, `LoginModal`
+- **API Files**: Use `kebab-case` with `-api` suffix: `auth-api.ts`, `user-api.ts`
+- **Type Files**: Use `kebab-case` with `.type.ts` suffix: auth.type.ts, chat.type.ts
+- **Redux Files**: Use `kebab-case` with appropriate suffix: `auth-slice.ts`, store.ts
+- **HOC Files**: Use `kebab-case` with `with-` prefix: `with-auth.tsx`
+
+## API Integration Rules
+
+### Axios Instance Usage (MANDATORY)
+- **MUST use centralized axios instance** from axiosInstance.ts
+- **NEVER create separate axios instances**
+- **All API calls must go through the configured instance**
+- **Automatic token refresh and error handling included**
+
+```tsx
+// ✅ CORRECT - Using centralized axios instance
+// File: apis/auth-api.ts
+import axiosInstance from './axiosInstance';
+import type { LoginRequest, LoginResponse, UserResponse } from '@/types/auth.type';
+import type { ApiResponse } from '@/types/common.type';
+
+export const authAPI = {
+  login: async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
+    const response = await axiosInstance.post('/auth/login', data);
+    return response.data;
+  },
+
+  getMe: async (): Promise<ApiResponse<UserResponse>> => {
+    const response = await axiosInstance.get('/users/me');
+    return response.data;
+  },
+
+  refreshToken: async (refreshToken: string): Promise<ApiResponse<LoginResponse>> => {
+    const response = await axiosInstance.post('/auth/refresh', {
+      refresh_token: refreshToken
+    });
+    return response.data;
+  }
+};
+
+// ❌ WRONG - Creating separate axios instances
+import axios from 'axios'; // Don't create new instances
+const customAxios = axios.create({ baseURL: '...' }); // NEVER DO THIS
+```
+
+### API File Structure
+- **Group APIs by feature**: `auth-api.ts`, `user-api.ts`, `chat-api.ts`
+- **Export as object with methods**: `export const authAPI = { ... }`
+- **Use consistent naming**: `getUsers`, `createUser`, `updateUser`, `deleteUser`
+
+```tsx
+// ✅ CORRECT - API file structure
+// File: apis/user-api.ts
+import axiosInstance from './axiosInstance';
+import type { 
+  UserResponse, 
+  CreateUserRequest, 
+  UpdateUserRequest,
+  SearchUserRequest 
+} from '@/types/auth.type';
+import type { ApiResponse, PaginatedResponse } from '@/types/common.type';
+
+export const userAPI = {
+  // GET operations
+  getUsers: async (params: SearchUserRequest): Promise<ApiResponse<PaginatedResponse<UserResponse>>> => {
+    const response = await axiosInstance.get('/users', { params });
+    return response.data;
+  },
+
+  getUserById: async (id: string): Promise<ApiResponse<UserResponse>> => {
+    const response = await axiosInstance.get(`/users/${id}`);
+    return response.data;
+  },
+
+  // POST operations
+  createUser: async (data: CreateUserRequest): Promise<ApiResponse<UserResponse>> => {
+    const response = await axiosInstance.post('/users', data);
+    return response.data;
+  },
+
+  // PUT operations
+  updateUser: async (id: string, data: UpdateUserRequest): Promise<ApiResponse<UserResponse>> => {
+    const response = await axiosInstance.put(`/users/${id}`, data);
+    return response.data;
+  },
+
+  // DELETE operations
+  deleteUser: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await axiosInstance.delete(`/users/${id}`);
+    return response.data;
+  }
+};
+```
+
+## TypeScript Type Definition Rules
+
+### Type File Organization
+- **Group types by feature** in separate files
+- **Use `.type.ts` suffix** for type definition files
+- **Export interfaces and types separately**
+- **Define API request/response types**
+
+```tsx
+// ✅ CORRECT - Type definitions
+// File: types/auth.type.ts
+export interface UserResponse {
+  id: string;
+  username: string;
+  email: string;
+  name?: string;
+  profile_picture?: string;
+  role?: string;
+  create_date: string;
+  update_date: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+  remember_me?: boolean;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+  user: UserResponse;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
+  name?: string;
+}
+
+export interface UpdateUserRequest {
+  name?: string;
+  profile_picture?: string;
+}
+
+export interface SearchUserRequest {
+  page?: number;
+  page_size?: number;
+  username?: string;
+  email?: string;
+  role?: string;
+}
+```
+
+### Common Types
+- **Define reusable types** in common.type.ts
+- **Use generic types** for API responses
+
+```tsx
+// ✅ CORRECT - Common types
+// File: types/common.type.ts
+export interface ApiResponse<T = any> {
+  error_code: number;
+  message: string;
+  data?: T;
+}
+
+export interface ApiError {
+  status: number;
+  error_code: number;
+  message: string;
+  errors?: Record<string, string[]>;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface PagingInfo {
+  total: number;
+  total_pages: number;
+  page: number;
+  page_size: number;
+}
+
+export type LoadingState = 'idle' | 'loading' | 'succeeded' | 'failed';
+
+export interface BaseEntity {
+  id: string;
+  create_date: string;
+  update_date: string;
+}
+```
+
+## Redux State Management Rules
+
+### Redux Store Structure
+- **Use Redux Toolkit** for state management
+- **Create typed hooks** in hooks.ts
+- **Organize slices by feature**
+- **Use immer for immutable updates**
+
+```tsx
+// ✅ CORRECT - Store configuration
+// File: redux/store.ts
+import { configureStore } from '@reduxjs/toolkit';
+import authSlice from './slices/authSlice';
+import themeSlice from './slices/themeSlice';
+import localeSlice from './slices/localeSlice';
+
+export const store = configureStore({
+  reducer: {
+    auth: authSlice,
+    theme: themeSlice,
+    locale: localeSlice,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+### Typed Redux Hooks
+- **MUST use typed hooks** instead of plain `useSelector` and `useDispatch`
+- **Export from centralized hooks file**
+
+```tsx
+// ✅ CORRECT - Typed hooks
+// File: redux/hooks.ts
+import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
+import type { RootState, AppDispatch } from './store';
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+// ✅ CORRECT - Using typed hooks in components
+'use client';
+import { useAppSelector, useAppDispatch } from '@/redux/hooks';
+import { loginUser, logoutUser } from '@/redux/slices/authSlice';
+
+function AuthComponent() {
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, loading } = useAppSelector((state) => state.auth);
+
+  const handleLogin = async (credentials: LoginRequest) => {
+    await dispatch(loginUser(credentials));
+  };
+
+  return (
+    <div>
+      {isAuthenticated ? (
+        <div>Welcome, {user?.name}</div>
+      ) : (
+        <button onClick={() => handleLogin(credentials)}>Login</button>
+      )}
+    </div>
+  );
+}
+```
+
+### Redux Slice Structure
+- **Use createSlice** for reducer creation
+- **Define initial state with proper types**
+- **Use extraReducers for async actions**
+
+```tsx
+// ✅ CORRECT - Redux slice
+// File: redux/slices/authSlice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { authAPI } from '@/apis/authApi';
+import type { UserResponse, LoginRequest } from '@/types/auth.type';
+import type { LoadingState } from '@/types/common.type';
+
+interface AuthState {
+  user: UserResponse | null;
+  isAuthenticated: boolean;
+  loading: LoadingState;
+  error: string | null;
+}
+
+const initialState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+  loading: 'idle',
+  error: null,
+};
+
+// Async thunks
+export const loginUser = createAsyncThunk(
+  'auth/login',
+  async (credentials: LoginRequest, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.login(credentials);
+      if (response.error_code === 0) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.message);
+      }
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Login failed');
+    }
+  }
+);
+
+export const fetchCurrentUser = createAsyncThunk(
+  'auth/fetchCurrentUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.getMe();
+      if (response.error_code === 0) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.message);
+      }
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch user');
+    }
+  }
+);
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    logoutUser: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = 'idle';
+      state.error = null;
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+    setUser: (state, action: PayloadAction<UserResponse>) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Login cases
+      .addCase(loginUser.pending, (state) => {
+        state.loading = 'loading';
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = 'succeeded';
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = 'failed';
+        state.error = action.payload as string;
+      })
+      // Fetch user cases
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      });
+  },
+});
+
+export const { logoutUser, clearError, setUser } = authSlice.actions;
+export default authSlice.reducer;
+```
+
+## Higher-Order Components (HOC) Rules
+
+### Authentication HOC Usage
+- **MUST use `withAuth` HOC** for protected pages
+- **Use `withoutAuth` HOC** for public-only pages (login/register)
+- **Use `withAuthState` HOC** for conditional auth behavior
+
+```tsx
+// ✅ CORRECT - Using authentication HOCs
+// File: app/[locale]/profile/page.tsx
+import { withAuth } from '@/hoc/withAuth';
+import type { UserResponse } from '@/types/auth.type';
+
+interface ProfilePageProps {
+  user: UserResponse; // Automatically injected by withAuth
+}
+
+async function ProfilePage({ user }: ProfilePageProps) {
+  const locale = await getCurrentLocale();
+  const dictionary = await getDictionary(locale);
+  const t = createTranslator(dictionary);
+
+  return (
+    <div>
+      <h1>{t('profile.title') || 'Profile'}</h1>
+      <p>Welcome, {user.name || user.username}</p>
+    </div>
+  );
+}
+
+export default withAuth(ProfilePage); // Protects the page
+
+// ✅ CORRECT - Public-only page
+// File: app/[locale]/auth/page.tsx
+import { withoutAuth } from '@/hoc/withAuth';
+
+async function AuthPage() {
+  // This page redirects authenticated users away
+  return <div>Login form here</div>;
+}
+
+export default withoutAuth(AuthPage, '/dashboard'); // Redirect authenticated users to dashboard
+```
+
+### Custom HOC Creation
+- **Follow the established pattern** for new HOCs
+- **Use proper TypeScript generics**
+- **Handle server-side rendering correctly**
+
+```tsx
+// ✅ CORRECT - Custom HOC example
+// File: hoc/withRoleCheck.tsx
+import { redirect } from 'next/navigation';
+import { getCurrentUser } from '@/lib/auth';
+import type { UserResponse } from '@/types/auth.type';
+
+export function withRoleCheck<T extends object>(
+  WrappedComponent: React.ComponentType<T & { user: UserResponse }>,
+  requiredRole: string,
+  redirectTo: string = '/unauthorized'
+) {
+  return async function RoleProtectedComponent(props: T) {
+    const user = await getCurrentUser();
+    
+    if (!user) {
+      redirect('/auth');
+    }
+    
+    if (user.role !== requiredRole) {
+      redirect(redirectTo);
+    }
+    
+    return <WrappedComponent {...props} user={user} />;
+  };
+}
+
+// Usage
+export default withRoleCheck(AdminPage, 'admin', '/dashboard');
+```
+
+## Component Architecture Rules
+
+### Server vs Client Components
+- **Default to Server Components** for better performance
+- **Use Client Components only** when you need:
+  - Event handlers (`onClick`, `onChange`, `onSubmit`)
+  - State management (`useState`, `useReducer`, `useEffect`)
+  - Browser APIs (`localStorage`, `geolocation`, etc.)
+  - Redux store access
+  - Client-side routing
+
+```tsx
+// ✅ CORRECT - Server Component (default)
+// File: components/layout/header.tsx
+import { getDictionary, createTranslator } from '@/utils/translation';
+import { getCurrentLocale } from '@/utils/getCurrentLocale';
+import ClientHeader from './client-header';
+
+async function Header() {
+  const locale = await getCurrentLocale();
+  const dictionary = await getDictionary(locale);
+  const t = createTranslator(dictionary);
+
+  const translations = {
+    home: t('nav.home') || 'Home',
+    about: t('nav.about') || 'About',
+    contact: t('nav.contact') || 'Contact'
+  };
+
+  return <ClientHeader {...translations} />;
+}
+
+export default Header;
+
+// ✅ CORRECT - Client Component (when interactivity needed)
+// File: components/layout/client-header.tsx
+'use client';
+import { useState } from 'react';
+import { useAppSelector } from '@/redux/hooks';
+
+interface ClientHeaderProps {
+  home: string;
+  about: string;
+  contact: string;
+}
+
+function ClientHeader({ home, about, contact }: ClientHeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  return (
+    <header>
+      <nav>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          Menu
+        </button>
+        {isMenuOpen && (
+          <ul>
+            <li>{home}</li>
+            <li>{about}</li>
+            <li>{contact}</li>
+          </ul>
+        )}
+      </nav>
+    </header>
+  );
+}
+
+export default ClientHeader;
+```
+
+### Component Props Interface Rules
+- **Always define TypeScript interfaces** for component props
+- **Use descriptive interface names**: `{ComponentName}Props`
+- **Export prop types** when they might be reused
+- **Use optional props with default values**
+
+```tsx
+// ✅ CORRECT - Props interface
+interface UserCardProps {
+  user: UserResponse;
+  onEdit?: (user: UserResponse) => void;
+  onDelete?: (userId: string) => void;
+  showActions?: boolean;
+  className?: string;
+  variant?: 'default' | 'compact' | 'detailed';
+}
+
+function UserCard({ 
+  user, 
+  onEdit, 
+  onDelete,
+  showActions = true, 
+  className = '',
+  variant = 'default'
+}: UserCardProps) {
+  return (
+    <div className={`user-card ${className}`}>
+      {/* Component implementation */}
+    </div>
+  );
+}
+
+export default UserCard;
+export type { UserCardProps };
+```
+
+## Error Handling and Loading States
+
+### API Error Handling
+- **Use try-catch blocks** for async operations
+- **Handle different error types** appropriately
+- **Show user-friendly error messages**
+
+```tsx
+// ✅ CORRECT - Error handling in components
+'use client';
+import { useState } from 'react';
+import { useAppDispatch } from '@/redux/hooks';
+import { loginUser } from '@/redux/slices/authSlice';
+import type { ApiError } from '@/types/common.type';
+
+function LoginForm() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+
+  const handleSubmit = async (formData: LoginRequest) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const result = await dispatch(loginUser(formData));
+      
+      if (loginUser.rejected.match(result)) {
+        setError(result.payload as string);
+      }
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.message || 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {error && (
+        <div className="text-[color:var(--destructive)] bg-red-50 dark:bg-red-950 p-3 rounded">
+          {error}
+        </div>
+      )}
+      <button 
+        type="submit" 
+        disabled={loading}
+        className="bg-[color:var(--primary)] text-[color:var(--primary-foreground)]"
+      >
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
+    </form>
+  );
+}
+```
+
+### Loading States
+- **Show loading indicators** for async operations
+- **Use consistent loading components**
+- **Provide feedback** during state changes
+
+```tsx
+// ✅ CORRECT - Loading state management
+import LoadingScreen from '@/components/ui/loading-screen';
+import { useAppSelector } from '@/redux/hooks';
+
+function DataComponent() {
+  const { data, loading, error } = useAppSelector((state) => state.someFeature);
+
+  if (loading === 'loading') {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-[color:var(--destructive)]">
+        Error: {error}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {data ? (
+        <div>Data loaded successfully</div>
+      ) : (
+        <div>No data available</div>
+      )}
+    </div>
+  );
+}
+```
+
+## Key Principles Summary
+
+1. **Server-First Architecture**: Default to server components, use client only when needed
+2. **Translation Isolation**: Server components handle translations, pass strings as props  
+3. **CSS Custom Properties**: Always use CSS variables, never hardcode colors
+4. **Type Safety**: Define interfaces for all props and use TypeScript strictly
+5. **API Centralization**: Use single axios instance with automatic token refresh
+6. **Redux Best Practices**: Use Redux Toolkit with typed hooks and proper state management
+7. **HOC for Authentication**: Use withAuth HOC for route protection
+8. **Error Handling**: Implement consistent error handling with user feedback
+9. **Component Composition**: Build small, focused, reusable components
+10. **Performance Optimization**: Leverage Next.js 15 optimizations and server rendering
+11. **Accessibility**: Use semantic HTML and proper ARIA attributes
+12. **Internationalization**: Support multiple locales with proper fallbacks
+13. **Theme Consistency**: Support light/dark modes with system preferences
+14. **Code Organization**: Follow established file structure and naming conventions

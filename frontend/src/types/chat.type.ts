@@ -44,6 +44,7 @@ export interface ConversationResponse {
   last_activity: string
   create_date: string
   update_date?: string
+  system_prompt?: string
 }
 
 export interface ConversationListRequest extends FilterableRequestSchema {
@@ -55,10 +56,12 @@ export interface ConversationListRequest extends FilterableRequestSchema {
 export interface CreateConversationRequest extends RequestSchema {
   name: string
   initial_message?: string
+  system_prompt?: string
 }
 
 export interface UpdateConversationRequest extends RequestSchema {
   name?: string
+  system_prompt?: string
 }
 
 // ============================================
@@ -85,25 +88,6 @@ export interface FileListRequest extends FilterableRequestSchema {
   search?: string
 }
 
-// ============================================
-// API KEY TYPES
-// ============================================
-
-export interface ApiKeyRequest extends RequestSchema {
-  provider: string
-  api_key: string
-  is_default?: boolean
-  key_name?: string
-}
-
-export interface ApiKeyResponse {
-  id: string
-  provider: string
-  masked_key: string
-  is_default: boolean
-  create_date: string
-  key_name?: string
-}
 
 // ============================================
 // WEBSOCKET TYPES
@@ -181,6 +165,7 @@ export interface Conversation {
   messages: Message[]
   lastActivity: Date
   messageCount: number
+  systemPrompt?: string
 }
 
 export interface Message {
@@ -212,7 +197,6 @@ export interface ChatState {
   isTyping: boolean
   error: string | null
   uploadedFiles: UploadedFile[]
-  apiKeys: ApiKeyResponse[]
   wsToken: string | null
 }
 
@@ -226,7 +210,8 @@ export function convertToUIConversation(apiConversation: ConversationResponse): 
     name: apiConversation.name,
     messages: [], // Will be loaded separately
     lastActivity: new Date(apiConversation.last_activity),
-    messageCount: apiConversation.message_count
+    messageCount: apiConversation.message_count,
+    systemPrompt: apiConversation.system_prompt
   }
 }
 

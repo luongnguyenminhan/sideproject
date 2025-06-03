@@ -1,8 +1,6 @@
 import 'server-only'
 import type { Locale } from '@/i18n.config'
-
-// Dictionary type definitions
-type Dictionary = Record<string, unknown>
+import { getNestedValue, type Dictionary } from './translationHelpers'
 
 // Dictionary cache để tránh load lại
 const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
@@ -33,19 +31,7 @@ export async function getDictionary(locale: Locale): Promise<Dictionary> {
   }
 }
 
-// Helper function để lấy nested value
-export function getNestedValue(obj: Dictionary, path: string): string {
-  const result = path.split('.').reduce((current: Dictionary | unknown, key: string): unknown => {
-    if (current && typeof current === 'object' && current !== null) {
-      return (current as Record<string, unknown>)[key]
-    }
-    return undefined
-  }, obj)
-  
-  return typeof result === 'string' ? result : path
-}
-
-// Translation function với type safety
+// Translation function với type safety cho Server Components
 export function createTranslator(dictionary: Dictionary) {
   return function t(key: string, params?: Record<string, string | number>): string {
     let translation = getNestedValue(dictionary, key)
