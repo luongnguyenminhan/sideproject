@@ -75,9 +75,7 @@ class ChatRepo:
 		response_time_ms: str = None,
 	):
 		"""Create a new message in the conversation"""
-		logger.info(
-			f'\033[93m[ChatRepo.create_message] Creating message in conversation: {conversation_id}, user: {user_id}, role: {role}, content_length: {len(content)}, model: {model_used}, tokens: {tokens_used}, response_time: {response_time_ms}ms\033[0m'
-		)
+		logger.info(f'\033[93m[ChatRepo.create_message] Creating message in conversation: {conversation_id}, user: {user_id}, role: {role}, content_length: {len(content)}, model: {model_used}, tokens: {tokens_used}, response_time: {response_time_ms}ms\033[0m')
 		# Verify conversation exists and user has access
 		conversation = self.get_conversation_by_id(conversation_id, user_id)
 		logger.info(f'\033[94m[ChatRepo.create_message] Conversation verified: {conversation.name}\033[0m')
@@ -127,9 +125,7 @@ class ChatRepo:
 		user_id: str = None,
 	) -> dict:
 		"""Get AI response for a message using Agent system (non-streaming)"""
-		logger.info(
-			f'\033[93m[ChatRepo.get_ai_response] Getting AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_api_key: {api_key is not None}\033[0m'
-		)
+		logger.info(f'\033[93m[ChatRepo.get_ai_response] Getting AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_api_key: {api_key is not None}\033[0m')
 		# Get user_id from conversation if not provided
 		if not user_id:
 			conversation = self.get_conversation_by_id(conversation_id, '')
@@ -193,9 +189,7 @@ class ChatRepo:
 		user_id: str = None,
 	) -> dict:
 		"""Get AI response using Agent system with streaming support"""
-		logger.info(
-			f'\033[93m[ChatRepo.get_ai_response_streaming] Getting streaming AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_websocket: {websocket_manager is not None}\033[0m'
-		)
+		logger.info(f'\033[93m[ChatRepo.get_ai_response_streaming] Getting streaming AI response via Agent system for conversation: {conversation_id}, user: {user_id}, message_length: {len(user_message)}, has_websocket: {websocket_manager is not None}\033[0m')
 
 		# Get user_id from conversation if not provided
 		if not user_id:
@@ -268,9 +262,7 @@ class ChatRepo:
 				'agent_name': result_data.get('agent_name', 'conversation-workflow'),
 			}
 
-			logger.info(
-				f'\033[92m[ChatRepo.get_ai_response_streaming] Agent streaming response completed, agent: {final_result.get("agent_name", "unknown")}, response_time: {final_result.get("response_time_ms", 0)}ms\033[0m'
-			)
+			logger.info(f'\033[92m[ChatRepo.get_ai_response_streaming] Agent streaming response completed, agent: {final_result.get("agent_name", "unknown")}, response_time: {final_result.get("response_time_ms", 0)}ms\033[0m')
 			return final_result
 
 		except Exception as e:

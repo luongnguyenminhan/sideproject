@@ -69,9 +69,7 @@ class WorkflowConfig:
 	)
 
 	# Filler words to remove from queries
-	filler_words: List[str] = field(
-		default_factory=lambda: ['cho tôi', 'giúp tôi', 'làm ơn', 'xin vui lòng', 'bạn có thể', 'tôi muốn', 'tôi cần', 'xin', 'hãy', 'thông tin về', 'có thể', 'được không', 'ạ', 'em', 'anh', 'chị']
-	)
+	filler_words: List[str] = field(default_factory=lambda: ['cho tôi', 'giúp tôi', 'làm ơn', 'xin vui lòng', 'bạn có thể', 'tôi muốn', 'tôi cần', 'xin', 'hãy', 'thông tin về', 'có thể', 'được không', 'ạ', 'em', 'anh', 'chị'])
 
 	# Financial terms for query enhancement
 	financial_terms: List[str] = field(

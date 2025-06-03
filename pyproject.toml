@@ -1,5 +1,5 @@
 [tool.ruff]
-line-length = 200
+line-length = 500
 target-version = "py313"
 exclude = [
   "meobeo",
@@ -30,7 +30,7 @@ unfixable = ["ALL"]
 quote-style = "single"
 indent-style = "tab"
 docstring-code-format = true
-docstring-code-line-length = 72
+docstring-code-line-length = 100
 preview = true
 
 [tool.ruff.analyze]

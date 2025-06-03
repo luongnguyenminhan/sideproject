@@ -25,9 +25,7 @@ class FileDAL(BaseDAL[File]):
 		conversation_id: Optional[str] = None,
 	):
 		"""Get files for a user with pagination and filtering"""
-		logger.info(
-			f'\033[93m[FileDAL.get_user_files] Getting files for user: {user_id}, page: {page}, page_size: {page_size}, file_type: {file_type}, search: {search}, conversation_id: {conversation_id}\033[0m'
-		)
+		logger.info(f'\033[93m[FileDAL.get_user_files] Getting files for user: {user_id}, page: {page}, page_size: {page_size}, file_type: {file_type}, search: {search}, conversation_id: {conversation_id}\033[0m')
 		query = self.db.query(self.model).filter(self.model.user_id == user_id, self.model.is_deleted == False)
 		logger.info(f'\033[94m[FileDAL.get_user_files] Base query created for user files\033[0m')
 
@@ -103,9 +101,7 @@ class FileDAL(BaseDAL[File]):
 		search: Optional[str] = None,
 	):
 		"""Get files for a specific conversation with pagination and filtering"""
-		print(
-			f'\033[93m[FileDAL.get_conversation_files] Getting files for conversation: {conversation_id}, user: {user_id}, page: {page}, page_size: {page_size}, file_type: {file_type}, search: {search}\033[0m'
-		)
+		print(f'\033[93m[FileDAL.get_conversation_files] Getting files for conversation: {conversation_id}, user: {user_id}, page: {page}, page_size: {page_size}, file_type: {file_type}, search: {search}\033[0m')
 
 		query = self.db.query(self.model).filter(
 			self.model.user_id == user_id,

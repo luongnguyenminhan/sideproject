@@ -23,9 +23,7 @@ class MessageDAL(BaseDAL[Message]):
 		before_message_id: Optional[str] = None,
 	):
 		"""Get messages for a conversation with pagination"""
-		logger.info(
-			f'\033[93m[MessageDAL.get_conversation_messages] Getting messages for conversation: {conversation_id}, page: {page}, page_size: {page_size}, before_message_id: {before_message_id}\033[0m'
-		)
+		logger.info(f'\033[93m[MessageDAL.get_conversation_messages] Getting messages for conversation: {conversation_id}, page: {page}, page_size: {page_size}, before_message_id: {before_message_id}\033[0m')
 		query = self.db.query(self.model).filter(
 			self.model.conversation_id == conversation_id,
 			self.model.is_deleted == False,

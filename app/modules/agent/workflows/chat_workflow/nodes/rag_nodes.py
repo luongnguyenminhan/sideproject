@@ -184,9 +184,7 @@ class RAGNodes:
 			collection_name = config.get('collection_name', self.config.collection_name)
 
 			# Perform retrieval
-			retrieved_docs = await self.retriever.retrieve_documents(
-				queries=queries, collection_name=collection_name, top_k=self.config.max_retrieved_docs, score_threshold=self.config.similarity_threshold
-			)
+			retrieved_docs = await self.retriever.retrieve_documents(queries=queries, collection_name=collection_name, top_k=self.config.max_retrieved_docs, score_threshold=self.config.similarity_threshold)
 
 			# Validate retrieved documents
 			if not Validator.validate_documents(retrieved_docs):

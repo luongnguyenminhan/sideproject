@@ -25,9 +25,7 @@ class ConversationDAL(BaseDAL[Conversation]):
 		order_direction: str = 'desc',
 	):
 		"""Get conversations for a user with pagination and filtering"""
-		logger.info(
-			f'\033[93m[ConversationDAL.get_user_conversations] Getting conversations for user: {user_id}, page: {page}, page_size: {page_size}, search: {search}, order_by: {order_by}, order_direction: {order_direction}\033[0m'
-		)
+		logger.info(f'\033[93m[ConversationDAL.get_user_conversations] Getting conversations for user: {user_id}, page: {page}, page_size: {page_size}, search: {search}, order_by: {order_by}, order_direction: {order_direction}\033[0m')
 		query = self.db.query(self.model).filter(self.model.user_id == user_id, self.model.is_deleted == False)
 		logger.info(f'\033[94m[ConversationDAL.get_user_conversations] Base query created for user conversations\033[0m')
 
@@ -69,9 +67,7 @@ class ConversationDAL(BaseDAL[Conversation]):
 			.first()
 		)
 		if conversation:
-			logger.info(
-				f'\033[92m[ConversationDAL.get_user_conversation_by_id] Found conversation: {conversation.name}, message_count: {conversation.message_count}, last_activity: {conversation.last_activity}\033[0m'
-			)
+			logger.info(f'\033[92m[ConversationDAL.get_user_conversation_by_id] Found conversation: {conversation.name}, message_count: {conversation.message_count}, last_activity: {conversation.last_activity}\033[0m')
 		else:
 			logger.info(f'\033[95m[ConversationDAL.get_user_conversation_by_id] Conversation not found: {conversation_id}\033[0m')
 		return conversation

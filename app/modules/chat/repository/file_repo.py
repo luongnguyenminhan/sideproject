@@ -106,9 +106,7 @@ class FileRepo:
 
 	def get_user_files(self, user_id: str, request: FileListRequest):
 		"""Get user's files with pagination and filtering"""
-		logger.info(
-			f'\033[93m[FileRepo.get_user_files] Getting files for user: {user_id}, page: {request.page}, page_size: {request.page_size}, file_type: {request.file_type}, search: {request.search}, conversation_id: {request.conversation_id}\033[0m'
-		)
+		logger.info(f'\033[93m[FileRepo.get_user_files] Getting files for user: {user_id}, page: {request.page}, page_size: {request.page_size}, file_type: {request.file_type}, search: {request.search}, conversation_id: {request.conversation_id}\033[0m')
 		files = self.file_dal.get_user_files(
 			user_id=user_id,
 			page=request.page,
@@ -170,9 +168,7 @@ class FileRepo:
 		request: FileListRequest,
 	):
 		"""Get files for a specific conversation with pagination and filtering"""
-		logger.info(
-			f'\033[93m[FileRepo.get_files_by_conversation] Getting files for conversation: {conversation_id}, user: {user_id}, page: {request.page}, page_size: {request.page_size}, file_type: {request.file_type}, search: {request.search}\033[0m'
-		)
+		logger.info(f'\033[93m[FileRepo.get_files_by_conversation] Getting files for conversation: {conversation_id}, user: {user_id}, page: {request.page}, page_size: {request.page_size}, file_type: {request.file_type}, search: {request.search}\033[0m')
 		files = self.file_dal.get_conversation_files(
 			user_id=user_id,
 			conversation_id=conversation_id,

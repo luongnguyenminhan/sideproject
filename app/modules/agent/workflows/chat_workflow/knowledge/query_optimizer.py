@@ -127,9 +127,7 @@ class QueryOptimizer:
 		# Generate suggested variants
 		variants = self._generate_basic_variants(cleaned, financial_terms)
 
-		return QueryAnalysis(
-			original_query=query, cleaned_query=cleaned, intent_type=intent, financial_terms=financial_terms, key_concepts=key_concepts, confidence_score=confidence, suggested_variants=variants
-		)
+		return QueryAnalysis(original_query=query, cleaned_query=cleaned, intent_type=intent, financial_terms=financial_terms, key_concepts=key_concepts, confidence_score=confidence, suggested_variants=variants)
 
 	def _basic_query_cleaning(self, query: str) -> str:
 		"""Basic query cleaning và normalization"""

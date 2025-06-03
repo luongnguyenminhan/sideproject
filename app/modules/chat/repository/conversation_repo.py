@@ -23,9 +23,7 @@ class ConversationRepo:
 
 	def get_user_conversations(self, user_id: str, request: ConversationListRequest):
 		"""Get user's conversations with pagination and filtering"""
-		logger.info(
-			f'\033[93m[ConversationRepo.get_user_conversations] Getting conversations for user: {user_id}, page: {request.page}, page_size: {request.page_size}, search: {request.search}, order_by: {request.order_by}, order_direction: {request.order_direction}\033[0m'
-		)
+		logger.info(f'\033[93m[ConversationRepo.get_user_conversations] Getting conversations for user: {user_id}, page: {request.page}, page_size: {request.page_size}, search: {request.search}, order_by: {request.order_by}, order_direction: {request.order_direction}\033[0m')
 		conversations = self.conversation_dal.get_user_conversations(
 			user_id=user_id,
 			page=request.page,
@@ -55,9 +53,7 @@ class ConversationRepo:
 		system_prompt: str = None,
 	):
 		"""Create a new conversation"""
-		logger.info(
-			f'\033[93m[ConversationRepo.create_conversation] Creating conversation for user: {user_id}, name: {name}, has_initial_message: {initial_message is not None}, has_system_prompt: {system_prompt is not None}\033[0m'
-		)
+		logger.info(f'\033[93m[ConversationRepo.create_conversation] Creating conversation for user: {user_id}, name: {name}, has_initial_message: {initial_message is not None}, has_system_prompt: {system_prompt is not None}\033[0m')
 		conversation_data = {
 			'name': name,
 			'user_id': user_id,
@@ -86,9 +82,7 @@ class ConversationRepo:
 		system_prompt: str = None,
 	):
 		"""Update conversation details"""
-		logger.info(
-			f'\033[93m[ConversationRepo.update_conversation] Updating conversation: {conversation_id} for user: {user_id}, new_name: {name}, new_system_prompt: {system_prompt is not None}\033[0m'
-		)
+		logger.info(f'\033[93m[ConversationRepo.update_conversation] Updating conversation: {conversation_id} for user: {user_id}, new_name: {name}, new_system_prompt: {system_prompt is not None}\033[0m')
 		conversation = self.get_conversation_by_id(conversation_id, user_id)
 		logger.info(f'\033[94m[ConversationRepo.update_conversation] Current conversation name: {conversation.name}\033[0m')
 
@@ -142,9 +136,7 @@ class ConversationRepo:
 		before_message_id: str = None,
 	):
 		"""Get messages for a conversation with pagination"""
-		logger.info(
-			f'\033[93m[ConversationRepo.get_conversation_messages] Getting messages for conversation: {conversation_id}, page: {page}, page_size: {page_size}, before_message_id: {before_message_id}\033[0m'
-		)
+		logger.info(f'\033[93m[ConversationRepo.get_conversation_messages] Getting messages for conversation: {conversation_id}, page: {page}, page_size: {page_size}, before_message_id: {before_message_id}\033[0m')
 		messages = self.message_dal.get_conversation_messages(
 			conversation_id=conversation_id,
 			page=page,
