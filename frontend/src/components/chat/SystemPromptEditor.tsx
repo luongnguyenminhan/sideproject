@@ -10,7 +10,6 @@ import { useTranslation } from '@/contexts/TranslationContext'
 interface SystemPromptEditorProps {
   conversationId: string
   currentPrompt?: string
-  agentSystemPrompt?: string
   onSave: (conversationId: string, prompt: string) => Promise<void>
   onCancel: () => void
   isOpen: boolean
@@ -20,7 +19,6 @@ interface SystemPromptEditorProps {
 export function SystemPromptEditor({
   conversationId,
   currentPrompt = '',
-  agentSystemPrompt,
   onSave,
   onCancel,
   isOpen,
@@ -114,22 +112,6 @@ export function SystemPromptEditor({
               </p>
             </div>
 
-            {/* Agent System Prompt Display */}
-            {agentSystemPrompt && (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-[color:var(--foreground)] mb-2">
-                  {t('chat.systemPrompt.agentPrompt')}
-                </h3>
-                <div className="p-3 bg-[color:var(--muted)]/30 border border-[color:var(--border)] rounded-lg">
-                  <p className="text-sm text-[color:var(--muted-foreground)] whitespace-pre-wrap">
-                    {agentSystemPrompt.length > 200 
-                      ? `${agentSystemPrompt.substring(0, 200)}...`
-                      : agentSystemPrompt
-                    }
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* Editor/Preview */}
             <div className="space-y-3">
@@ -138,7 +120,7 @@ export function SystemPromptEditor({
                   {t('chat.systemPrompt.conversationPrompt')}
                 </h3>
                 <span className={`text-xs ${getCharacterCountColor()}`}>
-                  {t('chat.systemPrompt.characterCount', { current: prompt.length, max: maxLength })}
+                  {t('chat.systemPrompt.characterCount')} {prompt.length}/{maxLength}
                 </span>
               </div>
 
