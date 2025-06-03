@@ -184,8 +184,8 @@ export function ChatInterface({
                             className="text-sm text-white" 
                           />
                         </div>
-                        <div className="flex-1">
-                          <p className="mb-2 leading-relaxed whitespace-pre-wrap">
+                        <div className="flex-1 min-w-0">
+                          <p className="mb-2 leading-relaxed whitespace-pre-wrap break-words">
                             {message.content}
                           </p>
                           <p className="text-xs mt-2 text-white/70">
@@ -212,147 +212,249 @@ export function ChatInterface({
                       </span>
                     </div>
                     
-                    {/* Bot Message Content - Using ReactMarkdown without bubble */}
+                    {/* Bot Message Content - Enhanced responsive markdown */}
                     <div className="ml-11 space-y-3">
-                      <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            code: (props: any) => {
-                              const { inline, className, children, ...rest } = props
-                              const match = /language-(\w+)/.exec(className || '')
-                              const codeContent = String(children).replace(/\n$/, '')
-                              const blockId = `${message.id}-${Math.random().toString(36).substr(2, 9)}`
-                              
-                              return !inline && match ? (
-                                <div className="relative group lg:max-w-[1200px] md:max-w-[600px] min-w-0">
-                                  <pre className="bg-[color:var(--muted)] p-3 rounded-lg overflow-x-auto border border-[color:var(--border)] my-2">
-                                    <code className={className} {...rest}>
-                                      {codeContent}
-                                    </code>
-                                  </pre>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyCodeBlock(codeContent, blockId)}
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs bg-[color:var(--background)]/80 backdrop-blur-sm border border-[color:var(--border)] hover:bg-[color:var(--muted)]"
-                                  >
-                                    <FontAwesomeIcon 
-                                      icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
-                                      className="mr-1" 
-                                    />
-                                    {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
-                                  </Button>
+                      {/* Wrapper container với width constraints */}
+                      <div className="w-full max-w-none overflow-hidden">
+                        <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              // Enhanced code block với responsive design
+                              code: (props: any) => {
+                                const { inline, className, children, ...rest } = props
+                                const match = /language-(\w+)/.exec(className || '')
+                                const language = match ? match[1] : 'text'
+                                const codeContent = String(children).replace(/\n$/, '')
+                                const blockId = `${message.id}-${Math.random().toString(36).substr(2, 9)}`
+                                
+                                return !inline && match ? (
+                                  // Block code với container responsive
+                                  <div className="relative group w-full my-4 overflow-hidden">
+                                    <div className="flex items-center justify-between bg-[color:var(--muted)]/50 px-3 py-2 rounded-t-lg border border-[color:var(--border)] border-b-0">
+                                      <span className="text-xs font-medium text-[color:var(--muted-foreground)] uppercase">
+                                        {language}
+                                      </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleCopyCodeBlock(codeContent, blockId)}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs h-6 px-2"
+                                      >
+                                        <FontAwesomeIcon 
+                                          icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
+                                          className="mr-1 w-3 h-3" 
+                                        />
+                                        {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
+                                      </Button>
+                                    </div>
+                                    <div className="bg-[color:var(--muted)] rounded-b-lg border border-[color:var(--border)] border-t-0">
+                                      <pre className="p-4 text-sm leading-relaxed whitespace-pre overflow-x-auto">
+                                        <code 
+                                          className={`${className} block`} 
+                                          style={{
+                                            wordBreak: 'normal',
+                                            overflowWrap: 'normal',
+                                            whiteSpace: 'pre'
+                                          }}
+                                          {...rest}
+                                        >
+                                          {codeContent}
+                                        </code>
+                                      </pre>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  // Inline code
+                                  <code className="bg-[color:var(--muted)] px-2 py-1 rounded text-sm border border-[color:var(--border)] break-words inline-block" {...rest}>
+                                    {children}
+                                  </code>
+                                )
+                              },
+                              // Enhanced images với responsive
+                              img: (props: any) => (
+                                <div className="my-4 w-full flex justify-center">
+                                  <Image
+                                    {...props}
+                                    alt={props.alt || 'Image'}
+                                    className="max-w-full h-auto rounded-lg border border-[color:var(--border)] shadow-sm hover:shadow-md transition-shadow duration-200"
+                                    style={{ maxHeight: '500px', objectFit: 'contain' }}
+                                    width={props.width || 600}
+                                    height={props.height || 400}
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                    }}
+                                  />
+                                  {props.alt && (
+                                    <p className="text-sm text-[color:var(--muted-foreground)] mt-2 italic text-center">
+                                      {props.alt}
+                                    </p>
+                                  )}
                                 </div>
-                              ) : (
-                                <code className="bg-[color:var(--muted)] px-1 py-0.5 rounded text-sm border border-[color:var(--border)]" {...rest}>
-                                  {children}
-                                </code>
-                              )
-                            },
-                            img: (props: any) => (
-                              <div className="my-4">
-                                <Image
-                                  {...props}
-                                  alt={props.alt || 'Image'}
-                                  className="max-w-full h-auto rounded-lg border border-[color:var(--border)] shadow-sm hover:shadow-md transition-shadow duration-200"
-                                  style={{ maxHeight: '500px', objectFit: 'contain' }}
-                                  width={props.width || 600}
-                                  height={props.height || 400}
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.style.display = 'none';
-                                  }}
-                                />
-                                {props.alt && (
-                                  <p className="text-sm text-[color:var(--muted-foreground)] mt-2 italic text-center">
-                                    {props.alt}
-                                  </p>
-                                )}
-                              </div>
-                            ),
-                            blockquote: (props: any) => (
-                              <blockquote className="border-l-4 border-[color:var(--border)] pl-4 italic text-[color:var(--muted-foreground)] my-2" {...props}>
-                                {props.children}
-                              </blockquote>
-                            ),
-                            h1: (props: any) => (
-                              <h1 className="text-2xl font-bold mb-4 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </h1>
-                            ),
-                            h2: (props: any) => (
-                              <h2 className="text-xl font-semibold mb-3 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </h2>
-                            ),
-                            h3: (props: any) => (
-                              <h3 className="text-lg font-medium mb-2 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </h3>
-                            ),
-                            ul: (props: any) => (
-                              <ul className="list-disc pl-6 mb-4 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </ul>
-                            ),
-                            ol: (props: any) => (
-                              <ol className="list-decimal pl-6 mb-4 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </ol>
-                            ),
-                            li: (props: any) => (
-                              <li className="mb-1 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </li>
-                            ),
-                            p: (props: any) => (
-                              <p className="mb-3 leading-relaxed text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </p>
-                            ),
-                            a: (props: any) => (
-                              <a 
-                                href={props.href} 
-                                className="text-[color:var(--primary)] hover:underline" 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                {...props}
-                              >
-                                {props.children}
-                              </a>
-                            ),
-                            table: (props: any) => (
-                              <div className="overflow-x-auto mb-4">
-                                <table className="min-w-full border border-[color:var(--border)] rounded-lg" {...props}>
+                              ),
+                              // Enhanced blockquote được convert thành code block
+                              blockquote: (props: any) => {
+                                const content = typeof props.children === 'string' 
+                                  ? props.children 
+                                  : props.children?.props?.children || '';
+                                const blockId = `quote-${message.id}-${Math.random().toString(36).substr(2, 9)}`
+                                
+                                return (
+                                  <div className="relative group w-full my-4 overflow-hidden">
+                                    <div className="flex items-center justify-between bg-[color:var(--muted)]/50 px-3 py-2 rounded-t-lg border border-[color:var(--border)] border-b-0">
+                                      <span className="text-xs font-medium text-[color:var(--muted-foreground)] uppercase">
+                                        Quote
+                                      </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleCopyCodeBlock(String(content), blockId)}
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs h-6 px-2"
+                                      >
+                                        <FontAwesomeIcon 
+                                          icon={copiedCodeBlocks.has(blockId) ? faCheck : faCopy} 
+                                          className="mr-1 w-3 h-3" 
+                                        />
+                                        {copiedCodeBlocks.has(blockId) ? 'Copied!' : 'Copy'}
+                                      </Button>
+                                    </div>
+                                    <div className="bg-[color:var(--muted)] p-4 rounded-b-lg border border-[color:var(--border)] border-t-0 overflow-x-auto">
+                                      <div className="text-sm leading-relaxed text-[color:var(--muted-foreground)] italic whitespace-pre-wrap break-words">
+                                        {props.children}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              },
+                              // Enhanced headings với proper wrapping
+                              h1: (props: any) => (
+                                <h1 className="text-2xl font-bold mb-4 text-[color:var(--foreground)] break-words hyphens-auto" {...props}>
                                   {props.children}
-                                </table>
-                              </div>
-                            ),
-                            th: (props: any) => (
-                              <th className="border border-[color:var(--border)] px-3 py-2 bg-[color:var(--muted)] font-medium text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </th>
-                            ),
-                            td: (props: any) => (
-                              <td className="border border-[color:var(--border)] px-3 py-2 text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </td>
-                            ),
-                            strong: (props: any) => (
-                              <strong className="font-semibold text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </strong>
-                            ),
-                            em: (props: any) => (
-                              <em className="italic text-[color:var(--foreground)]" {...props}>
-                                {props.children}
-                              </em>
-                            )
-                          }}
-                        >
-                          {message.content}
-                        </ReactMarkdown>
+                                </h1>
+                              ),
+                              h2: (props: any) => (
+                                <h2 className="text-xl font-semibold mb-3 text-[color:var(--foreground)] break-words hyphens-auto" {...props}>
+                                  {props.children}
+                                </h2>
+                              ),
+                              h3: (props: any) => (
+                                <h3 className="text-lg font-medium mb-2 text-[color:var(--foreground)] break-words hyphens-auto" {...props}>
+                                  {props.children}
+                                </h3>
+                              ),
+                              // Enhanced lists với proper spacing
+                              ul: (props: any) => (
+                                <ul className="list-disc pl-6 mb-4 text-[color:var(--foreground)] space-y-1" {...props}>
+                                  {props.children}
+                                </ul>
+                              ),
+                              ol: (props: any) => (
+                                <ol className="list-decimal pl-6 mb-4 text-[color:var(--foreground)] space-y-1" {...props}>
+                                  {props.children}
+                                </ol>
+                              ),
+                              li: (props: any) => (
+                                <li className="text-[color:var(--foreground)] break-words hyphens-auto leading-relaxed" {...props}>
+                                  {props.children}
+                                </li>
+                              ),
+                              // Enhanced paragraphs với better text handling
+                              p: (props: any) => (
+                                <p className="mb-3 leading-relaxed text-[color:var(--foreground)] break-words hyphens-auto" 
+                                   style={{ 
+                                     wordWrap: 'break-word', 
+                                     overflowWrap: 'anywhere',
+                                     maxWidth: '100%'
+                                   }} 
+                                   {...props}
+                                >
+                                  {props.children}
+                                </p>
+                              ),
+                              // Enhanced links với wrapping
+                              a: (props: any) => (
+                                <a 
+                                  href={props.href} 
+                                  className="text-[color:var(--primary)] hover:underline break-all" 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  style={{ 
+                                    wordBreak: 'break-all',
+                                    overflowWrap: 'anywhere'
+                                  }}
+                                  {...props}
+                                >
+                                  {props.children}
+                                </a>
+                              ),
+                              // Enhanced tables với full responsive design
+                              table: (props: any) => (
+                                <div className="w-full my-4 overflow-hidden">
+                                  <div className="overflow-x-auto border border-[color:var(--border)] rounded-lg">
+                                    <table className="min-w-full bg-[color:var(--card)] table-auto" 
+                                           style={{ tableLayout: 'auto' }}
+                                           {...props}
+                                    >
+                                      {props.children}
+                                    </table>
+                                  </div>
+                                </div>
+                              ),
+                              thead: (props: any) => (
+                                <thead className="bg-[color:var(--muted)]/50" {...props}>
+                                  {props.children}
+                                </thead>
+                              ),
+                              // Table headers với responsive behavior
+                              th: (props: any) => (
+                                <th 
+                                  className="border border-[color:var(--border)] px-3 py-2 font-medium text-[color:var(--foreground)] text-left"
+                                  style={{
+                                    minWidth: '120px',
+                                    maxWidth: '200px',
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'anywhere',
+                                    whiteSpace: 'normal'
+                                  }}
+                                  {...props}
+                                >
+                                  {props.children}
+                                </th>
+                              ),
+                              // Table cells với content wrapping
+                              td: (props: any) => (
+                                <td 
+                                  className="border border-[color:var(--border)] px-3 py-2 text-[color:var(--foreground)]"
+                                  style={{
+                                    minWidth: '120px',
+                                    maxWidth: '300px',
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'anywhere',
+                                    whiteSpace: 'normal',
+                                    verticalAlign: 'top'
+                                  }}
+                                  {...props}
+                                >
+                                  {props.children}
+                                </td>
+                              ),
+                              // Enhanced text formatting
+                              strong: (props: any) => (
+                                <strong className="font-semibold text-[color:var(--foreground)] break-words" {...props}>
+                                  {props.children}
+                                </strong>
+                              ),
+                              em: (props: any) => (
+                                <em className="italic text-[color:var(--foreground)] break-words" {...props}>
+                                  {props.children}
+                                </em>
+                              )
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                       
                       {/* Copy Button */}
