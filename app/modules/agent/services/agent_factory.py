@@ -42,7 +42,7 @@ class AgentFactory(object):
 			'name': 'System Configuration',
 			'description': 'Default system-wide AI configuration',
 			'model_provider': ModelProvider.GOOGLE,
-			'model_name': 'gemini-2.0-flash',
+			'model_name': 'gemini-2.0-flash-lite',
 			'temperature': 1,
 			'max_tokens': 2048,
 			'tools_config': {

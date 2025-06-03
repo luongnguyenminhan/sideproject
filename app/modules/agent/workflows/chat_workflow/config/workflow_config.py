@@ -13,9 +13,9 @@ class WorkflowConfig:
 	"""Centralized workflow configuration"""
 
 	# Model settings
-	model_name: str = 'gemini-2.0-flash'
+	model_name: str = 'gemini-2.0-flash-lite'
 	temperature: float = 1.0
-	max_tokens: int = 2048
+	max_tokens: int = 10000
 	api_key: Optional[str] = None
 
 	# RAG settings

@@ -338,7 +338,7 @@ async def call_model(state: AgentState, config: Dict) -> Dict[str, Any]:
 		# Setup model
 		model_config = config.get('model_config', {})
 		model = ChatGoogleGenerativeAI(
-			model=model_config.get('model', 'gemini-2.0-flash'),
+			model=model_config.get('model', 'gemini-2.0-flash-lite'),
 			temperature=model_config.get('temperature', 0),
 			google_api_key=model_config.get('api_key', os.getenv('GOOGLE_API_KEY')),
 		)

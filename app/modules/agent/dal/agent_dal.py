@@ -24,7 +24,7 @@ class AgentDAL(BaseDAL[Agent]):
 				'description': 'AI Assistant for all conversations',
 				'is_active': True,
 				'model_provider': ModelProvider.GOOGLE,
-				'model_name': 'gemini-2.0-flash',
+				'model_name': 'gemini-2.0-flash-lite',
 				'temperature': 0.7,
 				'max_tokens': 2048,
 				'default_system_prompt': 'You are a helpful AI assistant. Provide accurate, helpful, and friendly responses.',

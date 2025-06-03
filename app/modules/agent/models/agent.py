@@ -35,7 +35,7 @@ class Agent(BaseEntity):
 
 	# Embedded LLM Configuration (no separate config table)
 	model_provider = Column(Enum(ModelProvider), nullable=False, default=ModelProvider.GOOGLE)
-	model_name = Column(String(100), nullable=False, default='gemini-2.0-flash')
+	model_name = Column(String(100), nullable=False, default='gemini-2.0-flash-lite')
 	temperature = Column(Float, nullable=False, default=0.7)
 	max_tokens = Column(Integer, nullable=True, default=2048)
 	default_system_prompt = Column(Text, nullable=True, default='You are a helpful AI assistant.')

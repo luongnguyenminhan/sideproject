@@ -153,7 +153,6 @@ class ChatApi {
       model_name: string;
       temperature: number;
       max_tokens: number;
-      default_system_prompt?: string;
       tools_config: {
         web_search: boolean;
         memory_retrieval: boolean;

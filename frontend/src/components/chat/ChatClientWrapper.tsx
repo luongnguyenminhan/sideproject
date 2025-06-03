@@ -52,7 +52,6 @@ export function ChatClientWrapper() {
     provider: string;
     temperature: number;
     max_tokens: number;
-    system_prompt?: string;
   } | null>(null)
   const [agentStatus, setAgentStatus] = useState<'loading' | 'error' | 'success' | 'none'>('none')
   const [isAgentManagementOpen, setIsAgentManagementOpen] = useState(false)
@@ -219,7 +218,6 @@ export function ChatClientWrapper() {
           provider: response.model_provider,
           temperature: response.temperature,
           max_tokens: response.max_tokens,
-          system_prompt: response.default_system_prompt
         }
         setCurrentAgent(agentConfig)
         setAgentStatus('success')
@@ -552,7 +550,6 @@ export function ChatClientWrapper() {
     provider: string;
     temperature: number;
     max_tokens: number;
-    system_prompt?: string;
   }) => {
     setCurrentAgent(updatedAgent)
     setAgentStatus('success')
@@ -688,7 +685,6 @@ export function ChatClientWrapper() {
         <SystemPromptEditor
           conversationId={editingConversationSystemPrompt}
           currentPrompt={getCurrentConversationSystemPrompt()}
-          agentSystemPrompt={currentAgent?.system_prompt}
           onSave={handleUpdateConversationSystemPrompt}
           onCancel={() => {
             setIsSystemPromptEditorOpen(false)

@@ -39,7 +39,7 @@ async def example_custom_config():
 	"""Example với custom configuration"""
 
 	# Create custom config
-	config = WorkflowConfig(model_name='gemini-2.0-flash', temperature=0.1, rag_enabled=True, similarity_threshold=0.8, max_retrieved_docs=3, collection_name='financial_knowledge')
+	config = WorkflowConfig(model_name='gemini-2.0-flash-lite', temperature=0.5, rag_enabled=True, similarity_threshold=0.8, max_retrieved_docs=3, collection_name='financial_knowledge')
 
 	db = next(get_db())
 

@@ -44,7 +44,7 @@ Khi cần thông tin chuyên sâu, bạn sẽ tham khảo cơ sở dữ liệu k
 """
 
 # Initialize the default model
-model = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)
+model = ChatGoogleGenerativeAI(model='gemini-2.0-flash-lite', temperature=0)
 
 # Global services - will be initialized when workflow is created
 qdrant_service = None

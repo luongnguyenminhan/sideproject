@@ -26,7 +26,7 @@ SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
 SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
 SERVICE = 'gemini'
-MODEL_NAME = 'model/gemini-2.0-flash-exp'
+MODEL_NAME = 'model/gemini-2.0-flash'
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
