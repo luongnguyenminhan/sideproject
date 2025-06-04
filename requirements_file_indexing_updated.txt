@@ -1,0 +1,24 @@
+# Enhanced File Indexing Dependencies
+
+# Core text extraction
+PyPDF2>=3.0.1
+python-docx>=0.8.11
+
+# Additional file format support (optional)
+# python-pptx>=0.6.21      # For PowerPoint files
+# openpyxl>=3.1.2          # For Excel files  
+# pandas>=2.0.0            # For CSV/Excel data processing
+# python-docx2txt>=0.8     # For legacy DOC files
+
+# Event system and async support
+asyncio-utils>=0.3.0       # Async utilities
+
+
+# Database and storage
+qdrant-client>=1.6.0       # Qdrant vector database
+minio>=7.1.0               # MinIO object storage
+
+# LangChain and AI
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.0.10 

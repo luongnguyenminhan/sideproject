@@ -2,6 +2,10 @@
 
 from app.core.events import EventHooks
 from app.modules.agent.events.user_events import handle_user_created_event
+from app.modules.agent.events.file_indexing_events import (
+	FileIndexingEventHandler,
+	get_file_indexing_event_handler,
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,4 +23,8 @@ def register_agent_event_handlers():
 	logger.info('Agent event handlers registered successfully')
 
 
-__all__ = ['register_agent_event_handlers']
+__all__ = [
+	'register_agent_event_handlers',
+	'FileIndexingEventHandler',
+	'get_file_indexing_event_handler',
+]

@@ -373,7 +373,6 @@ async def call_model(state, config):
 	"""Call the language model with the current state and RAG context."""
 	start_time = time.time()
 	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
-	print('=' * 100, config)
 	color_logger.workflow_start(
 		'Model Invocation',
 		thread_id=thread_id,

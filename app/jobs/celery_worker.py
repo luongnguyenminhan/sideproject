@@ -4,7 +4,6 @@ from app.core.config import Settings
 
 # Khởi tạo Celery
 settings = Settings()
-print('=' * 300)
 print(settings.CELERY_BROKER_URL)
 print('Celery worker is starting...')
 celery_app = Celery(

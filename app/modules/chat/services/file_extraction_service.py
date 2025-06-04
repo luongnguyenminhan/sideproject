@@ -39,10 +39,12 @@ class FileExtractionService:
 		try:
 			logger.info(f'[FileExtractionService] Extracting text from {file_name}, type: {file_type}')
 
-			if file_type in self.supported_types:
-				extractor = self.supported_types[file_type]
-				text_content = extractor(file_content)
+			# Use the improved file content extractor from utils
+			from app.utils.file_extraction import FileContentExtractor
 
+			text_content, error_message = FileContentExtractor.extract_text_content(file_content, file_type, file_name)
+
+			if text_content is not None:
 				return {
 					'content': text_content,
 					'file_name': file_name,
@@ -52,14 +54,14 @@ class FileExtractionService:
 					'extraction_error': None,
 				}
 			else:
-				logger.warning(f'[FileExtractionService] Unsupported file type: {file_type}')
+				logger.warning(f'[FileExtractionService] Extraction failed: {error_message}')
 				return {
 					'content': '',
 					'file_name': file_name,
 					'file_type': file_type,
 					'char_count': 0,
 					'extraction_success': False,
-					'extraction_error': f'Unsupported file type: {file_type}',
+					'extraction_error': error_message or f'Unsupported file type: {file_type}',
 				}
 
 		except Exception as e:
