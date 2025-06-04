@@ -1,0 +1,70 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { DotsTypingIndicator } from '@/components/ui/TypingIndicator';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+
+interface MessageInputProps {
+  onSendMessage: (content: string) => void;
+  isLoading: boolean;
+  canSendMessage: boolean;
+  placeholder: string;
+  sendingText: string;
+}
+
+export function MessageInput({
+  onSendMessage,
+  isLoading,
+  canSendMessage,
+  placeholder,
+  sendingText
+}: MessageInputProps) {
+  const [input, setInput] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    onSendMessage(input);
+    setInput('');
+  };
+
+  return (
+    <div className="border-t border-[color:var(--border)] bg-[color:var(--card)]/80 backdrop-blur-sm p-4">
+      <div className="max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="flex gap-3 items-center">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={placeholder}
+            disabled={!canSendMessage}
+            className="flex-1 px-4 py-3 bg-[color:var(--background)] border border-[color:var(--border)] rounded-xl text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none transition-all duration-200 disabled:opacity-50"
+          />
+          <Button
+            type="submit"
+            disabled={!input.trim() || !canSendMessage}
+            className="px-6 py-3 bg-gradient-to-r text-white from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            ) : (
+              <FontAwesomeIcon icon={faPaperPlane} />
+            )}
+          </Button>
+        </form>
+        {isLoading && (
+          <div className="flex items-center justify-center mt-2 text-sm text-[color:var(--muted-foreground)]">
+            <DotsTypingIndicator text={sendingText} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,113 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { ChatHeader } from './chat-header';
+import { ChatWelcome } from './chat-welcome';
+import { MessagesContainer } from './messages-container';
+import { MessageInput } from './message-input';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  isStreaming?: boolean;
+  model_used?: string;
+  response_time_ms?: string;
+  file_attachments?: string[];
+}
+
+interface Conversation {
+  id: string;
+  name: string;
+  messages: Message[];
+  lastActivity: Date;
+  messageCount: number;
+}
+
+interface ChatInterfaceProps {
+  conversation: Conversation | null;
+  activeConversationId: string | null;
+  messages: Message[];
+  isLoading: boolean;
+  isTyping: boolean;
+  error: string | null;
+  onSendMessage: (content: string) => void;
+  onOpenMobileSidebar: () => void;
+}
+
+export function ChatInterface({ 
+  conversation, 
+  activeConversationId,
+  messages,
+  isLoading,
+  isTyping,
+  error,
+  onSendMessage,
+  onOpenMobileSidebar
+}: ChatInterfaceProps) {
+  const { t } = useTranslation();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  // Check if user can send messages
+  const canSendMessage = (): boolean => {
+    return Boolean(activeConversationId && !isLoading);
+  };
+
+  // Auto scroll when conversation changes
+  useEffect(() => {
+    if (activeConversationId) {
+      // Small delay to ensure messages are rendered
+      const timer = setTimeout(() => {
+        // Scroll behavior is handled in MessagesContainer
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [activeConversationId]);
+
+  // If no conversation is selected, show welcome screen
+  if (!conversation && !activeConversationId) {
+    return (
+      <ChatWelcome 
+        welcomeTitle={t('chat.welcomeTitle') || 'Welcome to Chat'}
+        welcomeDescription={t('chat.welcomeDescription') || 'Start a new conversation to begin chatting'}
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
+      {/* Chat Header */}
+      <ChatHeader 
+        conversationName={conversation?.name}
+        defaultTitle={t('chat.defaultChatTitle') || 'Chat'}
+        onOpenMobileSidebar={onOpenMobileSidebar}
+      />
+
+      {/* Messages Area */}
+      <MessagesContainer 
+        messages={messages}
+        user={user || undefined}
+        isTyping={isTyping}
+        error={error}
+        copyText={t('chat.copy') || 'Copy'}
+        copiedText={t('chat.copied') || 'Copied!'}
+        typingText={t('chat.typing') || 'Assistant is typing...'}
+        noMessagesText={t('chat.noMessages') || 'No messages yet'}
+        startConversationText={t('chat.startConversation') || 'Start a conversation'}
+      />
+
+      {/* Input Area */}
+      <MessageInput 
+        onSendMessage={onSendMessage}
+        isLoading={isLoading}
+        canSendMessage={canSendMessage()}
+        placeholder={t('chat.typeMessage') || 'Type your message...'}
+        sendingText={t('chat.sending') || 'Sending...'}
+      />
+    </div>
+  );
+}

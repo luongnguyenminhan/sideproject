@@ -74,6 +74,8 @@
     },
     "chats": "Trò chuyện",
     "conversations": "Cuộc trò chuyện",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
     "createFirstChat": "Tạo cuộc trò chuyện đầu tiên để bắt đầu",
     "defaultChatTitle": "Trò chuyện",
     "fileCount": "{{count}} tập tin",
@@ -84,6 +86,7 @@
     "noConversationsYet": "Chưa có cuộc trò chuyện nào",
     "noFilesUploaded": "Chưa có tập tin nào được tải lên",
     "noMessages": "Chưa có tin nhắn nào",
+    "assistant": "Trợ lý",
     "sending": "Đang gửi...",
     "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
     "systemPrompt": {

@@ -74,6 +74,8 @@
     },
     "chats": "Chats",
     "conversations": "Conversations",
+    "copy": "Copy",
+    "copied": "Copied!",
     "createFirstChat": "Create your first conversation to get started",
     "defaultChatTitle": "Chat",
     "fileCount": "{{count}} file",
@@ -85,6 +87,7 @@
     "noConversationsYet": "No conversations yet",
     "noFilesUploaded": "No files uploaded",
     "noMessages": "No messages yet",
+    "assistant": "Assistant",
     "sending": "Sending...",
     "startConversation": "Send a message to start the conversation",
     "systemPrompt": {
