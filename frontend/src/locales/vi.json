@@ -87,22 +87,22 @@
     "sending": "Đang gửi...",
     "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
     "systemPrompt": {
-      "agentPrompt": "Lời Nhắc Agent",
-      "conversationPrompt": "Lời Nhắc Cuộc Trò Chuyện",
-      "description": "Cấu hình lời nhắc hệ thống cho cuộc trò chuyện này",
+      "agentPrompt": "Prompt Agent",
+      "conversationPrompt": "Prompt Cuộc Trò Chuyện",
+      "description": "Cấu hình Prompt hệ thống cho cuộc trò chuyện này",
       "edit": "Chỉnh sửa",
-      "noAgentPrompt": "Chưa có lời nhắc agent nào được thiết lập",
-      "placeholder": "Nhập lời nhắc hệ thống...",
+      "noAgentPrompt": "Chưa có Prompt agent nào được thiết lập",
+      "placeholder": "Nhập Prompt hệ thống...",
       "preview": "Xem trước",
-      "promptSource": "Nguồn Lời Nhắc",
-      "title": "Lời Nhắc Hệ Thống"
+      "promptSource": "Nguồn Prompt",
+      "title": "Prompt Hệ Thống"
     },
     "thisConversation": "Cuộc trò chuyện này",
     "tooltips": {
       "deleteConversation": "Xóa cuộc trò chuyện",
       "editName": "Chỉnh sửa tên",
-      "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
-      "hasCustomSystemPrompt": "Có lời nhắc hệ thống tùy chỉnh"
+      "editSystemPrompt": "Chỉnh sửa Prompt hệ thống",
+      "hasCustomSystemPrompt": "Có Prompt hệ thống tùy chỉnh"
     },
     "typeMessage": "Nhập tin nhắn của bạn...",
     "typing": "AI đang nhập...",

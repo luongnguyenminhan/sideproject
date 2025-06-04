@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faEye, faEdit, faInfo } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 
 interface SystemPromptEditorProps {
@@ -26,7 +26,6 @@ export function SystemPromptEditor({
 }: SystemPromptEditorProps) {
   const { t } = useTranslation()
   const [prompt, setPrompt] = useState(currentPrompt)
-  const [isPreviewMode, setIsPreviewMode] = useState(false)
   const maxLength = 4000
 
   useEffect(() => {
@@ -45,7 +44,6 @@ export function SystemPromptEditor({
 
   const handleCancel = () => {
     setPrompt(currentPrompt)
-    setIsPreviewMode(false)
     onCancel()
   }
 
@@ -62,85 +60,62 @@ export function SystemPromptEditor({
     <>
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-[color:var(--card)] shadow-xl">
+        <Card className="w-full max-w-3xl max-h-[85vh] overflow-hidden bg-[color:var(--card)] shadow-xl border-none">
           {/* Header */}
-          <div className="p-6 border-b border-[color:var(--border)]">
+          <div className="p-4 border-b border-[color:var(--border)]">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-[color:var(--foreground)]">
-                  {t('chat.systemPrompt.title')}
-                </h2>
-                <p className="text-sm text-[color:var(--muted-foreground)] mt-1">
-                  {t('chat.systemPrompt.description')}
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] flex items-center justify-center">
+                  <FontAwesomeIcon icon={faEdit} className="text-white w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-[color:var(--foreground)]">
+                    {t('chat.systemPrompt.title')}
+                  </h2>
+                  <p className="text-xs text-[color:var(--muted-foreground)]">
+                    {t('chat.systemPrompt.description')}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsPreviewMode(!isPreviewMode)}
-                >
-                  <FontAwesomeIcon icon={isPreviewMode ? faEdit : faEye} className="mr-2" />
-                  {isPreviewMode ? t('chat.systemPrompt.edit') : t('chat.systemPrompt.preview')}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleCancel}>
-                  <FontAwesomeIcon icon={faTimes} />
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" onClick={handleCancel}>
+                <FontAwesomeIcon icon={faTimes} className='text-[color:var(--foreground)]' /> 
+              </Button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-6 overflow-y-auto max-h-[60vh]">
-            {/* Prompt Source Info */}
-            <div className="mb-4 p-3 bg-[color:var(--muted)]/50 rounded-lg border border-[color:var(--border)]">
-              <div className="flex items-center gap-2 mb-2">
-                <FontAwesomeIcon icon={faInfo} className="text-[color:var(--primary)]" />
-                <span className="text-sm font-medium text-[color:var(--foreground)]">
-                  {t('chat.systemPrompt.promptSource')}
-                </span>
-              </div>
-            </div>
-
-
-            {/* Editor/Preview */}
+          <div className="p-4 overflow-y-auto max-h-[55vh]">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-[color:var(--foreground)]">
                   {t('chat.systemPrompt.conversationPrompt')}
                 </h3>
                 <span className={`text-xs ${getCharacterCountColor()}`}>
-                  {t('chat.systemPrompt.characterCount')} {prompt.length}/{maxLength}
+                  {prompt.length}/{maxLength}
                 </span>
               </div>
 
-              {isPreviewMode ? (
-                <div className="min-h-[200px] p-4 bg-[color:var(--background)] border border-[color:var(--border)] rounded-lg">
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                  </div>
-                </div>
-              ) : (
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder={t('chat.systemPrompt.placeholder')}
-                  className="w-full h-[200px] p-4 bg-[color:var(--background)] border border-[color:var(--border)] rounded-lg text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none resize-none"
-                  maxLength={maxLength}
-                />
-              )}
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder={t('chat.systemPrompt.placeholder')}
+                className="w-full h-[300px] p-3 bg-[color:var(--background)] border border-[color:var(--border)] rounded-lg text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none resize-none text-sm"
+                maxLength={maxLength}
+              />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-[color:var(--border)] bg-[color:var(--muted)]/20">
-            <div className="flex items-center justify-end gap-3">
-              <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+          <div className="p-4 border-t border-[color:var(--border)] bg-[color:var(--muted)]/20">
+            <div className="flex items-center justify-end gap-2">
+              <Button variant="outline" onClick={handleCancel} disabled={isLoading} size="sm">
                 {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleSave} 
                 disabled={isLoading || prompt.length > maxLength}
                 className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)]"
+                size="sm"
               >
                 <FontAwesomeIcon icon={faSave} className="mr-2" />
                 {isLoading ? '...' : t('common.save')}
