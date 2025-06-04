@@ -37,7 +37,7 @@ class FileExtractionService:
 		    Dict chứa extracted text và metadata
 		"""
 		try:
-			logger.info(f'[FileExtractionService] Extracting text from {file_name}, type: {file_type}')
+			pass  # logger.info(f'[FileExtractionService] Extracting text from {file_name}, type: {file_type}')
 
 			# Use the improved file content extractor from utils
 			from app.utils.file_extraction import FileContentExtractor

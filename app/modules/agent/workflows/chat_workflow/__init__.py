@@ -1,46 +1,51 @@
 """
-Enhanced Chat Workflow với QdrantService Integration
-Production-ready LangGraph workflow cho MoneyEZ Financial Assistant
-
-✨ Features:
-- QdrantService integration cho knowledge retrieval
-- Query optimization cho better search
-- Basic calculation tools (+, -, *, /)
-- Vietnamese financial expertise
-- Production error handling
-- Performance monitoring
+Chat Workflow Module - Agentic RAG Implementation with LangChain Qdrant
+Enhanced workflow with intelligent query analysis, routing, and self-correction using LangChain Qdrant
 """
 
-import logging
+from datetime import datetime, timezone
 import time
+from dotenv import load_dotenv
+from langchain_core.messages import SystemMessage
+from langchain_core.tools import BaseTool
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.errors import NodeInterrupt
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langgraph.checkpoint.memory import MemorySaver
+
+from .tools.basic_tools import tools
+from .state.workflow_state import AgentState
+from .config.workflow_config import WorkflowConfig
+from app.modules.agentic_rag.services.langchain_qdrant_service import (
+	LangChainQdrantService,
+)
+from .utils.color_logger import get_color_logger, Colors
 from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 
-from .basic_workflow import create_workflow_with_rag, basic_workflow
-from .config import WorkflowConfig
-from .knowledge.query_optimizer import QueryOptimizer
-from .knowledge.retriever import KnowledgeRetriever
-from app.modules.agent.services.qdrant_service import QdrantService
-from .utils.color_logger import get_color_logger, Colors
+load_dotenv()
 
-logger = logging.getLogger(__name__)
+# Initialize colorful logger
 color_logger = get_color_logger(__name__)
 
 
 class ChatWorkflow:
 	"""
-	Enhanced Chat Workflow Implementation
+	Enhanced Chat Workflow with LangChain Qdrant integration for Agentic RAG
 
-	Production workflow với:
-	- QdrantService integration
-	- Query optimization
-	- Knowledge retrieval
-	- Basic calculation tools
-	- Vietnamese financial knowledge
+	Features:
+	- LangChain QdrantVectorStore integration
+	- Always-on RAG with intelligent routing
+	- Query analysis and optimization
+	- Document grading and self-correction
+	- Conversation file indexing and retrieval
 	- Production-ready error handling
 	"""
 
 	def __init__(self, db_session: Session, config: Optional[WorkflowConfig] = None):
+		"""Initialize ChatWorkflow with LangChain Qdrant services"""
 		self.start_time = time.time()
 		color_logger.workflow_start(
 			'ChatWorkflow Initialization',
@@ -56,68 +61,55 @@ class ChatWorkflow:
 			f'⚙️ {Colors.BOLD}CONFIG:{Colors.RESET}{Colors.CYAN} Workflow configuration loaded',
 			Colors.CYAN,
 			model_name=self.config.model_name,
-			rag_enabled=self.config.rag_enabled,
-			temperature=self.config.temperature,
 			collection_name=self.config.collection_name,
 		)
 
-		# Initialize services
-		self.qdrant_service = None
-		self.query_optimizer = None
-		self.knowledge_retriever = None
+		# Initialize services for RAG functionality
+		self.langchain_qdrant_service = None
+
+		self.compiled_graph = None
 
 		try:
-			# Initialize RAG services
+			# Initialize LangChain Qdrant services
 			color_logger.info(
-				f'🔧 {Colors.BOLD}INITIALIZING:{Colors.RESET}{Colors.YELLOW} RAG services...',
+				f'🔧 {Colors.BOLD}INITIALIZING:{Colors.RESET}{Colors.YELLOW} LangChain Qdrant RAG services...',
 				Colors.YELLOW,
 			)
 
-			self.qdrant_service = QdrantService(db_session)
+			self.langchain_qdrant_service = LangChainQdrantService(db_session)
 			color_logger.success(
-				'QdrantService initialized successfully',
-				service='QdrantService',
+				'LangChainQdrantService initialized successfully',
+				service='LangChainQdrantService',
 				status='ready',
 			)
 
-			self.query_optimizer = QueryOptimizer(self.config)
-			color_logger.success(
-				'QueryOptimizer initialized successfully',
-				service='QueryOptimizer',
-				keywords_available=len(self.config.knowledge_keywords),
-			)
+			# Create workflow with LangChain Qdrant
+			from .basic_workflow import create_agentic_rag_workflow
 
-			self.knowledge_retriever = KnowledgeRetriever(db_session, self.config)
-			color_logger.success(
-				'KnowledgeRetriever initialized successfully',
-				service='KnowledgeRetriever',
-				similarity_threshold=self.config.similarity_threshold,
-			)
-
-			# Use RAG-enabled workflow
-			self.compiled_graph = create_workflow_with_rag(db_session, self.config)
+			self.compiled_graph = create_agentic_rag_workflow(db_session, self.config)
 
 			color_logger.success(
-				'🚀 ChatWorkflow initialized with RAG functionality',
+				'🚀 ChatWorkflow initialized with LangChain Qdrant RAG functionality',
 				initialization_time=time.time() - self.start_time,
-				workflow_type='RAG-enabled',
+				workflow_type='LangChain-Qdrant-RAG-enabled',
 				services_count=3,
 			)
 
 		except Exception as e:
 			color_logger.error(
-				f'RAG initialization failed: {str(e)}, using basic workflow',
+				f'LangChain Qdrant RAG initialization failed: {str(e)}, using basic workflow',
 				error_type=type(e).__name__,
 				fallback_mode=True,
 			)
-
-			# Fallback to basic workflow
-			self.compiled_graph = basic_workflow
 
 			color_logger.warning(
 				'🔄 Fallback to basic workflow activated',
 				workflow_type='basic',
 				rag_available=False,
+			)
+			raise NodeInterrupt(
+				'LangChain Qdrant RAG initialization failed, falling back to basic workflow',
+				error_type=type(e).__name__,
 			)
 
 		initialization_time = time.time() - self.start_time
@@ -125,7 +117,9 @@ class ChatWorkflow:
 			'ChatWorkflow Initialization',
 			initialization_time,
 			workflow_ready=True,
-			rag_services_available=all([self.qdrant_service, self.query_optimizer, self.knowledge_retriever]),
+			rag_services_available=all([
+				self.langchain_qdrant_service,
+			]),
 		)
 
 	async def process_message(
@@ -136,7 +130,7 @@ class ChatWorkflow:
 		config_override: Optional[Dict[str, Any]] = None,
 	) -> Dict[str, Any]:
 		"""
-		Process user message through enhanced workflow với RAG
+		Process user message with LangChain Qdrant Agentic RAG
 		"""
 		start_time = time.time()
 		processing_session = session_id or 'default'
@@ -146,18 +140,9 @@ class ChatWorkflow:
 			user_id=user_id,
 			session_id=processing_session,
 			message_length=len(user_message),
-			has_config_override=bool(config_override),
-		)
-
-		color_logger.info(
-			f"📨 {Colors.BOLD}INPUT_MESSAGE:{Colors.RESET}{Colors.BRIGHT_CYAN} '{user_message[:100]}{'...' if len(user_message) > 100 else ''}'",
-			Colors.BRIGHT_CYAN,
-			full_length=len(user_message),
-			word_count=len(user_message.split()),
 		)
 
 		try:
-			# Create initial state
 			from langchain_core.messages import HumanMessage
 
 			initial_state = {'messages': [HumanMessage(content=user_message)]}
@@ -194,7 +179,7 @@ class ChatWorkflow:
 
 			# Execute workflow
 			color_logger.info(
-				f'🚀 {Colors.BOLD}EXECUTING:{Colors.RESET}{Colors.BRIGHT_YELLOW} Workflow invocation',
+				f'🚀 {Colors.BOLD}EXECUTING:{Colors.RESET}{Colors.BRIGHT_YELLOW} LangChain Qdrant workflow invocation',
 				Colors.BRIGHT_YELLOW,
 			)
 			final_state = await self.compiled_graph.ainvoke(initial_state, config=runtime_config)
@@ -230,6 +215,7 @@ class ChatWorkflow:
 					'rag_sources': rag_sources_count,
 					'user_id': user_id,
 					'session_id': processing_session,
+					'langchain_qdrant_used': final_state.get('langchain_qdrant_used', False),
 				},
 			}
 
@@ -251,7 +237,6 @@ class ChatWorkflow:
 				error_type=type(e).__name__,
 				processing_time=processing_time,
 				session_id=processing_session,
-				user_message_preview=user_message[:50],
 			)
 
 			# Create fallback response
@@ -301,31 +286,34 @@ class ChatWorkflow:
 		return 'Phản hồi không khả dụng.'
 
 	async def search_knowledge(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-		"""Search knowledge base directly"""
+		"""Search knowledge base directly using LangChain Qdrant"""
 		start_time = time.time()
-		color_logger.workflow_start('Direct Knowledge Search', query_length=len(query), top_k=top_k)
+		color_logger.workflow_start(
+			'Direct LangChain Qdrant Knowledge Search',
+			query_length=len(query),
+			top_k=top_k,
+		)
 
 		color_logger.info(
-			f"🔍 {Colors.BOLD}SEARCH_QUERY:{Colors.RESET}{Colors.BRIGHT_BLUE} '{query[:50]}...'",
-			Colors.BRIGHT_BLUE,
-			full_query_length=len(query),
+			f"🔍 {Colors.BOLD}LANGCHAIN SEARCH:{Colors.RESET}{Colors.BRIGHT_CYAN} '{query[:50]}...'",
+			Colors.BRIGHT_CYAN,
 		)
 
 		try:
-			if not self.query_optimizer or not self.knowledge_retriever:
+			if not self.langchain_qdrant_service:
 				color_logger.error(
-					'RAG services not available for knowledge search',
-					optimizer_available=bool(self.query_optimizer),
-					retriever_available=bool(self.knowledge_retriever),
+					'LangChain Qdrant service not available for knowledge search',
+					service_available=bool(self.langchain_qdrant_service),
 				)
 				return []
 
-			# Optimize queries
-			optimized_queries = self.query_optimizer.optimize_queries(query)
-			color_logger.query_optimization(query, len(optimized_queries))
-
-			# Retrieve documents
-			documents = await self.knowledge_retriever.retrieve_documents(queries=optimized_queries, top_k=top_k)
+			# Search using LangChain Qdrant
+			documents = self.langchain_qdrant_service.similarity_search(
+				query=query,
+				collection_name=self.config.collection_name,
+				top_k=top_k,
+				score_threshold=0.6,
+			)
 
 			# Format results
 			results = []
@@ -345,7 +333,7 @@ class ChatWorkflow:
 
 			search_time = time.time() - start_time
 			color_logger.workflow_complete(
-				'Direct Knowledge Search',
+				'Direct LangChain Qdrant Knowledge Search',
 				search_time,
 				results_count=len(results),
 				avg_score=(sum(r['score'] for r in results) / len(results) if results else 0),
@@ -355,25 +343,25 @@ class ChatWorkflow:
 
 		except Exception as e:
 			color_logger.error(
-				f'Error searching knowledge: {str(e)}',
+				f'Error searching LangChain Qdrant knowledge: {str(e)}',
 				error_type=type(e).__name__,
 				query_preview=query[:50],
 			)
 			return []
 
 	async def index_documents(self, documents: List[Dict[str, Any]], collection_name: Optional[str] = None) -> Dict[str, Any]:
-		"""Index documents to knowledge base"""
+		"""Index documents to knowledge base using LangChain Qdrant"""
 		start_time = time.time()
 		color_logger.workflow_start(
-			'Document Indexing',
+			'LangChain Qdrant Document Indexing',
 			document_count=len(documents),
 			target_collection=collection_name or self.config.collection_name,
 		)
 
 		try:
-			if not self.qdrant_service:
-				color_logger.error('QdrantService not available for indexing')
-				return {'error': 'QdrantService not available'}
+			if not self.langchain_qdrant_service:
+				color_logger.error('LangChain Qdrant service not available for indexing')
+				return {'error': 'LangChain Qdrant service not available'}
 
 			from langchain_core.documents import Document
 
@@ -387,34 +375,34 @@ class ChatWorkflow:
 				total_content_length += len(content)
 
 				color_logger.debug(
-					f'Document #{i + 1} prepared for indexing',
+					f'Document #{i + 1} prepared for LangChain indexing',
 					content_length=len(content),
 					metadata_keys=list(metadata.keys()),
 				)
 
 			color_logger.info(
-				f'📊 {Colors.BOLD}INDEXING_PREP:{Colors.RESET}{Colors.MAGENTA} Documents prepared',
+				f'📊 {Colors.BOLD}LANGCHAIN INDEXING_PREP:{Colors.RESET}{Colors.MAGENTA} Documents prepared',
 				Colors.MAGENTA,
 				total_docs=len(doc_objects),
 				total_content_length=total_content_length,
 			)
 
-			# Index documents
+			# Index using LangChain Qdrant
 			collection = collection_name or self.config.collection_name
-			result = self.qdrant_service.index_documents(doc_objects, collection)
+			result = self.langchain_qdrant_service.index_documents(doc_objects, collection)
 
 			indexing_time = time.time() - start_time
 			indexed_count = result.get('total_indexed', 0)
 
 			color_logger.success(
-				f'Documents indexed successfully',
+				f'Documents indexed successfully with LangChain Qdrant',
 				indexed_count=indexed_count,
 				collection=collection,
 				indexing_time=indexing_time,
 			)
 
 			color_logger.workflow_complete(
-				'Document Indexing',
+				'LangChain Qdrant Document Indexing',
 				indexing_time,
 				success=True,
 				indexed_count=indexed_count,
@@ -424,43 +412,46 @@ class ChatWorkflow:
 
 		except Exception as e:
 			color_logger.error(
-				f'Error indexing documents: {str(e)}',
+				f'Error indexing documents with LangChain Qdrant: {str(e)}',
 				error_type=type(e).__name__,
 				document_count=len(documents),
 			)
 			return {'error': str(e)}
 
 	async def get_knowledge_stats(self) -> Dict[str, Any]:
-		"""Get knowledge base statistics"""
+		"""Get knowledge base statistics using LangChain Qdrant"""
 		color_logger.info(
-			f'📊 {Colors.BOLD}STATS_REQUEST:{Colors.RESET}{Colors.CYAN} Getting knowledge base stats',
+			f'📊 {Colors.BOLD}LANGCHAIN STATS_REQUEST:{Colors.RESET}{Colors.CYAN} Getting knowledge base stats',
 			Colors.CYAN,
 		)
 
 		try:
-			if not self.qdrant_service:
-				color_logger.warning('QdrantService not available for stats')
-				return {'error': 'QdrantService not available'}
+			if not self.langchain_qdrant_service:
+				color_logger.warning('LangChain Qdrant service not available for stats')
+				return {'error': 'LangChain Qdrant service not available'}
 
-			stats = self.qdrant_service.get_collection_stats(self.config.collection_name)
+			stats = self.langchain_qdrant_service.get_collection_stats(self.config.collection_name)
 
 			color_logger.info(
-				f'📈 {Colors.BOLD}STATS_RETRIEVED:{Colors.RESET}{Colors.BRIGHT_GREEN} Collection statistics',
+				f'📈 {Colors.BOLD}LANGCHAIN STATS_RETRIEVED:{Colors.RESET}{Colors.BRIGHT_GREEN} Collection statistics',
 				Colors.BRIGHT_GREEN,
 				collection=self.config.collection_name,
-				**{k: v for k, v in stats.items() if isinstance(v, (int, float, str))},
+				vectors_count=stats.get('vectors_count', 0),
 			)
 
 			return stats
 
 		except Exception as e:
-			color_logger.error(f'Error getting knowledge stats: {str(e)}', error_type=type(e).__name__)
+			color_logger.error(
+				f'Error getting LangChain Qdrant knowledge stats: {str(e)}',
+				error_type=type(e).__name__,
+			)
 			return {'error': str(e)}
 
 	async def health_check(self) -> Dict[str, Any]:
-		"""Comprehensive health check"""
+		"""Comprehensive health check for LangChain Qdrant"""
 		start_time = time.time()
-		color_logger.workflow_start('Health Check', comprehensive=True)
+		color_logger.workflow_start('LangChain Qdrant Health Check', comprehensive=True)
 
 		try:
 			health_data = {
@@ -469,46 +460,38 @@ class ChatWorkflow:
 				'timestamp': time.time(),
 			}
 
-			# Check QdrantService
+			# Check LangChain Qdrant Service
 			color_logger.info(
-				f'🔍 {Colors.BOLD}CHECKING:{Colors.RESET}{Colors.YELLOW} QdrantService health',
+				f'🔍 {Colors.BOLD}CHECKING:{Colors.RESET}{Colors.YELLOW} LangChain Qdrant Service health',
 				Colors.YELLOW,
 			)
-			if self.qdrant_service:
+			if self.langchain_qdrant_service:
 				try:
-					collections = self.qdrant_service.list_collections()
-					health_data['components']['qdrant'] = {
+					collections = self.langchain_qdrant_service.list_collections()
+					health_data['components']['langchain_qdrant'] = {
 						'status': 'healthy',
 						'collections': collections,
 					}
-					color_logger.health_check('QdrantService', 'healthy', collections_count=len(collections))
+					color_logger.health_check(
+						'LangChainQdrantService',
+						'healthy',
+						collections_count=len(collections),
+					)
 				except Exception as e:
-					health_data['components']['qdrant'] = {
+					health_data['components']['langchain_qdrant'] = {
 						'status': 'unhealthy',
 						'error': str(e),
 					}
-					color_logger.health_check('QdrantService', 'unhealthy', error=str(e))
+					color_logger.health_check('LangChainQdrantService', 'unhealthy', error=str(e))
 			else:
-				health_data['components']['qdrant'] = {'status': 'not_initialized'}
-				color_logger.health_check('QdrantService', 'not_initialized')
-
-			# Check Query Optimizer
-			optimizer_status = 'healthy' if self.query_optimizer else 'not_initialized'
-			health_data['components']['query_optimizer'] = {'status': optimizer_status}
-			color_logger.health_check('QueryOptimizer', optimizer_status)
+				health_data['components']['langchain_qdrant'] = {'status': 'not_initialized'}
+				color_logger.health_check('LangChainQdrantService', 'not_initialized')
 
 			# Check Knowledge Retriever
 			color_logger.info(
 				f'🔍 {Colors.BOLD}CHECKING:{Colors.RESET}{Colors.YELLOW} KnowledgeRetriever health',
 				Colors.YELLOW,
 			)
-			if self.knowledge_retriever:
-				retriever_health = await self.knowledge_retriever.health_check()
-				health_data['components']['knowledge_retriever'] = retriever_health
-				color_logger.health_check('KnowledgeRetriever', retriever_health.get('status', 'unknown'))
-			else:
-				health_data['components']['knowledge_retriever'] = {'status': 'not_initialized'}
-				color_logger.health_check('KnowledgeRetriever', 'not_initialized')
 
 			# Check workflow
 			workflow_status = 'healthy' if self.compiled_graph else 'unhealthy'
@@ -527,7 +510,7 @@ class ChatWorkflow:
 
 			check_time = time.time() - start_time
 			color_logger.workflow_complete(
-				'Health Check',
+				'LangChain Qdrant Health Check',
 				check_time,
 				overall_status=health_data['status'],
 				components_checked=len(health_data['components']),
@@ -536,44 +519,58 @@ class ChatWorkflow:
 			return health_data
 
 		except Exception as e:
-			color_logger.error(f'Health check failed: {str(e)}', error_type=type(e).__name__)
+			color_logger.error(
+				f'LangChain Qdrant health check failed: {str(e)}',
+				error_type=type(e).__name__,
+			)
 			return {'status': 'unhealthy', 'error': str(e), 'timestamp': time.time()}
 
 	def get_workflow_info(self) -> Dict[str, Any]:
 		"""Get workflow information"""
 		color_logger.info(
-			f'ℹ️ {Colors.BOLD}INFO_REQUEST:{Colors.RESET}{Colors.BRIGHT_WHITE} Getting workflow information',
+			f'ℹ️ {Colors.BOLD}INFO_REQUEST:{Colors.RESET}{Colors.BRIGHT_WHITE} Getting LangChain Qdrant workflow information',
 			Colors.BRIGHT_WHITE,
 		)
 
 		# Check which services are available
 		services_status = {
-			'qdrant_service': self.qdrant_service is not None,
-			'query_optimizer': self.query_optimizer is not None,
-			'knowledge_retriever': self.knowledge_retriever is not None,
+			'langchain_qdrant_service': self.langchain_qdrant_service is not None,
 		}
 
 		workflow_info = {
-			'name': 'MoneyEZ Enhanced Chat Workflow',
-			'version': '2.0.0',
-			'description': 'Enhanced LangGraph workflow with QdrantService integration',
+			'name': 'MoneyEZ Enhanced Chat Workflow with LangChain Qdrant',
+			'version': '3.0.0',
+			'description': 'Enhanced LangGraph workflow with LangChain QdrantVectorStore integration',
 			'features': [
-				'QdrantService integration',
-				'Query optimization',
-				'Knowledge retrieval',
+				'LangChain QdrantVectorStore integration',
+				'Always-on Agentic RAG',
+				'Query optimization and analysis',
+				'Document grading and self-correction',
+				'Conversation file indexing',
 				'Basic calculation tools (+, -, *, /)',
 				'Vietnamese financial expertise',
 				'Production error handling',
 				'Performance monitoring',
 			],
-			'nodes': (['rag_decision', 'retrieve', 'agent', 'tools'] if any(services_status.values()) else ['agent', 'tools']),
+			'nodes': (
+				[
+					'query_analysis',
+					'agentic_retrieve',
+					'grade_documents',
+					'agent',
+					'tools',
+				]
+				if any(services_status.values())
+				else ['agent', 'tools']
+			),
 			'services': services_status,
 			'config': self.config.to_dict() if hasattr(self.config, 'to_dict') else {},
 			'compiled': self.compiled_graph is not None,
+			'langchain_qdrant_enabled': True,
 		}
 
 		color_logger.info(
-			f'📋 {Colors.BOLD}WORKFLOW_INFO:{Colors.RESET}{Colors.BRIGHT_CYAN} Information compiled',
+			f'📋 {Colors.BOLD}LANGCHAIN WORKFLOW_INFO:{Colors.RESET}{Colors.BRIGHT_CYAN} Information compiled',
 			Colors.BRIGHT_CYAN,
 			version=workflow_info['version'],
 			features_count=len(workflow_info['features']),
@@ -584,15 +581,21 @@ class ChatWorkflow:
 		return workflow_info
 
 
-# Factory function cho easy initialization
+# Factory function cho easy initialization với LangChain Qdrant
 def create_chat_workflow(db_session: Session, config: Optional[WorkflowConfig] = None) -> ChatWorkflow:
 	"""
-	Factory function để create ChatWorkflow instance
+	Factory function để create ChatWorkflow instance với LangChain Qdrant
+
+	Args:
+	        db_session: Database session
+	        config: Optional workflow configuration
+
+	Returns:
+	        ChatWorkflow instance with LangChain Qdrant integration
 	"""
-	return ChatWorkflow(db_session=db_session, config=config)
+	return ChatWorkflow(db_session, config)
 
 
-# Export workflow instance cho compatibility
 def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] = None):
 	"""
 	Get compiled workflow instance cho direct use
@@ -601,12 +604,12 @@ def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] 
 	return workflow.compiled_graph
 
 
-color_logger.success('🚀 MoneyEZ Enhanced Chat Workflow module loaded!')
+color_logger.success('🚀 MoneyEZ Enhanced Chat Workflow with LangChain Qdrant module loaded!')
 color_logger.info(
-	f'📊 {Colors.BOLD}FEATURES:{Colors.RESET}{Colors.BRIGHT_MAGENTA} QdrantService, Query Optimization, Knowledge Retrieval, Basic Tools',
+	f'📊 {Colors.BOLD}FEATURES:{Colors.RESET}{Colors.BRIGHT_MAGENTA} LangChain QdrantVectorStore, Agentic RAG, Query Optimization, Knowledge Retrieval, Basic Tools',
 	Colors.BRIGHT_MAGENTA,
 )
 color_logger.info(
-	f'🔧 {Colors.BOLD}STATUS:{Colors.RESET}{Colors.BRIGHT_GREEN} Production-ready với comprehensive RAG functionality',
+	f'🔧 {Colors.BOLD}STATUS:{Colors.RESET}{Colors.BRIGHT_GREEN} Production-ready với comprehensive LangChain Qdrant RAG functionality',
 	Colors.BRIGHT_GREEN,
 )

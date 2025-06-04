@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.modules.agent.services.file_indexing_service import (
 	ConversationFileIndexingService,
 )
+from app.modules.agentic_rag.services.conversation_rag_service import ConversationRAGService
 from app.modules.chat.repository.file_repo import FileRepo
 from app.modules.chat.models.file import File
 
@@ -22,6 +23,7 @@ class FileIndexingEventHandler:
 	def __init__(self, db: Session):
 		self.db = db
 		self.file_indexing_service = ConversationFileIndexingService(db)
+		self.conversation_rag_service = ConversationRAGService(db)  # Add agentic RAG service
 		self.file_repo = FileRepo(db)
 
 	async def handle_file_uploaded(self, file_id: str, conversation_id: str, user_id: str) -> Dict[str, Any]:
@@ -63,10 +65,19 @@ class FileIndexingEventHandler:
 					'file_id': file_id,
 				}
 
-			# Index file vào Qdrant
+			# Index file vào cả legacy service và agentic RAG
 			try:
 				logger.info(f'\033[95m[FileIndexingEventHandler] Starting indexing for file: {file_id}\033[0m')
-				result = await self.file_indexing_service.index_conversation_files(conversation_id, files_data)
+
+				# Index vào legacy Qdrant service (giữ lại để backward compatibility)
+				legacy_result = await self.file_indexing_service.index_conversation_files(conversation_id, files_data)
+
+				# Index vào agentic RAG service với local Qdrant
+				logger.info(f'\033[96m[FileIndexingEventHandler] Starting agentic RAG indexing for file: {file_id}\033[0m')
+				rag_result = await self.conversation_rag_service.index_conversation_files(conversation_id, files_data)
+
+				# Combine results (prioritize agentic RAG result)
+				result = rag_result if rag_result['successful_files'] > 0 else legacy_result
 
 				# Mark file as indexed
 				if result['successful_file_ids']:
@@ -156,10 +167,19 @@ class FileIndexingEventHandler:
 					'failed_files': failed_files,
 				}
 
-			# Index all files at once
+			# Index all files at once (both legacy and agentic RAG)
 			try:
 				logger.info(f'\033[95m[FileIndexingEventHandler] Starting batch indexing for {len(files_data)} files\033[0m')
-				result = await self.file_indexing_service.index_conversation_files(conversation_id, files_data)
+
+				# Index vào legacy service
+				legacy_result = await self.file_indexing_service.index_conversation_files(conversation_id, files_data)
+
+				# Index vào agentic RAG service
+				logger.info(f'\033[96m[FileIndexingEventHandler] Starting agentic RAG batch indexing\033[0m')
+				rag_result = await self.conversation_rag_service.index_conversation_files(conversation_id, files_data)
+
+				# Combine results
+				result = rag_result if rag_result['successful_files'] > 0 else legacy_result
 
 				# Mark files as indexed
 				if result['successful_file_ids']:
@@ -206,10 +226,16 @@ class FileIndexingEventHandler:
 			}
 
 	def get_conversation_collection_stats(self, conversation_id: str) -> Dict[str, Any]:
-		"""Get statistics của conversation collection"""
+		"""Get statistics của conversation collection (both legacy and agentic RAG)"""
 		try:
 			logger.info(f'\033[96m[FileIndexingEventHandler] Getting stats for conversation: {conversation_id}\033[0m')
-			return self.file_indexing_service.get_conversation_collection_stats(conversation_id)
+
+			# Get stats from both services
+			legacy_stats = self.file_indexing_service.get_conversation_collection_stats(conversation_id)
+			rag_stats = self.conversation_rag_service.get_conversation_collection_stats(conversation_id)
+
+			return {'conversation_id': conversation_id, 'legacy_service': legacy_stats, 'agentic_rag_service': rag_stats, 'primary_service': 'agentic_rag'}
+
 		except Exception as e:
 			logger.error(f'\033[91m[FileIndexingEventHandler] Error getting collection stats: {str(e)}\033[0m')
 			return {

@@ -9,7 +9,9 @@ from langchain_core.documents import Document
 from datetime import datetime
 
 from app.modules.chat.services.file_extraction_service import file_extraction_service
-from app.modules.agent.services.qdrant_service import QdrantService
+from app.modules.agentic_rag.services.langchain_qdrant_service import (
+	LangChainQdrantService,
+)
 from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 
@@ -21,7 +23,7 @@ class ConversationFileIndexingService:
 
 	def __init__(self, db: Session):
 		self.db = db
-		self.qdrant_service = QdrantService(db)
+		self.qdrant_service = LangChainQdrantService(db)
 
 	def get_conversation_collection_name(self, conversation_id: str) -> str:
 		"""Generate collection name cho specific conversation"""

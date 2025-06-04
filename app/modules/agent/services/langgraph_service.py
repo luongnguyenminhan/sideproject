@@ -11,9 +11,14 @@ import time
 from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 from app.modules.agent.models.agent import Agent
-from app.modules.agent.services.qdrant_service import QdrantService
+from app.modules.agentic_rag.services.langchain_qdrant_service import (
+	LangChainQdrantService,
+)
 from app.modules.agent.services.file_indexing_service import (
 	ConversationFileIndexingService,
+)
+from app.modules.agentic_rag.services.conversation_rag_service import (
+	ConversationRAGService,
 )
 from app.modules.chat.repository.file_repo import FileRepo
 from sqlalchemy.orm import Session
@@ -32,6 +37,7 @@ class LangGraphService(object):
 	_global_workflow = None
 	_qdrant_service = None
 	_file_indexing_service = None
+	_conversation_rag_service = None  # Add agentic RAG service
 	_file_repo = None
 
 	def __init__(self, db: Session):
@@ -49,10 +55,13 @@ class LangGraphService(object):
 		# Initialize shared services
 		if LangGraphService._qdrant_service is None:
 			logger.info('\033[95m[LangGraphService.__init__] Initializing Qdrant service\033[0m')
-			LangGraphService._qdrant_service = QdrantService(db)
+			LangGraphService._qdrant_service = LangChainQdrantService(db)
 		if LangGraphService._file_indexing_service is None:
 			logger.info('\033[95m[LangGraphService.__init__] Initializing file indexing service\033[0m')
 			LangGraphService._file_indexing_service = ConversationFileIndexingService(db)
+		if LangGraphService._conversation_rag_service is None:
+			logger.info('\033[95m[LangGraphService.__init__] Initializing agentic RAG service\033[0m')
+			LangGraphService._conversation_rag_service = ConversationRAGService(db)
 		if LangGraphService._file_repo is None:
 			logger.info('\033[95m[LangGraphService.__init__] Initializing file repository\033[0m')
 			LangGraphService._file_repo = FileRepo(db)
@@ -243,7 +252,7 @@ class LangGraphService(object):
 
 	# File indexing and search methods
 	def search_conversation_context(self, conversation_id: str, query: str, top_k: int = 5) -> List[Dict]:
-		"""Search for context in conversation files"""
+		"""Search for context in conversation files using legacy service"""
 		try:
 			logger.info(f'\033[94m[search_conversation_context] Searching context for conversation: {conversation_id}, query length: {len(query)}\033[0m')
 			documents = LangGraphService._file_indexing_service.search_conversation_context(conversation_id, query, top_k)
@@ -264,6 +273,32 @@ class LangGraphService(object):
 		except Exception as e:
 			logger.error(f'\033[91m[search_conversation_context] Error searching conversation context: {str(e)}\033[0m')
 			return []
+
+	async def search_conversation_context_rag(self, conversation_id: str, query: str, top_k: int = 5) -> List[Dict]:
+		"""Search for context using agentic RAG service"""
+		try:
+			logger.info(f'\033[94m[search_conversation_context_rag] Searching with agentic RAG for conversation: {conversation_id}\033[0m')
+			results = await LangGraphService._conversation_rag_service.search_conversation_context(conversation_id, query, top_k)
+			logger.info(f'\033[92m[search_conversation_context_rag] Found {len(results)} documents using agentic RAG\033[0m')
+			return results
+		except Exception as e:
+			logger.error(f'\033[91m[search_conversation_context_rag] Error with agentic RAG: {str(e)}\033[0m')
+			return []
+
+	async def generate_rag_response(self, conversation_id: str, query: str) -> Dict[str, Any]:
+		"""Generate RAG response using agentic RAG service"""
+		try:
+			logger.info(f'\033[94m[generate_rag_response] Generating RAG response for conversation: {conversation_id}\033[0m')
+			result = await LangGraphService._conversation_rag_service.generate_rag_response(conversation_id, query)
+			logger.info(f'\033[92m[generate_rag_response] Generated RAG response with {len(result.get("sources", []))} sources\033[0m')
+			return result
+		except Exception as e:
+			logger.error(f'\033[91m[generate_rag_response] Error generating RAG response: {str(e)}\033[0m')
+			return {
+				'answer': 'Không thể tạo phản hồi RAG.',
+				'sources': [],
+				'has_context': False,
+			}
 
 	# QdrantDB methods - delegate to shared service
 	def search_documents(self, query: str, collection_name: str = 'default_collection', top_k: int = 5) -> List[Dict]:
@@ -294,5 +329,6 @@ class LangGraphService(object):
 		cls._global_workflow = None
 		cls._qdrant_service = None
 		cls._file_indexing_service = None
+		cls._conversation_rag_service = None  # Reset agentic RAG service
 		cls._file_repo = None
 		logger.info('\033[92m[reset_global_cache] Global cache reset completed\033[0m')

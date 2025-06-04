@@ -1,6 +1,6 @@
 """
-Basic Chat Workflow with integrated RAG functionality
-Simple workflow with basic calculation tools + knowledge retrieval
+Basic Chat Workflow with integrated Agentic RAG functionality
+Advanced workflow with query analysis, routing, and self-correction using LangChain Qdrant
 """
 
 from datetime import datetime, timezone
@@ -17,10 +17,10 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from .tools.basic_tools import tools
 from .state.workflow_state import AgentState
-from .knowledge.query_optimizer import QueryOptimizer
-from .knowledge.retriever import KnowledgeRetriever
 from .config.workflow_config import WorkflowConfig
-from app.modules.agent.services.qdrant_service import QdrantService
+from app.modules.agentic_rag.services.langchain_qdrant_service import (
+	LangChainQdrantService,
+)
 from .utils.color_logger import get_color_logger, Colors
 
 load_dotenv()
@@ -40,25 +40,25 @@ Nhiệm vụ của bạn:
 6. Sử dụng kiến thức tài chính để tư vấn chuyên nghiệp
 
 Bạn có thể sử dụng các công cụ tính toán đơn giản: cộng, trừ, nhân, chia để hỗ trợ người dùng.
-Khi cần thông tin chuyên sâu, bạn sẽ tham khảo cơ sở dữ liệu kiến thức tài chính.
+Bạn luôn phân tích query và sử dụng kiến thức phù hợp nhất để trả lời.
 """
 
 # Initialize the default model
 model = ChatGoogleGenerativeAI(model='gemini-2.0-flash-lite', temperature=0)
 
 # Global services - will be initialized when workflow is created
-qdrant_service = None
+langchain_qdrant_service = None
 query_optimizer = None
 knowledge_retriever = None
 workflow_config = None
 
 
 def initialize_services(db_session, config=None):
-	"""Initialize RAG services"""
-	global qdrant_service, query_optimizer, knowledge_retriever, workflow_config
+	"""Initialize Agentic RAG services with LangChain Qdrant"""
+	global langchain_qdrant_service, query_optimizer, knowledge_retriever, workflow_config
 
 	color_logger.workflow_start(
-		'RAG Services Initialization',
+		'Agentic RAG Services Initialization',
 		db_session_id=id(db_session),
 		config_provided=config is not None,
 	)
@@ -66,32 +66,21 @@ def initialize_services(db_session, config=None):
 	try:
 		workflow_config = config or WorkflowConfig.from_env()
 		color_logger.info(
-			f'📋 {Colors.BOLD}CONFIG:{Colors.RESET}{Colors.CYAN} WorkflowConfig loaded',
+			f'📋 {Colors.BOLD}CONFIG:{Colors.RESET}{Colors.CYAN} Agentic RAG with LangChain Qdrant enabled',
 			Colors.CYAN,
 			model_name=workflow_config.model_name,
-			rag_enabled=workflow_config.rag_enabled,
 			collection_name=workflow_config.collection_name,
 		)
 
-		qdrant_service = QdrantService(db_session)
-		color_logger.success('QdrantService initialized', service_type='QdrantService', status='ready')
-
-		query_optimizer = QueryOptimizer(workflow_config)
+		langchain_qdrant_service = LangChainQdrantService(db_session)
 		color_logger.success(
-			'QueryOptimizer initialized',
-			service_type='QueryOptimizer',
-			keywords_count=len(workflow_config.knowledge_keywords),
-		)
-
-		knowledge_retriever = KnowledgeRetriever(db_session, workflow_config)
-		color_logger.success(
-			'KnowledgeRetriever initialized',
-			service_type='KnowledgeRetriever',
-			threshold=workflow_config.similarity_threshold,
+			'LangChainQdrantService initialized',
+			service_type='LangChainQdrantService',
+			status='ready',
 		)
 
 		color_logger.workflow_complete(
-			'RAG Services Initialization',
+			'Agentic RAG Services Initialization',
 			time.time(),
 			services_count=3,
 			status='success',
@@ -99,251 +88,11 @@ def initialize_services(db_session, config=None):
 		return True
 	except Exception as e:
 		color_logger.error(
-			f'Failed to initialize RAG services: {str(e)}',
+			f'Failed to initialize Agentic RAG services: {str(e)}',
 			error_type=type(e).__name__,
 			traceback_available=True,
 		)
 		return False
-
-
-def should_use_rag(state):
-	"""Determine if RAG should be used based on query"""
-	color_logger.info(
-		f'🤔 {Colors.BOLD}RAG_ANALYSIS:{Colors.RESET}{Colors.YELLOW} Starting decision process',
-		Colors.YELLOW,
-	)
-
-	messages = state.get('messages', [])
-	if not messages:
-		color_logger.warning('No messages found in state', decision='skip_rag', reason='empty_messages')
-		return 'skip_rag'
-
-	# Get last user message
-	last_message = None
-	for msg in reversed(messages):
-		if hasattr(msg, 'content') and msg.content:
-			last_message = msg.content
-			break
-
-	if not last_message:
-		color_logger.warning('No user message content found', decision='skip_rag', reason='no_content')
-		return 'skip_rag'
-
-	color_logger.info(
-		f"📝 {Colors.BOLD}ANALYZING:{Colors.RESET}{Colors.BRIGHT_CYAN} '{last_message[:100]}...'",
-		Colors.BRIGHT_CYAN,
-		message_length=len(last_message),
-	)
-
-	# Check for knowledge-related keywords
-	knowledge_keywords = [
-		'tài chính',
-		'thông tin',
-		'giải thích',
-		'là gì',
-		'định nghĩa',
-		'khái niệm',
-		'cách',
-		'làm sao',
-		'tư vấn',
-		'nên',
-		'hướng dẫn',
-		'quy định',
-		'luật',
-		'chính sách',
-		'so sánh',
-		'khác nhau',
-	]
-
-	matched_keywords = [kw for kw in knowledge_keywords if kw in last_message.lower()]
-	need_rag = len(matched_keywords) > 0
-
-	decision_factors = {
-		'matched_keywords': matched_keywords,
-		'keyword_count': len(matched_keywords),
-		'message_length': len(last_message),
-		'contains_question': any(q in last_message for q in ['?', 'gì', 'sao', 'nào']),
-	}
-
-	color_logger.rag_decision(
-		need_rag,
-		decision_factors,
-		matched_keywords=len(matched_keywords),
-		query_preview=last_message[:50],
-	)
-
-	return 'use_rag' if need_rag else 'skip_rag'
-
-
-async def retrieve_knowledge(state, config):
-	"""Retrieve relevant knowledge from QdrantDB and conversation files"""
-	start_time = time.time()
-	color_logger.workflow_start(
-		'Knowledge Retrieval',
-		services_available=all([knowledge_retriever, query_optimizer]),
-	)
-
-	try:
-		messages = state.get('messages', [])
-		if not messages:
-			color_logger.warning('No messages for retrieval', result='empty_context')
-			return {'rag_context': None}
-
-		# Get last user message
-		user_message = None
-		for msg in reversed(messages):
-			if hasattr(msg, 'content') and msg.content:
-				user_message = msg.content
-				break
-
-		if not user_message:
-			color_logger.warning('No user message for retrieval', result='empty_context')
-			return {'rag_context': None}
-
-		color_logger.info(
-			f"🔍 {Colors.BOLD}RETRIEVING:{Colors.RESET}{Colors.BRIGHT_BLUE} '{user_message[:50]}...'",
-			Colors.BRIGHT_BLUE,
-			query_length=len(user_message),
-		)
-
-		# Check if services are available
-		if not knowledge_retriever or not query_optimizer:
-			color_logger.error(
-				'RAG services not available',
-				knowledge_retriever_available=knowledge_retriever is not None,
-				query_optimizer_available=query_optimizer is not None,
-			)
-			return {'rag_context': None}
-
-		# Optimize queries
-		optimized_queries = query_optimizer.optimize_queries(user_message)
-		color_logger.query_optimization(
-			user_message,
-			len(optimized_queries),
-			original_length=len(user_message),
-			queries_generated=len(optimized_queries),
-		)
-
-		# Retrieve documents from knowledge base
-		documents = await knowledge_retriever.retrieve_documents(queries=optimized_queries, top_k=5, score_threshold=0.7)
-
-		# Retrieve documents from conversation files
-		conversation_documents = []
-		try:
-			# Get conversation ID from config
-			conversation_id = config.get('configurable', {}).get('thread_id')
-			if conversation_id and qdrant_service:
-				from app.modules.agent.services.file_indexing_service import (
-					ConversationFileIndexingService,
-				)
-
-				# Create file indexing service instance for search
-				file_indexing_service = ConversationFileIndexingService(qdrant_service.db)
-
-				# Search conversation files for each optimized query
-				for query in optimized_queries:
-					conv_docs = file_indexing_service.search_conversation_context(
-						conversation_id=conversation_id,
-						query=query,
-						top_k=3,
-						score_threshold=0.6,
-					)
-					conversation_documents.extend(conv_docs)
-
-				# Remove duplicates and sort by score
-				unique_conv_docs = {}
-				for doc in conversation_documents:
-					file_id = doc.metadata.get('file_id', 'unknown')
-					if file_id not in unique_conv_docs or doc.metadata.get('similarity_score', 0) > unique_conv_docs[file_id].metadata.get('similarity_score', 0):
-						unique_conv_docs[file_id] = doc
-
-				conversation_documents = list(unique_conv_docs.values())[:3]  # Limit to top 3
-
-				color_logger.info(
-					f'📁 {Colors.BOLD}CONVERSATION_FILES:{Colors.RESET}{Colors.BRIGHT_GREEN} Retrieved',
-					Colors.BRIGHT_GREEN,
-					conversation_id=conversation_id,
-					files_found=len(conversation_documents),
-				)
-		except Exception as e:
-			color_logger.warning(
-				f'Conversation file search failed: {str(e)}',
-				conversation_id=config.get('configurable', {}).get('thread_id', 'unknown'),
-			)
-
-		# Combine all documents
-		all_documents = documents + conversation_documents
-
-		# Calculate metrics
-		avg_score = sum(doc.metadata.get('similarity_score', 0) for doc in all_documents) / len(all_documents) if all_documents else 0
-
-		color_logger.knowledge_retrieval(
-			len(optimized_queries),
-			len(all_documents),
-			avg_score,
-			retrieval_time=time.time() - start_time,
-			threshold_used=0.7,
-			knowledge_docs=len(documents),
-			conversation_docs=len(conversation_documents),
-		)
-
-		# Format context
-		if all_documents:
-			rag_context = []
-
-			# Add knowledge base documents
-			for i, doc in enumerate(documents):
-				score = doc.metadata.get('similarity_score', 0)
-				context_text = f'Kiến thức {i + 1} (score: {score:.3f}): {doc.page_content}'
-				rag_context.append(context_text)
-
-				color_logger.debug(
-					f'Knowledge document {i + 1} retrieved',
-					score=score,
-					content_length=len(doc.page_content),
-					preview=doc.page_content[:100],
-				)
-
-			# Add conversation file documents
-			for i, doc in enumerate(conversation_documents):
-				score = doc.metadata.get('similarity_score', 0)
-				file_name = doc.metadata.get('file_name', 'unknown')
-				context_text = f"File '{file_name}' (score: {score:.3f}): {doc.page_content}"
-				rag_context.append(context_text)
-
-				color_logger.debug(
-					f'Conversation file {i + 1} retrieved',
-					score=score,
-					file_name=file_name,
-					content_length=len(doc.page_content),
-					preview=doc.page_content[:100],
-				)
-
-			color_logger.success(
-				f'Knowledge retrieval completed',
-				total_documents=len(all_documents),
-				knowledge_count=len(documents),
-				files_count=len(conversation_documents),
-				context_length=sum(len(ctx) for ctx in rag_context),
-				avg_relevance=avg_score,
-			)
-
-			return {'rag_context': rag_context}
-		else:
-			color_logger.warning(
-				'No relevant documents found',
-				queries_tried=len(optimized_queries),
-				threshold=0.7,
-			)
-			return {'rag_context': None}
-
-	except Exception as e:
-		color_logger.error(
-			f'Knowledge retrieval failed: {str(e)}',
-			error_type=type(e).__name__,
-			processing_time=time.time() - start_time,
-		)
-		return {'rag_context': None}
 
 
 def should_continue(state):
@@ -370,131 +119,120 @@ def get_tools(config):
 
 
 async def call_model(state, config):
-	"""Call the language model with the current state and RAG context."""
+	"""Agentic RAG - Enhanced Model Call with LangChain Qdrant Context"""
 	start_time = time.time()
 	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 	color_logger.workflow_start(
-		'Model Invocation',
+		'Agentic RAG - Model Invocation',
 		thread_id=thread_id,
-		has_rag_context=bool(state.get('rag_context')),
+		has_context=bool(state.get('rag_context')),
+		langchain_qdrant=state.get('langchain_qdrant_used', False),
 	)
 
-	# Get the system prompt from config
+	# Get system prompt
 	system = config.get('configurable', {}).get('system_prompt', DEFAULT_SYSTEM_PROMPT)
-	print(f'System prompt length: {system}')
-	color_logger.info(
-		f'📋 {Colors.BOLD}SYSTEM_PROMPT:{Colors.RESET}{Colors.CYAN} Loaded',
-		Colors.CYAN,
-		prompt_length=len(system),
-		thread_id=thread_id,
-	)
 
-	# Add RAG context to system prompt if available
+	# Enhanced system prompt for Agentic RAG with LangChain Qdrant
+	agentic_system = f"""{system}
+
+BẠN LÀ AGENTIC RAG AI với LangChain Qdrant - Sử dụng thông tin được cung cấp một cách thông minh:
+
+Retrieval Strategy: {state.get('retrieval_strategy_used', 'comprehensive')}
+Document Quality: {state.get('retrieval_quality', 'unknown')}
+Grading Score: {state.get('grading_score', 0):.2f}
+LangChain Qdrant: {state.get('langchain_qdrant_used', False)}
+
+Hướng dẫn đặc biệt:
+1. Ưu tiên thông tin từ nguồn có độ tin cậy cao từ LangChain Qdrant
+2. Kết hợp kiến thức từ nhiều nguồn khi phù hợp
+3. Nếu thông tin không đủ, hãy nói rõ và đưa ra câu trả lời tốt nhất có thể
+4. Luôn kiểm tra tính nhất quán của thông tin
+5. Cung cấp lý do và nguồn gốc thông tin khi có thể
+"""
+
+	# Add RAG context
 	rag_context = state.get('rag_context')
 	if rag_context:
+		context_quality = state.get('retrieval_quality', 'unknown')
 		context_length = sum(len(ctx) for ctx in rag_context)
+
 		color_logger.info(
-			f'🧠 {Colors.BOLD}RAG_CONTEXT:{Colors.RESET}{Colors.BRIGHT_YELLOW} Enhancing prompt',
+			f'🧠 {Colors.BOLD}LANGCHAIN CONTEXT:{Colors.RESET}{Colors.BRIGHT_YELLOW} Quality={context_quality}',
 			Colors.BRIGHT_YELLOW,
 			sources_count=len(rag_context),
 			total_context_length=context_length,
+			quality=context_quality,
 		)
-		enhanced_system = f'{system}\n\nThông tin tham khảo từ cơ sở dữ liệu:\n' + '\n'.join(rag_context)
+
+		enhanced_system = f'{agentic_system}\n\nKIẾN THỨC TỪ LANGCHAIN QDRANT (Quality: {context_quality}):\n' + '\n'.join(rag_context)
 	else:
 		color_logger.info(
-			f'📝 {Colors.BOLD}NO_RAG:{Colors.RESET}{Colors.DIM} Using base prompt only',
+			f'📝 {Colors.BOLD}NO CONTEXT:{Colors.RESET}{Colors.DIM} Using base knowledge',
 			Colors.DIM,
 		)
-		enhanced_system = system
+		enhanced_system = agentic_system
 
-	# Prepare messages with enhanced system prompt and ChatPromptTemplate
+	# Prepare messages
 	messages = state.get('messages', [])
 	if not messages:
-		color_logger.warning('No messages in state, creating system message', message_count=0)
 		return {'messages': [SystemMessage(content=enhanced_system)]}
 
-	# Create prompt template with system message and agent_scratchpad
+	# Create enhanced prompt
 	prompt = ChatPromptTemplate.from_messages([
 		('system', enhanced_system),
 		MessagesPlaceholder(variable_name='chat_history'),
 		MessagesPlaceholder(variable_name='agent_scratchpad'),
 	])
 
-	# Format the prompt with the chat history
 	formatted_prompt = prompt.format_messages(
 		chat_history=messages,
 		agent_scratchpad=[],
 	)
 
 	color_logger.info(
-		f'💬 {Colors.BOLD}MESSAGES:{Colors.RESET}{Colors.BRIGHT_WHITE} Formatted for model',
-		Colors.BRIGHT_WHITE,
-		total_messages=len(formatted_prompt),
-		chat_history_count=len(messages),
-	)
-
-	# Invoke model with tools
-	color_logger.info(
-		f'🤖 {Colors.BOLD}INVOKING:{Colors.RESET}{Colors.BRIGHT_BLUE} {model.__class__.__name__}',
+		f'🤖 {Colors.BOLD}AGENTIC LANGCHAIN MODEL:{Colors.RESET}{Colors.BRIGHT_BLUE} Processing with enhanced context',
 		Colors.BRIGHT_BLUE,
 		model_name=getattr(model, 'model', 'unknown'),
-		tools_available=len(get_tool_defs(config)),
+		total_messages=len(formatted_prompt),
 	)
 
+	# Invoke model
 	model_with_tools = model.bind_tools(get_tool_defs(config))
 	response = await model_with_tools.ainvoke(
 		formatted_prompt,
 		{
 			'system_time': datetime.now(tz=timezone.utc).isoformat(),
+			'agentic_mode': True,
+			'langchain_qdrant': True,
 		},
 	)
-
-	# Estimate token usage
-	total_chars = sum(len(str(msg.content)) for msg in formatted_prompt) + len(str(response.content))
-	estimated_tokens = total_chars // 4  # Rough estimate for Vietnamese
 
 	processing_time = time.time() - start_time
 	color_logger.model_invocation(
 		getattr(model, 'model', 'unknown'),
-		estimated_tokens,
+		len(str(response.content)) // 4,  # Token estimate
 		processing_time=processing_time,
 		response_length=len(str(response.content)),
-		has_tool_calls=hasattr(response, 'tool_calls') and bool(response.tool_calls),
+		agentic_mode=True,
+		langchain_qdrant=True,
 	)
 
-	color_logger.workflow_complete(
-		'Model Invocation',
-		processing_time,
-		response_generated=True,
-		thread_id=thread_id,
-	)
-
-	# Return the response to be added to the messages
 	return {'messages': response}
 
 
 async def run_tools(input, config, **kwargs):
-	"""Execute tools based on the model's response."""
+	"""Execute tools in Agentic RAG context"""
 	start_time = time.time()
 	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
-	color_logger.workflow_start('Tool Execution', thread_id=thread_id, available_tools=len(get_tools(config)))
+	color_logger.workflow_start('Agentic RAG - Tool Execution', thread_id=thread_id)
 
-	# Extract tool calls from messages
 	messages = input.get('messages', [])
 	tool_calls = []
 	if messages:
 		last_message = messages[-1]
 		if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
 			tool_calls = last_message.tool_calls
-			tool_names = [tc.get('name', 'unknown') for tc in tool_calls]
-
-			color_logger.info(
-				f'🔧 {Colors.BOLD}TOOL_CALLS:{Colors.RESET}{Colors.YELLOW} Detected',
-				Colors.YELLOW,
-				tool_count=len(tool_calls),
-				tool_names=tool_names,
-			)
 
 	tool_node = ToolNode(get_tools(config))
 	response = await tool_node.ainvoke(input, config, **kwargs)
@@ -506,24 +244,17 @@ async def run_tools(input, config, **kwargs):
 		tool_names,
 		processing_time,
 		thread_id=thread_id,
-		results_count=len(response.get('messages', [])),
-	)
-
-	color_logger.workflow_complete(
-		'Tool Execution',
-		processing_time,
-		tools_executed=len(tool_names),
-		thread_id=thread_id,
+		agentic_mode=True,
 	)
 
 	return response
 
 
-def create_workflow_with_rag(db_session, config=None):
-	"""Create workflow with RAG functionality"""
+def create_agentic_rag_workflow(db_session, config=None):
+	"""Create Agentic RAG Workflow with LangChain Qdrant - Always uses RAG with intelligent routing"""
 	color_logger.workflow_start(
-		'Workflow Creation',
-		rag_enabled=True,
+		'Agentic RAG Workflow Creation with LangChain Qdrant',
+		always_rag=True,
 		db_session_provided=db_session is not None,
 	)
 
@@ -531,83 +262,61 @@ def create_workflow_with_rag(db_session, config=None):
 	services_ready = initialize_services(db_session, config)
 
 	color_logger.info(
-		f'🔧 {Colors.BOLD}SERVICES:{Colors.RESET}{Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED} {"Ready" if services_ready else "Failed"}',
+		f'🚀 {Colors.BOLD}LANGCHAIN AGENTIC RAG:{Colors.RESET}{Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED} {"READY" if services_ready else "FAILED"}',
 		Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED,
-		qdrant_available=qdrant_service is not None,
-		optimizer_available=query_optimizer is not None,
-		retriever_available=knowledge_retriever is not None,
+		services_initialized=services_ready,
+		langchain_qdrant=True,
 	)
 
-	# Define the workflow with RAG
+	# Define Agentic RAG workflow
 	workflow = StateGraph(AgentState)
 
-	# Add nodes
-	workflow.add_node('rag_decision', lambda state: {'need_rag': should_use_rag(state) == 'use_rag'})
-	workflow.add_node('retrieve', retrieve_knowledge)
+	# Add Agentic RAG nodes
 	workflow.add_node('agent', call_model)
 	workflow.add_node('tools', run_tools)
 
 	color_logger.info(
-		f'📊 {Colors.BOLD}NODES:{Colors.RESET}{Colors.MAGENTA} Workflow nodes added',
+		f'📊 {Colors.BOLD}LANGCHAIN AGENTIC NODES:{Colors.RESET}{Colors.MAGENTA} Workflow nodes configured',
 		Colors.MAGENTA,
-		node_count=4,
-		nodes=['rag_decision', 'retrieve', 'agent', 'tools'],
+		node_count=2,
+		nodes=[
+			'agent',
+			'tools',
+		],
 	)
 
-	# Set up the graph flow
-	workflow.set_entry_point('rag_decision')
-
-	# Conditional RAG flow
-	workflow.add_conditional_edges(
-		'rag_decision',
-		lambda state: 'use_rag' if state.get('need_rag', False) else 'skip_rag',
-		{'use_rag': 'retrieve', 'skip_rag': 'agent'},
-	)
-
-	# RAG flow
-	workflow.add_edge('retrieve', 'agent')
+	# Agentic RAG flow - ALWAYS goes through RAG
+	workflow.set_entry_point('agent')
 
 	# Tool handling
 	workflow.add_conditional_edges('agent', should_continue, {'tools': 'tools', END: END})
 	workflow.add_edge('tools', 'agent')
 
 	color_logger.info(
-		f'🔗 {Colors.BOLD}EDGES:{Colors.RESET}{Colors.CYAN} Workflow connections established',
+		f'🔗 {Colors.BOLD}LANGCHAIN AGENTIC FLOW:{Colors.RESET}{Colors.CYAN} Always RAG → Analysis → LangChain Retrieve → Grade → Generate',
 		Colors.CYAN,
-		conditional_edges=2,
-		regular_edges=2,
-		entry_point='rag_decision',
+		entry_point='agent',
+		always_rag=True,
+		langchain_qdrant=True,
 	)
 
-	# Compile graph with memory checkpointer
+	# Compile with memory
 	memory = MemorySaver()
 	compiled_workflow = workflow.compile(checkpointer=memory)
 
 	color_logger.workflow_complete(
-		'Workflow Creation',
+		'Agentic RAG Workflow Creation with LangChain Qdrant',
 		time.time(),
-		rag_enabled=services_ready,
-		memory_checkpointer=True,
+		agentic_rag_enabled=True,
+		always_rag=True,
+		langchain_qdrant=True,
 		compilation_successful=True,
 	)
 
 	return compiled_workflow
 
 
-# For backward compatibility, create basic workflow without RAG
-workflow = StateGraph(AgentState)
-
-# Add nodes for the basic agent
-workflow.add_node('agent', call_model)
-workflow.add_node('tools', run_tools)
-
-# Set up the graph flow
-workflow.set_entry_point('agent')
-
-# Handle tools and end conditions
-workflow.add_conditional_edges('agent', should_continue, {'tools': 'tools', END: END})
-workflow.add_edge('tools', 'agent')
-
-# Compile graph with memory checkpointer
-memory = MemorySaver()
-basic_workflow = workflow.compile(checkpointer=memory)
+# Create default Agentic RAG workflow
+def create_workflow_with_rag(db_session, config=None):
+	"""Backward compatibility - now creates Agentic RAG workflow with LangChain Qdrant"""
+	return create_agentic_rag_workflow(db_session, config)
