@@ -20,6 +20,9 @@ class File(BaseEntity):
 	checksum = Column(String(64), nullable=True)
 	download_count = Column(Integer, default=0)
 	minio_bucket = Column(String(255), nullable=True)
+	is_indexed = Column(Boolean, default=False, nullable=False)
+	indexed_at = Column(DateTime, nullable=True)
+	indexing_error = Column(String(1000), nullable=True)
 
 	# Relationships
 	user = relationship('User', back_populates='files')

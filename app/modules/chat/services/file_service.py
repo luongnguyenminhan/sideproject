@@ -95,6 +95,17 @@ class FileService:
 			logger.error(f'Error generating download URL: {e}')
 			raise
 
+	@staticmethod
+	async def get_file_content(file_path: str) -> bytes:
+		"""Get file content from MinIO storage for indexing purposes"""
+		try:
+			file_content = minio_handler.get_file_content(file_path)
+			logger.info(f'Retrieved {len(file_content)} bytes from MinIO for path: {file_path}')
+			return file_content
+		except Exception as e:
+			logger.error(f'Error getting file content from storage: {e}')
+			raise
+
 
 # Singleton instance
 file_service = FileService()

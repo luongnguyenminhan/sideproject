@@ -57,7 +57,11 @@ def initialize_services(db_session, config=None):
 	"""Initialize RAG services"""
 	global qdrant_service, query_optimizer, knowledge_retriever, workflow_config
 
-	color_logger.workflow_start('RAG Services Initialization', db_session_id=id(db_session), config_provided=config is not None)
+	color_logger.workflow_start(
+		'RAG Services Initialization',
+		db_session_id=id(db_session),
+		config_provided=config is not None,
+	)
 
 	try:
 		workflow_config = config or WorkflowConfig.from_env()
@@ -172,7 +176,7 @@ def should_use_rag(state):
 
 
 async def retrieve_knowledge(state, config):
-	"""Retrieve relevant knowledge from QdrantDB"""
+	"""Retrieve relevant knowledge from QdrantDB and conversation files"""
 	start_time = time.time()
 	color_logger.workflow_start(
 		'Knowledge Retrieval',
@@ -220,38 +224,106 @@ async def retrieve_knowledge(state, config):
 			queries_generated=len(optimized_queries),
 		)
 
-		# Retrieve documents
+		# Retrieve documents from knowledge base
 		documents = await knowledge_retriever.retrieve_documents(queries=optimized_queries, top_k=5, score_threshold=0.7)
 
+		# Retrieve documents from conversation files
+		conversation_documents = []
+		try:
+			# Get conversation ID from config
+			conversation_id = config.get('configurable', {}).get('thread_id')
+			if conversation_id and qdrant_service:
+				from app.modules.agent.services.file_indexing_service import (
+					ConversationFileIndexingService,
+				)
+
+				# Create file indexing service instance for search
+				file_indexing_service = ConversationFileIndexingService(qdrant_service.db)
+
+				# Search conversation files for each optimized query
+				for query in optimized_queries:
+					conv_docs = file_indexing_service.search_conversation_context(
+						conversation_id=conversation_id,
+						query=query,
+						top_k=3,
+						score_threshold=0.6,
+					)
+					conversation_documents.extend(conv_docs)
+
+				# Remove duplicates and sort by score
+				unique_conv_docs = {}
+				for doc in conversation_documents:
+					file_id = doc.metadata.get('file_id', 'unknown')
+					if file_id not in unique_conv_docs or doc.metadata.get('similarity_score', 0) > unique_conv_docs[file_id].metadata.get('similarity_score', 0):
+						unique_conv_docs[file_id] = doc
+
+				conversation_documents = list(unique_conv_docs.values())[:3]  # Limit to top 3
+
+				color_logger.info(
+					f'📁 {Colors.BOLD}CONVERSATION_FILES:{Colors.RESET}{Colors.BRIGHT_GREEN} Retrieved',
+					Colors.BRIGHT_GREEN,
+					conversation_id=conversation_id,
+					files_found=len(conversation_documents),
+				)
+		except Exception as e:
+			color_logger.warning(
+				f'Conversation file search failed: {str(e)}',
+				conversation_id=config.get('configurable', {}).get('thread_id', 'unknown'),
+			)
+
+		# Combine all documents
+		all_documents = documents + conversation_documents
+
 		# Calculate metrics
-		avg_score = sum(doc.metadata.get('similarity_score', 0) for doc in documents) / len(documents) if documents else 0
+		avg_score = sum(doc.metadata.get('similarity_score', 0) for doc in all_documents) / len(all_documents) if all_documents else 0
 
 		color_logger.knowledge_retrieval(
 			len(optimized_queries),
-			len(documents),
+			len(all_documents),
 			avg_score,
 			retrieval_time=time.time() - start_time,
 			threshold_used=0.7,
+			knowledge_docs=len(documents),
+			conversation_docs=len(conversation_documents),
 		)
 
 		# Format context
-		if documents:
+		if all_documents:
 			rag_context = []
+
+			# Add knowledge base documents
 			for i, doc in enumerate(documents):
 				score = doc.metadata.get('similarity_score', 0)
-				context_text = f'Nguồn {i + 1} (score: {score:.3f}): {doc.page_content}'
+				context_text = f'Kiến thức {i + 1} (score: {score:.3f}): {doc.page_content}'
 				rag_context.append(context_text)
 
 				color_logger.debug(
-					f'Document {i + 1} retrieved',
+					f'Knowledge document {i + 1} retrieved',
 					score=score,
+					content_length=len(doc.page_content),
+					preview=doc.page_content[:100],
+				)
+
+			# Add conversation file documents
+			for i, doc in enumerate(conversation_documents):
+				score = doc.metadata.get('similarity_score', 0)
+				file_name = doc.metadata.get('file_name', 'unknown')
+				context_text = f"File '{file_name}' (score: {score:.3f}): {doc.page_content}"
+				rag_context.append(context_text)
+
+				color_logger.debug(
+					f'Conversation file {i + 1} retrieved',
+					score=score,
+					file_name=file_name,
 					content_length=len(doc.page_content),
 					preview=doc.page_content[:100],
 				)
 
 			color_logger.success(
 				f'Knowledge retrieval completed',
-				documents_count=len(documents),
+				total_documents=len(all_documents),
+				knowledge_count=len(documents),
+				files_count=len(conversation_documents),
 				context_length=sum(len(ctx) for ctx in rag_context),
 				avg_relevance=avg_score,
 			)

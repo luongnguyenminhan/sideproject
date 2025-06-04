@@ -226,3 +226,69 @@ class QdrantService:
 		except Exception as e:
 			logger.error(f'QdrantService - Failed to list collections: {str(e)}')
 			raise ValidationException(_('list_collections_failed'))
+
+	def get_conversation_collection_name(self, conversation_id: str) -> str:
+		"""Generate collection name for a specific conversation"""
+		return f'conversation_{conversation_id}'
+
+	def index_conversation_files(self, conversation_id: str, files_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+		"""Index files for a specific conversation"""
+		try:
+			collection_name = self.get_conversation_collection_name(conversation_id)
+
+			# Convert files data to Document objects
+			documents = []
+			for file_data in files_data:
+				doc = Document(
+					page_content=file_data['content'],
+					metadata={
+						'file_id': file_data['file_id'],
+						'file_name': file_data['file_name'],
+						'file_type': file_data['file_type'],
+						'conversation_id': conversation_id,
+						'indexed_at': file_data.get('indexed_at'),
+					},
+				)
+				documents.append(doc)
+
+			# Index documents
+			result = self.index_documents(documents, collection_name)
+
+			logger.info(f'QdrantService - Indexed {len(documents)} files for conversation: {conversation_id}')
+			return result
+
+		except Exception as e:
+			logger.error(f'QdrantService - Failed to index conversation files: {str(e)}')
+			raise ValidationException(_('conversation_files_indexing_failed'))
+
+	def search_conversation_files(self, conversation_id: str, query: str, top_k: int = 5, score_threshold: float = 0.7) -> List[Document]:
+		"""Search files within a specific conversation"""
+		try:
+			collection_name = self.get_conversation_collection_name(conversation_id)
+
+			# Check if collection exists
+			collections = self.client.get_collections()
+			existing_names = [col.name for col in collections.collections]
+
+			if collection_name not in existing_names:
+				logger.info(f'QdrantService - No indexed files found for conversation: {conversation_id}')
+				return []
+
+			# Perform search
+			documents = self.similarity_search(query, collection_name, top_k, score_threshold)
+
+			logger.info(f'QdrantService - Found {len(documents)} relevant files for query in conversation: {conversation_id}')
+			return documents
+
+		except Exception as e:
+			logger.error(f'QdrantService - Failed to search conversation files: {str(e)}')
+			raise ValidationException(_('conversation_files_search_failed'))
+
+	def delete_conversation_collection(self, conversation_id: str) -> bool:
+		"""Delete all indexed files for a conversation"""
+		try:
+			collection_name = self.get_conversation_collection_name(conversation_id)
+			return self.delete_documents(collection_name)
+		except Exception as e:
+			logger.error(f'QdrantService - Failed to delete conversation collection: {str(e)}')
+			return False

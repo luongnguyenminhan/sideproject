@@ -309,6 +309,41 @@ class MinioHandler:
 			logger.error(f'Error removing file from MinIO: {err}')
 			return False
 
+	def get_file_content(self, object_name: str) -> bytes:
+		"""
+		Get file content as bytes from MinIO.
+
+		Args:
+		    object_name: The path of the object in MinIO storage
+
+		Returns:
+		    File content as bytes
+		"""
+		try:
+			# First normalize the path to avoid double slashes
+			object_name = object_name.replace('//', '/')
+			logger.info(f'Getting file content: {object_name}')
+
+			# Get file from MinIO
+			response = self.minio_client.get_object(bucket_name=self.bucket_name, object_name=object_name)
+
+			# Read all data
+			file_content = response.read()
+
+			# Close the response
+			response.close()
+			response.release_conn()
+
+			logger.info(f'File content retrieved successfully: {len(file_content)} bytes')
+			return file_content
+
+		except S3Error as err:
+			logger.error(f'Error getting file content from MinIO: {err}')
+			raise
+		except Exception as err:
+			logger.error(f'File not found in MinIO: {err}')
+			raise
+
 
 # Create a singleton instance
 minio_handler = MinioHandler()

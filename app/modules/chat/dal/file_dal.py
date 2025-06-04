@@ -128,3 +128,52 @@ class FileDAL(BaseDAL[File]):
 
 		paginated_result = Pagination(items=files, total_count=total_count, page=page, page_size=page_size)
 		return paginated_result
+
+	def get_unindexed_files_for_conversation(self, conversation_id: str) -> list[File]:
+		"""Get all unindexed files for a specific conversation"""
+		logger.info(f'[FileDAL.get_unindexed_files_for_conversation] Getting unindexed files for conversation: {conversation_id}')
+
+		files = (
+			self.db.query(self.model)
+			.filter(
+				self.model.conversation_id == conversation_id,
+				self.model.is_deleted == False,
+				self.model.is_indexed == False,
+			)
+			.all()
+		)
+
+		logger.info(f'[FileDAL.get_unindexed_files_for_conversation] Found {len(files)} unindexed files')
+		return files
+
+	def get_all_files_for_conversation(self, conversation_id: str) -> list[File]:
+		"""Get all files for a specific conversation (indexed and unindexed)"""
+		logger.info(f'[FileDAL.get_all_files_for_conversation] Getting all files for conversation: {conversation_id}')
+
+		files = (
+			self.db.query(self.model)
+			.filter(
+				self.model.conversation_id == conversation_id,
+				self.model.is_deleted == False,
+			)
+			.all()
+		)
+
+		logger.info(f'[FileDAL.get_all_files_for_conversation] Found {len(files)} files')
+		return files
+
+	def mark_file_as_indexed(self, file_id: str, success: bool = True, error_message: str = None):
+		"""Mark a file as indexed (successfully or with error)"""
+		from datetime import datetime
+
+		logger.info(f'[FileDAL.mark_file_as_indexed] Marking file {file_id} as indexed: success={success}')
+
+		file = self.db.query(self.model).filter(self.model.id == file_id).first()
+		if file:
+			file.is_indexed = success
+			file.indexed_at = datetime.utcnow() if success else None
+			file.indexing_error = error_message if not success else None
+			self.db.commit()
+			logger.info(f'[FileDAL.mark_file_as_indexed] File {file_id} marked as indexed')
+		else:
+			logger.warning(f'[FileDAL.mark_file_as_indexed] File {file_id} not found')

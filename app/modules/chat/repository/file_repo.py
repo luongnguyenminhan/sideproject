@@ -179,3 +179,70 @@ class FileRepo:
 		)
 		pass  # logger.info(f'\033[92m[FileRepo.get_files_by_conversation] Found {len(files.items) if hasattr(files, "items") else len(files)} files\033[0m')
 		return files
+
+	def get_unindexed_files_for_conversation(self, conversation_id: str):
+		"""Get all unindexed files for a specific conversation"""
+		logger.info(f'[FileRepo.get_unindexed_files_for_conversation] Getting unindexed files for conversation: {conversation_id}')
+		return self.file_dal.get_unindexed_files_for_conversation(conversation_id)
+
+	def get_all_files_for_conversation(self, conversation_id: str):
+		"""Get all files for a specific conversation"""
+		logger.info(f'[FileRepo.get_all_files_for_conversation] Getting all files for conversation: {conversation_id}')
+		return self.file_dal.get_all_files_for_conversation(conversation_id)
+
+	def mark_file_as_indexed(self, file_id: str, success: bool = True, error_message: str = None):
+		"""Mark a file as indexed"""
+		logger.info(f'[FileRepo.mark_file_as_indexed] Marking file {file_id} as indexed: success={success}')
+		return self.file_dal.mark_file_as_indexed(file_id, success, error_message)
+
+	async def get_file_content(self, file_id: str, user_id: str) -> bytes:
+		"""Download file content from MinIO for indexing purposes"""
+		logger.info(f'[FileRepo.get_file_content] Getting file content for file: {file_id}, user: {user_id}')
+
+		# Get file metadata
+		file = self.file_dal.get_user_file_by_id(file_id, user_id)
+		if not file:
+			raise NotFoundException(_('file_not_found'))
+
+		# Download file content from MinIO
+		file_content = await file_service.get_file_content(file.file_path)
+		logger.info(f'[FileRepo.get_file_content] Retrieved {len(file_content)} bytes for file: {file.name}')
+		return file_content
+
+	async def get_files_for_indexing(self, conversation_id: str) -> List[dict]:
+		"""Get all files in conversation formatted for indexing service"""
+		logger.info(f'[FileRepo.get_files_for_indexing] Getting files for indexing in conversation: {conversation_id}')
+
+		# Get all files for conversation
+		files = self.file_dal.get_all_files_for_conversation(conversation_id)
+
+		# Format files for indexing service
+		files_data = []
+		for file in files:
+			try:
+				# Download file content
+				file_content = await file_service.get_file_content(file.file_path)
+
+				file_data = {
+					'file_id': file.id,
+					'file_name': file.original_name,
+					'file_type': file.type,
+					'file_content': file_content,
+				}
+				files_data.append(file_data)
+				logger.info(f'[FileRepo.get_files_for_indexing] Prepared file {file.original_name} ({len(file_content)} bytes)')
+
+			except Exception as e:
+				logger.error(f'[FileRepo.get_files_for_indexing] Error preparing file {file.original_name}: {str(e)}')
+				continue
+
+		logger.info(f'[FileRepo.get_files_for_indexing] Prepared {len(files_data)} files for indexing')
+		return files_data
+
+	def bulk_mark_files_as_indexed(self, file_ids: List[str], success: bool = True):
+		"""Mark multiple files as indexed"""
+		logger.info(f'[FileRepo.bulk_mark_files_as_indexed] Marking {len(file_ids)} files as indexed: success={success}')
+
+		with self.file_dal.transaction():
+			for file_id in file_ids:
+				self.file_dal.mark_file_as_indexed(file_id, success)
