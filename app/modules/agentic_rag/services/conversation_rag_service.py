@@ -317,19 +317,6 @@ class ConversationRAGService:
 		kb_repo.collection_name = collection_name
 		logger.info(f'{LogColors.OKBLUE}[ConversationRAGService] Base KB repository created, updating collection name{LogColors.ENDC}')
 
-		# Recreate vectorstore với collection mới
-		from app.modules.agentic_rag.core.config import settings
-		from langchain_qdrant import QdrantVectorStore
-
-		logger.info(f'{LogColors.OKCYAN}[ConversationRAGService] Recreating vectorstore with collection: {collection_name}{LogColors.ENDC}')
-
-		kb_repo.vectorstore = QdrantVectorStore(
-			client=kb_repo.client,
-			collection_name=collection_name,
-			embedding=kb_repo.embedding,
-			metadata_payload_key='metadata',
-		)
-
 		logger.info(f'{LogColors.OKGREEN}[ConversationRAGService] Conversation-specific KB repository created successfully{LogColors.ENDC}')
 		return kb_repo
 
