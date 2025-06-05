@@ -5,7 +5,13 @@ Kiểm tra và xử lý đầu ra từ AI
 
 import re
 from typing import Dict, List, Any
-from .core import BaseGuardrail, GuardrailResult, GuardrailViolation, GuardrailSeverity, GuardrailAction
+from .core import (
+	BaseGuardrail,
+	GuardrailResult,
+	GuardrailViolation,
+	GuardrailSeverity,
+	GuardrailAction,
+)
 from datetime import datetime
 
 
@@ -16,7 +22,15 @@ class HallucinationGuardrail(BaseGuardrail):
 		super().__init__('hallucination_filter', True, GuardrailSeverity.HIGH)
 
 		# Patterns cho các dấu hiệu hallucination
-		self.uncertainty_phrases = ['tôi không chắc chắn', 'có thể là', 'theo như tôi biết', 'tôi nghĩ rằng', 'có lẽ', 'không rõ', 'tôi không có thông tin chính xác']
+		self.uncertainty_phrases = [
+			'tôi không chắc chắn',
+			'có thể là',
+			'theo như tôi biết',
+			'tôi nghĩ rằng',
+			'có lẽ',
+			'không rõ',
+			'tôi không có thông tin chính xác',
+		]
 
 		# Patterns cần cảnh báo
 		self.suspicious_patterns = [
@@ -45,7 +59,11 @@ class HallucinationGuardrail(BaseGuardrail):
 				severity=self.severity,
 				action=GuardrailAction.ALLOW,  # Cảnh báo nhưng cho phép
 				message=f'Phát hiện khả năng hallucination: {len(suspicious_findings)} patterns',
-				details={'suspicious_patterns': suspicious_findings, 'uncertainty_count': uncertainty_count, 'confidence_score': max(0, 1 - len(suspicious_findings) * 0.2)},
+				details={
+					'suspicious_patterns': suspicious_findings,
+					'uncertainty_count': uncertainty_count,
+					'confidence_score': max(0, 1 - len(suspicious_findings) * 0.2),
+				},
 				timestamp=datetime.now(),
 				confidence=max(0.3, 1 - len(suspicious_findings) * 0.1),
 			)
@@ -61,7 +79,12 @@ class FactualityGuardrail(BaseGuardrail):
 		super().__init__('factuality_filter', True, GuardrailSeverity.MEDIUM)
 
 		# CGSEM facts để cross-check
-		self.cgsem_facts = {'founding_date': '14/12/2020', 'motto': 'Cụ thể - Đa dạng - Văn minh - Công bằng', 'spirit': 'tiên quyết, tiên phong, sáng tạo', 'school': 'THPT Cần Giuộc'}
+		self.cgsem_facts = {
+			'founding_date': '14/12/2020',
+			'motto': 'Cụ thể - Đa dạng - Văn minh - Công bằng',
+			'spirit': 'tiên quyết, tiên phong, sáng tạo',
+			'school': 'THPT Cần Giuộc',
+		}
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		violations = []
@@ -82,7 +105,14 @@ class FactualityGuardrail(BaseGuardrail):
 				factual_issues.append('Kim chỉ nam CGSEM không chính xác')
 
 		if factual_issues:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.ALLOW, message=f'Phát hiện khả năng thông tin không chính xác về CGSEM', details={'factual_issues': factual_issues}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.ALLOW,
+				message=f'Phát hiện khả năng thông tin không chính xác về CGSEM',
+				details={'factual_issues': factual_issues},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 		return GuardrailResult(passed=True, violations=violations)
@@ -118,7 +148,14 @@ class ToxicityGuardrail(BaseGuardrail):
 				found_toxic.append(pattern)
 
 		if found_toxic:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.BLOCK, message=f'Phát hiện nội dung độc hại trong AI response', details={'toxic_patterns': found_toxic}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.BLOCK,
+				message=f'Phát hiện nội dung độc hại trong AI response',
+				details={'toxic_patterns': found_toxic},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			return GuardrailResult(passed=False, violations=violations)
@@ -157,7 +194,14 @@ class BrandSafetyGuardrail(BaseGuardrail):
 		found_unsafe = [kw for kw in self.brand_unsafe_keywords if kw in content_lower]
 
 		if found_unsafe:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.MODIFY, message=f'Nội dung có thể không phù hợp với thương hiệu CGSEM', details={'unsafe_keywords': found_unsafe}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.MODIFY,
+				message=f'Nội dung có thể không phù hợp với thương hiệu CGSEM',
+				details={'unsafe_keywords': found_unsafe},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			# Suggest modification
@@ -183,7 +227,14 @@ class ResponseQualityGuardrail(BaseGuardrail):
 
 		# Kiểm tra độ dài
 		if len(content.strip()) < self.min_length:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.BLOCK, message=f'Response quá ngắn ({len(content)} < {self.min_length} ký tự)', details={'content_length': len(content), 'min_length': self.min_length}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.BLOCK,
+				message=f'Response quá ngắn ({len(content)} < {self.min_length} ký tự)',
+				details={'content_length': len(content), 'min_length': self.min_length},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			return GuardrailResult(passed=False, violations=violations)
@@ -201,7 +252,14 @@ class ResponseQualityGuardrail(BaseGuardrail):
 
 		# Kiểm tra có phải chỉ toàn ký tự đặc biệt
 		if re.match(r'^[^\w\s]*$', content.strip()):
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.BLOCK, message='Response chỉ chứa ký tự đặc biệt', details={'special_chars_only': True}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.BLOCK,
+				message='Response chỉ chứa ký tự đặc biệt',
+				details={'special_chars_only': True},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			return GuardrailResult(passed=False, violations=violations)
@@ -216,10 +274,27 @@ class CGSEMConsistencyGuardrail(BaseGuardrail):
 		super().__init__('cgsem_consistency_filter', True, GuardrailSeverity.LOW)
 
 		# CGSEM values
-		self.cgsem_values = ['tiên quyết', 'tiên phong', 'sáng tạo', 'cụ thể', 'đa dạng', 'văn minh', 'công bằng']
+		self.cgsem_values = [
+			'tiên quyết',
+			'tiên phong',
+			'sáng tạo',
+			'cụ thể',
+			'đa dạng',
+			'văn minh',
+			'công bằng',
+		]
 
 		# Negative values (trái với CGSEM)
-		self.negative_values = ['lười biếng', 'thụ động', 'cũ kỹ', 'bảo thủ', 'mơ hồ', 'đơn điệu', 'thô lỗ', 'bất công']
+		self.negative_values = [
+			'lười biếng',
+			'thụ động',
+			'cũ kỹ',
+			'bảo thủ',
+			'mơ hồ',
+			'đơn điệu',
+			'thô lỗ',
+			'bất công',
+		]
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		violations = []
@@ -242,4 +317,12 @@ class CGSEMConsistencyGuardrail(BaseGuardrail):
 		# Kiểm tra có promote CGSEM values không
 		found_positive = [val for val in self.cgsem_values if val in content_lower]
 
-		return GuardrailResult(passed=True, violations=violations, metadata={'cgsem_values_mentioned': found_positive, 'negative_values_mentioned': found_negative, 'alignment_score': len(found_positive) / max(1, len(found_negative) + len(found_positive))})
+		return GuardrailResult(
+			passed=True,
+			violations=violations,
+			metadata={
+				'cgsem_values_mentioned': found_positive,
+				'negative_values_mentioned': found_negative,
+				'alignment_score': len(found_positive) / max(1, len(found_negative) + len(found_positive)),
+			},
+		)

@@ -57,7 +57,12 @@ class GuardrailResult:
 class BaseGuardrail(ABC):
 	"""Base class cho tất cả guardrail rules"""
 
-	def __init__(self, name: str, enabled: bool = True, severity: GuardrailSeverity = GuardrailSeverity.MEDIUM):
+	def __init__(
+		self,
+		name: str,
+		enabled: bool = True,
+		severity: GuardrailSeverity = GuardrailSeverity.MEDIUM,
+	):
 		self.name = name
 		self.enabled = enabled
 		self.severity = severity
@@ -75,7 +80,13 @@ class BaseGuardrail(ABC):
 
 	def get_stats(self) -> Dict[str, Any]:
 		"""Lấy thống kê vi phạm"""
-		return {'name': self.name, 'violation_count': self.violation_count, 'last_violation': self.last_violation, 'enabled': self.enabled, 'severity': self.severity.value}
+		return {
+			'name': self.name,
+			'violation_count': self.violation_count,
+			'last_violation': self.last_violation,
+			'enabled': self.enabled,
+			'severity': self.severity.value,
+		}
 
 
 class GuardrailEngine:
@@ -84,7 +95,12 @@ class GuardrailEngine:
 	def __init__(self):
 		self.input_guardrails: List[BaseGuardrail] = []
 		self.output_guardrails: List[BaseGuardrail] = []
-		self.global_stats = {'total_checks': 0, 'total_violations': 0, 'blocked_content': 0, 'modified_content': 0}
+		self.global_stats = {
+			'total_checks': 0,
+			'total_violations': 0,
+			'blocked_content': 0,
+			'modified_content': 0,
+		}
 
 	def add_input_guardrail(self, guardrail: BaseGuardrail):
 		"""Thêm input guardrail"""
@@ -129,7 +145,14 @@ class GuardrailEngine:
 
 			except Exception as e:
 				# Log error nhưng không crash toàn bộ system
-				violation = GuardrailViolation(rule_name=guardrail.name, severity=GuardrailSeverity.HIGH, action=GuardrailAction.ESCALATE, message=f'Guardrail execution error: {str(e)}', details={'error': str(e), 'guardrail': guardrail.name}, timestamp=datetime.now())
+				violation = GuardrailViolation(
+					rule_name=guardrail.name,
+					severity=GuardrailSeverity.HIGH,
+					action=GuardrailAction.ESCALATE,
+					message=f'Guardrail execution error: {str(e)}',
+					details={'error': str(e), 'guardrail': guardrail.name},
+					timestamp=datetime.now(),
+				)
 				all_violations.append(violation)
 
 		# Xác định kết quả cuối cùng
@@ -143,7 +166,18 @@ class GuardrailEngine:
 
 		processing_time = time.time() - start_time
 
-		return GuardrailResult(passed=not has_blocking_violations, violations=all_violations, modified_content=modified_content if modified_content != content else None, metadata={'original_content_length': len(content), 'modified_content_length': len(modified_content), 'guardrails_checked': len([g for g in guardrails if g.is_enabled()]), 'violations_found': len(all_violations)}, processing_time=processing_time)
+		return GuardrailResult(
+			passed=not has_blocking_violations,
+			violations=all_violations,
+			modified_content=modified_content if modified_content != content else None,
+			metadata={
+				'original_content_length': len(content),
+				'modified_content_length': len(modified_content),
+				'guardrails_checked': len([g for g in guardrails if g.is_enabled()]),
+				'violations_found': len(all_violations),
+			},
+			processing_time=processing_time,
+		)
 
 	def get_stats(self) -> Dict[str, Any]:
 		"""Lấy thống kê tổng quan"""
@@ -152,4 +186,9 @@ class GuardrailEngine:
 		for guardrail in self.input_guardrails + self.output_guardrails:
 			guardrail_stats.append(guardrail.get_stats())
 
-		return {'global_stats': self.global_stats, 'guardrail_stats': guardrail_stats, 'total_guardrails': len(self.input_guardrails) + len(self.output_guardrails), 'active_guardrails': len([g for g in self.input_guardrails + self.output_guardrails if g.is_enabled()])}
+		return {
+			'global_stats': self.global_stats,
+			'guardrail_stats': guardrail_stats,
+			'total_guardrails': len(self.input_guardrails) + len(self.output_guardrails),
+			'active_guardrails': len([g for g in self.input_guardrails + self.output_guardrails if g.is_enabled()]),
+		}

@@ -5,7 +5,13 @@ Kiểm tra và xử lý đầu vào từ user
 
 import re
 from typing import Dict, List, Any
-from .core import BaseGuardrail, GuardrailResult, GuardrailViolation, GuardrailSeverity, GuardrailAction
+from .core import (
+	BaseGuardrail,
+	GuardrailResult,
+	GuardrailViolation,
+	GuardrailSeverity,
+	GuardrailAction,
+)
 from datetime import datetime
 
 
@@ -38,7 +44,20 @@ class ProfanityGuardrail(BaseGuardrail):
 		}
 
 		# Từ thay thế
-		self.replacements = {'đụ': '***', 'địt': '***', 'lồn': '***', 'cặc': '***', 'đéo': '***', 'đm': '***', 'vcl': '***', 'vkl': '***', 'shit': '***', 'fuck': '***', 'damn': '***', 'bitch': '***'}
+		self.replacements = {
+			'đụ': '***',
+			'địt': '***',
+			'lồn': '***',
+			'cặc': '***',
+			'đéo': '***',
+			'đm': '***',
+			'vcl': '***',
+			'vkl': '***',
+			'shit': '***',
+			'fuck': '***',
+			'damn': '***',
+			'bitch': '***',
+		}
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		violations = []
@@ -51,7 +70,14 @@ class ProfanityGuardrail(BaseGuardrail):
 				modified_content = modified_content.replace(word, self.replacements.get(word, '***'))
 
 		if found_profanity:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.MODIFY, message=f'Phát hiện từ ngữ không phù hợp: {", ".join(found_profanity)}', details={'banned_words_found': found_profanity}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.MODIFY,
+				message=f'Phát hiện từ ngữ không phù hợp: {", ".join(found_profanity)}',
+				details={'banned_words_found': found_profanity},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			return GuardrailResult(
@@ -77,7 +103,14 @@ class SpamGuardrail(BaseGuardrail):
 		# Kiểm tra ký tự lặp lại
 		repeated_char_pattern = r'(.)\1{' + str(self.max_repeated_chars) + ',}'
 		if re.search(repeated_char_pattern, content):
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.MODIFY, message=f'Phát hiện ký tự lặp lại quá {self.max_repeated_chars} lần', details={'repeated_chars': True}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.MODIFY,
+				message=f'Phát hiện ký tự lặp lại quá {self.max_repeated_chars} lần',
+				details={'repeated_chars': True},
+				timestamp=datetime.now(),
+			)
 			violations.append(violation)
 
 			# Sửa đổi content
@@ -118,7 +151,14 @@ class LengthGuardrail(BaseGuardrail):
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		if len(content) > self.max_length:
-			violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.BLOCK, message=f'Input quá dài ({len(content)} > {self.max_length} ký tự)', details={'content_length': len(content), 'max_length': self.max_length}, timestamp=datetime.now())
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=self.severity,
+				action=GuardrailAction.BLOCK,
+				message=f'Input quá dài ({len(content)} > {self.max_length} ký tự)',
+				details={'content_length': len(content), 'max_length': self.max_length},
+				timestamp=datetime.now(),
+			)
 
 			return GuardrailResult(passed=False, violations=[violation])
 
@@ -188,7 +228,14 @@ class InjectionGuardrail(BaseGuardrail):
 
 		for pattern in self.dangerous_patterns:
 			if re.search(pattern, content_lower, re.IGNORECASE):
-				violation = GuardrailViolation(rule_name=self.name, severity=self.severity, action=GuardrailAction.BLOCK, message=f'Phát hiện khả năng prompt injection: {pattern}', details={'detected_pattern': pattern}, timestamp=datetime.now())
+				violation = GuardrailViolation(
+					rule_name=self.name,
+					severity=self.severity,
+					action=GuardrailAction.BLOCK,
+					message=f'Phát hiện khả năng prompt injection: {pattern}',
+					details={'detected_pattern': pattern},
+					timestamp=datetime.now(),
+				)
 				violations.append(violation)
 
 				return GuardrailResult(passed=False, violations=violations)

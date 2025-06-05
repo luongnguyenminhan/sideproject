@@ -11,7 +11,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 
-from .core import BaseGuardrail, GuardrailResult, GuardrailViolation, GuardrailSeverity, GuardrailAction, GuardrailEngine
+from .core import (
+	BaseGuardrail,
+	GuardrailResult,
+	GuardrailViolation,
+	GuardrailSeverity,
+	GuardrailAction,
+	GuardrailEngine,
+)
 from ..utils.color_logger import get_color_logger, Colors
 
 # Initialize colorful logger
@@ -97,7 +104,11 @@ class LLMInputGuardrail(BaseGuardrail):
 		"""Phân tích content với LLM để xác định vi phạm."""
 		start_time = time.time()
 
-		color_logger.workflow_start('LLM Input Guardrail Analysis', content_length=len(content), model=self.model.model)
+		color_logger.workflow_start(
+			'LLM Input Guardrail Analysis',
+			content_length=len(content),
+			model=self.model.model,
+		)
 
 		try:
 			# Prepare context information
@@ -136,7 +147,14 @@ class LLMInputGuardrail(BaseGuardrail):
 
 			processing_time = time.time() - start_time
 
-			color_logger.info(f'🤖 {Colors.BOLD}LLM GUARDRAIL DECISION:{Colors.RESET} {decision.action}', Colors.BRIGHT_CYAN, violation=decision.has_violation, severity=decision.severity, confidence=decision.confidence, processing_time=processing_time)
+			color_logger.info(
+				f'🤖 {Colors.BOLD}LLM GUARDRAIL DECISION:{Colors.RESET} {decision.action}',
+				Colors.BRIGHT_CYAN,
+				violation=decision.has_violation,
+				severity=decision.severity,
+				confidence=decision.confidence,
+				processing_time=processing_time,
+			)
 
 			# Convert to GuardrailResult
 			return self._convert_to_guardrail_result(decision, content, processing_time)
@@ -145,7 +163,21 @@ class LLMInputGuardrail(BaseGuardrail):
 			color_logger.error(f'LLM Guardrail Error: {str(e)}', Colors.BRIGHT_RED)
 
 			# Fallback to safe mode
-			return GuardrailResult(passed=False, violations=[GuardrailViolation(rule_name=self.name, severity=GuardrailSeverity.HIGH, action=GuardrailAction.ESCALATE, message=f'LLM Guardrail analysis failed: {str(e)}', details={'error': str(e), 'content_length': len(content)}, timestamp=datetime.now(tz=timezone.utc), confidence=0.5)], processing_time=time.time() - start_time)
+			return GuardrailResult(
+				passed=False,
+				violations=[
+					GuardrailViolation(
+						rule_name=self.name,
+						severity=GuardrailSeverity.HIGH,
+						action=GuardrailAction.ESCALATE,
+						message=f'LLM Guardrail analysis failed: {str(e)}',
+						details={'error': str(e), 'content_length': len(content)},
+						timestamp=datetime.now(tz=timezone.utc),
+						confidence=0.5,
+					)
+				],
+				processing_time=time.time() - start_time,
+			)
 
 	def _prepare_context(self, context: Dict[str, Any]) -> str:
 		"""Chuẩn bị context information cho LLM."""
@@ -168,25 +200,66 @@ class LLMInputGuardrail(BaseGuardrail):
 
 		return '\n'.join(context_parts) if context_parts else 'No additional context'
 
-	def _convert_to_guardrail_result(self, decision: LLMGuardrailDecision, original_content: str, processing_time: float) -> GuardrailResult:
+	def _convert_to_guardrail_result(
+		self,
+		decision: LLMGuardrailDecision,
+		original_content: str,
+		processing_time: float,
+	) -> GuardrailResult:
 		"""Convert LLM decision to GuardrailResult."""
 
 		violations = []
 
 		if decision.has_violation:
 			# Map severity
-			severity_map = {'low': GuardrailSeverity.LOW, 'medium': GuardrailSeverity.MEDIUM, 'high': GuardrailSeverity.HIGH, 'critical': GuardrailSeverity.CRITICAL}
+			severity_map = {
+				'low': GuardrailSeverity.LOW,
+				'medium': GuardrailSeverity.MEDIUM,
+				'high': GuardrailSeverity.HIGH,
+				'critical': GuardrailSeverity.CRITICAL,
+			}
 
 			# Map action
-			action_map = {'allow': GuardrailAction.ALLOW, 'modify': GuardrailAction.MODIFY, 'block': GuardrailAction.BLOCK, 'escalate': GuardrailAction.ESCALATE}
+			action_map = {
+				'allow': GuardrailAction.ALLOW,
+				'modify': GuardrailAction.MODIFY,
+				'block': GuardrailAction.BLOCK,
+				'escalate': GuardrailAction.ESCALATE,
+			}
 
-			violation = GuardrailViolation(rule_name=self.name, severity=severity_map.get(decision.severity, GuardrailSeverity.MEDIUM), action=action_map.get(decision.action, GuardrailAction.BLOCK), message=decision.explanation, details={'violation_type': decision.violation_type, 'tags': decision.tags, 'llm_decision': True, 'model': self.model.model}, timestamp=datetime.now(tz=timezone.utc), confidence=decision.confidence)
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=severity_map.get(decision.severity, GuardrailSeverity.MEDIUM),
+				action=action_map.get(decision.action, GuardrailAction.BLOCK),
+				message=decision.explanation,
+				details={
+					'violation_type': decision.violation_type,
+					'tags': decision.tags,
+					'llm_decision': True,
+					'model': self.model.model,
+				},
+				timestamp=datetime.now(tz=timezone.utc),
+				confidence=decision.confidence,
+			)
 			violations.append(violation)
 
 		# Determine if passed
 		passed = not decision.has_violation or decision.action == 'allow'
 
-		return GuardrailResult(passed=passed, violations=violations, modified_content=decision.modified_content, metadata={'llm_analysis': True, 'confidence': decision.confidence, 'violation_type': decision.violation_type if decision.has_violation else None, 'tags': decision.tags, 'original_content_length': len(original_content), 'modified_content_length': len(decision.modified_content) if decision.modified_content else None}, processing_time=processing_time)
+		return GuardrailResult(
+			passed=passed,
+			violations=violations,
+			modified_content=decision.modified_content,
+			metadata={
+				'llm_analysis': True,
+				'confidence': decision.confidence,
+				'violation_type': (decision.violation_type if decision.has_violation else None),
+				'tags': decision.tags,
+				'original_content_length': len(original_content),
+				'modified_content_length': (len(decision.modified_content) if decision.modified_content else None),
+			},
+			processing_time=processing_time,
+		)
 
 
 class LLMOutputGuardrail(BaseGuardrail):
@@ -255,7 +328,11 @@ class LLMOutputGuardrail(BaseGuardrail):
 		"""Phân tích AI response với LLM để đảm bảo chất lượng."""
 		start_time = time.time()
 
-		color_logger.workflow_start('LLM Output Guardrail Analysis', content_length=len(content), model=self.model.model)
+		color_logger.workflow_start(
+			'LLM Output Guardrail Analysis',
+			content_length=len(content),
+			model=self.model.model,
+		)
 
 		try:
 			# Prepare context information
@@ -294,7 +371,14 @@ class LLMOutputGuardrail(BaseGuardrail):
 
 			processing_time = time.time() - start_time
 
-			color_logger.info(f'🤖 {Colors.BOLD}LLM OUTPUT GUARDRAIL:{Colors.RESET} {decision.action}', Colors.BRIGHT_MAGENTA, violation=decision.has_violation, severity=decision.severity, confidence=decision.confidence, processing_time=processing_time)
+			color_logger.info(
+				f'🤖 {Colors.BOLD}LLM OUTPUT GUARDRAIL:{Colors.RESET} {decision.action}',
+				Colors.BRIGHT_MAGENTA,
+				violation=decision.has_violation,
+				severity=decision.severity,
+				confidence=decision.confidence,
+				processing_time=processing_time,
+			)
 
 			# Convert to GuardrailResult
 			return self._convert_to_guardrail_result(decision, content, processing_time)
@@ -303,7 +387,21 @@ class LLMOutputGuardrail(BaseGuardrail):
 			color_logger.error(f'LLM Output Guardrail Error: {str(e)}', Colors.BRIGHT_RED)
 
 			# Fallback - allow but with warning
-			return GuardrailResult(passed=True, violations=[GuardrailViolation(rule_name=self.name, severity=GuardrailSeverity.MEDIUM, action=GuardrailAction.ALLOW, message=f'LLM Output Guardrail analysis failed, allowing with warning: {str(e)}', details={'error': str(e), 'fallback': True}, timestamp=datetime.now(tz=timezone.utc), confidence=0.3)], processing_time=time.time() - start_time)
+			return GuardrailResult(
+				passed=True,
+				violations=[
+					GuardrailViolation(
+						rule_name=self.name,
+						severity=GuardrailSeverity.MEDIUM,
+						action=GuardrailAction.ALLOW,
+						message=f'LLM Output Guardrail analysis failed, allowing with warning: {str(e)}',
+						details={'error': str(e), 'fallback': True},
+						timestamp=datetime.now(tz=timezone.utc),
+						confidence=0.3,
+					)
+				],
+				processing_time=time.time() - start_time,
+			)
 
 	def _prepare_output_context(self, context: Dict[str, Any]) -> str:
 		"""Chuẩn bị context cho output analysis."""
@@ -323,30 +421,77 @@ class LLMOutputGuardrail(BaseGuardrail):
 
 		return '\n'.join(context_parts) if context_parts else 'No additional context'
 
-	def _convert_to_guardrail_result(self, decision: LLMGuardrailDecision, original_content: str, processing_time: float) -> GuardrailResult:
+	def _convert_to_guardrail_result(
+		self,
+		decision: LLMGuardrailDecision,
+		original_content: str,
+		processing_time: float,
+	) -> GuardrailResult:
 		"""Convert LLM decision to GuardrailResult for output."""
 
 		violations = []
 
 		if decision.has_violation:
 			# Map severity and action (same as input guardrail)
-			severity_map = {'low': GuardrailSeverity.LOW, 'medium': GuardrailSeverity.MEDIUM, 'high': GuardrailSeverity.HIGH, 'critical': GuardrailSeverity.CRITICAL}
+			severity_map = {
+				'low': GuardrailSeverity.LOW,
+				'medium': GuardrailSeverity.MEDIUM,
+				'high': GuardrailSeverity.HIGH,
+				'critical': GuardrailSeverity.CRITICAL,
+			}
 
-			action_map = {'allow': GuardrailAction.ALLOW, 'modify': GuardrailAction.MODIFY, 'block': GuardrailAction.BLOCK, 'escalate': GuardrailAction.ESCALATE}
+			action_map = {
+				'allow': GuardrailAction.ALLOW,
+				'modify': GuardrailAction.MODIFY,
+				'block': GuardrailAction.BLOCK,
+				'escalate': GuardrailAction.ESCALATE,
+			}
 
-			violation = GuardrailViolation(rule_name=self.name, severity=severity_map.get(decision.severity, GuardrailSeverity.MEDIUM), action=action_map.get(decision.action, GuardrailAction.MODIFY), message=decision.explanation, details={'violation_type': decision.violation_type, 'tags': decision.tags, 'llm_decision': True, 'model': self.model.model, 'output_analysis': True}, timestamp=datetime.now(tz=timezone.utc), confidence=decision.confidence)
+			violation = GuardrailViolation(
+				rule_name=self.name,
+				severity=severity_map.get(decision.severity, GuardrailSeverity.MEDIUM),
+				action=action_map.get(decision.action, GuardrailAction.MODIFY),
+				message=decision.explanation,
+				details={
+					'violation_type': decision.violation_type,
+					'tags': decision.tags,
+					'llm_decision': True,
+					'model': self.model.model,
+					'output_analysis': True,
+				},
+				timestamp=datetime.now(tz=timezone.utc),
+				confidence=decision.confidence,
+			)
 			violations.append(violation)
 
 		# For output, be more lenient - allow unless critical
 		passed = not decision.has_violation or decision.action in ['allow', 'modify']
 
-		return GuardrailResult(passed=passed, violations=violations, modified_content=decision.modified_content, metadata={'llm_analysis': True, 'output_guardrail': True, 'confidence': decision.confidence, 'violation_type': decision.violation_type if decision.has_violation else None, 'tags': decision.tags, 'original_content_length': len(original_content), 'modified_content_length': len(decision.modified_content) if decision.modified_content else None}, processing_time=processing_time)
+		return GuardrailResult(
+			passed=passed,
+			violations=violations,
+			modified_content=decision.modified_content,
+			metadata={
+				'llm_analysis': True,
+				'output_guardrail': True,
+				'confidence': decision.confidence,
+				'violation_type': (decision.violation_type if decision.has_violation else None),
+				'tags': decision.tags,
+				'original_content_length': len(original_content),
+				'modified_content_length': (len(decision.modified_content) if decision.modified_content else None),
+			},
+			processing_time=processing_time,
+		)
 
 
 class LLMGuardrailEngine(GuardrailEngine):
 	"""Enhanced Guardrail Engine with LLM-powered analysis."""
 
-	def __init__(self, enable_llm_guardrails: bool = True, model_name: str = 'gemini-2.0-flash-lite'):
+	def __init__(
+		self,
+		enable_llm_guardrails: bool = True,
+		model_name: str = 'gemini-2.0-flash-lite',
+	):
 		super().__init__()
 
 		self.enable_llm_guardrails = enable_llm_guardrails
@@ -357,4 +502,10 @@ class LLMGuardrailEngine(GuardrailEngine):
 			self.add_input_guardrail(LLMInputGuardrail(model_name))
 			self.add_output_guardrail(LLMOutputGuardrail(model_name))
 
-			color_logger.info(f'🧠 {Colors.BOLD}LLM GUARDRAILS ENABLED:{Colors.RESET} Enhanced protection active', Colors.BRIGHT_GREEN, model=model_name, llm_input_guard=True, llm_output_guard=True)
+			color_logger.info(
+				f'🧠 {Colors.BOLD}LLM GUARDRAILS ENABLED:{Colors.RESET} Enhanced protection active',
+				Colors.BRIGHT_GREEN,
+				model=model_name,
+				llm_input_guard=True,
+				llm_output_guard=True,
+			)
