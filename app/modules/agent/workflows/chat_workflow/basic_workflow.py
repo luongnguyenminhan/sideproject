@@ -5,6 +5,7 @@ Advanced workflow with query analysis, routing, and self-correction using Agenti
 
 from datetime import datetime, timezone
 import time
+from typing import Literal
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import BaseTool
@@ -14,6 +15,7 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langgraph.checkpoint.memory import MemorySaver
+from pydantic import BaseModel, Field
 
 from .tools.basic_tools import tools
 from .state.workflow_state import AgentState
@@ -25,29 +27,85 @@ load_dotenv()
 # Initialize colorful logger
 color_logger = get_color_logger(__name__)
 
-# Default system prompt for the financial assistant
+
+# Router Schema theo LangChain pattern với Pydantic BaseModel
+class RouterDecision(BaseModel):
+	"""Router decision schema for query routing."""
+
+	target: Literal['rag_query', 'direct_agent', 'math_tools', 'general'] = Field(description='Target node để route query đến')
+	explanation: str = Field(description='Explanation cho quyết định routing')
+
+
+# Default system prompt for CGSEM AI Assistant
 DEFAULT_SYSTEM_PROMPT = """
-Bạn là trợ lý tài chính thông minh MoneyEZ với khả năng RAG (Retrieval-Augmented Generation), một trợ lý AI được tạo ra để giúp người dùng quản lý tài chính cá nhân.
+🌟 Bạn là CGSEM AI Assistant - Trợ lý thông minh của CLB Truyền thông và Sự Kiện trường THPT Cần Giuộc
 
-Nhiệm vụ của bạn:
-1. Giúp người dùng theo dõi chi tiêu hàng ngày
-2. Phân loại các khoản chi tiêu vào các danh mục phù hợp
-3. Cung cấp thông tin và tư vấn tài chính từ knowledge base
-4. Trả lời mọi câu hỏi liên quan đến tài chính cá nhân một cách chính xác và hữu ích
+📖 VỀ CGSEM:
+CLB Truyền thông và Sự Kiện trường THPT Cần Giuộc (CGSEM) là tổ chức truyền thông phi lợi nhuận được thành lập 14/12/2020, với kim chỉ nam: "Cụ thể - Đa dạng - Văn minh - Công bằng"
+
+🎯 NHIỆM VỤ CỦA BẠN:
+1. Hỗ trợ thành viên và người quan tâm đến CGSEM
+2. Cung cấp thông tin về hoạt động, dự án của CLB
+3. Hướng dẫn tham gia các chương trình truyền thông, sự kiện
+4. Truyền cảm hứng về tinh thần "tiên quyết, tiên phong, sáng tạo"
 5. Thực hiện các phép tính cơ bản khi cần thiết
-6. Sử dụng kiến thức từ tài liệu đã upload để tư vấn chuyên nghiệp
+6. Sử dụng kiến thức từ tài liệu CGSEM để tư vấn chuyên nghiệp
 
-Công cụ có sẵn:
+🛠️ CÔNG CỤ CÓ SẴN:
 - Phép tính: add, subtract, multiply, divide
-- RAG: answer_query_collection - Trả lời câu hỏi từ knowledge base của conversation cụ thể
-- Search: search_knowledge_base - Tìm kiếm thông tin trong knowledge base
+- RAG: answer_query_collection - Trả lời câu hỏi từ knowledge base của CGSEM
+- Search: search_knowledge_base - Tìm kiếm thông tin trong knowledge base CGSEM
 
-Hướng dẫn sử dụng RAG:
-- Khi được hỏi về thông tin cụ thể, hãy sử dụng answer_query_collection với conversation_id
+🔍 HƯỚNG DẪN SỬ DỤNG RAG:
+- Khi được hỏi về thông tin cụ thể về CGSEM, sử dụng answer_query_collection
 - Sử dụng search_knowledge_base để tìm kiếm thông tin trước khi trả lời
-- Luôn ưu tiên thông tin từ knowledge base khi có
+- Luôn ưu tiên thông tin từ knowledge base CGSEM
 
-Bạn luôn phân tích query và sử dụng công cụ phù hợp nhất để trả lời.
+🗣️ PHONG CÁCH GIAO TIẾP:
+- Nhiệt tình, tích cực và truyền cảm hứng
+- Gần gũi với học sinh và giới trẻ
+- Khuyến khích sáng tạo và dám thử thách
+- Trả lời tự nhiên như thành viên thực sự của CGSEM
+
+⚡ PHƯƠNG CHÂM: "CGSEM - tiên quyết, tiên phong, sáng tạo"
+
+Bạn luôn phân tích query và sử dụng công cụ phù hợp nhất để trả lời với tinh thần nhiệt huyết của tuổi trẻ CGSEM!
+"""
+
+# Router system prompt cho CGSEM theo meobeo-ai-rule standards
+ROUTER_SYSTEM_PROMPT = """
+🧭 Bạn là Router Agent thông minh cho hệ thống CGSEM AI Assistant. Nhiệm vụ của bạn là phân tích user query và quyết định route phù hợp nhất.
+
+🎯 TARGET NODES AVAILABLE:
+1. "rag_query" - Cho câu hỏi cần tìm kiếm thông tin từ knowledge base hoặc file người dùng đã upload
+2. "direct_agent" - Cho câu hỏi đơn giản, general knowledge, chat thông thường, chào hỏi
+3. "math_tools" - Cho các phép tính, calculation, tính toán cơ bản
+4. "general" - Cho các trường hợp khác
+
+📋 QUY TẮC ROUTING:
+- RAG Query: Khi user hỏi về:
+    * **Thông tin từ file/tài liệu đã upload (ưu tiên cao nhất)**
+    * Nội dung cụ thể mà có thể có trong file người dùng
+    * Thông tin về CGSEM chỉ khi user đề cập rõ ràng về CLB
+    * Kiến thức chuyên môn cần tra cứu từ tài liệu
+    * **Khi user hỏi về thông tin cụ thể mà có thể đến từ file đã upload**
+
+- Direct Agent: 
+    * Chat thông thường và chào hỏi
+    * Câu hỏi general knowledge không cần tra cứu file
+    * Thông tin chung mà AI có thể trả lời từ kiến thức có sẵn
+    * Khi chắc chắn không cần thông tin từ file người dùng
+
+- Math Tools: 
+    * Phép tính toán học cơ bản
+    * Calculations và computations
+
+- General: 
+    * Các trường hợp đặc biệt khác
+
+⚠️ NGUYÊN TẮC: Ưu tiên route "rag_query" khi user hỏi về thông tin cụ thể có thể đến từ file đã upload, không bias về thông tin CGSEM trừ khi user đề cập rõ ràng.
+
+💡 Phân tích context để xác định user đang hỏi về file của họ hay thông tin general!
 """
 
 # Initialize the default model
@@ -263,7 +321,7 @@ async def call_model(state, config):
 	else:
 		system = config.get('configurable', {}).get('system_prompt', DEFAULT_SYSTEM_PROMPT)
 
-	# Enhanced system prompt for Agentic RAG with Pre-loaded Context and Persona
+	# Enhanced system prompt for Agentic RAG với CGSEM context và Persona
 	persona_info = ''
 	if workflow_config and workflow_config.persona_enabled:
 		persona_info = f"""
@@ -273,27 +331,28 @@ Persona Type: {workflow_config.persona_type.value if workflow_config.persona_typ
 
 	agentic_system = f"""{system}
 
-🤖 BẠN LÀ AGENTIC RAG AI với KNOWLEDGE CONTEXT - Context đã được load sẵn:{persona_info}
+🤖 BẠN LÀ CGSEM AGENTIC RAG AI với KNOWLEDGE CONTEXT - Context đã được load sẵn:{persona_info}
 
-Basic Tools Available:
+🛠️ BASIC TOOLS AVAILABLE:
 - add(a, b): Cộng hai số
 - subtract(a, b): Trừ hai số  
 - multiply(a, b): Nhân hai số
 - divide(a, b): Chia hai số
 
-Conversation Context: {thread_id}
-RAG Status: {state.get('retrieval_quality', 'unknown')}
-Context Pre-loaded: {state.get('mandatory_rag_complete', False)}
-Agentic RAG: {state.get('agentic_rag_used', True)}
+📊 CONVERSATION CONTEXT: {thread_id}
+📈 RAG Status: {state.get('retrieval_quality', 'unknown')}
+✅ Context Pre-loaded: {state.get('mandatory_rag_complete', False)}
+🔥 Agentic RAG: {state.get('agentic_rag_used', True)}
 
-Hướng dẫn đặc biệt:
-1. 📚 CONTEXT ĐÃ CÓ SẴN: Sử dụng knowledge context được cung cấp bên dưới làm nguồn chính
-2. 🧮 TÍNH TOÁN: Sử dụng math tools khi cần thực hiện phép tính
-3. 💡 Kết hợp context có sẵn với kiến thức của bạn để trả lời toàn diện
-4. 🎯 TRẢ LỜI TỰ NHIÊN: KHÔNG ghi "(Theo thông tin từ context)" hay trích nguồn máy móc
-5. 🗣️ Nói như thể thông tin đó là kiến thức của bạn, trả lời trực tiếp và tự nhiên
-6. ⚡ Context đã được retrieve tự động, không cần gọi thêm RAG tools
-7. 🎭 Giữ đúng personality và phong cách giao tiếp theo persona được định nghĩa
+🌟 HƯỚNG DẪN ĐẶC BIỆT CHO CGSEM:
+1. 📚 CONTEXT CGSEM ĐÃ CÓ SẴN: Sử dụng knowledge context CGSEM được cung cấp bên dưới làm nguồn chính
+2. 🧮 TÍNH TOÁN: Sử dụng math tools khi cần thực hiện phép tính cho dự án, sự kiện
+3. 💡 Kết hợp context CGSEM với kiến thức về truyền thông, sự kiện để trả lời toàn diện
+4. 🎯 TRẢ LỜI TỰ NHIÊN: KHÔNG ghi "(Theo thông tin từ context)" - trả lời như thành viên thực sự của CGSEM
+5. 🗣️ Nói như thể bạn là một phần của CLB CGSEM, sử dụng "chúng mình", "CLB của mình", "team CGSEM"
+6. ⚡ Context CGSEM đã được retrieve tự động, không cần gọi thêm RAG tools
+7. 🎭 Giữ tinh thần nhiệt huyết, sáng tạo và truyền cảm hứng của CGSEM
+8. 🌈 Luôn khuyến khích tham gia hoạt động và phát triển bản thân cùng CGSEM
 """
 
 	# Add RAG context if available (from mandatory RAG query)
@@ -311,7 +370,7 @@ Hướng dẫn đặc biệt:
 			pre_loaded=True,
 		)
 
-		enhanced_system = f'{agentic_system}\n\n🔗 KIẾN THỨC TỪ KNOWLEDGE BASE (Quality: {context_quality}):\n' + '\n'.join(rag_context)
+		enhanced_system = f'{agentic_system}\n\n🔗 KIẾN THỨC TỪ CGSEM KNOWLEDGE BASE (Quality: {context_quality}):\n' + '\n'.join(rag_context)
 	else:
 		color_logger.info(
 			f'📝 {Colors.BOLD}NO RAG CONTEXT:{Colors.RESET}{Colors.DIM} No context retrieved from knowledge base',
@@ -402,11 +461,139 @@ async def run_tools(input, config, **kwargs):
 	return response
 
 
-def create_agentic_rag_workflow(db_session, config=None):
-	"""Create Agentic RAG Workflow with KBRepository and RAG Tools - Always uses RAG with intelligent routing and Persona support"""
+async def router_node(state, config):
+	"""Router Node - Intelligent query routing với LLM router sử dụng structured output"""
+	start_time = time.time()
+	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
+
 	color_logger.workflow_start(
-		'Agentic RAG Workflow Creation with KBRepository + RAG Tools + Persona',
-		always_rag=True,
+		'Router Node - Intelligent Query Routing',
+		thread_id=thread_id,
+		router_enabled=True,
+	)
+
+	# Get user message để phân tích routing
+	messages = state.get('messages', [])
+	if not messages:
+		color_logger.warning('No messages found for routing')
+		return {
+			**state,
+			'router_decision': {'target': 'general', 'explanation': 'No user input'},
+		}
+
+	# Lấy message cuối cùng từ user
+	user_query = None
+	for msg in reversed(messages):
+		if hasattr(msg, 'content') and msg.content:
+			user_query = msg.content
+			break
+
+	if not user_query:
+		color_logger.warning('No user query found for routing')
+		return {
+			**state,
+			'router_decision': {'target': 'general', 'explanation': 'Empty query'},
+		}
+
+	try:
+		# Create router prompt theo LangChain pattern
+		router_prompt = ChatPromptTemplate.from_messages([
+			('system', ROUTER_SYSTEM_PROMPT),
+			(
+				'human',
+				'User query: {input}\n\nAnalyze this query and determine the best routing target.',
+			),
+		])
+
+		# Create router chain với structured output
+		router_chain = router_prompt | model.with_structured_output(RouterDecision)
+
+		color_logger.info(
+			f'🧭 {Colors.BOLD}ROUTER ANALYSIS:{Colors.RESET}{Colors.BRIGHT_YELLOW} Analyzing query for routing',
+			Colors.BRIGHT_YELLOW,
+			query_preview=user_query[:100],
+			available_targets=['rag_query', 'direct_agent', 'math_tools', 'general'],
+		)
+
+		# Execute router decision
+		router_result = await router_chain.ainvoke({'input': user_query})
+
+		target = router_result.target if hasattr(router_result, 'target') else 'general'
+		explanation = router_result.explanation if hasattr(router_result, 'explanation') else 'Default routing'
+
+		color_logger.info(
+			f'🎯 {Colors.BOLD}ROUTER DECISION:{Colors.RESET}{Colors.BRIGHT_GREEN} Target={target}',
+			Colors.BRIGHT_GREEN,
+			target=target,
+			explanation=explanation,
+			query_length=len(user_query),
+		)
+
+		# Update state với router decision
+		updated_state = {
+			**state,
+			'router_decision': {'target': target, 'explanation': explanation},
+			'routing_complete': True,
+		}
+
+		processing_time = time.time() - start_time
+		color_logger.workflow_complete(
+			'Router Node - Intelligent Query Routing',
+			processing_time,
+			target_selected=target,
+			routing_successful=True,
+		)
+
+		return updated_state
+
+	except Exception as e:
+		color_logger.error(
+			f'Router Node failed: {str(e)}',
+			error_type=type(e).__name__,
+		)
+
+		# Fallback routing on error
+		return {
+			**state,
+			'router_decision': {
+				'target': 'general',
+				'explanation': f'Router error: {str(e)[:100]}',
+			},
+			'routing_complete': True,
+		}
+
+
+def router_conditional_edge(state):
+	"""Conditional edge function for router decisions"""
+	router_decision = state.get('router_decision', {})
+	target = router_decision.get('target', 'general') if isinstance(router_decision, dict) else 'general'
+
+	# Map router targets to actual nodes
+	target_mapping = {
+		'rag_query': 'rag_query',
+		'direct_agent': 'agent',
+		'math_tools': 'agent',  # Will use tools via agent
+		'general': 'agent',
+	}
+
+	actual_target = target_mapping.get(target, 'agent')
+
+	color_logger.info(
+		f'🔀 {Colors.BOLD}ROUTER EDGE:{Colors.RESET}{Colors.CYAN} {target} → {actual_target}',
+		Colors.CYAN,
+		logical_target=target,
+		actual_node=actual_target,
+	)
+
+	return actual_target
+
+
+def create_agentic_rag_workflow(db_session, config=None):
+	"""Create Agentic RAG Workflow with Router + KBRepository and RAG Tools - Intelligent routing với LLM router và Persona support"""
+	color_logger.workflow_start(
+		'Agentic RAG Workflow Creation with Router + KBRepository + RAG Tools + Persona',
+		router_enabled=True,
+		intelligent_routing=True,
 		db_session_provided=db_session is not None,
 		rag_tools_enabled=True,
 		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
@@ -437,31 +624,36 @@ def create_agentic_rag_workflow(db_session, config=None):
 		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
 	)
 
-	# Define Agentic RAG workflow with tools
+	# Define Agentic RAG workflow with Router and tools
 	workflow = StateGraph(AgentState)
 
-	# Add Agentic RAG nodes với mandatory RAG flow
-	workflow.add_node('rag_query', rag_query_node)  # Mandatory RAG node
-	workflow.add_node('agent', call_model)
-	workflow.add_node('tools', run_tools)
+	# Add Router and Agentic RAG nodes
+	workflow.add_node('router', router_node)  # Router node - entry point
+	workflow.add_node('rag_query', rag_query_node)  # RAG query node
+	workflow.add_node('agent', call_model)  # Agent node
+	workflow.add_node('tools', run_tools)  # Tools node
 
 	available_tools = get_tools(config)
 	tool_names = [tool.name for tool in available_tools]
 
 	color_logger.info(
-		f'📊 {Colors.BOLD}MANDATORY RAG WORKFLOW NODES:{Colors.RESET}{Colors.MAGENTA} Workflow nodes configured',
+		f'📊 {Colors.BOLD}ROUTER + AGENTIC RAG WORKFLOW NODES:{Colors.RESET}{Colors.MAGENTA} Workflow nodes configured',
 		Colors.MAGENTA,
-		node_count=3,
-		nodes=['rag_query', 'agent', 'tools'],
+		node_count=4,
+		nodes=['router', 'rag_query', 'agent', 'tools'],
 		available_tools=tool_names,
 		math_tools_count=len([t for t in tool_names if t in ['add', 'subtract', 'multiply', 'divide']]),
-		mandatory_rag=True,
+		router_enabled=True,
+		intelligent_routing=True,
 	)
 
-	# Mandatory RAG flow: rag_query → agent → tools (if needed) → agent → END
-	workflow.set_entry_point('rag_query')  # Bắt đầu với RAG query
+	# Router-based flow: router → (rag_query | agent) → tools (if needed) → agent → END
+	workflow.set_entry_point('router')  # Bắt đầu với Router
 
-	# RAG query → agent (luôn luôn)
+	# Router → conditional routing to rag_query or agent
+	workflow.add_conditional_edges('router', router_conditional_edge, {'rag_query': 'rag_query', 'agent': 'agent'})
+
+	# RAG query → agent (when RAG is needed)
 	workflow.add_edge('rag_query', 'agent')
 
 	# Agent → tools (if needed) or END
@@ -469,11 +661,11 @@ def create_agentic_rag_workflow(db_session, config=None):
 	workflow.add_edge('tools', 'agent')
 
 	color_logger.info(
-		f'🔗 {Colors.BOLD}MANDATORY RAG FLOW:{Colors.RESET}{Colors.CYAN} RAG Query (Mandatory) → Agent → Math Tools (if needed) → Agent → END',
+		f'🔗 {Colors.BOLD}INTELLIGENT ROUTER FLOW:{Colors.RESET}{Colors.CYAN} Router → (RAG Query | Direct Agent) → Math Tools (if needed) → Agent → END',
 		Colors.CYAN,
-		entry_point='rag_query',
-		mandatory_rag=True,
-		always_rag=True,
+		entry_point='router',
+		router_enabled=True,
+		intelligent_routing=True,
 		agentic_rag=True,
 		math_tools_enabled=True,
 	)
@@ -483,10 +675,11 @@ def create_agentic_rag_workflow(db_session, config=None):
 	compiled_workflow = workflow.compile(checkpointer=memory)
 
 	color_logger.workflow_complete(
-		'Agentic RAG Workflow Creation with KBRepository + RAG Tools + Persona',
+		'Agentic RAG Workflow Creation with Router + KBRepository + RAG Tools + Persona',
 		time.time(),
+		router_enabled=True,
+		intelligent_routing=True,
 		agentic_rag_enabled=True,
-		always_rag=True,
 		agentic_rag=True,
 		rag_tools_enabled=True,
 		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
