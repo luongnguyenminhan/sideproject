@@ -45,6 +45,22 @@ logger.info(f'{LogColors.OKBLUE}[AgenticRAG-CoreConfig] Default collection: {QDR
 EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'models/embedding-001')
 logger.info(f'{LogColors.OKCYAN}[AgenticRAG-CoreConfig] Embedding model: {EMBEDDING_MODEL}{LogColors.ENDC}')
 
+# File extraction configuration
+MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', '10485760'))  # 10MB default
+SUPPORTED_FILE_TYPES = {
+	'application/pdf': '.pdf',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+	'text/plain': '.txt',
+	'text/markdown': '.md',
+	'application/msword': '.doc',
+}
+logger.info(f'{LogColors.OKCYAN}[AgenticRAG-CoreConfig] File extraction - Max size: {MAX_FILE_SIZE} bytes, Supported types: {list(SUPPORTED_FILE_TYPES.keys())}{LogColors.ENDC}')
+
+# Collection management
+DEFAULT_COLLECTION = 'global'
+COLLECTION_PREFIX = 'rag_'
+logger.info(f'{LogColors.OKCYAN}[AgenticRAG-CoreConfig] Collection management - Default: {DEFAULT_COLLECTION}, Prefix: {COLLECTION_PREFIX}{LogColors.ENDC}')
+
 
 class QdrantConfig(BaseModel):
 	"""Qdrant configuration."""

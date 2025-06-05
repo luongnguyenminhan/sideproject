@@ -83,6 +83,23 @@ services:
       - cgsem-network
     restart: always
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    image: cgsem-frontend:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://localhost:8000/api
+    networks:
+      - cgsem-network
+    depends_on:
+      - api
 
 networks:
   cgsem-network:

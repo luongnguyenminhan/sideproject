@@ -4,10 +4,10 @@ Service for extracting text content from different file types for indexing
 
 import io
 import logging
-from typing import Dict, Any, Optional
-import PyPDF2
+from typing import Dict, Any
 import docx
-from pathlib import Path
+
+from app.utils.pdf import PDFToTextConverter
 
 logger = logging.getLogger(__name__)
 
@@ -79,14 +79,9 @@ class FileExtractionService:
 		"""Extract text từ PDF file"""
 		try:
 			pdf_file = io.BytesIO(file_content)
-			pdf_reader = PyPDF2.PdfReader(pdf_file)
+			pdf_reader = PDFToTextConverter.extract_text_from_file(pdf_file, filetype='pdf')
 
-			text_parts = []
-			for page_num in range(len(pdf_reader.pages)):
-				page = pdf_reader.pages[page_num]
-				text_parts.append(page.extract_text())
-
-			return '\n'.join(text_parts)
+			return pdf_reader.get('text', '')
 
 		except Exception as e:
 			logger.error(f'[FileExtractionService] Error extracting PDF: {str(e)}')

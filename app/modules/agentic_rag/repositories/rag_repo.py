@@ -82,30 +82,30 @@ class RAGRepo:
 		)
 		logger.info(f'{LogColors.OKGREEN}[RAGRepo] RAG prompt template configured successfully{LogColors.ENDC}')
 
-	async def generate(self, request: RAGRequest, collection_name: str = 'default') -> RAGResponse:
-		"""Generate a response using RAG based on the query."""
-		logger.info(f'{LogColors.HEADER}[RAGRepo] Starting RAG generation for collection: {collection_name}{LogColors.ENDC}')
+	async def generate(self, request: RAGRequest, collection_id: str = 'global') -> RAGResponse:
+		"""Generate a response using RAG based on the query for specific collection."""
+		logger.info(f'{LogColors.HEADER}[RAGRepo] Starting RAG generation for collection: {collection_id}{LogColors.ENDC}')
 		logger.info(f'{LogColors.OKBLUE}[RAGRepo] Query: "{request.query[:100]}..." (Top K: {request.top_k}, Temperature: {request.temperature}){LogColors.ENDC}')
 
 		try:
 			# Validate collection exists
-			logger.info(f'{LogColors.OKCYAN}[RAGRepo] Validating collection existence: {collection_name}{LogColors.ENDC}')
-			if not self.rag_dal.collection_exists(collection_name):
-				logger.info(f'{LogColors.WARNING}[RAGRepo] Collection not found: {collection_name}{LogColors.ENDC}')
+			logger.info(f'{LogColors.OKCYAN}[RAGRepo] Validating collection existence: {collection_id}{LogColors.ENDC}')
+			if not self.rag_dal.collection_exists(collection_id):
+				logger.info(f'{LogColors.WARNING}[RAGRepo] Collection not found: {collection_id}{LogColors.ENDC}')
 				raise ValidationException(_('collection_not_found'))
 
-			logger.info(f'{LogColors.OKGREEN}[RAGRepo] Collection validated successfully: {collection_name}{LogColors.ENDC}')
+			logger.info(f'{LogColors.OKGREEN}[RAGRepo] Collection validated successfully: {collection_id}{LogColors.ENDC}')
 
 			# Retrieve documents from the knowledge base via DAL
 			logger.info(f'{LogColors.OKBLUE}[RAGRepo] Retrieving documents from collection via DAL{LogColors.ENDC}')
-			query_response = await self.rag_dal.search_in_collection(collection_name=collection_name, query=request.query, top_k=request.top_k)
+			query_response = await self.rag_dal.search_in_collection(collection_name=collection_id, query=request.query, top_k=request.top_k)
 
 			logger.info(f'{LogColors.OKCYAN}[RAGRepo] Retrieved {len(query_response.results)} documents from collection{LogColors.ENDC}')
 
 			if not query_response.results:
-				logger.info(f'{LogColors.WARNING}[RAGRepo] No results found for query: "{request.query}"{LogColors.ENDC}')
+				logger.info(f'{LogColors.WARNING}[RAGRepo] No results found for query in collection {collection_id}: "{request.query}"{LogColors.ENDC}')
 				return RAGResponse(
-					answer="I don't have enough information to answer this question based on the available knowledge.",
+					answer=f"I don't have enough information to answer this question based on the available knowledge in collection '{collection_id}'.",
 					sources=[],
 					usage={
 						'prompt_tokens': 0,
@@ -116,7 +116,7 @@ class RAGRepo:
 
 			# Prepare the context by combining the contents of retrieved documents
 			logger.info(f'{LogColors.OKBLUE}[RAGRepo] Preparing context from {len(query_response.results)} retrieved documents{LogColors.ENDC}')
-			context = '\n\n'.join([f'Document {i + 1}:\n{doc.content}' for i, doc in enumerate(query_response.results)])
+			context = '\n\n'.join([f'Document {i + 1} (Collection: {collection_id}):\n{doc.content}' for i, doc in enumerate(query_response.results)])
 			context_length = len(context)
 			logger.info(f'{LogColors.OKCYAN}[RAGRepo] Context prepared - Total length: {context_length} characters{LogColors.ENDC}')
 
@@ -138,30 +138,27 @@ class RAGRepo:
 					id=doc.id,
 					content=(doc.content[:200] + '...' if len(doc.content) > 200 else doc.content),
 					score=doc.score,
-					metadata=doc.metadata,
+					metadata={**doc.metadata, 'collection_id': collection_id},
 				)
 				sources.append(source)
-				logger.info(f'{LogColors.OKCYAN}[RAGRepo] Source {i + 1} created - ID: {doc.id}, Score: {doc.score:.4f}, Content length: {len(doc.content)}{LogColors.ENDC}')
+				logger.info(f'{LogColors.OKCYAN}[RAGRepo] Source {i + 1} created - ID: {doc.id}, Score: {doc.score:.4f}, Collection: {collection_id}{LogColors.ENDC}')
 
-			# Create token usage estimation (example values, replace with actual tracking)
+			# Create token usage estimation
 			answer_text = result['text']
 			usage = {
-				'prompt_tokens': len(context) // 4 + len(request.query) // 4,  # Approximation
-				'completion_tokens': len(answer_text) // 4,  # Approximation
-				'total_tokens': (len(context) + len(request.query) + len(answer_text)) // 4,  # Approximation
+				'prompt_tokens': len(context) // 4 + len(request.query) // 4,
+				'completion_tokens': len(answer_text) // 4,
+				'total_tokens': (len(context) + len(request.query) + len(answer_text)) // 4,
 			}
 
-			logger.info(f'{LogColors.OKGREEN}[RAGRepo] Token usage estimated - Prompt: {usage["prompt_tokens"]}, Completion: {usage["completion_tokens"]}, Total: {usage["total_tokens"]}{LogColors.ENDC}')
-			logger.info(f'{LogColors.OKGREEN}[RAGRepo] RAG response generated successfully - Answer length: {len(answer_text)} characters{LogColors.ENDC}')
+			logger.info(f'{LogColors.OKGREEN}[RAGRepo] RAG response generated successfully for collection {collection_id} - Answer length: {len(answer_text)} characters{LogColors.ENDC}')
 
 			return RAGResponse(answer=answer_text, sources=sources, usage=usage)
 
 		except ValidationException:
-			logger.info(f'{LogColors.WARNING}[RAGRepo] Validation exception occurred during RAG generation{LogColors.ENDC}')
-			# Re-raise validation exceptions
 			raise
 		except Exception as e:
-			logger.info(f'{LogColors.FAIL}[RAGRepo] Critical error during RAG generation: {e}{LogColors.ENDC}')
+			logger.info(f'{LogColors.FAIL}[RAGRepo] Critical error during RAG generation for collection {collection_id}: {e}{LogColors.ENDC}')
 			raise CustomHTTPException(status_code=500, message=_('error_occurred'))
 
 	def create_qa_chain(self, temperature: float) -> Any:

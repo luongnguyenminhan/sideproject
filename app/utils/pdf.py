@@ -1,4 +1,5 @@
 import os
+import fitz
 
 
 class MDToPDFConverter:
@@ -172,3 +173,60 @@ class MDToPDFConverter:
 		# Return the PDF as bytes
 		pdf_buffer.seek(0)
 		return pdf_buffer.read()
+
+
+class PDFToTextConverter:
+	def __init__(self, file_path: str):
+		self.file_path = file_path
+		self.doc = fitz.open(file_path)
+
+	def extract_text(self) -> dict:
+		"""
+		Extracts text from the PDF in multiple formats and returns a dictionary
+		with format types as keys and their corresponding content as values.
+
+		Returns:
+		    dict: A dictionary containing the extracted text in different formats.
+		"""
+		try:
+			print('[DEBUG] Starting PDF text extraction in multiple formats')
+			print(f'[DEBUG] Processing PDF file: {self.file_path}')
+			print(f'[DEBUG] Document has {len(self.doc)} pages')
+
+			result = {}
+
+			# Extract content in each format
+			result['text'] = '\n'.join([page.get_text('text') for page in self.doc])
+			return result
+		except Exception as e:
+			print(f'[DEBUG] Error extracting text from PDF: {str(e)}')
+			print(f'[DEBUG] Exception type: {type(e).__name__}')
+			print(f'[DEBUG] Exception occurred in file: {self.file_path}')
+			return {}  # Return empty dict or raise a custom exception
+
+	@staticmethod
+	def extract_text_from_file(file_content):
+		"""
+		Extracts text from a PDF file content in multiple formats.
+		"""
+		results = {}
+		try:
+			doc = fitz.open(stream=file_content, filetype='pdf')
+			for page in doc:
+				results['text'] = page.get_text('text')
+			return results
+		except Exception as e:
+			print(f'[DEBUG] Error extracting text from PDF: {str(e)}')
+			return {}  # Return empty dict or raise a custom exception
+
+	def search_for_text(self, search_string: str) -> list:
+		"""
+		Searches for a string in the PDF and returns a list of rectangles for each occurrence.
+		"""
+		results = []
+		for page in self.doc:
+			results.extend(page.search_for(search_string))
+		return results
+
+	def close(self):
+		self.doc.close()

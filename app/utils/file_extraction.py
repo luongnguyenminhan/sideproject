@@ -9,6 +9,8 @@ from typing import Optional, Tuple
 import tempfile
 import os
 
+import fitz
+
 logger = logging.getLogger(__name__)
 
 
@@ -77,23 +79,20 @@ class FileContentExtractor:
 
 	@staticmethod
 	def _extract_from_pdf(file_content: bytes) -> Tuple[Optional[str], Optional[str]]:
-		"""Extract text from PDF files using PyPDF2"""
 		try:
-			import PyPDF2
-
 			pdf_stream = io.BytesIO(file_content)
-			pdf_reader = PyPDF2.PdfReader(pdf_stream)
+			pdf_reader = fitz.open(stream=pdf_stream, filetype='pdf')
 
 			text_content = []
-			for page_num in range(len(pdf_reader.pages)):
-				page = pdf_reader.pages[page_num]
-				text_content.append(page.extract_text())
+			for page_num in range(len(pdf_reader)):
+				page = pdf_reader[page_num]
+				text_content.append(page.get_text('text'))
 
 			full_text = '\n'.join(text_content).strip()
 			return full_text if full_text else None, None
 
 		except ImportError:
-			return None, 'PyPDF2 library not installed. Please install with: pip install PyPDF2'
+			return None, 'PyMuPDF library not installed. Please install with: pip install PyMuPDF'
 		except Exception as e:
 			return None, f'Error reading PDF file: {str(e)}'
 
