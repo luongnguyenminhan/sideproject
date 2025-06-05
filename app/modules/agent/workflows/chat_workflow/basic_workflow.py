@@ -21,6 +21,7 @@ from .tools.basic_tools import tools
 from .state.workflow_state import AgentState
 from .config.workflow_config import WorkflowConfig
 from .utils.color_logger import get_color_logger, Colors
+from .guardrails.manager import ChatWorkflowGuardrailManager
 
 load_dotenv()
 
@@ -114,10 +115,13 @@ model = ChatGoogleGenerativeAI(model='gemini-2.0-flash-lite', temperature=0)
 # Global workflow config
 workflow_config = None
 
+# Global guardrail manager
+guardrail_manager = None
+
 
 def initialize_services(db_session, config=None):
 	"""Initialize workflow configuration for Agentic RAG"""
-	global workflow_config
+	global workflow_config, guardrail_manager
 
 	color_logger.workflow_start(
 		'Agentic RAG Workflow Configuration',
@@ -127,6 +131,11 @@ def initialize_services(db_session, config=None):
 
 	try:
 		workflow_config = config or WorkflowConfig.from_env()
+
+		# Initialize Guardrail Manager
+		guardrail_config = {'enable_input_guardrails': True, 'enable_output_guardrails': True, 'max_input_length': 5000, 'strict_mode': False}
+		guardrail_manager = ChatWorkflowGuardrailManager(guardrail_config)
+
 		color_logger.info(
 			f'📋 {Colors.BOLD}CONFIG:{Colors.RESET}{Colors.CYAN} Agentic RAG workflow configured',
 			Colors.CYAN,
@@ -134,10 +143,17 @@ def initialize_services(db_session, config=None):
 			collection_name=workflow_config.collection_name,
 		)
 
+		color_logger.info(
+			f'🛡️ {Colors.BOLD}GUARDRAILS:{Colors.RESET}{Colors.CYAN} Guardrail system initialized',
+			Colors.CYAN,
+			input_guardrails=len(guardrail_manager.engine.input_guardrails),
+			output_guardrails=len(guardrail_manager.engine.output_guardrails),
+		)
+
 		color_logger.workflow_complete(
 			'Agentic RAG Workflow Configuration',
 			time.time(),
-			services_count=1,
+			services_count=2,  # workflow + guardrails
 			status='success',
 		)
 		return True
@@ -462,14 +478,15 @@ async def run_tools(input, config, **kwargs):
 
 
 async def router_node(state, config):
-	"""Router Node - Intelligent query routing với LLM router sử dụng structured output"""
+	"""Router Node - Intelligent query routing với LLM router sử dụng structured output + Input Guardrails"""
 	start_time = time.time()
 	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
 	color_logger.workflow_start(
-		'Router Node - Intelligent Query Routing',
+		'Router Node - Intelligent Query Routing with Input Guardrails',
 		thread_id=thread_id,
 		router_enabled=True,
+		guardrails_enabled=True,
 	)
 
 	# Get user message để phân tích routing
@@ -494,6 +511,65 @@ async def router_node(state, config):
 			**state,
 			'router_decision': {'target': 'general', 'explanation': 'Empty query'},
 		}
+
+	# 🛡️ APPLY INPUT GUARDRAILS
+	try:
+		if guardrail_manager:
+			color_logger.info(
+				f'🛡️ {Colors.BOLD}INPUT GUARDRAILS:{Colors.RESET}{Colors.YELLOW} Checking user input',
+				Colors.YELLOW,
+				query_length=len(user_query),
+			)
+
+			# Check input với guardrails
+			guardrail_context = {'thread_id': thread_id, 'user_id': config.get('configurable', {}).get('user_id', 'unknown'), 'conversation_step': 'router_input'}
+
+			guardrail_result = guardrail_manager.check_user_input(user_query, guardrail_context)
+
+			# Log guardrail results
+			if guardrail_result.violations:
+				violation_details = [f'{v.rule_name}: {v.message}' for v in guardrail_result.violations]
+				color_logger.warning(
+					f'🚨 Input Guardrail Violations: {len(guardrail_result.violations)} found',
+					violations=violation_details,
+				)
+
+			# Block nếu guardrails failed
+			if not guardrail_result.passed:
+				color_logger.error(
+					f'🚫 Input BLOCKED by guardrails',
+					violation_count=len(guardrail_result.violations),
+				)
+
+				return {
+					**state,
+					'router_decision': {'target': 'general', 'explanation': 'Input blocked by content safety guardrails'},
+					'routing_complete': True,
+					'guardrail_blocked': True,
+					'guardrail_violations': [v.__dict__ for v in guardrail_result.violations],
+				}
+
+			# Sử dụng modified content nếu có
+			if guardrail_result.modified_content:
+				user_query = guardrail_result.modified_content
+				color_logger.info(
+					f'✏️ Input modified by guardrails',
+					original_length=len(messages[-1].content),
+					modified_length=len(user_query),
+				)
+
+			color_logger.info(
+				f'✅ Input passed guardrails',
+				violations_count=len(guardrail_result.violations),
+				processing_time=f'{guardrail_result.processing_time:.3f}s',
+			)
+
+	except Exception as e:
+		color_logger.error(
+			f'Guardrail check failed: {str(e)}',
+			error_type=type(e).__name__,
+		)
+		# Continue without guardrails on error
 
 	try:
 		# Create router prompt theo LangChain pattern
@@ -538,10 +614,11 @@ async def router_node(state, config):
 
 		processing_time = time.time() - start_time
 		color_logger.workflow_complete(
-			'Router Node - Intelligent Query Routing',
+			'Router Node - Intelligent Query Routing with Input Guardrails',
 			processing_time,
 			target_selected=target,
 			routing_successful=True,
+			guardrails_passed=True,
 		)
 
 		return updated_state
