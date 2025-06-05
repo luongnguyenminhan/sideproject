@@ -235,25 +235,45 @@ async def rag_query_node(state, config):
 
 
 async def call_model(state, config):
-	"""Agentic RAG - Enhanced Model Call với RAG Context có sẵn"""
+	"""Agentic RAG - Enhanced Model Call với RAG Context có sẵn và Persona Support"""
 	start_time = time.time()
 	thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
 	color_logger.workflow_start(
-		'Agentic RAG - Model Invocation with Pre-loaded Context',
+		'Agentic RAG - Model Invocation with Pre-loaded Context and Persona',
 		thread_id=thread_id,
 		has_context=bool(state.get('rag_context')),
 		mandatory_rag_complete=state.get('mandatory_rag_complete', False),
 		agentic_rag_enabled=True,
+		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
 	)
 
-	# Get system prompt
-	system = config.get('configurable', {}).get('system_prompt', DEFAULT_SYSTEM_PROMPT)
+	# Get system prompt - Use persona if enabled
+	if workflow_config and workflow_config.persona_enabled:
+		persona_prompt = workflow_config.get_persona_prompt()
+		persona_name = workflow_config.get_persona_name()
 
-	# Enhanced system prompt for Agentic RAG with Pre-loaded Context
+		color_logger.info(
+			f'🎭 {Colors.BOLD}PERSONA ACTIVATED:{Colors.RESET}{Colors.BRIGHT_MAGENTA} {persona_name}',
+			Colors.BRIGHT_MAGENTA,
+			persona_name=persona_name,
+			persona_type=(workflow_config.persona_type.value if workflow_config.persona_type else 'none'),
+		)
+		system = persona_prompt
+	else:
+		system = config.get('configurable', {}).get('system_prompt', DEFAULT_SYSTEM_PROMPT)
+
+	# Enhanced system prompt for Agentic RAG with Pre-loaded Context and Persona
+	persona_info = ''
+	if workflow_config and workflow_config.persona_enabled:
+		persona_info = f"""
+🎭 PERSONA ACTIVE: {workflow_config.get_persona_name()}
+Persona Type: {workflow_config.persona_type.value if workflow_config.persona_type else 'none'}
+"""
+
 	agentic_system = f"""{system}
 
-🤖 BẠN LÀ AGENTIC RAG AI với KNOWLEDGE CONTEXT - Context đã được load sẵn:
+🤖 BẠN LÀ AGENTIC RAG AI với KNOWLEDGE CONTEXT - Context đã được load sẵn:{persona_info}
 
 Basic Tools Available:
 - add(a, b): Cộng hai số
@@ -270,8 +290,10 @@ Hướng dẫn đặc biệt:
 1. 📚 CONTEXT ĐÃ CÓ SẴN: Sử dụng knowledge context được cung cấp bên dưới làm nguồn chính
 2. 🧮 TÍNH TOÁN: Sử dụng math tools khi cần thực hiện phép tính
 3. 💡 Kết hợp context có sẵn với kiến thức của bạn để trả lời toàn diện
-4. 📝 Luôn cite sources khi sử dụng thông tin từ context
-5. ⚡ Context đã được retrieve tự động, không cần gọi thêm RAG tools
+4. 🎯 TRẢ LỜI TỰ NHIÊN: KHÔNG ghi "(Theo thông tin từ context)" hay trích nguồn máy móc
+5. 🗣️ Nói như thể thông tin đó là kiến thức của bạn, trả lời trực tiếp và tự nhiên
+6. ⚡ Context đã được retrieve tự động, không cần gọi thêm RAG tools
+7. 🎭 Giữ đúng personality và phong cách giao tiếp theo persona được định nghĩa
 """
 
 	# Add RAG context if available (from mandatory RAG query)
@@ -381,23 +403,38 @@ async def run_tools(input, config, **kwargs):
 
 
 def create_agentic_rag_workflow(db_session, config=None):
-	"""Create Agentic RAG Workflow with KBRepository and RAG Tools - Always uses RAG with intelligent routing"""
+	"""Create Agentic RAG Workflow with KBRepository and RAG Tools - Always uses RAG with intelligent routing and Persona support"""
 	color_logger.workflow_start(
-		'Agentic RAG Workflow Creation with KBRepository + RAG Tools',
+		'Agentic RAG Workflow Creation with KBRepository + RAG Tools + Persona',
 		always_rag=True,
 		db_session_provided=db_session is not None,
 		rag_tools_enabled=True,
+		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
 	)
 
 	# Initialize workflow configuration
 	services_ready = initialize_services(db_session, config)
 
+	# Log persona information if enabled
+	persona_info = ''
+	if workflow_config and workflow_config.persona_enabled:
+		persona_name = workflow_config.get_persona_name()
+		persona_info = f' + {persona_name} Persona'
+
+		color_logger.info(
+			f'🎭 {Colors.BOLD}PERSONA ENABLED:{Colors.RESET}{Colors.BRIGHT_MAGENTA} {persona_name}',
+			Colors.BRIGHT_MAGENTA,
+			persona_name=persona_name,
+			persona_type=(workflow_config.persona_type.value if workflow_config.persona_type else 'none'),
+		)
+
 	color_logger.info(
-		f'🚀 {Colors.BOLD}AGENTIC RAG + TOOLS:{Colors.RESET}{Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED} {"READY" if services_ready else "FAILED"}',
+		f'🚀 {Colors.BOLD}AGENTIC RAG + TOOLS{persona_info}:{Colors.RESET}{Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED} {"READY" if services_ready else "FAILED"}',
 		Colors.BRIGHT_GREEN if services_ready else Colors.BRIGHT_RED,
 		services_initialized=services_ready,
 		agentic_rag=True,
 		rag_tools_enabled=True,
+		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
 	)
 
 	# Define Agentic RAG workflow with tools
@@ -446,12 +483,14 @@ def create_agentic_rag_workflow(db_session, config=None):
 	compiled_workflow = workflow.compile(checkpointer=memory)
 
 	color_logger.workflow_complete(
-		'Agentic RAG Workflow Creation with KBRepository + RAG Tools',
+		'Agentic RAG Workflow Creation with KBRepository + RAG Tools + Persona',
 		time.time(),
 		agentic_rag_enabled=True,
 		always_rag=True,
 		agentic_rag=True,
 		rag_tools_enabled=True,
+		persona_enabled=workflow_config.persona_enabled if workflow_config else False,
+		persona_name=(workflow_config.get_persona_name() if workflow_config and workflow_config.persona_enabled else None),
 		compilation_successful=True,
 	)
 
