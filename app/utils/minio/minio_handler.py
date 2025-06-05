@@ -24,7 +24,6 @@ secure_value = settings.MINIO_SECURE
 if isinstance(secure_value, str):
 	secure_value = secure_value.lower() == 'true'
 
-logger.info(f'MinIO config: endpoint={settings.MINIO_ENDPOINT}, access_key={settings.MINIO_ACCESS_KEY}, bucket_name={settings.MINIO_BUCKET_NAME}, secure={secure_value}')
 
 
 class MinioHandler:
@@ -34,8 +33,6 @@ class MinioHandler:
 
 	def __init__(self):
 		"""Initialize MinIO client with configuration from settings."""
-		logger.info(f'Initializing MinIO client with endpoint: {settings.MINIO_ENDPOINT}')
-		logger.info(f'Using bucket name: {settings.MINIO_BUCKET_NAME}')
 
 		# Ensure secure is a boolean
 		secure_param = settings.MINIO_SECURE
@@ -56,11 +53,9 @@ class MinioHandler:
 		try:
 			if not self.minio_client.bucket_exists(self.bucket_name):
 				self.minio_client.make_bucket(self.bucket_name)
-				logger.info(f'Bucket {self.bucket_name} created successfully')
 			else:
-				logger.info(f'Bucket {self.bucket_name} already exists')
+				logger.info(f'Bucket {self.bucket_name} already exists.')
 		except S3Error as err:
-			logger.error(f'Error checking/creating bucket: {err}')
 			raise
 
 	def _generate_safe_object_name(self, meeting_id: str, file_name: str, file_type: str = 'audio') -> str:
@@ -108,7 +103,6 @@ class MinioHandler:
 		    The object name (path) in MinIO storage
 		"""
 		try:
-			logger.info(f"Starting upload of '{file_name}', size: {len(file_content)} bytes")
 
 			# Convert bytes to file-like object
 			file_data = io.BytesIO(file_content)
@@ -116,7 +110,6 @@ class MinioHandler:
 
 			# Generate a safe object name with UUID, meeting_id and file_type
 			object_name = self._generate_safe_object_name(meeting_id, file_name, file_type)
-			logger.info(f'Generated safe object name: {object_name}')
 
 			# Upload the file to MinIO
 			self.minio_client.put_object(
@@ -127,14 +120,11 @@ class MinioHandler:
 				content_type=content_type,
 			)
 
-			logger.info(f"File '{file_name}' uploaded successfully to MinIO as '{object_name}'")
 			return object_name
 
 		except S3Error as err:
-			logger.error(f'Error uploading file to MinIO: {err}')
 			raise
 		except Exception as e:
-			logger.error(f'Unexpected error uploading file to MinIO: {str(e)}')
 			raise
 
 	async def upload_fastapi_file(self, file: UploadFile, meeting_id: str, file_type: str = 'audio') -> str:
@@ -166,7 +156,6 @@ class MinioHandler:
 			)
 
 		except Exception as err:
-			logger.error(f'Error uploading FastAPI file to MinIO: {err}')
 			raise
 
 	async def upload_bytes(
@@ -191,7 +180,6 @@ class MinioHandler:
 		    The object name (path) in MinIO storage
 		"""
 		try:
-			logger.info(f"Starting upload of '{filename}' as bytes, size: {len(content)} bytes")
 
 			# Convert bytes to file-like object
 			file_data = io.BytesIO(content)
@@ -199,7 +187,6 @@ class MinioHandler:
 
 			# Generate a safe object name with UUID, meeting_id and file_type
 			object_name = self._generate_safe_object_name(meeting_id, filename, file_type)
-			logger.info(f'Generated safe object name: {object_name}')
 
 			# Upload the content to MinIO
 			self.minio_client.put_object(
@@ -210,14 +197,11 @@ class MinioHandler:
 				content_type=content_type,
 			)
 
-			logger.info(f"Bytes uploaded successfully to MinIO as '{object_name}'")
 			return object_name
 
 		except S3Error as err:
-			logger.error(f'Error uploading bytes to MinIO: {err}')
 			raise
 		except Exception as e:
-			logger.error(f'Unexpected error uploading bytes to MinIO: {str(e)}')
 			raise
 
 	def download_file(self, object_name: str) -> Tuple[bytes, str]:
@@ -233,7 +217,6 @@ class MinioHandler:
 		try:
 			# First normalize the path to avoid double slashes
 			object_name = object_name.replace('//', '/')
-			logger.info(f'Attempting to download: {object_name}')
 
 			# Get file from MinIO
 			response = self.minio_client.get_object(bucket_name=self.bucket_name, object_name=object_name)
@@ -248,14 +231,11 @@ class MinioHandler:
 			response.close()
 			response.release_conn()
 
-			logger.info(f"File '{object_name}' downloaded successfully from MinIO")
 			return file_content, file_name
 
 		except S3Error as err:
-			logger.error(f'Error downloading file from MinIO: {err}')
 			raise
 		except Exception as err:
-			logger.error(f'File not found in MinIO: {err}')
 			raise
 
 	def get_file_url(self, object_name: str, expires: int | None = None) -> str:
@@ -280,14 +260,11 @@ class MinioHandler:
 				expires=expires_delta,
 			)
 
-			logger.info(f'Generated presigned URL for: {object_name}')
 			return url
 
 		except S3Error as err:
-			logger.error(f'Error generating presigned URL: {err}')
 			raise
 		except FileNotFoundError as err:
-			logger.error(f'File not found when generating URL: {err}')
 			raise
 
 	def remove_file(self, object_name: str) -> bool:
@@ -302,11 +279,9 @@ class MinioHandler:
 		"""
 		try:
 			self.minio_client.remove_object(bucket_name=self.bucket_name, object_name=object_name)
-			logger.info(f"File '{object_name}' removed successfully from MinIO")
 			return True
 
 		except S3Error as err:
-			logger.error(f'Error removing file from MinIO: {err}')
 			return False
 
 	def get_file_content(self, object_name: str) -> bytes:
@@ -322,7 +297,6 @@ class MinioHandler:
 		try:
 			# First normalize the path to avoid double slashes
 			object_name = object_name.replace('//', '/')
-			logger.info(f'Getting file content: {object_name}')
 
 			# Get file from MinIO
 			response = self.minio_client.get_object(bucket_name=self.bucket_name, object_name=object_name)
@@ -334,14 +308,11 @@ class MinioHandler:
 			response.close()
 			response.release_conn()
 
-			logger.info(f'File content retrieved successfully: {len(file_content)} bytes')
 			return file_content
 
 		except S3Error as err:
-			logger.error(f'Error getting file content from MinIO: {err}')
 			raise
 		except Exception as err:
-			logger.error(f'File not found in MinIO: {err}')
 			raise
 
 

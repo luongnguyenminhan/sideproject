@@ -42,7 +42,6 @@ class FileIndexingEventHandler:
 		    Dict chứa kết quả indexing
 		"""
 		try:
-			logger.info(f'\033[94m[FileIndexingEventHandler] Processing file upload event via Agentic RAG: {file_id} in conversation: {conversation_id}\033[0m')
 
 			# Get file data cho indexing
 			try:
@@ -58,10 +57,8 @@ class FileIndexingEventHandler:
 					}
 				]
 
-				logger.info(f'\033[96m[FileIndexingEventHandler] Prepared file data for Agentic RAG indexing: {file.original_name} ({len(file_content)} bytes)\033[0m')
 
 			except Exception as e:
-				logger.error(f'\033[91m[FileIndexingEventHandler] Error preparing file data: {str(e)}\033[0m')
 				return {
 					'success': False,
 					'error': f'Failed to prepare file data: {str(e)}',
@@ -70,7 +67,6 @@ class FileIndexingEventHandler:
 
 			# Index file vào Agentic RAG KBRepository
 			try:
-				logger.info(f'\033[95m[FileIndexingEventHandler] Starting Agentic RAG indexing for file: {file_id}\033[0m')
 
 				# Get collection ID for conversation
 				collection_id = self._get_conversation_collection_id(conversation_id)
@@ -81,7 +77,6 @@ class FileIndexingEventHandler:
 				# Mark file as indexed
 				if result['successful_file_ids']:
 					self.file_repo.bulk_mark_files_as_indexed(result['successful_file_ids'], success=True)
-					logger.info(f'\033[92m[FileIndexingEventHandler] File marked as indexed via Agentic RAG: {file_id}\033[0m')
 
 				# Mark failed files
 				if result['failed_file_details']:
@@ -93,7 +88,6 @@ class FileIndexingEventHandler:
 						)
 						self.file_repo.mark_file_as_indexed(failed_id, success=False, error_message=error_msg)
 
-				logger.info(f'\033[92m[FileIndexingEventHandler] Agentic RAG file indexing completed: {result["successful_files"]}/{result["total_files"]} files indexed\033[0m')
 
 				return {
 					'success': True,
@@ -104,7 +98,6 @@ class FileIndexingEventHandler:
 				}
 
 			except Exception as e:
-				logger.error(f'\033[91m[FileIndexingEventHandler] Error indexing file via Agentic RAG: {str(e)}\033[0m')
 				# Mark file as failed indexing
 				self.file_repo.mark_file_as_indexed(file_id, success=False, error_message=str(e))
 
@@ -115,7 +108,6 @@ class FileIndexingEventHandler:
 				}
 
 		except Exception as e:
-			logger.error(f'\033[91m[FileIndexingEventHandler] Error handling file upload event: {str(e)}\033[0m')
 			return {
 				'success': False,
 				'error': f'Event handling failed: {str(e)}',
@@ -135,7 +127,6 @@ class FileIndexingEventHandler:
 		    Dict chứa kết quả indexing tổng hợp
 		"""
 		try:
-			logger.info(f'\033[94m[FileIndexingEventHandler] Processing multiple files upload event via Agentic RAG: {len(file_ids)} files in conversation: {conversation_id}\033[0m')
 
 			# Prepare all files data
 			files_data = []
@@ -153,10 +144,8 @@ class FileIndexingEventHandler:
 						'file_content': file_content,
 					}
 					files_data.append(file_data)
-					logger.info(f'\033[96m[FileIndexingEventHandler] Prepared file for Agentic RAG: {file.original_name} ({len(file_content)} bytes)\033[0m')
 
 				except Exception as e:
-					logger.error(f'\033[91m[FileIndexingEventHandler] Error preparing file {file_id}: {str(e)}\033[0m')
 					failed_files.append({'file_id': file_id, 'error': str(e)})
 
 			if not files_data:
@@ -169,7 +158,6 @@ class FileIndexingEventHandler:
 
 			# Index all files at once via Agentic RAG
 			try:
-				logger.info(f'\033[95m[FileIndexingEventHandler] Starting Agentic RAG batch indexing for {len(files_data)} files\033[0m')
 
 				# Get collection ID for conversation
 				collection_id = self._get_conversation_collection_id(conversation_id)
@@ -180,7 +168,6 @@ class FileIndexingEventHandler:
 				# Mark files as indexed
 				if result['successful_file_ids']:
 					self.file_repo.bulk_mark_files_as_indexed(result['successful_file_ids'], success=True)
-					logger.info(f'\033[92m[FileIndexingEventHandler] {len(result["successful_file_ids"])} files marked as indexed via Agentic RAG\033[0m')
 
 				# Mark failed files
 				if result['failed_file_details']:
@@ -191,7 +178,6 @@ class FileIndexingEventHandler:
 							error_message=failed_detail['error'],
 						)
 
-				logger.info(f'\033[92m[FileIndexingEventHandler] Agentic RAG batch file indexing completed: {result["successful_files"]}/{result["total_files"]} files indexed\033[0m')
 
 				return {
 					'success': True,
@@ -203,7 +189,6 @@ class FileIndexingEventHandler:
 				}
 
 			except Exception as e:
-				logger.error(f'\033[91m[FileIndexingEventHandler] Error in Agentic RAG batch indexing: {str(e)}\033[0m')
 				# Mark all files as failed
 				for file_id in file_ids:
 					self.file_repo.mark_file_as_indexed(file_id, success=False, error_message=str(e))
@@ -215,7 +200,6 @@ class FileIndexingEventHandler:
 				}
 
 		except Exception as e:
-			logger.error(f'\033[91m[FileIndexingEventHandler] Error handling multiple files upload event: {str(e)}\033[0m')
 			return {
 				'success': False,
 				'error': f'Event handling failed: {str(e)}',
@@ -225,7 +209,6 @@ class FileIndexingEventHandler:
 	def get_conversation_collection_stats(self, conversation_id: str) -> Dict[str, Any]:
 		"""Get statistics của conversation collection từ Agentic RAG"""
 		try:
-			logger.info(f'\033[96m[FileIndexingEventHandler] Getting Agentic RAG stats for conversation: {conversation_id}\033[0m')
 
 			# Get stats from Agentic RAG file indexing service
 			stats = self.file_indexing_service.get_conversation_collection_stats(conversation_id)
@@ -238,7 +221,6 @@ class FileIndexingEventHandler:
 			}
 
 		except Exception as e:
-			logger.error(f'\033[91m[FileIndexingEventHandler] Error getting Agentic RAG collection stats: {str(e)}\033[0m')
 			return {
 				'error': str(e),
 				'conversation_id': conversation_id,

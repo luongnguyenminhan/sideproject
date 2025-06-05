@@ -15,24 +15,18 @@ class SystemAgentRepo:
 	"""Repository for ultra-simplified System Agent operations"""
 
 	def __init__(self, db: Session = Depends(get_db)):
-		logger.info('SystemAgentRepo.__init__() - ENTRY')
 		self.db = db
 		self.agent_dal = AgentDAL(db)
-		logger.info('SystemAgentRepo.__init__() - EXIT')
 
 	def get_system_agent(self) -> Agent:
 		"""Get or create the system agent with embedded config and API key"""
-		logger.info('SystemAgentRepo.get_system_agent() - ENTRY')
 
 		agent = self.agent_dal.get_or_create_system_agent()
 
-		logger.info(f'System agent retrieved: {agent.id}')
 		return agent
 
 	def update_system_agent_config(self, config_updates: Dict[str, Any]) -> Agent:
 		"""Update system agent configuration"""
-		logger.info('SystemAgentRepo.update_system_agent_config() - ENTRY')
-		logger.info(f'Updates: {list(config_updates.keys())}')
 
 		# Get current agent
 		agent = self.get_system_agent()
@@ -51,23 +45,18 @@ class SystemAgentRepo:
 		self.db.commit()
 		self.db.refresh(updated_agent)
 		print(f'Agent after update: {updated_agent}')
-		logger.info('System agent config updated successfully')
 		return updated_agent
 
 	def update_system_agent_api_key(self, api_key: str, api_provider: str = 'google') -> Agent:
 		"""Update system agent API key"""
-		logger.info('SystemAgentRepo.update_system_agent_api_key() - ENTRY')
 
 		# Get current agent
 		agent = self.get_system_agent()
 
 		# Update API key
-		logger.info(f'Updating API key for agent {agent.id} with provider {api_provider} with api key: {api_key}')
 		updated_agent = self.agent_dal.update_agent_api_key(agent.id, api_key, api_provider)
 		self.db.commit()
 		self.db.refresh(updated_agent)
-		logger.info(f'Agent after API key update: {updated_agent.api_key}')
-		logger.info('System agent API key updated successfully')
 		return updated_agent
 
 	def get_available_models(self) -> Dict[str, list]:

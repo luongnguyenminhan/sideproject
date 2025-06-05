@@ -83,7 +83,6 @@ async def get_google_oauth_url(request: Request, scopes: list | None = None, log
 			# Override the default scopes
 			params['scope'] = scope
 
-		logger.info(f'Initiating Google OAuth flow with params: {params} and redirect_uri: {redirect_uri}')
 
 		# Authorize redirect with enhanced parameters
 		response = await oauth.google.authorize_redirect(request, redirect_uri, **params)
@@ -286,13 +285,9 @@ async def get_google_token(request: Request) -> dict:
 	    HTTPException: If state validation fails or token retrieval fails
 	"""
 	try:
-		logger.info('Fetching Google OAuth access token.')
 
 		# Log cookies and session for debugging
 		session_cookie = request.cookies.get('session')
-		logger.info(f'[OAuth Debug] Session cookie: {session_cookie}')
-		logger.info(f'[OAuth Debug] Cookies: {request.cookies}')
-		logger.info(f'[OAuth Debug] Session before: {request.session}')
 
 		# Get the state parameter from the request
 		request_state = request.query_params.get('state')
@@ -304,19 +299,16 @@ async def get_google_token(request: Request) -> dict:
 			for key in request.session:
 				if key.startswith('_state_google_') and request_state:
 					# The request state might be in any of these state objects
-					logger.info(f'[OAuth Debug] Checking state in {key}')
 					# Don't validate state strictly - allow the flow to continue
 					session_state = key.replace('_state_google_', '')
 					break
 
-		logger.info(f'[OAuth Debug] Session state: {session_state}, Request state: {request_state}')
 
 		# Enhanced state validation with fallback options:
 
 		# 1. Traditional session-based validation
 		if session_state and request_state and session_state == request_state:
-			logger.info('[OAuth Debug] State validated via session.')
-
+			logger.info("[OAuth Debug] Session state matches request state. Proceeding with token retrieval.")
 		# 2. If state is missing from session but exists in request (common when sessions aren't preserved properly)
 		# We can choose to proceed with caution
 		elif request_state:
@@ -324,12 +316,10 @@ async def get_google_token(request: Request) -> dict:
 
 		# Get access token from Google with relaxed state validation
 		try:
-			logger.info('[OAuth Debug] Calling oauth.google.authorize_access_token')
 
 			# Use authorize_access_token which is the correct method for Starlette/FastAPI
 			token = await oauth.google.authorize_access_token(request)
 
-			logger.info('[OAuth Debug] Successfully fetched token')
 
 			# Get user info if not already included
 			if 'userinfo' not in token and token.get('access_token'):
@@ -338,7 +328,6 @@ async def get_google_token(request: Request) -> dict:
 					token['userinfo'] = user_info
 
 			# Log session after token retrieval
-			logger.info(f'[OAuth Debug] Session after: {request.session}')
 
 		except Exception as token_error:
 			logger.error(f'Error fetching token: {token_error}')
@@ -350,7 +339,6 @@ async def get_google_token(request: Request) -> dict:
 				message=_('missing_access_token'),
 			)
 
-		logger.info('Successfully retrieved Google OAuth access token.')
 		return token
 	except HTTPException:
 		# Re-raise HTTP exceptions as is
@@ -546,13 +534,11 @@ def process_google_token(token: dict) -> dict:
 	    HTTPException: If processing fails or user info is missing
 	"""
 	try:
-		logger.info('Processing Google OAuth token.')
 		user_info = token.get('userinfo')
 		if not user_info:
 			raise CustomHTTPException(
 				message=_('missing_user_info'),
 			)
-		logger.info('Successfully processed Google OAuth token.')
 		return user_info
 	except Exception as e:
 		logger.error(f'Error processing Google OAuth token: {e}')
@@ -572,7 +558,6 @@ def revoke_google_token(token: str) -> bool:
 	    bool: True if revocation was successful, False otherwise
 	"""
 	try:
-		logger.info('Revoking Google OAuth token.')
 		response = requests.post(
 			'https://oauth2.googleapis.com/revoke',
 			params={'token': token},
@@ -581,7 +566,6 @@ def revoke_google_token(token: str) -> bool:
 
 		# Check if the request was successful
 		if response.status_code == 200:
-			logger.info('Successfully revoked Google OAuth token.')
 			return True
 		else:
 			logger.error(f'Failed to revoke token. Status: {response.status_code}, Response: {response.text}')
@@ -617,7 +601,6 @@ def check_granted_scopes(credentials: dict) -> Dict[str, bool]:
 		else:
 			granted_scopes = credentials.get('granted_scopes', [])
 
-		logger.info(f'Detected granted scopes: {granted_scopes}')
 
 		# === Sign-In Scopes ===
 		# Check for profile access
@@ -631,7 +614,6 @@ def check_granted_scopes(credentials: dict) -> Dict[str, bool]:
 
 		# Add checks for other scopes as needed for your application
 
-		logger.info(f'Checked granted scopes, enabled features: {features}')
 		return features
 	except Exception as e:
 		logger.error(f'Error checking granted scopes: {e}')

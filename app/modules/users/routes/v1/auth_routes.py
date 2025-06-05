@@ -163,16 +163,11 @@ async def google_callback(request: Request, repo: AuthenRepo = Depends()):
 	"""
 	try:
 		# Enhanced logging for debugging the callback
-		logger.info('Google callback received')
-		logger.info(f'Query params: {request.query_params}')
-		logger.info(f'Session data: {request.session}')
-		logger.info(f'Cookies: {request.cookies}')
 
 		# Get token from Google - this includes state verification for CSRF protection
 		try:
 			token = await get_google_token(request)
 			user_info = token.get('userinfo')
-			logger.info(f'Successfully retrieved token and user info: {user_info.get("email") if user_info else "No email"}')
 		except Exception as token_error:
 			logger.error(f'Error retrieving token: {token_error}')
 			error_message = str(token_error)

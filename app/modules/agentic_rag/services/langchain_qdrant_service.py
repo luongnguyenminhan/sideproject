@@ -19,12 +19,10 @@ class LangChainQdrantService:
 	"""Simplified service using KB Repository for all document operations"""
 
 	def __init__(self, db: Session):
-		logger.info('LangChainQdrantService - Initializing with KB Repository integration')
 		self.db = db
 
 	async def index_documents(self, documents: List[Document], collection_name: str, batch_size: int = 50) -> Dict[str, Any]:
 		"""Index documents using KB Repository"""
-		logger.info(f"LangChainQdrantService - Indexing {len(documents)} documents to collection '{collection_name}'")
 
 		try:
 			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
@@ -72,7 +70,6 @@ class LangChainQdrantService:
 				'indexing_method': 'kb_repository',
 			}
 
-			logger.info(f'LangChainQdrantService - Indexing completed: {result}')
 			return result
 
 		except Exception as e:
@@ -90,7 +87,6 @@ class LangChainQdrantService:
 		score_threshold: float = 0.7,
 	) -> List[Document]:
 		"""Perform similarity search using KB Repository"""
-		logger.info(f"LangChainQdrantService - Searching in collection '{collection_name}': '{query[:50]}...'")
 
 		try:
 			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
@@ -115,7 +111,6 @@ class LangChainQdrantService:
 					)
 					documents.append(doc)
 
-			logger.info(f'LangChainQdrantService - Found {len(documents)} documents above threshold')
 			return documents
 
 		except Exception as e:
@@ -129,7 +124,6 @@ class LangChainQdrantService:
 
 			kb_repo = KBRepository()
 			collections = kb_repo.list_collections()
-			logger.info(f'LangChainQdrantService - Found {len(collections)} collections')
 			return collections
 
 		except Exception as e:
@@ -161,7 +155,6 @@ class LangChainQdrantService:
 
 			kb_repo = KBRepository()
 			result = kb_repo.create_collection(collection_name)
-			logger.info(f"LangChainQdrantService - Collection '{collection_name}' creation: {result}")
 			return result
 
 		except Exception as e:
@@ -177,7 +170,6 @@ class LangChainQdrantService:
 
 	async def index_conversation_files(self, conversation_id: str, files_data: List[Dict[str, Any]]) -> Dict[str, Any]:
 		"""Index files for conversation using KB Repository"""
-		logger.info(f"LangChainQdrantService - Indexing {len(files_data)} files for conversation '{conversation_id}'")
 
 		try:
 			collection_name = self.get_conversation_collection_name(conversation_id)
@@ -199,7 +191,6 @@ class LangChainQdrantService:
 
 			# Index via KB Repository
 			result = await self.index_documents(documents, collection_name)
-			logger.info(f'LangChainQdrantService - Conversation files indexed successfully')
 			return result
 
 		except Exception as e:
@@ -217,19 +208,16 @@ class LangChainQdrantService:
 		score_threshold: float = 0.7,
 	) -> List[Document]:
 		"""Search files in conversation using KB Repository"""
-		logger.info(f"LangChainQdrantService - Searching files in conversation '{conversation_id}'")
 
 		try:
 			collection_name = self.get_conversation_collection_name(conversation_id)
 
 			# Check if collection exists
 			if not self.collection_exists(collection_name):
-				logger.info(f"LangChainQdrantService - No files indexed for conversation '{conversation_id}'")
 				return []
 
 			# Perform search
 			documents = await self.similarity_search(query, collection_name, top_k, score_threshold)
-			logger.info(f'LangChainQdrantService - Found {len(documents)} relevant files')
 			return documents
 
 		except Exception as e:

@@ -52,7 +52,6 @@ class ConversationFileIndexingService:
 		    Dict chứa kết quả indexing
 		"""
 		try:
-			logger.info(f'[FileIndexingService] Starting Agentic RAG indexing {len(files_data)} files for conversation: {conversation_id}')
 
 			collection_id = self.get_conversation_collection_name(conversation_id)
 
@@ -89,7 +88,6 @@ class ConversationFileIndexingService:
 						documents_to_add.append(doc)
 						successful_files.append(file_data['file_id'])
 
-						logger.info(f'[FileIndexingService] Extracted {extraction_result["char_count"]} chars from {file_data["file_name"]}')
 					else:
 						failed_files.append({
 							'file_id': file_data['file_id'],
@@ -98,7 +96,6 @@ class ConversationFileIndexingService:
 						logger.warning(f'[FileIndexingService] Failed to extract text from {file_data["file_name"]}')
 
 				except Exception as e:
-					logger.error(f'[FileIndexingService] Error processing file {file_data["file_name"]}: {str(e)}')
 					failed_files.append({'file_id': file_data['file_id'], 'error': str(e)})
 
 			# Index documents vào Agentic RAG KBRepository nếu có
@@ -119,10 +116,8 @@ class ConversationFileIndexingService:
 						'collection_id': collection_id,
 					}
 
-					logger.info(f'[FileIndexingService] Successfully indexed {len(document_ids)} documents to Agentic RAG collection: {collection_id}')
 
 				except Exception as e:
-					logger.error(f'[FileIndexingService] Error indexing documents to Agentic RAG: {str(e)}')
 					# Move successful files to failed
 					for file_id in successful_files:
 						failed_files.append({'file_id': file_id, 'error': f'Indexing failed: {str(e)}'})
@@ -144,7 +139,6 @@ class ConversationFileIndexingService:
 			}
 
 		except Exception as e:
-			logger.error(f'[FileIndexingService] Error indexing conversation files via Agentic RAG: {str(e)}')
 			raise ValidationException(_('conversation_files_indexing_failed'))
 
 	def search_conversation_context(
@@ -188,11 +182,9 @@ class ConversationFileIndexingService:
 					)
 					documents.append(doc)
 
-			logger.info(f'[FileIndexingService] Found {len(documents)} relevant documents via Agentic RAG for query in conversation: {conversation_id}')
 			return documents
 
 		except Exception as e:
-			logger.error(f'[FileIndexingService] Error searching conversation context via Agentic RAG: {str(e)}')
 			# Return empty list instead of raising exception để không break conversation flow
 			return []
 
@@ -215,7 +207,6 @@ class ConversationFileIndexingService:
 			}
 
 		except Exception as e:
-			logger.error(f'[FileIndexingService] Error getting Agentic RAG collection stats: {str(e)}')
 			return {
 				'name': collection_id,
 				'documents_count': 0,
@@ -238,11 +229,9 @@ class ConversationFileIndexingService:
 			for doc in documents:
 				kb_repo.delete_document(doc.id, collection_id=collection_id)
 
-			logger.info(f'[FileIndexingService] Successfully deleted {len(documents)} documents from Agentic RAG collection: {collection_id}')
 			return True
 
 		except Exception as e:
-			logger.error(f'[FileIndexingService] Error deleting Agentic RAG conversation collection: {str(e)}')
 			return False
 
 	def check_collection_exists(self, conversation_id: str) -> bool:
@@ -258,5 +247,4 @@ class ConversationFileIndexingService:
 			return True  # If no exception, collection exists
 
 		except Exception as e:
-			logger.error(f'[FileIndexingService] Error checking Agentic RAG collection existence: {str(e)}')
 			return False
