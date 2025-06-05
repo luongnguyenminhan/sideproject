@@ -3,12 +3,12 @@ import fitz
 
 
 class MDToPDFConverter:
-	def __init__(self, markdown_text: str, css_path: str | None = None):
-		self.markdown_text = markdown_text
-		self.css_path = css_path
+    def __init__(self, markdown_text: str, css_path: str | None = None):
+        self.markdown_text = markdown_text
+        self.css_path = css_path
 
-		# Default CSS if no custom CSS is provided
-		self.default_css = """
+        # Default CSS if no custom CSS is provided
+        self.default_css = """
         /* Import fonts at the beginning to avoid warnings */
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap');
         
@@ -142,91 +142,118 @@ class MDToPDFConverter:
         /* Rest of CSS as provided */
         """
 
-	def convert(self) -> bytes:
-		"""
-		Convert the markdown text to a styled PDF file using WeasyPrint.
-		"""
-		import io
+    def convert(self) -> bytes:
+        """
+        Convert the markdown text to a styled PDF file using WeasyPrint.
+        """
+        import io
 
-		import markdown2
-		from weasyprint import CSS, HTML
+        import markdown2
+        from weasyprint import CSS, HTML
 
-		# Convert markdown to HTML with extra features
-		html_content = markdown2.markdown(self.markdown_text, extras=['tables', 'fenced-code-blocks', 'code-friendly'])
+        # Convert markdown to HTML with extra features
+        html_content = markdown2.markdown(
+            self.markdown_text, extras=["tables", "fenced-code-blocks", "code-friendly"]
+        )
 
-		# Use custom CSS if provided, otherwise use default
-		css_content = self.default_css
-		if self.css_path and os.path.exists(self.css_path):
-			with open(self.css_path) as f:
-				css_content = f.read()
+        # Use custom CSS if provided, otherwise use default
+        css_content = self.default_css
+        if self.css_path and os.path.exists(self.css_path):
+            with open(self.css_path) as f:
+                css_content = f.read()
 
-		# Create CSS object to properly handle CSS rules
-		css = CSS(string=css_content)
+        # Create CSS object to properly handle CSS rules
+        css = CSS(string=css_content)
 
-		# Create HTML document
-		html = HTML(string=f'<html><head></head><body>{html_content}</body></html>')
+        # Create HTML document
+        html = HTML(string=f"<html><head></head><body>{html_content}</body></html>")
 
-		# Generate PDF into a bytes buffer
-		pdf_buffer = io.BytesIO()
-		html.write_pdf(pdf_buffer, stylesheets=[css])
+        # Generate PDF into a bytes buffer
+        pdf_buffer = io.BytesIO()
+        html.write_pdf(pdf_buffer, stylesheets=[css])
 
-		# Return the PDF as bytes
-		pdf_buffer.seek(0)
-		return pdf_buffer.read()
+        # Return the PDF as bytes
+        pdf_buffer.seek(0)
+        return pdf_buffer.read()
 
 
 class PDFToTextConverter:
-	def __init__(self, file_path: str):
-		self.file_path = file_path
-		self.doc = fitz.open(file_path)
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.doc = fitz.open(file_path)
 
-	def extract_text(self) -> dict:
-		"""
-		Extracts text from the PDF in multiple formats and returns a dictionary
-		with format types as keys and their corresponding content as values.
+    def extract_text(self) -> dict:
+        """
+        Extracts text from the PDF in multiple formats and returns a dictionary
+        with format types as keys and their corresponding content as values.
 
-		Returns:
-		    dict: A dictionary containing the extracted text in different formats.
-		"""
-		try:
-			print('[DEBUG] Starting PDF text extraction in multiple formats')
-			print(f'[DEBUG] Processing PDF file: {self.file_path}')
-			print(f'[DEBUG] Document has {len(self.doc)} pages')
+        Returns:
+            dict: A dictionary containing the extracted text in different formats.
+        """
+        try:
+            print("[DEBUG] Starting PDF text extraction in multiple formats")
+            print(f"[DEBUG] Processing PDF file: {self.file_path}")
+            print(f"[DEBUG] Document has {len(self.doc)} pages")
 
-			result = {}
+            result = {}
 
-			# Extract content in each format
-			result['text'] = '\n'.join([page.get_text('text') for page in self.doc])
-			return result
-		except Exception as e:
-			print(f'[DEBUG] Error extracting text from PDF: {str(e)}')
-			print(f'[DEBUG] Exception type: {type(e).__name__}')
-			print(f'[DEBUG] Exception occurred in file: {self.file_path}')
-			return {}  # Return empty dict or raise a custom exception
+            # Extract content in each format
+            result["text"] = "\n".join([page.get_text("text") for page in self.doc])
+            return result
+        except Exception as e:
+            print(f"[DEBUG] Error extracting text from PDF: {str(e)}")
+            print(f"[DEBUG] Exception type: {type(e).__name__}")
+            print(f"[DEBUG] Exception occurred in file: {self.file_path}")
+            return {}  # Return empty dict or raise a custom exception
 
-	@staticmethod
-	def extract_text_from_file(file_content):
-		"""
-		Extracts text from a PDF file content in multiple formats.
-		"""
-		results = {}
-		try:
-			doc = fitz.open(stream=file_content, filetype='pdf')
-			for page in doc:
-				results['text'] = page.get_text('text')
-			return results
-		except Exception as e:
-			print(f'[DEBUG] Error extracting text from PDF: {str(e)}')
-			return {}  # Return empty dict or raise a custom exception
+    @staticmethod
+    def extract_text_from_file(file_content, filetype="pdf"):
+        """
+        Extracts text from a PDF file content in multiple formats.
 
-	def search_for_text(self, search_string: str) -> list:
-		"""
-		Searches for a string in the PDF and returns a list of rectangles for each occurrence.
-		"""
-		results = []
-		for page in self.doc:
-			results.extend(page.search_for(search_string))
-		return results
+        Args:
+            file_content: File content as BytesIO or bytes
+            filetype: Type of file (default: 'pdf')
 
-	def close(self):
-		self.doc.close()
+        Returns:
+            dict: Dictionary with extracted text
+        """
+        results = {}
+        try:
+            # Handle different input types
+            if hasattr(file_content, "read"):
+                # It's already a file-like object
+                doc = fitz.open(stream=file_content, filetype=filetype)
+            else:
+                # It's bytes, convert to BytesIO
+                import io
+
+                file_stream = io.BytesIO(file_content)
+                doc = fitz.open(stream=file_stream, filetype=filetype)
+
+            # Extract text from all pages
+            text_parts = []
+            for page in doc:
+                page_text = page.get_text("text")
+                if page_text.strip():
+                    text_parts.append(page_text)
+
+            results["text"] = "\n".join(text_parts)
+            doc.close()
+
+            return results
+        except Exception as e:
+            print(f"[DEBUG] Error extracting text from PDF: {str(e)}")
+            return {"text": ""}  # Return empty text instead of empty dict
+
+    def search_for_text(self, search_string: str) -> list:
+        """
+        Searches for a string in the PDF and returns a list of rectangles for each occurrence.
+        """
+        results = []
+        for page in self.doc:
+            results.extend(page.search_for(search_string))
+        return results
+
+    def close(self):
+        self.doc.close()
