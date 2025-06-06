@@ -35,7 +35,8 @@ services:
       - QDRANT_PATH=/app/qdrant_storage
       # AI APIs
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
       - PYTHONDONTWRITEBYTECODE=1
     env_file:
       - .env
