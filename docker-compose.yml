@@ -46,7 +46,7 @@ services:
       - cgsem-network
     depends_on:
       - minio
-      - qdrant
+      # - qdrant
 
   minio:
     image: minio/minio
