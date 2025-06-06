@@ -1,9 +1,7 @@
 export interface QuestionOption {
   id: string;
   label: string;
-  icon?: string | React.ReactNode;
-  description?: string;
-  color?: string;
+  // Chỉ giữ lại các thuộc tính cần thiết cho text input
   type?: string;
   placeholder?: string;
   required?: boolean;

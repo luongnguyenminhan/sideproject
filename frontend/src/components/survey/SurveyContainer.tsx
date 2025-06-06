@@ -170,11 +170,19 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
         <div className="text-center mb-4 md:mb-6 flex-shrink-0">
           <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)] px-4 py-2 rounded-full text-sm font-medium mb-4">
             <span>
-              Question {currentStep + 1} of {questions.length}
+              {t('survey.question')} {currentStep + 1} / {questions.length}
             </span>
             <span>•</span>
             <span className="capitalize">
-              {currentQuestion.Question_type.replace('_', ' ')}
+              {currentQuestion.Question_type == 'single_option'
+                ? t('survey.type.single_option')
+                : currentQuestion.Question_type == 'multiple_choice'
+                ? t('survey.type.multiple_choice')
+                : currentQuestion.Question_type == 'text_input'
+                ? t('survey.type.text_input')
+                : currentQuestion.Question_type == 'sub_form'
+                ? t('survey.type.sub_form')
+                : t('survey.type.unknown')}
             </span>
           </div>
           
@@ -214,7 +222,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
             `}
           >
             <ChevronLeft className="w-5 h-5" />
-            <span>Previous</span>
+            <span>{t('survey.previous')}</span>
           </button>
 
           <button
@@ -230,11 +238,11 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
             `}
           >
             <span>
-              {isSubmitting 
-                ? 'Submitting...'
-                : currentStep === questions.length - 1 
-                ? 'Complete Survey' 
-                : 'Continue'
+              {isSubmitting
+                ? t('survey.submitting')
+                : currentStep === questions.length - 1
+                ? t('survey.complete')
+                : t('survey.continue')
               }
             </span>
             {!isSubmitting && <ArrowRight className="w-5 h-5" />}
@@ -259,7 +267,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
             </div>
           </div>
           <div className="text-center text-sm text-[color:var(--muted-foreground)]">
-            Step {currentStep + 1} of {questions.length}
+            {t('survey.step')} {currentStep + 1} / {questions.length}
           </div>
         </div>
         </div>

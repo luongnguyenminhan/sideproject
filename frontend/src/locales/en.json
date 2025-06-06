@@ -215,8 +215,14 @@
       "submit": "Submit",
       "submitting": "Submitting..."
     },
+    "complete": "Complete",
+    "continue": "Continue",
+    "previous": "Previous",
+    "question": "Question",
+    "step": "Step }",
+    "submitting": "Submitting...",
     "progress": {
-      "step": "Step {{current}} of {{total}}",
+      "step": "Step",
       "completed": "{{percent}}% completed"
     },
     "validation": {
@@ -228,7 +234,8 @@
       "completed": "Completed",
       "title": "Thank you!",
       "description": "We've received your feedback and will review it carefully.",
-      "backToStart": "Back to Start"
+      "backToStart": "Back to Start",
+      "retake": "Retake Survey"
     },
     "questions": {
       "role": {
@@ -343,6 +350,13 @@
           }
         ]
       }
+    },
+    "type": {
+      "single_option": "Single Choice",
+      "multiple_choice": "Multiple Choice", 
+      "text_input": "Text Input",
+      "sub_form": "Form",
+      "unknown": "Unknown"
     }
   }
 }

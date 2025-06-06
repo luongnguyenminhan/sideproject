@@ -214,8 +214,14 @@
       "submit": "Gửi",
       "submitting": "Đang gửi..."
     },
+    "complete": "Hoàn thành",
+    "continue": "Tiếp tục",
+    "previous": "Trước",
+    "question": "Câu hỏi",
+    "step": "Bước",
+    "submitting": "Đang gửi...",
     "progress": {
-      "step": "Bước {{current}} của {{total}}",
+      "step": "Bước",
       "completed": "{{percent}}% hoàn thành"
     },
     "validation": {
@@ -227,7 +233,8 @@
       "completed": "Hoàn thành",
       "title": "Cảm ơn bạn!",
       "description": "Chúng tôi đã nhận được phản hồi của bạn và sẽ xem xét cẩn thận.",
-      "backToStart": "Quay lại đầu"
+      "backToStart": "Quay lại đầu",
+      "retake": "Làm lại khảo sát"
     },
     "questions": {
       "role": {
@@ -342,6 +349,13 @@
           }
         ]
       }
+    },
+    "type": {
+      "single_option": "Lựa chọn đơn",
+      "multiple_choice": "Lựa chọn nhiều", 
+      "text_input": "Nhập văn bản",
+      "sub_form": "Biểu mẫu",
+      "unknown": "Không xác định"
     }
   }
 }

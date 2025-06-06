@@ -2,7 +2,6 @@
 
 import { User, Mail, Building, MessageSquare } from 'lucide-react';
 import { QuestionComponentProps, QuestionOption } from '@/types/question.types';
-import { useTranslation } from '@/contexts/TranslationContext';
 
 const TextInputQuestion: React.FC<QuestionComponentProps> = ({
   question,
@@ -10,7 +9,6 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
   selectedAnswers,
   onAnswerChange,
 }) => {
-  const { t } = useTranslation();
   const inputValues = (selectedAnswers[questionIndex] as Record<string, string>) || {};
   const options = question.Question_data as QuestionOption[];
 
@@ -39,7 +37,7 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
           <label className='block text-sm font-semibold text-[var(--foreground)] mb-2'>
             <div className='flex items-center space-x-2'>
               <span className='text-[var(--primary)]'>{getIcon(option.id)}</span>
-              <span>{t(option.label || '')}</span>
+              <span>{option.label}</span>
               {option.required && <span className='text-[var(--destructive)]'>*</span>}
             </div>
           </label>
@@ -47,7 +45,7 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
             <textarea
               value={inputValues[option.id] || ''}
               onChange={(e) => handleInputChange(option.id, e.target.value)}
-              placeholder={t(option.placeholder || '')}
+              placeholder={option.placeholder || ''}
               rows={option.rows || 3}
               className='w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/20 transition-all duration-300 resize-none placeholder:text-[var(--muted-foreground)]'
             />
@@ -56,7 +54,7 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
               type={option.type || 'text'}
               value={inputValues[option.id] || ''}
               onChange={(e) => handleInputChange(option.id, e.target.value)}
-              placeholder={t(option.placeholder || '')}
+              placeholder={option.placeholder || ''}
               className='w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/20 transition-all duration-300 placeholder:text-[var(--muted-foreground)]'
             />
           )}
