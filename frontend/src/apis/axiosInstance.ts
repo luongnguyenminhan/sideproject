@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
     if (!access_token && refresh_token) {
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/${API_VERSION}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           { refresh_token }
         );
 
@@ -101,7 +101,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/${API_VERSION}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           {
             refresh_token: refreshToken,
           }
