@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: cgsem-api:latest
     ports:
-      - "11111:11111"
+      - "11111:8000"
     volumes:
       - .:/app
       - audio_data:/data/audio 
@@ -51,8 +51,8 @@ services:
   minio:
     image: minio/minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9100:9000"
+      - "9101:9001"
     volumes:
       - minio-data:/data
     environment:
