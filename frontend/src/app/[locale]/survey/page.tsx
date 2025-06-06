@@ -21,29 +21,6 @@ async function SurveyContent({ locale }: { locale: Locale }) {
         <Header />
         <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
           <div className="container mx-auto px-4 py-8">
-            {/* Hero Section */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-purple)] text-[color:var(--feature-purple-text)] px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
-                <span className="text-lg">📋</span>
-                <span>Survey</span>
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-6 leading-tight">
-                Complete Our Survey
-              </h1>
-              
-              <p className="text-lg md:text-xl text-[color:var(--muted-foreground)] max-w-3xl mx-auto leading-relaxed">
-                Help us understand your needs better by completing this quick survey
-              </p>
-              
-              {/* Decorative elements */}
-              <div className="relative mt-8">
-                <div className="absolute top-0 left-1/4 w-16 h-16 bg-[color:var(--feature-blue)] rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <div className="absolute top-0 right-1/4 w-20 h-20 bg-[color:var(--feature-green)] rounded-full blur-xl opacity-25 animate-pulse delay-1000"></div>
-              </div>
-            </div>
-
-            {/* Survey Container với TranslationProvider */}
             <TranslationProvider dictionary={dictionary} locale={locale}>
               <div className="relative">
                 {/* Background decorative elements */}

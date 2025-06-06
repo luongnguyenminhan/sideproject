@@ -24,6 +24,38 @@ export const mockSurveyQuestions: Question[] = [
         id: 'entrepreneur',
         label: 'Doanh nhân',
       },
+      {
+        id: 'student_2',
+        label: 'Sinh viên',
+      },
+      {
+        id: 'professional_2',
+        label: 'Nhân viên công ty',
+      },
+      {
+        id: 'freelancer_2',
+        label: 'Freelancer',
+      },
+      {
+        id: 'entrepreneur_2',
+        label: 'Doanh nhân',
+      },
+      {
+        id: 'student_3',
+        label: 'Sinh viên',
+      },
+      {
+        id: 'professional_3',
+        label: 'Nhân viên công ty',
+      },
+      {
+        id: 'freelancer_3',
+        label: 'Freelancer',
+      },
+      {
+        id: 'entrepreneur_3',
+        label: 'Doanh nhân',
+      },
     ],
   },
   {
@@ -100,10 +132,22 @@ export const mockSurveyQuestions: Question[] = [
     Question_type: 'multiple_choice',
     subtitle: 'Chọn các lĩnh vực bạn quan tâm',
     Question_data: [
-      { id: 'technology', label: 'Công nghệ' },
-      { id: 'business', label: 'Kinh doanh' },
-      { id: 'design', label: 'Thiết kế' },
-      { id: 'marketing', label: 'Marketing' },
+      { id: 'javascript', label: 'JavaScript' },
+      { id: 'typescript', label: 'TypeScript' },
+      { id: 'react', label: 'React' },
+      { id: 'nodejs', label: 'Node.js' },
+      { id: 'python', label: 'Python' },
+      { id: 'java', label: 'Java' },
+      { id: 'csharp', label: 'C#' },
+      { id: 'cpp', label: 'C++' },
+      { id: 'html', label: 'HTML' },
+      { id: 'css', label: 'CSS' },
+      { id: 'angular', label: 'Angular' },
+      { id: 'vue', label: 'Vue.js' },
+      { id: 'nextjs', label: 'Next.js' },
+      { id: 'express', label: 'Express.js' },
+      { id: 'mongodb', label: 'MongoDB' },
+      { id: 'mysql', label: 'MySQL' },
     ],
   },
   {

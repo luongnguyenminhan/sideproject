@@ -7,6 +7,8 @@ import { Question, QuestionOption } from '@/types/question.types';
 import { useTranslation } from '@/contexts/TranslationContext';
 import QuestionRenderer from './QuestionRenderer';
 import { submitSurveyResponse } from '@/apis/questionApi';
+import AnimatedSurveyWrapper from './AnimatedSurveyWrapper';
+import AnimatedStepper from './AnimatedStepper';
 
 interface SurveyContainerProps {
   questions: Question[];
@@ -18,6 +20,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, any>>({});
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const progress = ((currentStep + 1) / questions.length) * 100;
 
@@ -81,10 +84,16 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
     }
   };
 
+  const currentQuestion = questions[currentStep];
+
   if (showResults) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-[color:var(--background)] rounded-3xl shadow-2xl border border-[color:var(--border)] p-8 md:p-12 text-center">
+      <AnimatedSurveyWrapper currentStep={questions.length} totalSteps={questions.length}>
+        <div className="w-full h-screen flex flex-col">
+          <div className="h-14 flex-shrink-0"></div>
+          <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center">
+            <div className="w-full max-w-4xl mx-auto">
+              <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-8 md:p-12 text-center">
           <div className="mb-8">
             <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-green)] text-[color:var(--feature-green-text)] px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
               <Check className="w-5 h-5" />
@@ -119,160 +128,137 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
             >
               {t('survey.results.retake') || 'Retake Survey'}
             </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </AnimatedSurveyWrapper>
     );
-  }
-
-  const currentQuestion = questions[currentStep];
+    }
 
   return (
-    <div className="w-full max-w-4xl mx-auto h-full flex flex-col">
-      <div className="bg-[color:var(--background)] rounded-3xl shadow-2xl border border-[color:var(--border)] p-4 md:p-8 h-full flex flex-col max-h-[calc(100vh-120px)] overflow-hidden">
-        {/* Progress Indicator */}
-        <div className="flex justify-center mb-6 md:mb-8 flex-shrink-0">
-          <div className="flex items-center space-x-2 md:space-x-4">
-            {questions.map((_, index) => (
-              <div key={index} className="flex items-center">
-                <div
+    <AnimatedSurveyWrapper currentStep={currentStep} totalSteps={questions.length}>
+      <div className="w-full h-screen flex flex-col">
+        {/* Header offset */}
+        <div className="h-14 flex-shrink-0"></div>
+        
+        <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center">
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-4 md:p-8 h-[calc(100vh-160px)] flex flex-col overflow-hidden">
+              {/* Animated Progress Indicator */}
+              <AnimatedStepper 
+                currentStep={currentStep}
+                totalSteps={questions.length}
+                questions={questions}
+              />
+
+              {/* Question Header */}
+              <div className="text-center mb-4 md:mb-6 flex-shrink-0">
+                <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)] px-4 py-2 rounded-full text-sm font-medium mb-4">
+                  <span>
+                    Question {currentStep + 1} of {questions.length}
+                  </span>
+                  <span>•</span>
+                  <span className="capitalize">
+                    {currentQuestion.Question_type == 'single_option' ? t('survey.type.single_option') : 
+                      currentQuestion.Question_type == 'multiple_choice' ? t('survey.type.multiple_choice') :
+                      currentQuestion.Question_type == 'text_input' ? t('survey.type.text_input') :
+                      currentQuestion.Question_type == 'sub_form' ? t('survey.type.sub_form') :
+                      t('survey.type.unknown_type')}
+                  </span>
+                </div>
+                
+                <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-3">
+                  {currentQuestion.Question}
+                </h1>
+                
+                {currentQuestion.subtitle && (
+                  <p className="text-base md:text-lg text-[color:var(--muted-foreground)] max-w-3xl mx-auto">
+                    {currentQuestion.subtitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Question Content */}
+              <div className="flex-1 overflow-y-auto mb-4 md:mb-6 min-h-0 overflow-x-hidden">
+                <QuestionRenderer
+                  question={currentQuestion}
+                  questionIndex={currentStep}
+                  selectedAnswers={selectedAnswers}
+                  onAnswerChange={handleAnswerChange}
+                />
+              </div>
+
+              {/* Navigation */}
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 flex-shrink-0">
+                <button
+                  onClick={handleBack}
+                  disabled={currentStep === 0}
                   className={`
-                    w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center font-semibold text-xs md:text-sm transition-all duration-300
+                    flex items-center space-x-2 px-4 md:px-6 py-3 rounded-xl font-semibold transition-all duration-300 w-full md:w-auto justify-center md:justify-start
                     ${
-                      index < currentStep
-                        ? 'bg-[color:var(--feature-green)] text-[color:var(--feature-green-text)] shadow-lg'
-                        : index === currentStep
-                        ? 'bg-[color:var(--primary)] text-[color:var(--primary-foreground)] ring-4 ring-[color:var(--primary)]/20 shadow-lg'
-                        : 'bg-[color:var(--muted)] text-[color:var(--muted-foreground)]'
+                      currentStep === 0
+                        ? 'text-[color:var(--muted-foreground)] cursor-not-allowed bg-[color:var(--muted)]/30'
+                        : 'text-[color:var(--foreground)] hover:bg-[color:var(--muted)] border border-[color:var(--border)]'
                     }
                   `}
                 >
-                  {index < currentStep ? (
-                    <Check className="w-4 h-4 md:w-6 md:h-6" />
-                  ) : (
-                    index + 1
+                  <ChevronLeft className="w-5 h-5" />
+                  <span>{t('survey.previous')}</span>
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  disabled={!isQuestionAnswered(currentStep) || isSubmitting}
+                  className={`
+                    flex items-center space-x-2 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 transform w-full md:w-auto justify-center
+                    ${
+                      isQuestionAnswered(currentStep) && !isSubmitting
+                        ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white hover:shadow-lg hover:-translate-y-1'
+                        : 'bg-[color:var(--muted)] text-[color:var(--muted-foreground)] cursor-not-allowed'
+                    }
+                  `}
+                >
+                  <span>
+                    {isSubmitting
+                      ? t('survey.submitting')
+                      : currentStep === questions.length - 1
+                      ? t('survey.complete')
+                      : t('survey.continue')
+                    }
+                  </span>
+                  {!isSubmitting && <ArrowRight className="w-5 h-5" />}
+                  {isSubmitting && (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   )}
-                </div>
-                {index < questions.length - 1 && (
-                  <div
-                    className={`
-                      w-8 md:w-16 h-1 mx-1 md:mx-2 rounded-full transition-all duration-300
-                      ${index < currentStep ? 'bg-[color:var(--feature-green)]' : 'bg-[color:var(--muted)]'}
-                    `}
-                  />
-                )}
+                </button>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Question Header */}
-        <div className="text-center mb-4 md:mb-6 flex-shrink-0">
-          <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)] px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <span>
-              {t('survey.question')} {currentStep + 1} / {questions.length}
-            </span>
-            <span>•</span>
-            <span className="capitalize">
-              {currentQuestion.Question_type == 'single_option'
-                ? t('survey.type.single_option')
-                : currentQuestion.Question_type == 'multiple_choice'
-                ? t('survey.type.multiple_choice')
-                : currentQuestion.Question_type == 'text_input'
-                ? t('survey.type.text_input')
-                : currentQuestion.Question_type == 'sub_form'
-                ? t('survey.type.sub_form')
-                : t('survey.type.unknown')}
-            </span>
-          </div>
-          
-          <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-3">
-            {currentQuestion.Question}
-          </h1>
-          
-          {currentQuestion.subtitle && (
-            <p className="text-base md:text-lg text-[color:var(--muted-foreground)] max-w-3xl mx-auto">
-              {currentQuestion.subtitle}
-            </p>
-          )}
-        </div>
-
-        {/* Question Content */}
-        <div className="flex-1 overflow-y-auto mb-4 md:mb-6 min-h-0">
-          <QuestionRenderer
-            question={currentQuestion}
-            questionIndex={currentStep}
-            selectedAnswers={selectedAnswers}
-            onAnswerChange={handleAnswerChange}
-          />
-        </div>
-
-        {/* Navigation */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 flex-shrink-0">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className={`
-              flex items-center space-x-2 px-4 md:px-6 py-3 rounded-xl font-semibold transition-all duration-300 w-full md:w-auto justify-center md:justify-start
-              ${
-                currentStep === 0
-                  ? 'text-[color:var(--muted-foreground)] cursor-not-allowed bg-[color:var(--muted)]/30'
-                  : 'text-[color:var(--foreground)] hover:bg-[color:var(--muted)] border border-[color:var(--border)]'
-              }
-            `}
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span>{t('survey.previous')}</span>
-          </button>
-
-          <button
-            onClick={handleNext}
-            disabled={!isQuestionAnswered(currentStep) || isSubmitting}
-            className={`
-              flex items-center space-x-2 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 transform w-full md:w-auto justify-center
-              ${
-                isQuestionAnswered(currentStep) && !isSubmitting
-                  ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white hover:shadow-lg hover:-translate-y-1'
-                  : 'bg-[color:var(--muted)] text-[color:var(--muted-foreground)] cursor-not-allowed'
-              }
-            `}
-          >
-            <span>
-              {isSubmitting
-                ? t('survey.submitting')
-                : currentStep === questions.length - 1
-                ? t('survey.complete')
-                : t('survey.continue')
-              }
-            </span>
-            {!isSubmitting && <ArrowRight className="w-5 h-5" />}
-            {isSubmitting && (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            )}
-          </button>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="space-y-3 flex-shrink-0">
-          <div className="flex justify-between text-sm font-medium text-[color:var(--muted-foreground)]">
-            <span>Progress</span>
-            <span>{Math.round(progress)}% Complete</span>
-          </div>
-          <div className="w-full bg-[color:var(--muted)] rounded-full h-3 md:h-4 overflow-hidden">
-            <div
-              className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] h-full rounded-full transition-all duration-700 ease-out relative"
-              style={{ width: `${progress}%` }}
-            >
-              <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+              {/* Progress Bar */}
+              <div className="space-y-3 flex-shrink-0">
+                <div className="flex justify-between text-sm font-medium text-[color:var(--muted-foreground)]">
+                  <span>Progress</span>
+                  <span>{Math.round(progress)}% Complete</span>
+                </div>
+                <div className="w-full bg-[color:var(--muted)] rounded-full h-3 md:h-4 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] h-full rounded-full transition-all duration-700 ease-out relative"
+                    style={{ width: `${progress}%` }}
+                  >
+                    <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="text-center text-sm text-[color:var(--muted-foreground)]">
+                  {t('survey.step')} {currentStep + 1} / {questions.length}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="text-center text-sm text-[color:var(--muted-foreground)]">
-            {t('survey.step')} {currentStep + 1} / {questions.length}
-          </div>
-        </div>
         </div>
       </div>
-    );
+    </AnimatedSurveyWrapper>
+  );
 };
 
 export default SurveyContainer;
