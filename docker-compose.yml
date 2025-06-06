@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: cgsem-api:latest
     ports:
-      - "8000:8000"
+      - "11111:11111"
     volumes:
       - .:/app
       - audio_data:/data/audio 
@@ -62,26 +62,26 @@ services:
     networks:
       - cgsem-network
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    volumes:
-      - qdrant-data:/qdrant/storage
-    environment:
-      - QDRANT__LOG_LEVEL=INFO
-    networks:
-      - cgsem-network
-    restart: always
-  redis-cgsem:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - cgsem-network
-    restart: always
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   ports:
+  #     - "6333:6333"
+  #     - "6334:6334"
+  #   volumes:
+  #     - qdrant-data:/qdrant/storage
+  #   environment:
+  #     - QDRANT__LOG_LEVEL=INFO
+  #   networks:
+  #     - cgsem-network
+  #   restart: always
+  # redis-cgsem:
+  #   image: redis:latest
+  #   container_name: redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - cgsem-network
+  #   restart: always
 
   # frontend:
   #   build:
@@ -108,5 +108,5 @@ networks:
 volumes:
   minio-data:
   audio_data:  # Add new volume for audio files
-  qdrant-data:  # Add volume for QdrantDB storage
+  # qdrant-data:  # Add volume for QdrantDB storage
 
