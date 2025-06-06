@@ -205,5 +205,144 @@
     "themeDescription": "Choose your preferred theme",
     "title": "Settings",
     "updateAccount": "Update Account"
+  },
+  "survey": {
+    "title": "Survey Demo",
+    "description": "Experience our survey system",
+    "navigation": {
+      "next": "Next",
+      "back": "Back",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "progress": {
+      "step": "Step {{current}} of {{total}}",
+      "completed": "{{percent}}% completed"
+    },
+    "validation": {
+      "required": "This field is required",
+      "selectOption": "Please select an option",
+      "selectMultiple": "Please select at least one option"
+    },
+    "results": {
+      "completed": "Completed",
+      "title": "Thank you!",
+      "description": "We've received your feedback and will review it carefully.",
+      "backToStart": "Back to Start"
+    },
+    "questions": {
+      "role": {
+        "title": "What is your current role?",
+        "subtitle": "Help us understand your professional background",
+        "options": {
+          "student": {
+            "label": "Student",
+            "description": "Currently studying or learning"
+          },
+          "professional": {
+            "label": "Professional",
+            "description": "Working in a company"
+          },
+          "freelancer": {
+            "label": "Freelancer",
+            "description": "Independent contractor"
+          },
+          "entrepreneur": {
+            "label": "Entrepreneur",
+            "description": "Running own business"
+          }
+        }
+      },
+      "personal": {
+        "title": "Personal Information",
+        "subtitle": "Provide your contact information",
+        "fields": {
+          "fullName": {
+            "label": "Full Name",
+            "placeholder": "Enter your full name"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "your.email@example.com"
+          },
+          "phone": {
+            "label": "Phone Number",
+            "placeholder": "+1 xxx xxx xxxx"
+          },
+          "company": {
+            "label": "Company (optional)",
+            "placeholder": "Your company name"
+          }
+        }
+      },
+      "interests": {
+        "title": "What areas are you interested in?",
+        "subtitle": "Select all that apply",
+        "options": {
+          "technology": {
+            "label": "Technology",
+            "description": "AI, software, hardware"
+          },
+          "business": {
+            "label": "Business",
+            "description": "Startups, management, strategy"
+          },
+          "design": {
+            "label": "Design",
+            "description": "UI/UX, graphics, creative"
+          },
+          "marketing": {
+            "label": "Marketing",
+            "description": "Digital, content, SEO"
+          }
+        }
+      },
+      "goals": {
+        "title": "What is your main goal?",
+        "subtitle": "Choose the most important one",
+        "options": {
+          "learn": {
+            "label": "Learn new skills",
+            "description": "Develop professional abilities"
+          },
+          "network": {
+            "label": "Expand network",
+            "description": "Connect with professionals"
+          },
+          "career": {
+            "label": "Career development",
+            "description": "Find new opportunities"
+          },
+          "business": {
+            "label": "Business growth",
+            "description": "Expand business"
+          }
+        }
+      },
+      "feedback": {
+        "title": "Service Feedback",
+        "subtitle": "Rate your experience",
+        "subQuestions": [
+          {
+            "title": "How would you rate the interface?",
+            "options": {
+              "excellent": "Excellent",
+              "good": "Good",
+              "average": "Average",
+              "poor": "Poor"
+            }
+          },
+          {
+            "title": "Would you recommend to friends?",
+            "options": {
+              "definitely": "Definitely",
+              "probably": "Probably",
+              "maybe": "Maybe",
+              "unlikely": "Unlikely"
+            }
+          }
+        ]
+      }
+    }
   }
 }

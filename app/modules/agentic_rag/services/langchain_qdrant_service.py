@@ -11,6 +11,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 import uuid
+from app.modules.agentic_rag.services.chunking_service import SemanticChunkingService
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class LangChainQdrantService:
 	def __init__(self, db: Session):
 		logger.info('LangChainQdrantService - Initializing with KB Repository integration')
 		self.db = db
+		self.semantic_chunking = SemanticChunkingService()
 
 	async def index_documents(self, documents: List[Document], collection_name: str, batch_size: int = 50) -> Dict[str, Any]:
 		"""Index documents using KB Repository"""
@@ -33,14 +35,16 @@ class LangChainQdrantService:
 				DocumentModel,
 			)
 
-			# Text splitter for large documents
-			text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, length_function=len)
-
-			# Split documents into chunks
+			# Semantic chunking for better context
 			doc_chunks = []
 			for doc in documents:
-				chunks = text_splitter.split_documents([doc])
-				doc_chunks.extend(chunks)
+				# Sử dụng semantic chunking
+				semantic_chunks = self.semantic_chunking.semantic_chunk(doc.page_content)
+
+				# Tạo Document objects từ semantic chunks
+				for chunk_text in semantic_chunks:
+					chunk_doc = Document(page_content=chunk_text, metadata={**doc.metadata, 'chunk_method': 'semantic'})
+					doc_chunks.append(chunk_doc)
 
 			# Initialize KB Repository
 			kb_repo = KBRepository(collection_name=collection_name)

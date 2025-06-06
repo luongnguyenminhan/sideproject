@@ -204,5 +204,144 @@
     "themeDescription": "Chọn chủ đề ưa thích của bạn",
     "title": "Cài Đặt",
     "updateAccount": "Cập Nhật Tài Khoản"
+  },
+  "survey": {
+    "title": "Khảo Sát Demo",
+    "description": "Trải nghiệm hệ thống khảo sát của chúng tôi",
+    "navigation": {
+      "next": "Tiếp theo",
+      "back": "Quay lại",
+      "submit": "Gửi",
+      "submitting": "Đang gửi..."
+    },
+    "progress": {
+      "step": "Bước {{current}} của {{total}}",
+      "completed": "{{percent}}% hoàn thành"
+    },
+    "validation": {
+      "required": "Trường này là bắt buộc",
+      "selectOption": "Vui lòng chọn một tùy chọn",
+      "selectMultiple": "Vui lòng chọn ít nhất một tùy chọn"
+    },
+    "results": {
+      "completed": "Hoàn thành",
+      "title": "Cảm ơn bạn!",
+      "description": "Chúng tôi đã nhận được phản hồi của bạn và sẽ xem xét cẩn thận.",
+      "backToStart": "Quay lại đầu"
+    },
+    "questions": {
+      "role": {
+        "title": "Vai trò hiện tại của bạn là gì?",
+        "subtitle": "Giúp chúng tôi hiểu nền tảng nghề nghiệp của bạn",
+        "options": {
+          "student": {
+            "label": "Sinh viên",
+            "description": "Đang học tập hoặc nghiên cứu"
+          },
+          "professional": {
+            "label": "Nhân viên",
+            "description": "Làm việc tại công ty"
+          },
+          "freelancer": {
+            "label": "Freelancer",
+            "description": "Nhà thầu độc lập"
+          },
+          "entrepreneur": {
+            "label": "Doanh nhân",
+            "description": "Điều hành doanh nghiệp riêng"
+          }
+        }
+      },
+      "personal": {
+        "title": "Thông tin cá nhân",
+        "subtitle": "Cung cấp thông tin liên hệ của bạn",
+        "fields": {
+          "fullName": {
+            "label": "Họ và tên",
+            "placeholder": "Nhập họ và tên của bạn"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "your.email@example.com"
+          },
+          "phone": {
+            "label": "Số điện thoại",
+            "placeholder": "+84 xxx xxx xxx"
+          },
+          "company": {
+            "label": "Công ty (tùy chọn)",
+            "placeholder": "Tên công ty của bạn"
+          }
+        }
+      },
+      "interests": {
+        "title": "Bạn quan tâm đến lĩnh vực nào?",
+        "subtitle": "Chọn tất cả các lĩnh vực phù hợp",
+        "options": {
+          "technology": {
+            "label": "Công nghệ",
+            "description": "AI, phần mềm, phần cứng"
+          },
+          "business": {
+            "label": "Kinh doanh",
+            "description": "Khởi nghiệp, quản lý, chiến lược"
+          },
+          "design": {
+            "label": "Thiết kế",
+            "description": "UI/UX, đồ họa, sáng tạo"
+          },
+          "marketing": {
+            "label": "Marketing",
+            "description": "Số hóa, nội dung, SEO"
+          }
+        }
+      },
+      "goals": {
+        "title": "Mục tiêu chính của bạn là gì?",
+        "subtitle": "Chọn mục tiêu quan trọng nhất",
+        "options": {
+          "learn": {
+            "label": "Học hỏi kỹ năng mới",
+            "description": "Phát triển khả năng chuyên môn"
+          },
+          "network": {
+            "label": "Mở rộng mạng lưới",
+            "description": "Kết nối với chuyên gia"
+          },
+          "career": {
+            "label": "Phát triển sự nghiệp",
+            "description": "Tìm cơ hội mới"
+          },
+          "business": {
+            "label": "Phát triển kinh doanh",
+            "description": "Mở rộng doanh nghiệp"
+          }
+        }
+      },
+      "feedback": {
+        "title": "Phản hồi về dịch vụ",
+        "subtitle": "Đánh giá trải nghiệm của bạn",
+        "subQuestions": [
+          {
+            "title": "Bạn đánh giá giao diện như thế nào?",
+            "options": {
+              "excellent": "Xuất sắc",
+              "good": "Tốt",
+              "average": "Trung bình",
+              "poor": "Kém"
+            }
+          },
+          {
+            "title": "Bạn có khả năng giới thiệu cho bạn bè không?",
+            "options": {
+              "definitely": "Chắc chắn",
+              "probably": "Có thể",
+              "maybe": "Có thể",
+              "unlikely": "Không chắc"
+            }
+          }
+        ]
+      }
+    }
   }
 }
