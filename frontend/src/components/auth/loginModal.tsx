@@ -150,8 +150,8 @@ export default function LoginModal({ isOpen, onClose, callbackUrl, onSuccess, t 
             
             const apiBaseUrl =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
-                "http://localhost:8000/api/v1";
-            const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;
+                "http://localhost:8000/api";
+            const googleLoginUrl = `${apiBaseUrl}/v1/auth/google/login`;
 
             // Show loading message
             message.info(t('auth.openingGoogleLogin'), 2);

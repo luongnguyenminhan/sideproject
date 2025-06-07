@@ -13,6 +13,10 @@ echo "Reading translations and detecting usage..."
 extracted_file=$(mktemp)
 usage_file=$(mktemp)
 output_json=$(mktemp)
+en_keys=$(mktemp)
+vi_keys=$(mktemp)
+unused_en=$(mktemp)
+unused_vi=$(mktemp)
 
 # Find all t('...') patterns with dot notation only - must contain at least one dot
 # This regex specifically looks for t('key.subkey') or t("key.subkey") patterns
@@ -99,14 +103,26 @@ get_nested_keys() {
     fi
 }
 
-# Generate the main output JSON
-echo "{" > "$output_json"
-echo "  \"summary\": {" >> "$output_json"
-echo "    \"totalTranslationKeys\": $(wc -l < "$extracted_file")," >> "$output_json"
+# Function to detect unused translations
+detect_unused_translations() {
+    local locale_file=$1
+    local used_keys_file=$2
+    local output_file=$3
+    
+    if [ -f "$locale_file" ]; then
+        local all_keys=$(mktemp)
+        get_nested_keys "$locale_file" > "$all_keys"
+        
+        # Find keys that exist in locale but not in used keys
+        comm -23 <(sort "$all_keys") <(sort "$used_keys_file") > "$output_file"
+        
+        rm "$all_keys"
+    else
+        touch "$output_file"
+    fi
+}
 
-# Count existing keys in en.json and vi.json if they exist
-en_keys=$(mktemp)
-vi_keys=$(mktemp)
+# Get keys from locale files
 en_count=0
 vi_count=0
 
@@ -120,8 +136,18 @@ if [ -f "./frontend/src/locales/vi.json" ]; then
     vi_count=$(wc -l < "$vi_keys")
 fi
 
+# Detect unused translations
+detect_unused_translations "./frontend/src/locales/en.json" "$extracted_file" "$unused_en"
+detect_unused_translations "./frontend/src/locales/vi.json" "$extracted_file" "$unused_vi"
+
+# Generate the main output JSON
+echo "{" > "$output_json"
+echo "  \"summary\": {" >> "$output_json"
+echo "    \"totalTranslationKeys\": $(wc -l < "$extracted_file")," >> "$output_json"
 echo "    \"totalEnKeys\": $en_count," >> "$output_json"
-echo "    \"totalViKeys\": $vi_count" >> "$output_json"
+echo "    \"totalViKeys\": $vi_count," >> "$output_json"
+echo "    \"unusedEnKeys\": $(wc -l < "$unused_en")," >> "$output_json"
+echo "    \"unusedViKeys\": $(wc -l < "$unused_vi")" >> "$output_json"
 echo "  }," >> "$output_json"
 
 # Add usage information
@@ -207,6 +233,35 @@ while IFS= read -r key; do
     fi
 done < "$extracted_file"
 echo "" >> "$output_json"
+echo "    ]," >> "$output_json"
+
+# Add unused translations section
+echo "    \"unusedInEn\": [" >> "$output_json"
+first=true
+while IFS= read -r key; do
+    [ -z "$key" ] && continue
+    if [ "$first" = true ]; then
+        first=false
+    else
+        echo "," >> "$output_json"
+    fi
+    echo -n "      \"$key\"" >> "$output_json"
+done < "$unused_en"
+echo "" >> "$output_json"
+echo "    ]," >> "$output_json"
+
+echo "    \"unusedInVi\": [" >> "$output_json"
+first=true
+while IFS= read -r key; do
+    [ -z "$key" ] && continue
+    if [ "$first" = true ]; then
+        first=false
+    else
+        echo "," >> "$output_json"
+    fi
+    echo -n "      \"$key\"" >> "$output_json"
+done < "$unused_vi"
+echo "" >> "$output_json"
 echo "    ]" >> "$output_json"
 
 echo "  }" >> "$output_json"
@@ -224,6 +279,8 @@ echo -e "\n${BLUE}Summary:${NC}"
 echo -e "Total translation keys with dot notation: ${YELLOW}$(wc -l < "$extracted_file")${NC}"
 echo -e "Keys found in en.json: ${YELLOW}$en_count${NC}"  
 echo -e "Keys found in vi.json: ${YELLOW}$vi_count${NC}"
+echo -e "Unused keys in en.json: ${RED}$(wc -l < "$unused_en")${NC}"
+echo -e "Unused keys in vi.json: ${RED}$(wc -l < "$unused_vi")${NC}"
 
 # Save to file
 output_file="translation_analysis_$(date +%Y%m%d_%H%M%S).json"
@@ -244,14 +301,37 @@ echo -e "\n${BLUE}Analysis Summary:${NC}"
 if command -v jq >/dev/null 2>&1; then
     missing_en=$(jq '.analysis.missingInEn | length' "$output_json")
     missing_vi=$(jq '.analysis.missingInVi | length' "$output_json")
+    unused_en_count=$(jq '.analysis.unusedInEn | length' "$output_json")
+    unused_vi_count=$(jq '.analysis.unusedInVi | length' "$output_json")
 else
     missing_en=$(grep -c '"' "$output_json" | grep missingInEn || echo "0")
     missing_vi=$(grep -c '"' "$output_json" | grep missingInVi || echo "0")
+    unused_en_count=$(wc -l < "$unused_en")
+    unused_vi_count=$(wc -l < "$unused_vi")
 fi
 echo -e "Missing in en.json: ${RED}$missing_en${NC}"
 echo -e "Missing in vi.json: ${RED}$missing_vi${NC}"
+echo -e "Unused in en.json: ${YELLOW}$unused_en_count${NC}"
+echo -e "Unused in vi.json: ${YELLOW}$unused_vi_count${NC}"
+
+# Show samples of unused translations if any exist
+if [ -s "$unused_en" ]; then
+    echo -e "\n${YELLOW}Sample unused keys in en.json:${NC}"
+    head -n 5 "$unused_en" | while read -r key; do
+        echo -e "  - $key"
+    done
+    [ $(wc -l < "$unused_en") -gt 5 ] && echo "  ..."
+fi
+
+if [ -s "$unused_vi" ]; then
+    echo -e "\n${YELLOW}Sample unused keys in vi.json:${NC}"
+    head -n 5 "$unused_vi" | while read -r key; do
+        echo -e "  - $key"
+    done
+    [ $(wc -l < "$unused_vi") -gt 5 ] && echo "  ..."
+fi
 
 # Clean up temporary files
-rm "$extracted_file" "$usage_file" "$output_json" "$temp_nested" "$en_keys" "$vi_keys" 2>/dev/null
+rm "$extracted_file" "$usage_file" "$output_json" "$temp_nested" "$en_keys" "$vi_keys" "$unused_en" "$unused_vi" 2>/dev/null
 
 echo -e "\n${GREEN}Analysis exported to JSON format!${NC}"

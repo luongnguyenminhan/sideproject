@@ -1,5 +1,6 @@
 {
   "aboutUs": {
+    "contact": "Liên Hệ",
     "mission": {
       "description": "Chúng tôi nỗ lực tạo ra những giải pháp sáng tạo giúp công nghệ trở nên dễ tiếp cận và có ý nghĩa cho mọi người.",
       "title": "Sứ Mệnh Của Chúng Tôi"
@@ -114,6 +115,14 @@
     "welcomeDescription": "Chọn một cuộc trò chuyện hoặc tạo mới để bắt đầu trò chuyện",
     "welcomeTitle": "Chào Mừng Đến Với AI Chat"
   },
+  "carousel": {
+    "title": "Bộ Sưu Tập Hình Ảnh",
+    "subtitle": "Tài nguyên thiết kế chất lượng cao",
+    "description": "Khám phá thư viện hình ảnh và biểu tượng đa dạng được tuyển chọn kỹ lưỡng",
+    "nextImage": "Hình tiếp theo",
+    "prevImage": "Hình trước đó",
+    "currentImage": "Hình hiện tại"
+  },
   "common": {
     "branding": "Website AnLNM",
     "cancel": "Hủy",
@@ -133,24 +142,6 @@
     "email": "Email",
     "facebookPostCountPrefix": "Hiển thị",
     "facebookPostCountSuffix": "bài viết từ trang này.",
-    "features": {
-      "darkMode": {
-        "description": "Chế độ sáng và tối đẹp mắt với hiệu ứng chuyển đổi mượt mà",
-        "title": "Hỗ Trợ Chế Độ Tối"
-      },
-      "fastPerformance": {
-        "description": "Hiệu suất nhanh như chớp với server-side rendering và tối ưu hóa",
-        "title": "Hiệu Suất Nhanh"
-      },
-      "globalReady": {
-        "description": "Hỗ trợ đa ngôn ngữ tích hợp sẵn cho nhiều ngôn ngữ",
-        "title": "Sẵn Sàng Toàn Cầu"
-      },
-      "modernStack": {
-        "description": "Được xây dựng với các công nghệ và phương pháp tốt nhất mới nhất",
-        "title": "Ngăn Xếp Công Nghệ Hiện Đại"
-      }
-    },
     "getStarted": "Bắt Đầu",
     "learnMore": "Tìm Hiểu Thêm",
     "post": "Bài Viết Facebook",
@@ -159,7 +150,34 @@
     "unknownTime": "Thời gian không xác định",
     "userInformation": "Thông Tin Người Dùng",
     "username": "Tên người dùng",
-    "welcomeBack": "Chào mừng trở lại"
+    "welcomeBack": "Chào mừng trở lại",
+    "demo": {
+      "title": "Hoạt động của chúng tôi",
+      "subtitle": "Câu lạc bộ truyền thông và sự kiện trường THPT Cần Giuộc",
+      "description": "Chúng tôi là một câu lạc bộ truyền thông tại trường THPT Cần Giuộc, chuyên tổ chức các sự kiện và hoạt động truyền thông để kết nối học sinh và cộng đồng.",
+      "viewAssets": "Xem hình ảnh",
+      "totalAssets": "hình ảnh có sẵn"
+    },
+    "features": {
+      "title": "Tính Năng Nổi Bật",
+      "subtitle": "Điều gì làm chúng tôi khác biệt",
+      "modernStack": {
+        "title": "Công Nghệ Hiện Đại",
+        "description": "Được xây dựng với Next.js 14, React 18, và TypeScript để đạt hiệu suất tối đa và trải nghiệm phát triển tốt nhất"
+      },
+      "fastPerformance": {
+        "title": "Hiệu Suất Cao",
+        "description": "Được tối ưu hóa về tốc độ với server-side rendering, bộ nhớ đệm và các tiêu chuẩn web hiện đại"
+      },
+      "globalReady": {
+        "title": "Sẵn Sàng Toàn Cầu",
+        "description": "Hỗ trợ đầy đủ đa ngôn ngữ với nhiều ngôn ngữ và vùng miền khác nhau"
+      },
+      "darkMode": {
+        "title": "Chế Độ Tối",
+        "description": "Giao diện đẹp mắt với chế độ tối và sáng thích ứng theo sở thích của bạn"
+      }
+    }
   },
   "navigation": {
     "about": "Giới thiệu",
@@ -357,5 +375,81 @@
       "sub_form": "Biểu mẫu",
       "unknown": "Không xác định"
     }
+  },
+  "team": {
+    "title": "Đội Ngũ Của Chúng Tôi",
+    "subtitle": "Gặp gỡ những con người đứng sau những sản phẩm tuyệt vời",
+    "leadership": {
+      "title": "Ban Lãnh Đạo",
+      "ceo": {
+        "name": "Nguyễn Lê An",
+        "role": "Giám Đốc Điều Hành & Nhà Sáng Lập",
+        "bio": "Với hơn 10 năm kinh nghiệm trong lĩnh vực công nghệ, An dẫn dắt đội ngũ tạo ra những giải pháp sáng tạo và có tác động tích cực đến cộng đồng.",
+        "experience": "10+ năm kinh nghiệm"
+      },
+      "cto": {
+        "name": "Lê Minh Techie",
+        "role": "Giám Đốc Công Nghệ",
+        "bio": "Chuyên gia về kiến trúc hệ thống và AI, Techie chịu trách nhiệm định hướng công nghệ và đảm bảo chất lượng sản phẩm cao nhất.",
+        "experience": "8+ năm kinh nghiệm"
+      },
+      "designer": {
+        "name": "Nguyễn Creative",
+        "role": "Giám Đốc Thiết Kế",
+        "bio": "Với con mắt thẩm mỹ tinh tế, Creative tạo ra những trải nghiệm người dùng độc đáo và thu hút.",
+        "experience": "6+ năm kinh nghiệm"
+      }
+    },
+    "values": {
+      "title": "Giá Trị Cốt Lõi",
+      "innovation": {
+        "title": "Sáng Tạo",
+        "description": "Luôn tìm kiếm những giải pháp mới và cách tiếp cận độc đáo"
+      },
+      "quality": {
+        "title": "Chất Lượng",
+        "description": "Cam kết mang đến sản phẩm và dịch vụ chất lượng cao nhất"
+      },
+      "community": {
+        "title": "Cộng Đồng",
+        "description": "Xây dựng và phát triển cùng cộng đồng người dùng"
+      }
+    }
+  },
+  "footer": {
+    "company": {
+      "title": "Công Ty",
+      "about": "Về chúng tôi",
+      "team": "Đội ngũ",
+      "careers": "Tuyển dụng",
+      "contact": "Liên hệ"
+    },
+    "products": {
+      "title": "Sản Phẩm",
+      "webDevelopment": "Phát triển Web",
+      "mobileApps": "Ứng dụng Di động",
+      "aiSolutions": "Giải pháp AI",
+      "consulting": "Tư vấn"
+    },
+    "resources": {
+      "title": "Tài Nguyên",
+      "documentation": "Tài liệu",
+      "blog": "Blog",
+      "support": "Hỗ trợ",
+      "community": "Cộng đồng"
+    },
+    "social": {
+      "title": "Mạng Xã Hội",
+      "followUs": "Theo dõi chúng tôi"
+    },
+    "legal": {
+      "title": "Pháp Lý",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản sử dụng",
+      "cookies": "Chính sách Cookie"
+    },
+    "copyright": "© 2024 AnLNM Website. Tất cả quyền được bảo lưu.",
+    "madeWith": "Được tạo với",
+    "location": "Việt Nam"
   }
 }

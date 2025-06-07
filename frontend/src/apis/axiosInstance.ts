@@ -9,12 +9,11 @@ import { ApiError } from "@/types/common.type";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "http://localhost:8000/api";
-const API_VERSION = "v1";
+  "http://localhost:8000/api/v1";
 
 
 const axiosInstance = axios.create({
-  baseURL: `${API_BASE_URL}/${API_VERSION}`,
+  baseURL: `${API_BASE_URL}`,
 });
 
 axiosInstance.interceptors.request.use(
@@ -25,7 +24,7 @@ axiosInstance.interceptors.request.use(
     if (!access_token && refresh_token) {
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/${API_VERSION}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           { refresh_token }
         );
 
@@ -102,7 +101,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/${API_VERSION}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           {
             refresh_token: refreshToken,
           }
