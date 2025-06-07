@@ -120,38 +120,45 @@
     "yes": "Yes"
   },
   "home": {
-    "authenticatedDescription": "Explore all the features available to you as a logged-in user.",
+    "authenticatedDescription": "Explore all the features available to you as a member of the club.",
     "confirmed": "Confirmed",
-    "description": "A modern, fast, and scalable web application built with Next.js 14, featuring server-side rendering, internationalization, and beautiful UI components.",
+    "description": "Official website of Can Giuoc High School's Media and Events Club. A place to connect, share, and develop the student community through creative media activities.",
     "email": "Email",
     "facebookPostCountPrefix": "Showing",
     "facebookPostCountSuffix": "posts from this page.",
-    "getStarted": "Get Started",
+    "getStarted": "Join Now",
     "learnMore": "Learn More",
     "post": "Facebook Post",
-    "title": "Welcome to AnLNM Website",
+    "title": "Welcome to Can Giuoc High School Media Club",
     "unknownTime": "Unknown time",
-    "userInformation": "User Information",
-    "username": "Username",
+    "userInformation": "Member Information",
+    "username": "Member name",
     "welcomeBack": "Welcome back",
+    "demo": {
+      "title": "Our Activities",
+      "subtitle": "Can Giuoc High School Media and Events Club",
+      "description": "We are a media club at Can Giuoc High School, specializing in organizing events and media activities to connect students and the school community.",
+      "viewAssets": "View activity images",
+      "totalAssets": "event images available"
+    },
     "features": {
       "title": "Key Features",
-      "subtitle": "What makes us different",
+      "subtitle": "What makes our club special",
       "modernStack": {
-        "title": "Modern Stack",
-        "description": "Built with Next.js 14, React 18, and TypeScript for maximum performance and developer experience"
+        "title": "Modern Media",
+        "description": "Using modern media tools and platforms to create quality and engaging content"
       },
       "fastPerformance": {
-        "title": "Fast Performance",
-        "description": "Optimized for speed with server-side rendering, caching, and modern web standards"
+        "title": "Quality Events",
+        "description": "Organizing carefully planned events and activities that provide excellent experiences for students"
       },
       "globalReady": {
-        "title": "Global Ready",
-        "description": "Full internationalization support with multiple languages and locales"
+        "title": "Community Connection",
+        "description": "Building bridges between students and the community through meaningful activities"
       },
       "darkMode": {
-        "title": "Dark Mode",
-        "description": "Beautiful dark and light themes that adapt to your preferences"
+        "title": "Unlimited Creativity",
+        "description": "Encouraging creativity and innovation in all media and event organization activities"
       }
     }
   },

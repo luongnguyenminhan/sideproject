@@ -19,12 +19,125 @@ import {
   MagnetButton,
   AnimatedRibbon
 } from '@/components/animations';
+import { Metadata } from "next";
 
 interface HomeProps {
   user: UserResponse | null;
   isAuthenticated: boolean;
 }
-
+export const metadata: Metadata = {
+  title: {
+    default: "CGSEM",
+    template: "%s | CGSEM"
+  },
+  description: "CGSEM - Club Geoscience Engineering & Management. A modern platform for geoscience education, research, and community building with cutting-edge technology.",
+  keywords: [
+    "CGSEM", 
+    "Geoscience", 
+    "Engineering", 
+    "Management", 
+    "Club", 
+    "Education", 
+    "Research", 
+    "Geology", 
+    "Earth Sciences", 
+    "Mining", 
+    "Environmental", 
+    "Next.js", 
+    "React", 
+    "TypeScript", 
+    "i18n", 
+    "Internationalization", 
+    "Dark Mode",
+    "Student Organization",
+    "Academic Club",
+    "Science Community"
+  ],
+  authors: [
+    { name: "CGSEM Team", url: "https://cgsem.org" },
+    { name: "Club Development Team" }
+  ],
+  creator: "CGSEM - Club Geoscience Engineering & Management",
+  publisher: "CGSEM Organization",
+  applicationName: "CGSEM Platform",
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
+  category: "Education",
+  classification: "Educational Platform",
+  metadataBase: new URL("https://cgsem.org"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      "vi-VN": "/vi",
+      "en-US": "/en",
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/Logo CLB 2023.png", sizes: "32x32", type: "image/png" },
+      { url: "/Logo CLB 2023.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/Logo CLB 2023.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/Logo CLB 2023.png",
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    alternateLocale: ["en_US"],
+    url: "https://cgsem.org",
+    title: "CGSEM - Club Geoscience Engineering & Management",
+    description: "Join CGSEM community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    siteName: "CGSEM Platform",
+    images: [
+      {
+        url: "/Logo CLB 2023.png",
+        width: 1200,
+        height: 630,
+        alt: "CGSEM Logo - Club Geoscience Engineering & Management",
+      },
+    ],
+    countryName: "Vietnam",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@cgsem_official",
+    creator: "@cgsem_official",
+    title: "CGSEM - Club Geoscience Engineering & Management",
+    description: "Join CGSEM community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    images: ["/Logo CLB 2023.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-site-verification-code",
+    yandex: "your-yandex-verification-code",
+    yahoo: "your-yahoo-verification-code",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "CGSEM",
+    "application-name": "CGSEM Platform",
+    "msapplication-TileColor": "#3b82f6",
+    "msapplication-TileImage": "/Logo CLB 2023.png",
+    "theme-color": "#3b82f6",
+  },
+};
 async function Home({ user, isAuthenticated }: HomeProps) {
   const locale = await getCurrentLocale()
   const dictionary = await getDictionary(locale)

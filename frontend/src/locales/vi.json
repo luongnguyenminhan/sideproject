@@ -120,45 +120,45 @@
     "yes": "Có"
   },
   "home": {
-    "authenticatedDescription": "Khám phá tất cả các tính năng có sẵn cho bạn với tư cách là người dùng đã đăng nhập.",
+    "authenticatedDescription": "Khám phá tất cả các tính năng có sẵn cho bạn với tư cách là thành viên của câu lạc bộ.",
     "confirmed": "Đã xác nhận",
-    "description": "Một ứng dụng web hiện đại, nhanh chóng và có thể mở rộng được xây dựng với Next.js 14, tích hợp server-side rendering, đa ngôn ngữ và các thành phần UI đẹp mắt.",
+    "description": "Trang web chính thức của Câu lạc bộ truyền thông và sự kiện trường THPT Cần Giuộc. Nơi kết nối, chia sẻ và phát triển cộng đồng học sinh thông qua các hoạt động truyền thông sáng tạo.",
     "email": "Email",
     "facebookPostCountPrefix": "Hiển thị",
     "facebookPostCountSuffix": "bài viết từ trang này.",
-    "getStarted": "Bắt Đầu",
+    "getStarted": "Tham Gia Ngay",
     "learnMore": "Tìm Hiểu Thêm",
     "post": "Bài Viết Facebook",
-    "title": "Chào Mừng Đến Với Website AnLNM",
+    "title": "Chào Mừng Đến Với CLB Truyền Thông THPT Cần Giuộc",
     "unknownTime": "Thời gian không xác định",
-    "userInformation": "Thông Tin Người Dùng",
-    "username": "Tên người dùng",
+    "userInformation": "Thông Tin Thành Viên",
+    "username": "Tên thành viên",
     "welcomeBack": "Chào mừng trở lại",
     "demo": {
       "title": "Hoạt động của chúng tôi",
       "subtitle": "Câu lạc bộ truyền thông và sự kiện trường THPT Cần Giuộc",
-      "description": "Chúng tôi là một câu lạc bộ truyền thông tại trường THPT Cần Giuộc, chuyên tổ chức các sự kiện và hoạt động truyền thông để kết nối học sinh và cộng đồng.",
-      "viewAssets": "Xem hình ảnh",
-      "totalAssets": "hình ảnh có sẵn"
+      "description": "Chúng tôi là một câu lạc bộ truyền thông tại trường THPT Cần Giuộc, chuyên tổ chức các sự kiện và hoạt động truyền thông để kết nối học sinh và cộng đồng trường.",
+      "viewAssets": "Xem hình ảnh hoạt động",
+      "totalAssets": "hình ảnh sự kiện có sẵn"
     },
     "features": {
-      "title": "Tính Năng Nổi Bật",
-      "subtitle": "Điều gì làm chúng tôi khác biệt",
+      "title": "Đặc Điểm Nổi Bật",
+      "subtitle": "Điều gì làm CLB chúng tôi đặc biệt",
       "modernStack": {
-        "title": "Công Nghệ Hiện Đại",
-        "description": "Được xây dựng với Next.js 14, React 18, và TypeScript để đạt hiệu suất tối đa và trải nghiệm phát triển tốt nhất"
+        "title": "Truyền Thông Hiện Đại",
+        "description": "Sử dụng các công cụ và nền tảng truyền thông hiện đại để tạo ra những nội dung chất lượng và thu hút"
       },
       "fastPerformance": {
-        "title": "Hiệu Suất Cao",
-        "description": "Được tối ưu hóa về tốc độ với server-side rendering, bộ nhớ đệm và các tiêu chuẩn web hiện đại"
+        "title": "Sự Kiện Chất Lượng",
+        "description": "Tổ chức các sự kiện và hoạt động được lên kế hoạch kỹ lưỡng, mang lại trải nghiệm tuyệt vời cho học sinh"
       },
       "globalReady": {
-        "title": "Sẵn Sàng Toàn Cầu",
-        "description": "Hỗ trợ đầy đủ đa ngôn ngữ với nhiều ngôn ngữ và vùng miền khác nhau"
+        "title": "Kết Nối Cộng Đồng",
+        "description": "Xây dựng cầu nối giữa học sinh với nhau và với cộng đồng thông qua các hoạt động ý nghĩa"
       },
       "darkMode": {
-        "title": "Chế Độ Tối",
-        "description": "Giao diện đẹp mắt với chế độ tối và sáng thích ứng theo sở thích của bạn"
+        "title": "Sáng Tạo Không Giới Hạn",
+        "description": "Khuyến khích sự sáng tạo và đổi mới trong mọi hoạt động truyền thông và tổ chức sự kiện"
       }
     }
   },
