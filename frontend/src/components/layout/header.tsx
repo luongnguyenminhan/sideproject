@@ -39,7 +39,7 @@ export default async function Header() {
         <div className="flex items-center gap-2">
           <Link href={`/${locale}`} className="flex items-center gap-2">
             <Image
-              src="/Logo CLB 2023.png"
+              src="/assets/logo/logo_web.png"
               alt="App Logo"
               width={80}
               height={30}
