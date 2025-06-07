@@ -1,6 +1,31 @@
-from typing import Annotated, Dict, List, Optional, TypedDict
+from typing import Annotated, Dict, List, Optional, TypedDict, Literal
 from langgraph.graph.message import add_messages
 from pydantic import BaseModel, Field
+
+# --- LLM Chunking Models ---
+
+
+class CVChunkWithSection(BaseModel):
+	"""A chunk of CV content with its classified section type."""
+
+	chunk_content: str = Field(description='The actual text content of this chunk')
+	section: Literal[
+		'personal_info',
+		'education',
+		'work_experience',
+		'skills',
+		'projects',
+		'certificates',
+		'interests',
+		'other',
+	] = Field(description='Section type determined by LLM during chunking')
+
+
+class LLMChunkingResult(BaseModel):
+	"""Result of LLM-based intelligent chunking and classification."""
+
+	chunks: List[CVChunkWithSection] = Field(description='List of intelligently chunked and classified CV sections')
+
 
 # --- Individual Data Item Models for CV Sections ---
 
@@ -258,6 +283,9 @@ class CVState(TypedDict):
 
 	# Section identification
 	identified_sections: Optional[List[str]]  # List of section names (Output of SectionIdentifierNode)
+
+	# LLM-based chunking result (Output of LLMChunkDecisionNode)
+	chunking_result: Optional[LLMChunkingResult]
 
 	# Extracted structured data items (Populated by InformationExtractorNode)
 	# These fields will hold instances of the Pydantic wrapper models (e.g., ListEducationItem) or singular item models.

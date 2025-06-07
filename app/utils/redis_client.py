@@ -17,7 +17,7 @@ class RedisClient:
 		self.settings = get_settings()
 		# Extract Redis URL from Celery broker URL for consistency
 		redis_url = self.settings.CELERY_BROKER_URL.replace('/0', '/1')  # Use DB 1 for cache
-		self.redis_client = redis.from_url("redis://160.191.88.194:6379/1", decode_responses=True)
+		self.redis_client = redis.from_url('redis://160.191.88.194:6379/1', decode_responses=True)
 
 	async def get(self, key: str) -> Optional[Any]:
 		"""
