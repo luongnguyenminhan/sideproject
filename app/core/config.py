@@ -38,7 +38,7 @@ with open(CLIENT_SECRET_FILE) as f:
 GOOGLE_CLIENT_ID = google_creds['client_id']
 GOOGLE_CLIENT_SECRET = google_creds['client_secret']
 # Update the redirect URI to support Next.js frontend
-GOOGLE_REDIRECT_URI = 'http://160.191.88.194:11111/api/v1/auth/google/callback'
+GOOGLE_REDIRECT_URI = 'http://api.wc504.io.vn/api/v1/auth/google/callback'
 
 # Frontend redirect URLs for OAuth flows - callback server on port 3000
 FRONTEND_SUCCESS_URL = os.getenv('FRONTEND_SUCCESS_URL', 'http://127.0.0.1:5500/auth/google/callback')
