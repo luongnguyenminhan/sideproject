@@ -14,7 +14,6 @@ export default function MagneticCard({
   children, 
   className = "",
   strength = 20,
-  restoreSpeed = 0.5
 }: MagneticCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
