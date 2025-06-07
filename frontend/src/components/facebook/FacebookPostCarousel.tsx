@@ -1,5 +1,4 @@
-import FacebookPost from './FacebookPost';
-import { Carousel } from '@/components/ui';
+import ResponsiveFacebookCarousel from './ResponsiveFacebookCarousel';
 import { FacebookPageInfo } from '@/types/facebook.type';
 import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import getDictionary, { createTranslator } from '@/utils/translation';
@@ -48,29 +47,19 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
   const posts = pageInfo.posts.data.slice(0, limit);
 
   return (
-    <div className="w-full space-y-6">
-      {/* Posts Carousel with Fade Effect */}
+    <div className="w-full space-y-6">      {/* Posts Carousel with Responsive Items Per View */}
       <div className="relative">
-        <Carousel
+        <ResponsiveFacebookCarousel
+          posts={posts}
           autoPlay={autoPlay}
-          autoPlayInterval={6000}
-          itemsPerView={3}
-          className="w-full"
-        >
-          {posts.map((post) => (
-            <FacebookPost
-              key={post.id}
-              post={post}
-              truncateMessage={truncateMessage}
-              maxMessageLength={maxMessageLength}
-              locale={locale}
-              translation={{
-                unknownTime: t('home.unknownTime'),
-                post: t('home.post'),
-              }}
-            />
-          ))}
-        </Carousel>
+          truncateMessage={truncateMessage}
+          maxMessageLength={maxMessageLength}
+          locale={locale}
+          translation={{
+            unknownTime: t('home.unknownTime'),
+            post: t('home.post'),
+          }}
+        />
       </div>
 
       {/* Post Count Info */}
