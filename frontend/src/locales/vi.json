@@ -1,19 +1,11 @@
 {
   "aboutUs": {
     "contact": "Liên Hệ",
-    "mission": {
-      "description": "Chúng tôi nỗ lực tạo ra những giải pháp sáng tạo giúp công nghệ trở nên dễ tiếp cận và có ý nghĩa cho mọi người.",
-      "title": "Sứ Mệnh Của Chúng Tôi"
-    },
     "social": {
       "about": "Giới thiệu",
       "followers": "người theo dõi"
     },
-    "title": "Về Chúng Tôi",
-    "vision": {
-      "description": "Xây dựng một thế giới nơi công nghệ phục vụ nhân loại, thúc đẩy kết nối, sáng tạo và thay đổi tích cực.",
-      "title": "Tầm Nhìn Của Chúng Tôi"
-    }
+    "title": "Về Chúng Tôi"
   },
   "auth": {
     "allowPopups": "Vui lòng cho phép popup và thử lại",
@@ -64,7 +56,6 @@
       "selectProvider": "Chọn Nhà Cung Cấp",
       "subtitle": "Cấu hình và quản lý cài đặt AI agent của bạn",
       "temperature": "Nhiệt độ",
-      "testMessage": "Kiểm tra cấu hình agent của bạn với một tin nhắn mẫu.",
       "title": "Quản Lý Agent",
       "updateAgent": "Cập Nhật Agent",
       "validateAgent": "Xác Thực Agent",
@@ -79,7 +70,6 @@
     "copied": "Đã sao chép!",
     "createFirstChat": "Tạo cuộc trò chuyện đầu tiên để bắt đầu",
     "defaultChatTitle": "Trò chuyện",
-    "fileCount": "{{count}} tập tin",
     "files": "Tập tin",
     "filesAssociated": "Các tập tin được tải lên ở đây sẽ được liên kết với cuộc trò chuyện này",
     "messages": "tin nhắn",
@@ -91,14 +81,9 @@
     "sending": "Đang gửi...",
     "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
     "systemPrompt": {
-      "agentPrompt": "Prompt Agent",
       "conversationPrompt": "Prompt Cuộc Trò Chuyện",
       "description": "Cấu hình Prompt hệ thống cho cuộc trò chuyện này",
-      "edit": "Chỉnh sửa",
-      "noAgentPrompt": "Chưa có Prompt agent nào được thiết lập",
       "placeholder": "Nhập Prompt hệ thống...",
-      "preview": "Xem trước",
-      "promptSource": "Nguồn Prompt",
       "title": "Prompt Hệ Thống"
     },
     "thisConversation": "Cuộc trò chuyện này",
@@ -126,7 +111,6 @@
   "common": {
     "branding": "Website AnLNM",
     "cancel": "Hủy",
-    "close": "Đóng",
     "delete": "Xóa",
     "download": "Tải xuống",
     "loading": "Đang tải...",
@@ -145,7 +129,6 @@
     "getStarted": "Bắt Đầu",
     "learnMore": "Tìm Hiểu Thêm",
     "post": "Bài Viết Facebook",
-    "serverComponentDemo": "Demo Server Component",
     "title": "Chào Mừng Đến Với Website AnLNM",
     "unknownTime": "Thời gian không xác định",
     "userInformation": "Thông Tin Người Dùng",
@@ -182,11 +165,7 @@
   "navigation": {
     "about": "Giới thiệu",
     "chat": "Trò chuyện",
-    "conversations": "Cuộc trò chuyện",
-    "dashboard": "Bảng điều khiển",
-    "files": "Tập tin",
     "help": "Trợ giúp",
-    "home": "Trang chủ",
     "menu": "Menu",
     "profile": "Hồ sơ",
     "settings": "Cài đặt"
@@ -224,156 +203,16 @@
     "updateAccount": "Cập Nhật Tài Khoản"
   },
   "survey": {
-    "title": "Khảo Sát Demo",
-    "description": "Trải nghiệm hệ thống khảo sát của chúng tôi",
-    "navigation": {
-      "next": "Tiếp theo",
-      "back": "Quay lại",
-      "submit": "Gửi",
-      "submitting": "Đang gửi..."
-    },
     "complete": "Hoàn thành",
     "continue": "Tiếp tục",
     "previous": "Trước",
-    "question": "Câu hỏi",
     "step": "Bước",
     "submitting": "Đang gửi...",
-    "progress": {
-      "step": "Bước",
-      "completed": "{{percent}}% hoàn thành"
-    },
-    "validation": {
-      "required": "Trường này là bắt buộc",
-      "selectOption": "Vui lòng chọn một tùy chọn",
-      "selectMultiple": "Vui lòng chọn ít nhất một tùy chọn"
-    },
     "results": {
       "completed": "Hoàn thành",
       "title": "Cảm ơn bạn!",
       "description": "Chúng tôi đã nhận được phản hồi của bạn và sẽ xem xét cẩn thận.",
-      "backToStart": "Quay lại đầu",
       "retake": "Làm lại khảo sát"
-    },
-    "questions": {
-      "role": {
-        "title": "Vai trò hiện tại của bạn là gì?",
-        "subtitle": "Giúp chúng tôi hiểu nền tảng nghề nghiệp của bạn",
-        "options": {
-          "student": {
-            "label": "Sinh viên",
-            "description": "Đang học tập hoặc nghiên cứu"
-          },
-          "professional": {
-            "label": "Nhân viên",
-            "description": "Làm việc tại công ty"
-          },
-          "freelancer": {
-            "label": "Freelancer",
-            "description": "Nhà thầu độc lập"
-          },
-          "entrepreneur": {
-            "label": "Doanh nhân",
-            "description": "Điều hành doanh nghiệp riêng"
-          }
-        }
-      },
-      "personal": {
-        "title": "Thông tin cá nhân",
-        "subtitle": "Cung cấp thông tin liên hệ của bạn",
-        "fields": {
-          "fullName": {
-            "label": "Họ và tên",
-            "placeholder": "Nhập họ và tên của bạn"
-          },
-          "email": {
-            "label": "Email",
-            "placeholder": "your.email@example.com"
-          },
-          "phone": {
-            "label": "Số điện thoại",
-            "placeholder": "+84 xxx xxx xxx"
-          },
-          "company": {
-            "label": "Công ty (tùy chọn)",
-            "placeholder": "Tên công ty của bạn"
-          }
-        }
-      },
-      "interests": {
-        "title": "Bạn quan tâm đến lĩnh vực nào?",
-        "subtitle": "Chọn tất cả các lĩnh vực phù hợp",
-        "options": {
-          "technology": {
-            "label": "Công nghệ",
-            "description": "AI, phần mềm, phần cứng"
-          },
-          "business": {
-            "label": "Kinh doanh",
-            "description": "Khởi nghiệp, quản lý, chiến lược"
-          },
-          "design": {
-            "label": "Thiết kế",
-            "description": "UI/UX, đồ họa, sáng tạo"
-          },
-          "marketing": {
-            "label": "Marketing",
-            "description": "Số hóa, nội dung, SEO"
-          }
-        }
-      },
-      "goals": {
-        "title": "Mục tiêu chính của bạn là gì?",
-        "subtitle": "Chọn mục tiêu quan trọng nhất",
-        "options": {
-          "learn": {
-            "label": "Học hỏi kỹ năng mới",
-            "description": "Phát triển khả năng chuyên môn"
-          },
-          "network": {
-            "label": "Mở rộng mạng lưới",
-            "description": "Kết nối với chuyên gia"
-          },
-          "career": {
-            "label": "Phát triển sự nghiệp",
-            "description": "Tìm cơ hội mới"
-          },
-          "business": {
-            "label": "Phát triển kinh doanh",
-            "description": "Mở rộng doanh nghiệp"
-          }
-        }
-      },
-      "feedback": {
-        "title": "Phản hồi về dịch vụ",
-        "subtitle": "Đánh giá trải nghiệm của bạn",
-        "subQuestions": [
-          {
-            "title": "Bạn đánh giá giao diện như thế nào?",
-            "options": {
-              "excellent": "Xuất sắc",
-              "good": "Tốt",
-              "average": "Trung bình",
-              "poor": "Kém"
-            }
-          },
-          {
-            "title": "Bạn có khả năng giới thiệu cho bạn bè không?",
-            "options": {
-              "definitely": "Chắc chắn",
-              "probably": "Có thể",
-              "maybe": "Có thể",
-              "unlikely": "Không chắc"
-            }
-          }
-        ]
-      }
-    },
-    "type": {
-      "single_option": "Lựa chọn đơn",
-      "multiple_choice": "Lựa chọn nhiều", 
-      "text_input": "Nhập văn bản",
-      "sub_form": "Biểu mẫu",
-      "unknown": "Không xác định"
     }
   },
   "team": {
