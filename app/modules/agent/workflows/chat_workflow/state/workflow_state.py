@@ -5,7 +5,13 @@ Production-ready state management với comprehensive typing
 
 from typing import Dict, List, Optional, Annotated, TypedDict, Any, Union
 from datetime import datetime
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage, ToolMessage
+from langchain_core.messages import (
+	BaseMessage,
+	HumanMessage,
+	AIMessage,
+	SystemMessage,
+	ToolMessage,
+)
 from langchain_core.documents import Document
 from langgraph.graph.message import add_messages
 
@@ -30,6 +36,10 @@ class AgentState(TypedDict):
 	queries: Optional[List[str]]
 	retrieved_docs: Optional[List[Document]]
 	need_rag: Optional[bool]
+
+	# Router decision state
+	router_decision: Optional[Dict[str, str]]  # {target: str, explanation: str}
+	routing_complete: Optional[bool]
 
 	# Decision tracking
 	rag_decision_factors: Optional[Dict[str, Any]]
@@ -64,7 +74,11 @@ class StateManager:
 	"""Helper class để manage state transitions và validation"""
 
 	@staticmethod
-	def create_initial_state(user_message: str, user_id: Optional[str] = None, session_id: Optional[str] = None) -> AgentState:
+	def create_initial_state(
+		user_message: str,
+		user_id: Optional[str] = None,
+		session_id: Optional[str] = None,
+	) -> AgentState:
 		"""Create initial state từ user message"""
 
 		initial_message = HumanMessage(content=user_message)
@@ -75,10 +89,18 @@ class StateManager:
 			queries=None,
 			retrieved_docs=None,
 			need_rag=None,
+			router_decision=None,
+			routing_complete=False,
 			rag_decision_factors=None,
 			query_optimization_metadata=None,
 			retrieval_metadata=None,
-			conversation_metadata={'user_id': user_id, 'session_id': session_id, 'started_at': datetime.now().isoformat(), 'message_count': 1, 'topic_classification': None},
+			conversation_metadata={
+				'user_id': user_id,
+				'session_id': session_id,
+				'started_at': datetime.now().isoformat(),
+				'message_count': 1,
+				'topic_classification': None,
+			},
 			user_profile=None,
 			session_context=None,
 			error_context=None,
@@ -90,7 +112,10 @@ class StateManager:
 			tool_results=None,
 			current_node=None,
 			next_action=None,
-			workflow_metadata={'workflow_version': '1.0.0', 'created_at': datetime.now().isoformat()},
+			workflow_metadata={
+				'workflow_version': '1.0.0',
+				'created_at': datetime.now().isoformat(),
+			},
 		)
 
 	@staticmethod
@@ -106,16 +131,31 @@ class StateManager:
 		return {**state, 'conversation_metadata': current_metadata}
 
 	@staticmethod
-	def add_error_context(state: AgentState, error_type: str, error_message: str, node_name: Optional[str] = None) -> AgentState:
+	def add_error_context(
+		state: AgentState,
+		error_type: str,
+		error_message: str,
+		node_name: Optional[str] = None,
+	) -> AgentState:
 		"""Add error context to state"""
 		error_context = state.get('error_context', {})
 
 		if 'errors' not in error_context:
 			error_context['errors'] = []
 
-		error_context['errors'].append({'type': error_type, 'message': error_message, 'node': node_name, 'timestamp': datetime.now().isoformat(), 'retry_count': state.get('retry_count', 0)})
+		error_context['errors'].append({
+			'type': error_type,
+			'message': error_message,
+			'node': node_name,
+			'timestamp': datetime.now().isoformat(),
+			'retry_count': state.get('retry_count', 0),
+		})
 
-		error_context['last_error'] = {'type': error_type, 'message': error_message, 'timestamp': datetime.now().isoformat()}
+		error_context['last_error'] = {
+			'type': error_type,
+			'message': error_message,
+			'timestamp': datetime.now().isoformat(),
+		}
 
 		return {**state, 'error_context': error_context}
 
@@ -131,14 +171,24 @@ class StateManager:
 		return {**state, 'processing_time': processing_time}
 
 	@staticmethod
-	def update_model_usage(state: AgentState, tokens_used: int, model_name: str, cost: Optional[float] = None) -> AgentState:
+	def update_model_usage(
+		state: AgentState,
+		tokens_used: int,
+		model_name: str,
+		cost: Optional[float] = None,
+	) -> AgentState:
 		"""Update model usage tracking"""
 		model_usage = state.get('model_usage', {})
 
 		if 'calls' not in model_usage:
 			model_usage['calls'] = []
 
-		model_usage['calls'].append({'model': model_name, 'tokens': tokens_used, 'cost': cost, 'timestamp': datetime.now().isoformat()})
+		model_usage['calls'].append({
+			'model': model_name,
+			'tokens': tokens_used,
+			'cost': cost,
+			'timestamp': datetime.now().isoformat(),
+		})
 
 		# Update totals
 		model_usage['total_tokens'] = sum(call['tokens'] for call in model_usage['calls'])
@@ -167,7 +217,11 @@ class StateManager:
 		for message in messages:
 			if isinstance(message, (HumanMessage, AIMessage)):
 				role = 'user' if isinstance(message, HumanMessage) else 'assistant'
-				history.append({'role': role, 'content': message.content, 'timestamp': getattr(message, 'timestamp', None)})
+				history.append({
+					'role': role,
+					'content': message.content,
+					'timestamp': getattr(message, 'timestamp', None),
+				})
 
 		if limit:
 			history = history[-limit:]
@@ -185,6 +239,8 @@ class StateManager:
 			'message_count': len(messages),
 			'has_rag_context': bool(state.get('rag_context')),
 			'rag_docs_count': len(state.get('retrieved_docs', [])),
+			'router_decision': state.get('router_decision'),
+			'routing_complete': state.get('routing_complete', False),
 			'has_errors': bool(error_context.get('errors')),
 			'error_count': len(error_context.get('errors', [])),
 			'total_processing_time': processing_time.get('total', 0),

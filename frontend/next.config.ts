@@ -26,13 +26,19 @@ const nextConfig: NextConfig = {
       'external.fsgn5-2.fna.fbcdn.net',
       'external.fsgn5-3.fna.fbcdn.net',
       'platform-lookaside.fbsbx.com',
-      'lookaside.fbsbx.com'
+      'lookaside.fbsbx.com',
+      'https://www.plantuml.com'
     ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.plantuml.com',
+        pathname: '/plantuml/**',
       },
       {
         protocol: 'https',

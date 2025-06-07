@@ -1,18 +1,11 @@
 {
   "aboutUs": {
-    "mission": {
-      "description": "We strive to create innovative solutions that make technology accessible and meaningful for everyone.",
-      "title": "Our Mission"
-    },
+    "contact": "Contact Us",
     "social": {
       "about": "About",
       "followers": "followers"
     },
-    "title": "About Us",
-    "vision": {
-      "description": "To build a world where technology serves humanity, fostering connection, creativity, and positive change.",
-      "title": "Our Vision"
-    }
+    "title": "About Us"
   },
   "auth": {
     "allowPopups": "Please allow popups and try again",
@@ -115,6 +108,14 @@
     "welcomeDescription": "Select a conversation or create a new one to start chatting",
     "welcomeTitle": "Welcome to AI Chat"
   },
+  "carousel": {
+    "title": "Image Gallery",
+    "subtitle": "High-quality design resources", 
+    "description": "Explore our carefully curated collection of diverse images and icons",
+    "nextImage": "Next image",
+    "prevImage": "Previous image",
+    "currentImage": "Current image"
+  },
   "common": {
     "branding": "AnLNM Website",
     "cancel": "Cancel",
@@ -134,24 +135,6 @@
     "email": "Email",
     "facebookPostCountPrefix": "Showing",
     "facebookPostCountSuffix": "posts from this page.",
-    "features": {
-      "darkMode": {
-        "description": "Beautiful dark and light themes with smooth transitions",
-        "title": "Dark Mode Support"
-      },
-      "fastPerformance": {
-        "description": "Lightning-fast performance with server-side rendering and optimization",
-        "title": "Fast Performance"
-      },
-      "globalReady": {
-        "description": "Built-in internationalization support for multiple languages",
-        "title": "Global Ready"
-      },
-      "modernStack": {
-        "description": "Built with the latest technologies and best practices",
-        "title": "Modern Tech Stack"
-      }
-    },
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Facebook Post",
@@ -160,7 +143,34 @@
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",
-    "welcomeBack": "Welcome back"
+    "welcomeBack": "Welcome back",
+    "demo": {
+      "title": "Resource Library",
+      "subtitle": "Explore Our Collection",
+      "description": "Diverse resource library with high-quality icons and images for your projects.",
+      "viewAssets": "View Assets",
+      "totalAssets": "assets available"
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "What makes us different",
+      "modernStack": {
+        "title": "Modern Stack",
+        "description": "Built with Next.js 14, React 18, and TypeScript for maximum performance and developer experience"
+      },
+      "fastPerformance": {
+        "title": "Fast Performance",
+        "description": "Optimized for speed with server-side rendering, caching, and modern web standards"
+      },
+      "globalReady": {
+        "title": "Global Ready",
+        "description": "Full internationalization support with multiple languages and locales"
+      },
+      "darkMode": {
+        "title": "Dark Mode",
+        "description": "Beautiful dark and light themes that adapt to your preferences"
+      }
+    }
   },
   "navigation": {
     "about": "About",
@@ -205,5 +215,234 @@
     "themeDescription": "Choose your preferred theme",
     "title": "Settings",
     "updateAccount": "Update Account"
+  },
+  "survey": {
+    "title": "Survey Demo",
+    "description": "Experience our survey system",
+    "navigation": {
+      "next": "Next",
+      "back": "Back",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "complete": "Complete",
+    "continue": "Continue",
+    "previous": "Previous",
+    "question": "Question",
+    "step": "Step }",
+    "submitting": "Submitting...",
+    "progress": {
+      "step": "Step",
+      "completed": "{{percent}}% completed"
+    },
+    "validation": {
+      "required": "This field is required",
+      "selectOption": "Please select an option",
+      "selectMultiple": "Please select at least one option"
+    },
+    "results": {
+      "completed": "Completed",
+      "title": "Thank you!",
+      "description": "We've received your feedback and will review it carefully.",
+      "backToStart": "Back to Start",
+      "retake": "Retake Survey"
+    },
+    "questions": {
+      "role": {
+        "title": "What is your current role?",
+        "subtitle": "Help us understand your professional background",
+        "options": {
+          "student": {
+            "label": "Student",
+            "description": "Currently studying or learning"
+          },
+          "professional": {
+            "label": "Professional",
+            "description": "Working in a company"
+          },
+          "freelancer": {
+            "label": "Freelancer",
+            "description": "Independent contractor"
+          },
+          "entrepreneur": {
+            "label": "Entrepreneur",
+            "description": "Running own business"
+          }
+        }
+      },
+      "personal": {
+        "title": "Personal Information",
+        "subtitle": "Provide your contact information",
+        "fields": {
+          "fullName": {
+            "label": "Full Name",
+            "placeholder": "Enter your full name"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "your.email@example.com"
+          },
+          "phone": {
+            "label": "Phone Number",
+            "placeholder": "+1 xxx xxx xxxx"
+          },
+          "company": {
+            "label": "Company (optional)",
+            "placeholder": "Your company name"
+          }
+        }
+      },
+      "interests": {
+        "title": "What areas are you interested in?",
+        "subtitle": "Select all that apply",
+        "options": {
+          "technology": {
+            "label": "Technology",
+            "description": "AI, software, hardware"
+          },
+          "business": {
+            "label": "Business",
+            "description": "Startups, management, strategy"
+          },
+          "design": {
+            "label": "Design",
+            "description": "UI/UX, graphics, creative"
+          },
+          "marketing": {
+            "label": "Marketing",
+            "description": "Digital, content, SEO"
+          }
+        }
+      },
+      "goals": {
+        "title": "What is your main goal?",
+        "subtitle": "Choose the most important one",
+        "options": {
+          "learn": {
+            "label": "Learn new skills",
+            "description": "Develop professional abilities"
+          },
+          "network": {
+            "label": "Expand network",
+            "description": "Connect with professionals"
+          },
+          "career": {
+            "label": "Career development",
+            "description": "Find new opportunities"
+          },
+          "business": {
+            "label": "Business growth",
+            "description": "Expand business"
+          }
+        }
+      },
+      "feedback": {
+        "title": "Service Feedback",
+        "subtitle": "Rate your experience",
+        "subQuestions": [
+          {
+            "title": "How would you rate the interface?",
+            "options": {
+              "excellent": "Excellent",
+              "good": "Good",
+              "average": "Average",
+              "poor": "Poor"
+            }
+          },
+          {
+            "title": "Would you recommend to friends?",
+            "options": {
+              "definitely": "Definitely",
+              "probably": "Probably",
+              "maybe": "Maybe",
+              "unlikely": "Unlikely"
+            }
+          }
+        ]
+      }
+    },
+    "type": {
+      "single_option": "Single Choice",
+      "multiple_choice": "Multiple Choice", 
+      "text_input": "Text Input",
+      "sub_form": "Form",
+      "unknown": "Unknown"
+    }
+  },
+  "team": {
+    "title": "Our Team",
+    "subtitle": "Meet the people behind our amazing products",
+    "leadership": {
+      "title": "Leadership Team",
+      "ceo": {
+        "name": "Nguyen Le An",
+        "role": "CEO & Founder",
+        "bio": "With over 10 years of experience in technology, An leads the team to create innovative solutions that positively impact the community.",
+        "experience": "10+ years experience"
+      },
+      "cto": {
+        "name": "Le Minh Techie",
+        "role": "Chief Technology Officer",
+        "bio": "Expert in system architecture and AI, Techie is responsible for technology direction and ensuring the highest product quality.",
+        "experience": "8+ years experience"
+      },
+      "designer": {
+        "name": "Nguyen Creative",
+        "role": "Chief Design Officer",
+        "bio": "With a refined aesthetic eye, Creative creates unique and engaging user experiences.",
+        "experience": "6+ years experience"
+      }
+    },
+    "values": {
+      "title": "Core Values",
+      "innovation": {
+        "title": "Innovation",
+        "description": "Always seeking new solutions and unique approaches"
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "Committed to delivering the highest quality products and services"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Building and growing together with our user community"
+      }
+    }
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "about": "About us",
+      "team": "Team",
+      "careers": "Careers",
+      "contact": "Contact"
+    },
+    "products": {
+      "title": "Products",
+      "webDevelopment": "Web Development",
+      "mobileApps": "Mobile Apps",
+      "aiSolutions": "AI Solutions",
+      "consulting": "Consulting"
+    },
+    "resources": {
+      "title": "Resources",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "support": "Support",
+      "community": "Community"
+    },
+    "social": {
+      "title": "Social Media",
+      "followUs": "Follow us"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    },
+    "copyright": "© 2024 AnLNM Website. All rights reserved.",
+    "madeWith": "Made with",
+    "location": "Vietnam"
   }
 }

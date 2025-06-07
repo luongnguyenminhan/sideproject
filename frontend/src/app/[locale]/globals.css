@@ -383,3 +383,110 @@
     max-width: 400px;
   }
 }
+
+/* Header animation enhancements */
+.header-glow {
+  box-shadow: 
+    0 0 20px rgba(var(--primary), 0.1),
+    0 0 40px rgba(var(--primary), 0.05),
+    0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.header-glow:hover {
+  box-shadow: 
+    0 0 30px rgba(var(--primary), 0.2),
+    0 0 60px rgba(var(--primary), 0.1),
+    0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* Navigation hover effects */
+.nav-item-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+  border-radius: inherit;
+}
+
+.nav-item-hover:hover::before {
+  left: 100%;
+}
+
+/* Glassmorphism effects */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme=dark] .glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth animations */
+.smooth-bounce {
+  animation: smoothBounce 2s ease-in-out infinite;
+}
+
+@keyframes smoothBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(var(--primary), 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(var(--primary), 0.6);
+  }
+}
+
+/* React Bits style particle effects */
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}

@@ -124,8 +124,9 @@ class FacebookRepo(BaseRepo):
 				page_info: FacebookPageInfo = FacebookPageInfo.model_validate(data)
 
 				# Cache the successful response for 24 hours
-				await redis_client.set(cache_key, data, ttl=self.cache_ttl)
+				result = await redis_client.set(cache_key, data, ttl=self.cache_ttl)
 				logger.info(f'\033[92mINFO: Successfully cached page info for {self.cache_ttl} seconds\033[0m')
+				logger.info(f'\033[92mINFO: Result: {result}\033[0m')
 
 				return page_info
 

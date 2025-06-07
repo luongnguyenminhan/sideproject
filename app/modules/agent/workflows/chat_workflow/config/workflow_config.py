@@ -7,6 +7,9 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import os
 
+# Import persona types
+from .persona_prompts import PersonaType, PersonaPrompts
+
 
 @dataclass
 class WorkflowConfig:
@@ -28,81 +31,6 @@ class WorkflowConfig:
 	enable_query_optimization: bool = True
 	max_queries_per_request: int = 3
 
-	# Vietnamese financial keywords
-	knowledge_keywords: List[str] = field(
-		default_factory=lambda: [
-			'tài chính',
-			'thông tin',
-			'giải thích',
-			'là gì',
-			'định nghĩa',
-			'khái niệm',
-			'cách',
-			'làm sao',
-			'tư vấn',
-			'nên',
-			'hướng dẫn',
-			'quy định',
-			'luật',
-			'chính sách',
-			'so sánh',
-			'khác nhau',
-			'đầu tư',
-			'tiết kiệm',
-			'ngân hàng',
-			'tín dụng',
-			'bảo hiểm',
-			'thuế',
-			'lãi suất',
-			'cổ phiếu',
-			'trái phiếu',
-			'quỹ đầu tư',
-			'khoản vay',
-			'thẻ tín dụng',
-			'gửi tiết kiệm',
-			'forex',
-			'cryptocurrency',
-			'bitcoin',
-			'blockchain',
-			'fintech',
-		]
-	)
-
-	# Filler words to remove from queries
-	filler_words: List[str] = field(default_factory=lambda: ['cho tôi', 'giúp tôi', 'làm ơn', 'xin vui lòng', 'bạn có thể', 'tôi muốn', 'tôi cần', 'xin', 'hãy', 'thông tin về', 'có thể', 'được không', 'ạ', 'em', 'anh', 'chị'])
-
-	# Financial terms for query enhancement
-	financial_terms: List[str] = field(
-		default_factory=lambda: [
-			'đầu tư',
-			'tiết kiệm',
-			'ngân hàng',
-			'tín dụng',
-			'bảo hiểm',
-			'thuế',
-			'lãi suất',
-			'cổ phiếu',
-			'trái phiếu',
-			'quỹ đầu tư',
-			'forex',
-			'crypto',
-			'blockchain',
-			'fintech',
-			'digital banking',
-		]
-	)
-
-	# Question types for classification
-	question_types: Dict[str, List[str]] = field(
-		default_factory=lambda: {
-			'information': ['là gì', 'định nghĩa', 'khái niệm', 'thông tin'],
-			'explanation': ['giải thích', 'cách thức', 'hoạt động', 'nguyên lý'],
-			'comparison': ['so sánh', 'khác nhau', 'giống nhau', 'lựa chọn'],
-			'guidance': ['hướng dẫn', 'cách làm', 'thực hiện', 'bước'],
-			'advice': ['tư vấn', 'nên', 'không nên', 'lời khuyên'],
-		}
-	)
-
 	# Error handling
 	enable_graceful_degradation: bool = True
 	max_retry_attempts: int = 3
@@ -112,6 +40,20 @@ class WorkflowConfig:
 	enable_caching: bool = True
 	cache_ttl_seconds: int = 3600  # 1 hour
 	enable_batch_processing: bool = True
+
+	# Persona settings
+	persona_enabled: bool = True
+	persona_type: PersonaType = PersonaType.CGSEM_ASSISTANT
+
+	def get_persona_prompt(self) -> Optional[str]:
+		"""Get persona-based system prompt"""
+		if not self.persona_enabled:
+			return None
+		return PersonaPrompts.get_persona_prompt(self.persona_type)
+
+	def get_persona_name(self) -> str:
+		"""Get persona name"""
+		return PersonaPrompts.get_persona_name(self.persona_type)
 
 	def __post_init__(self):
 		"""Initialize từ environment variables nếu không được set"""
@@ -150,6 +92,8 @@ class WorkflowConfig:
 			'enable_caching': self.enable_caching,
 			'cache_ttl_seconds': self.cache_ttl_seconds,
 			'enable_batch_processing': self.enable_batch_processing,
+			'persona_enabled': self.persona_enabled,
+			'persona_type': self.persona_type.value,
 		}
 
 	def validate(self) -> bool:
