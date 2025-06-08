@@ -133,7 +133,28 @@
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Philosophy Chatbot"
+    "title": "Philosophy Chatbot",
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "team": "Team",
+      "careers": "Careers",
+      "contact": "Contact"
+    },
+    "products": {
+      "title": "Products",
+      "webDevelopment": "Web Development",
+      "mobileApps": "Mobile Apps",
+      "aiSolutions": "AI Solutions",
+      "consulting": "Consulting"
+    },
+    "resources": {
+      "title": "Resources",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "support": "Support",
+      "community": "Community"
+    }
   },
   "home": {
     "authenticatedDescription": "Welcome back! Continue your philosophical journey.",
@@ -250,13 +271,43 @@
       "experience": "Experience",
       "name": "Name",
       "role": "Role",
-      "title": "Leadership"
+      "title": "Leadership",
+      "ceo": {
+        "name": "Alex Nguyen",
+        "role": "Chief Executive Officer",
+        "bio": "Alex is passionate about making philosophy accessible to everyone. With a background in education and technology, Alex leads the team with vision and dedication.",
+        "experience": "10+ years in educational technology and project leadership."
+      },
+      "cto": {
+        "name": "Minh Tran",
+        "role": "Chief Technology Officer",
+        "bio": "Minh is an expert in AI and web development, driving the technical direction of the project and ensuring robust, scalable solutions.",
+        "experience": "8+ years in AI, software engineering, and system architecture."
+      },
+      "designer": {
+        "name": "Linh Pham",
+        "role": "Lead Designer",
+        "bio": "Linh brings creativity and user-centric design to the platform, making philosophy engaging and visually appealing.",
+        "experience": "7+ years in UI/UX design and digital product branding."
+      }
     },
     "subtitle": "Meet our team",
     "title": "Our Team",
     "values": {
       "description": "We believe in making philosophy accessible and engaging for everyone.",
-      "title": "Our Values"
+      "title": "Our Values",
+      "innovation": {
+        "title": "Innovation",
+        "description": "We constantly explore new ideas and technologies to enhance philosophical learning and debate."
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "We are committed to delivering a high-quality, reliable, and effective platform for all users."
+      },
+      "community": {
+        "title": "Community",
+        "description": "We foster a supportive and inclusive community for learners, educators, and philosophy enthusiasts."
+      }
     }
   }
 }

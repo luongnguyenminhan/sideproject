@@ -133,7 +133,28 @@
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "Chatbot Triết học"
+    "title": "Chatbot Triết học",
+    "company": {
+      "title": "Công ty",
+      "about": "Về chúng tôi",
+      "team": "Đội ngũ",
+      "careers": "Tuyển dụng",
+      "contact": "Liên hệ"
+    },
+    "products": {
+      "title": "Sản phẩm",
+      "webDevelopment": "Phát triển web",
+      "mobileApps": "Ứng dụng di động",
+      "aiSolutions": "Giải pháp AI",
+      "consulting": "Tư vấn"
+    },
+    "resources": {
+      "title": "Tài nguyên",
+      "documentation": "Tài liệu",
+      "blog": "Blog",
+      "support": "Hỗ trợ",
+      "community": "Cộng đồng"
+    }
   },
   "home": {
     "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình triết học của bạn.",
@@ -250,13 +271,43 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Ban lãnh đạo"
+      "title": "Ban lãnh đạo",
+      "ceo": {
+        "name": "Alex Nguyễn",
+        "role": "Giám đốc điều hành",
+        "bio": "Alex đam mê đưa triết học đến gần hơn với mọi người. Với nền tảng giáo dục và công nghệ, Alex dẫn dắt đội ngũ bằng tầm nhìn và sự tận tâm.",
+        "experience": "Hơn 10 năm kinh nghiệm trong công nghệ giáo dục và quản lý dự án."
+      },
+      "cto": {
+        "name": "Minh Trần",
+        "role": "Giám đốc công nghệ",
+        "bio": "Minh là chuyên gia về AI và phát triển web, định hướng kỹ thuật cho dự án và đảm bảo giải pháp vững chắc, mở rộng.",
+        "experience": "Hơn 8 năm kinh nghiệm về AI, kỹ thuật phần mềm và kiến trúc hệ thống."
+      },
+      "designer": {
+        "name": "Linh Phạm",
+        "role": "Trưởng nhóm thiết kế",
+        "bio": "Linh mang đến sự sáng tạo và thiết kế lấy người dùng làm trung tâm, giúp triết học trở nên hấp dẫn và trực quan.",
+        "experience": "Hơn 7 năm kinh nghiệm thiết kế UI/UX và xây dựng thương hiệu số."
+      }
     },
     "subtitle": "Gặp gỡ đội ngũ của chúng tôi",
     "title": "Đội ngũ",
     "values": {
       "description": "Chúng tôi tin vào việc làm cho triết học trở nên dễ tiếp cận và hấp dẫn cho mọi người.",
-      "title": "Giá trị cốt lõi"
+      "title": "Giá trị cốt lõi",
+      "innovation": {
+        "title": "Đổi mới",
+        "description": "Chúng tôi luôn tìm tòi, ứng dụng ý tưởng và công nghệ mới để nâng cao trải nghiệm học và tranh luận triết học."
+      },
+      "quality": {
+        "title": "Chất lượng",
+        "description": "Chúng tôi cam kết mang đến nền tảng chất lượng cao, ổn định và hiệu quả cho mọi người dùng."
+      },
+      "community": {
+        "title": "Cộng đồng",
+        "description": "Chúng tôi xây dựng một cộng đồng hỗ trợ, cởi mở cho người học, giáo viên và những người yêu triết học."
+      }
     }
   }
 }
