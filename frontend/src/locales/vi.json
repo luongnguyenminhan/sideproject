@@ -27,8 +27,8 @@
   "carousel": {
     "currentImage": "Hình hiện tại",
     "description": "Mô tả",
-    "nextImage": "Hình tiếp theo",
-    "prevImage": "Hình trước",
+    "nextImage": " ",
+    "prevImage": " ",
     "subtitle": "Khám phá triết học một cách tương tác",
     "title": "Trình mô phỏng tranh luận triết học"
   },
