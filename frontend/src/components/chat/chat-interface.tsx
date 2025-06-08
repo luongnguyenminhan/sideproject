@@ -37,6 +37,10 @@ interface ChatInterfaceProps {
   error: string | null;
   onSendMessage: (content: string) => void;
   onOpenMobileSidebar: () => void;
+  isConversationSidebarCollapsed?: boolean;
+  isFileSidebarCollapsed?: boolean;
+  onToggleConversationSidebar?: () => void;
+  onToggleFileSidebar?: () => void;
 }
 
 export function ChatInterface({ 
@@ -47,7 +51,11 @@ export function ChatInterface({
   isTyping,
   error,
   onSendMessage,
-  onOpenMobileSidebar
+  onOpenMobileSidebar,
+  isConversationSidebarCollapsed = false,
+  isFileSidebarCollapsed = false,
+  onToggleConversationSidebar,
+  onToggleFileSidebar
 }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -85,6 +93,10 @@ export function ChatInterface({
         conversationName={conversation?.name}
         defaultTitle={t('chat.defaultChatTitle')}
         onOpenMobileSidebar={onOpenMobileSidebar}
+        isConversationSidebarCollapsed={isConversationSidebarCollapsed}
+        isFileSidebarCollapsed={isFileSidebarCollapsed}
+        onToggleConversationSidebar={onToggleConversationSidebar}
+        onToggleFileSidebar={onToggleFileSidebar}
       />
 
       {/* Messages Area */}

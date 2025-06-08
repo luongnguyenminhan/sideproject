@@ -21,7 +21,7 @@ import {
 } from '@/types/chat.type'
 import { getErrorMessage } from '@/utils/apiHandler'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faRobot, faTimes, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/contexts/TranslationContext'
 
@@ -608,9 +608,27 @@ export function ChatClientWrapper() {
 
   return (
     <div className="flex h-full">
+      {/* Expand button for Conversation Sidebar when collapsed */}
+      {isConversationSidebarCollapsed && (
+        <div className="hidden md:flex items-center justify-center w-12 border-r border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
+          <Button
+            onClick={handleToggleConversationSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group"
+            title={t('chat.tooltips.expandSidebar') || 'Expand sidebar'}
+          >
+            <FontAwesomeIcon 
+              icon={faChevronRight} 
+              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
+            />
+          </Button>
+        </div>
+      )}
+
       {/* Desktop Conversation Sidebar */}
-      <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ${
-        isConversationSidebarCollapsed ? 'w-0' : 'w-80'
+      <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+        isConversationSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
       }`}>
         <ConversationSidebar
           conversations={state.conversations}
@@ -629,7 +647,7 @@ export function ChatClientWrapper() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <ChatInterface
           conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
           activeConversationId={state.activeConversationId}
@@ -639,12 +657,16 @@ export function ChatClientWrapper() {
           error={state.error}
           onSendMessage={handleSendMessage}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          isConversationSidebarCollapsed={isConversationSidebarCollapsed}
+          isFileSidebarCollapsed={isFileSidebarCollapsed}
+          onToggleConversationSidebar={handleToggleConversationSidebar}
+          onToggleFileSidebar={handleToggleFileSidebar}
         />
       </div>
 
       {/* Desktop File Sidebar */}
-      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ${
-        isFileSidebarCollapsed ? 'w-0' : 'w-80'
+      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+        isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
       }`}>
         <FileSidebar
           uploadedFiles={state.uploadedFiles}
@@ -656,6 +678,24 @@ export function ChatClientWrapper() {
           onToggleCollapse={handleToggleFileSidebar}
         />
       </div>
+
+      {/* Expand button for File Sidebar when collapsed */}
+      {isFileSidebarCollapsed && (
+        <div className="hidden lg:flex items-center justify-center w-12 border-l border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
+          <Button
+            onClick={handleToggleFileSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group"
+            title={t('chat.tooltips.expandSidebar') || 'Expand sidebar'}
+          >
+            <FontAwesomeIcon 
+              icon={faChevronLeft} 
+              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
+            />
+          </Button>
+        </div>
+      )}
 
       {/* Mobile Sidebar */}
       <MobileSidebar
