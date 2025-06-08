@@ -35,6 +35,9 @@ class User(BaseEntity):
 	# Agent relationship (if users can own agents)
 	agents = relationship('Agent', back_populates='user', cascade='all, delete-orphan')
 
+	# Question Composer relationship
+	question_sessions = relationship('QuestionSession', back_populates='user', cascade='all, delete-orphan')
+
 	@validates('email')
 	def validate_email(self, key, address):
 		if not address or '@' not in address:

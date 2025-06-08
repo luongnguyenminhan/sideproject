@@ -80,7 +80,8 @@ class CVRepository:
 		print('[DEBUG] Initialized CVAnalyzer')
 		try:
 			print('[DEBUG] Starting CV analysis')
-			result = await cv_analyzer.analyze_cv_content(extracted_text['markdown'])
+			print(f'[DEBUG] Extracted text: {extracted_text}')
+			result = await cv_analyzer.analyze_cv_content(extracted_text['text'])
 			print(f'[DEBUG] CV analysis result: {result}')
 		except Exception as e:
 			print(f'[DEBUG] Exception during CV analysis: {str(e)}')
@@ -118,7 +119,7 @@ class CVRepository:
 
 		try:
 			async with aiohttp.ClientSession() as session:
-				async with session.get(url) as response:
+				async with session.get(url, ssl=False) as response:  # Thêm ssl=False để bỏ qua SSL verification
 					print(f'Response: {response}')
 					if response.status == 200:
 						print(f'Download successful (Status: {response.status})')

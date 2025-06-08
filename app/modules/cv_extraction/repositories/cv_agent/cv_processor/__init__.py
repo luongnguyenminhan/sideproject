@@ -1,7 +1,9 @@
 import logging
 import uuid
+import re
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel  # Added import for BaseModel
+from pydantic import BaseModel, Field
+from typing import Literal
 
 from app.modules.cv_extraction.repositories.cv_agent.agent_schema import (
 	CVState,
@@ -35,6 +37,29 @@ from app.modules.cv_extraction.repositories.cv_agent.utils import (
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+
+# Schemas for LLM-based CV Chunking and Classification
+class CVChunkWithSection(BaseModel):
+	"""A chunk of CV content with its classified section type."""
+
+	chunk_content: str = Field(description='The actual text content of this chunk')
+	section: Literal[
+		'personal_info',
+		'education',
+		'work_experience',
+		'skills',
+		'projects',
+		'certificates',
+		'interests',
+		'other',
+	] = Field(description='Section type determined by LLM during chunking')
+
+
+class LLMChunkingResult(BaseModel):
+	"""Result of LLM-based intelligent chunking and classification."""
+
+	chunks: List[CVChunkWithSection] = Field(description='List of intelligently chunked and classified CV sections')
 
 
 class CVProcessorWorkflow:
@@ -139,6 +164,96 @@ class CVProcessorWorkflow:
 			'messages': state.get('messages', []) + [AIMessage(content=f'Identified sections: {", ".join(identified_sections)}')],
 		}
 
+	async def llm_chunk_decision_node(self, state: CVState) -> Dict[str, Any]:
+		"""Uses LLM to intelligently chunk and classify CV content in one step."""
+		print('LLMChunkDecisionNode: Starting intelligent CV chunking and classification.')
+		processed_cv_text = state.get('processed_cv_text', '')
+
+		print(f'LLMChunkDecisionNode: Received CV text length: {len(processed_cv_text)}')
+		print(f'LLMChunkDecisionNode: CV text preview: {processed_cv_text[:500]}...')
+		print(f'LLMChunkDecisionNode: State keys: {list(state.keys())}')
+
+		if not processed_cv_text:
+			print('LLMChunkDecisionNode: No processed CV text available.')
+			return {
+				'chunking_result': LLMChunkingResult(chunks=[]),
+				'messages': state.get('messages', []) + [AIMessage(content='No CV content to chunk and classify.')],
+			}
+
+		# LLM-based intelligent chunking and classification prompt
+		chunking_prompt = f"""
+You are an expert CV analyzer. Read the following CV content and intelligently divide it into logical chunks, where each chunk represents a coherent section of the CV.
+
+**Section Types Available:**
+- personal_info: Personal details, contact information, profile, summary, bio, introduction
+- education: Academic background, degrees, schools, universities, qualifications, studies  
+- work_experience: Employment history, professional experience, career, jobs, positions
+- skills: Technical skills, competencies, abilities, expertise, languages, technologies
+- projects: Personal projects, portfolio, case studies, achievements, works
+- certificates: Certifications, licenses, courses, training, credentials, workshops
+- interests: Hobbies, activities, personal interests, volunteering, recreational activities
+- other: Any content that doesn't fit the above categories
+
+**CV Content:**
+{processed_cv_text}
+
+**Instructions:**
+1. Analyze the content semantically and divide into logical chunks
+2. Each chunk should contain related information that belongs to the same section type
+3. Don't break up coherent information across multiple chunks
+4. Classify each chunk into the most appropriate section type
+5. Ensure personal information is captured completely in one chunk
+6. Make sure no important information is lost
+
+**Expected Output Format:**
+Return a list of chunks where each chunk has:
+- chunk_content: The actual text content
+- section: The classified section type
+
+Focus on semantic understanding and logical grouping, not keyword matching.
+"""
+
+		input_tokens = count_tokens(chunking_prompt, 'gemini')
+		self.token_tracker.add_input_tokens(input_tokens)
+		print(f'LLMChunkDecisionNode: Input tokens: {input_tokens}')
+
+		structured_llm = self.llm.with_structured_output(LLMChunkingResult)
+		print(f'LLMChunkDecisionNode: Structured LLM created, invoking chunking...')
+
+		try:
+			chunking_result = await structured_llm.ainvoke(chunking_prompt)
+			print(f'LLMChunkDecisionNode: LLM response received, type: {type(chunking_result)}')
+			print(f'LLMChunkDecisionNode: Raw LLM result: {chunking_result}')
+
+			output_tokens = count_tokens(str(chunking_result), 'gemini')
+			self.token_tracker.add_output_tokens(output_tokens)
+			print(f'LLMChunkDecisionNode: Output tokens: {output_tokens}')
+
+			print(f'LLMChunkDecisionNode: Created {len(chunking_result.chunks)} intelligent chunks.')
+			for i, chunk in enumerate(chunking_result.chunks, 1):
+				print(f'  - Chunk {i}: {chunk.section} ({len(chunk.chunk_content)} chars)')
+
+			return_data = {
+				'chunking_result': chunking_result,
+				'messages': state.get('messages', []) + [AIMessage(content=f'Intelligently chunked CV into {len(chunking_result.chunks)} logical sections using LLM analysis.')],
+			}
+			print(f'LLMChunkDecisionNode: Returning data with chunking_result type: {type(return_data["chunking_result"])}')
+			print(f'LLMChunkDecisionNode: Returning chunking_result with {len(return_data["chunking_result"].chunks)} chunks')
+			print(f'LLMChunkDecisionNode: Return data keys: {list(return_data.keys())}')
+			return return_data
+
+		except Exception as e:
+			print(f'LLMChunkDecisionNode: Error during intelligent chunking: {e}')
+			print(f'LLMChunkDecisionNode: Exception type: {type(e).__name__}')
+			# Fallback to simple chunking
+			fallback_chunks = [CVChunkWithSection(chunk_content=processed_cv_text, section='other')]
+			fallback_return = {
+				'chunking_result': LLMChunkingResult(chunks=fallback_chunks),
+				'messages': state.get('messages', []) + [AIMessage(content=f'Error during intelligent chunking: {e}')],
+			}
+			print(f'LLMChunkDecisionNode: Returning fallback with {len(fallback_return["chunking_result"].chunks)} chunks')
+			return fallback_return
+
 	async def _extract_structured_data(self, cv_text_portion: str, schema: type, section_title: str) -> Optional[BaseModel]:  # Changed return type
 		"""Helper to extract data for a given schema using with_structured_output."""
 		print(f"InformationExtractorNode: Extracting data for section '{section_title}' with schema {schema.__name__}.")
@@ -178,14 +293,22 @@ class CVProcessorWorkflow:
 				print(f"InformationExtractorNode: Successfully extracted data for '{section_title}' using schema {schema.__name__}.")
 			return actual_instance  # Return the direct instance or None
 		except Exception as e:
-			print(f"InformationExtractorNode: Error extracting '{section_title}' with schema {schema.__name__}: {e}", exc_info=True)
+			print(
+				f"InformationExtractorNode: Error extracting '{section_title}' with schema {schema.__name__}: {e}",
+				exc_info=True,
+			)
 			return None  # Return None on error
 
 	async def information_extractor_node(self, state: CVState) -> Dict[str, Any]:
-		"""Extracts detailed information from CV sections using Pydantic schemas."""
-		print('InformationExtractorNode: Starting information extraction.')
+		"""Extracts detailed information from CV chunks using LLM directly in this node."""
+		print(f'InformationExtractorNode: Starting LLM-based information extraction. state: {state.get("chunking_result")}')
 		processed_cv_text = state.get('processed_cv_text', '')
-		identified_sections = state.get('identified_sections', [])
+		chunking_result = state.get('chunking_result', LLMChunkingResult(chunks=[]))
+
+		print(f'InformationExtractorNode: Processing CV text of length: {len(processed_cv_text)}')
+		print(f'InformationExtractorNode: Found {len(chunking_result.chunks)} chunks from chunking')
+		print(f'InformationExtractorNode: Chunking result type: {type(chunking_result)}')
+		print(f'InformationExtractorNode: Raw chunking result: {chunking_result}')
 
 		# Initialize with default empty wrapper instances
 		extracted_data_update = {
@@ -200,155 +323,173 @@ class CVProcessorWorkflow:
 			'extracted_keywords': ListKeywordItem(),  # Initialize with ListKeywordItem
 			'cv_summary': '',
 		}
-		section_to_schema_map = {
-			# Personal information keywords
-			('personal information', 'contact', 'about me', 'personal details', 'profile', 'bio', 'introduction', 'summary', 'overview'): (
-				PersonalInfoItem,
-				'personal_info_item',
-			),
-			# Education keywords
-			('education', 'academic background', 'qualifications', 'academic history', 'studies', 'degrees', 'academic achievements', 'schools', 'university', 'colleges', 'academic qualifications'): (
-				ListEducationItem,
-				'education_items',
-			),
-			# Work experience keywords
-			(
-				'work experience',
-				'experience',
-				'employment history',
-				'professional experience',
-				'career history',
-				'professional background',
-				'job history',
-				'work history',
-				'positions held',
-				'career summary',
-				'professional summary',
-				'employment',
-			): (
-				ListWorkExperienceItem,
-				'work_experience_items',
-			),
-			# Skills keywords
-			(
-				'skills',
-				'technical skills',
-				'languages',
-				'competencies',
-				'abilities',
-				'expertise',
-				'proficiencies',
-				'capabilities',
-				'core skills',
-				'key skills',
-				'professional skills',
-				'soft skills',
-				'hard skills',
-				'tech stack',
-				'technologies',
-			): (
-				ListSkillItem,
-				'skill_items',
-			),
-			# Projects keywords
-			(
-				'projects',
-				'personal projects',
-				'portfolio',
-				'case studies',
-				'works',
-				'project experience',
-				'project history',
-				'achievements',
-				'key projects',
-				'featured projects',
-				'research projects',
-			): (
-				ListProjectItem,
-				'project_items',
-			),
-			# Certifications keywords
-			(
-				'certifications',
-				'courses',
-				'licenses',
-				'certificates',
-				'accreditations',
-				'qualifications',
-				'professional development',
-				'training',
-				'workshops',
-				'professional certifications',
-				'credentials',
-			): (
-				ListCertificateItem,
-				'certificate_items',
-			),
-			# Interests keywords
-			('interests', 'hobbies', 'activities', 'personal interests', 'extracurricular activities', 'volunteering', 'leisure activities', 'passions', 'recreational activities'): (
-				ListInterestItem,
-				'interest_items',
-			),
-		}
 
 		current_messages = state.get('messages', [])
 
-		for section_title in identified_sections:
-			matched = False
-			for keywords, (schema, state_key) in section_to_schema_map.items():
-				print(f"Checking section '{section_title}' against keywords: {keywords}")
-				if any(keyword in section_title.lower() for keyword in keywords):
-					extracted_items = await self._extract_structured_data(processed_cv_text, schema, section_title)
-					print(f'Extracted items: {extracted_items}')
+		# Schema mapping for LLM-based extraction
+		type_to_schema_map = {
+			'personal_info': (PersonalInfoItem, 'personal_info_item'),
+			'education': (ListEducationItem, 'education_items'),
+			'work_experience': (ListWorkExperienceItem, 'work_experience_items'),
+			'skills': (ListSkillItem, 'skill_items'),
+			'projects': (ListProjectItem, 'project_items'),
+			'certificates': (ListCertificateItem, 'certificate_items'),
+			'interests': (ListInterestItem, 'interest_items'),
+		}
+		print(f'InformationExtractorNode: Schema mapping configured for {len(type_to_schema_map)} section types')
+
+		# Group chunks by section type
+		chunks_by_type = {}
+		for chunk in chunking_result.chunks:
+			section_type = chunk.section
+			if section_type not in chunks_by_type:
+				chunks_by_type[section_type] = []
+			chunks_by_type[section_type].append(chunk)
+
+		print(f'InformationExtractorNode: Grouped chunks by type:')
+		for section_type, chunks in chunks_by_type.items():
+			print(f'  - {section_type}: {len(chunks)} chunk(s), total chars: {sum(len(c.chunk_content) for c in chunks)}')
+
+		# Process each section type using LLM directly
+		for section_type, chunks in chunks_by_type.items():
+			print(f"InformationExtractorNode: Processing section type '{section_type}'")
+
+			if section_type in type_to_schema_map:
+				schema, state_key = type_to_schema_map[section_type]
+
+				# Combine content from all chunks of this type
+				combined_content = '\n\n'.join([chunk.chunk_content for chunk in chunks])
+
+				print(f'InformationExtractorNode: Processing {len(chunks)} chunks as {section_type}')
+				print(f'InformationExtractorNode: Combined content length: {len(combined_content)} characters')
+				print(f'InformationExtractorNode: Using schema: {schema.__name__} -> state key: {state_key}')
+
+				# Use LLM directly for extraction with structured output
+				extraction_prompt = f"""
+You are an expert CV data extractor. Extract structured information from the following {section_type} content.
+
+**Content to Extract From:**
+{combined_content}
+
+**Instructions:**
+1. Extract ALL relevant information from the content
+2. Structure the data according to the expected schema
+3. Be comprehensive and don't miss any details
+4. If information is missing, use null/empty values appropriately
+5. Ensure data is clean and properly formatted
+
+Focus on accuracy and completeness of extraction.
+"""
+
+				print(f'InformationExtractorNode: Generating extraction prompt for {section_type}')
+				input_tokens = count_tokens(extraction_prompt, 'gemini')
+				self.token_tracker.add_input_tokens(input_tokens)
+				print(f'InformationExtractorNode: Input tokens for {section_type}: {input_tokens}')
+
+				structured_llm = self.llm.with_structured_output(schema)
+
+				try:
+					print(f'InformationExtractorNode: Invoking LLM for {section_type} extraction...')
+					extracted_items = await structured_llm.ainvoke(extraction_prompt)
+					output_tokens = count_tokens(str(extracted_items), 'gemini')
+					self.token_tracker.add_output_tokens(output_tokens)
+
+					print(f'InformationExtractorNode: LLM extraction successful for {section_type}')
+					print(f'InformationExtractorNode: Output tokens for {section_type}: {output_tokens}')
+					print(f'InformationExtractorNode: Extracted items for {section_type}: {extracted_items}')
 
 					if state_key == 'personal_info_item':
 						extracted_data_update[state_key] = extracted_items
-						print(f'Extracted personal info: {extracted_data_update[state_key]}')
+						print(f'InformationExtractorNode: Set personal info item: {extracted_data_update[state_key]}')
 					else:
 						# For list types, assign the whole wrapper object
 						extracted_data_update[state_key] = extracted_items
-						print(f'Extracted {state_key}: {extracted_data_update[state_key]}')
+						items_count = len(extracted_items.items) if hasattr(extracted_items, 'items') else 0
+						print(f'InformationExtractorNode: Set {state_key} with {items_count} items')
+						print(f'InformationExtractorNode: {state_key} content: {extracted_data_update[state_key]}')
 
-					current_messages.append(AIMessage(content=f'Extracted items for section: {section_title}'))
-					matched = True
-					break
-			if not matched:
-				print(f"InformationExtractorNode: Section '{section_title}' not mapped to a specific schema. Storing as other data.")
-				current_messages.append(AIMessage(content=f"Section '{section_title}' noted as other data."))
+					current_messages.append(AIMessage(content=f'LLM extracted {section_type} from {len(chunks)} chunks'))
+					print(f'InformationExtractorNode: Added success message for {section_type}')
+
+				except Exception as e:
+					print(f'InformationExtractorNode: ERROR extracting {section_type}: {e}')
+					print(f'InformationExtractorNode: Exception type: {type(e).__name__}')
+					current_messages.append(AIMessage(content=f'Error extracting {section_type}: {e}'))
+
+			else:
+				print(f"InformationExtractorNode: Section type '{section_type}' not in schema mapping")
+				print(f'InformationExtractorNode: Available schema types: {list(type_to_schema_map.keys())}')
+				print(f"InformationExtractorNode: Storing '{section_type}' as other data")
+				current_messages.append(AIMessage(content=f"Section type '{section_type}' noted as other data."))
 
 		# --- Keyword Extraction ---
-		print('InformationExtractorNode: Extracting keywords.')
+		print('InformationExtractorNode: Starting keyword extraction phase')
 		keyword_prompt = EXTRACT_KEYWORDS_PROMPT.format(processed_cv_text=processed_cv_text)
 		input_tokens_keywords = count_tokens(keyword_prompt, 'gemini')
 		self.token_tracker.add_input_tokens(input_tokens_keywords)
+		print(f'InformationExtractorNode: Keyword extraction input tokens: {input_tokens_keywords}')
 
 		structured_llm_keywords = self.llm.with_structured_output(ListKeywordItem)
 		try:
+			print('InformationExtractorNode: Invoking LLM for keyword extraction...')
 			extracted_keyword_items = await structured_llm_keywords.ainvoke(keyword_prompt)
+
 			if isinstance(extracted_keyword_items, ListKeywordItem):
 				extracted_data_update['extracted_keywords'] = extracted_keyword_items
 				output_tokens_keywords = count_tokens(str(extracted_keyword_items), 'gemini')
 				self.token_tracker.add_output_tokens(output_tokens_keywords)
-				print(f'InformationExtractorNode: Extracted keywords: {extracted_keyword_items.items}')
+				print(f'InformationExtractorNode: Keyword extraction successful')
+				print(f'InformationExtractorNode: Keyword extraction output tokens: {output_tokens_keywords}')
+				print(f'InformationExtractorNode: Extracted {len(extracted_keyword_items.items)} keywords: {extracted_keyword_items.items}')
 				current_messages.append(AIMessage(content=f'Extracted {len(extracted_keyword_items.items)} keywords.'))
 			else:
-				print(f'InformationExtractorNode: Keyword extraction did not return ListKeywordItem. Got: {type(extracted_keyword_items)}')
+				print(f'InformationExtractorNode: ERROR - Keyword extraction returned unexpected type: {type(extracted_keyword_items)}')
+				print(f'InformationExtractorNode: Expected ListKeywordItem, got: {extracted_keyword_items}')
 				current_messages.append(AIMessage(content='Keyword extraction failed to return expected type.'))
 		except Exception as e:
-			print(f'InformationExtractorNode: Error extracting keywords: {e}', exc_info=True)
+			print(f'InformationExtractorNode: ERROR during keyword extraction: {e}')
+			print(f'InformationExtractorNode: Keyword extraction exception type: {type(e).__name__}')
 			current_messages.append(AIMessage(content=f'Error during keyword extraction: {e}'))
 
+		# --- CV Summary Generation ---
+		print('InformationExtractorNode: Starting CV summary generation')
 		summary_prompt = CV_SUMMARY_PROMPT.format(processed_cv_text=processed_cv_text)
 		input_tokens_sum = count_tokens(summary_prompt, 'gemini')
 		self.token_tracker.add_input_tokens(input_tokens_sum)
-		summary_response = await self.llm.ainvoke(summary_prompt)
-		extracted_data_update['cv_summary'] = summary_response.content
-		output_tokens_sum = count_tokens(extracted_data_update['cv_summary'], 'gemini')
-		self.token_tracker.add_output_tokens(output_tokens_sum)
-		current_messages.append(AIMessage(content=f'Generated CV summary.'))
+		print(f'InformationExtractorNode: Summary generation input tokens: {input_tokens_sum}')
+
+		try:
+			print('InformationExtractorNode: Invoking LLM for summary generation...')
+			summary_response = await self.llm.ainvoke(summary_prompt)
+			extracted_data_update['cv_summary'] = summary_response.content
+			output_tokens_sum = count_tokens(extracted_data_update['cv_summary'], 'gemini')
+			self.token_tracker.add_output_tokens(output_tokens_sum)
+			print(f'InformationExtractorNode: Summary generation successful')
+			print(f'InformationExtractorNode: Summary generation output tokens: {output_tokens_sum}')
+			print(f'InformationExtractorNode: Generated summary length: {len(extracted_data_update["cv_summary"])} characters')
+			print(f'InformationExtractorNode: Summary preview: {extracted_data_update["cv_summary"][:200]}...')
+			current_messages.append(AIMessage(content=f'Generated CV summary.'))
+		except Exception as e:
+			print(f'InformationExtractorNode: ERROR during summary generation: {e}')
+			print(f'InformationExtractorNode: Summary generation exception type: {type(e).__name__}')
+			extracted_data_update['cv_summary'] = f'Error generating summary: {str(e)}'
 
 		extracted_data_update['messages'] = current_messages
-		print('InformationExtractorNode: Information extraction phase complete.')
+
+		# Final summary of extraction results
+		print('InformationExtractorNode: Information extraction phase complete')
+		print(f'InformationExtractorNode: Total tokens used - Input: {self.token_tracker.input_tokens}, Output: {self.token_tracker.output_tokens}')
+		print(f'InformationExtractorNode: Extraction results summary:')
+		print(f'  - Personal info: {"Set" if extracted_data_update["personal_info_item"] else "Not set"}')
+		print(f'  - Education items: {len(extracted_data_update["education_items"].items) if hasattr(extracted_data_update["education_items"], "items") else 0}')
+		print(f'  - Work experience items: {len(extracted_data_update["work_experience_items"].items) if hasattr(extracted_data_update["work_experience_items"], "items") else 0}')
+		print(f'  - Skill items: {len(extracted_data_update["skill_items"].items) if hasattr(extracted_data_update["skill_items"], "items") else 0}')
+		print(f'  - Project items: {len(extracted_data_update["project_items"].items) if hasattr(extracted_data_update["project_items"], "items") else 0}')
+		print(f'  - Certificate items: {len(extracted_data_update["certificate_items"].items) if hasattr(extracted_data_update["certificate_items"], "items") else 0}')
+		print(f'  - Interest items: {len(extracted_data_update["interest_items"].items) if hasattr(extracted_data_update["interest_items"], "items") else 0}')
+		print(f'  - Keywords: {len(extracted_data_update["extracted_keywords"].items) if hasattr(extracted_data_update["extracted_keywords"], "items") else 0}')
+		print(f'  - Summary length: {len(extracted_data_update["cv_summary"])} chars')
+
 		return extracted_data_update
 
 	async def characteristic_inference_node(self, state: CVState) -> Dict[str, Any]:
@@ -451,7 +592,7 @@ class CVProcessorWorkflow:
 		# Add nodes based on the PlantUML diagram
 		workflow.add_node('InputHandler', self.input_handler_node)
 		workflow.add_node('CVParser', self.cv_parser_node)
-		workflow.add_node('SectionIdentifier', self.section_identifier_node)
+		workflow.add_node('LLMChunkDecision', self.llm_chunk_decision_node)
 		workflow.add_node('InformationExtractor', self.information_extractor_node)
 		workflow.add_node('CharacteristicInference', self.characteristic_inference_node)
 		workflow.add_node('OutputAggregator', self.output_aggregator_node)
@@ -459,8 +600,8 @@ class CVProcessorWorkflow:
 		# Define edges for the workflow
 		workflow.add_edge(START, 'InputHandler')
 		workflow.add_edge('InputHandler', 'CVParser')
-		workflow.add_edge('CVParser', 'SectionIdentifier')
-		workflow.add_edge('SectionIdentifier', 'InformationExtractor')
+		workflow.add_edge('CVParser', 'LLMChunkDecision')
+		workflow.add_edge('LLMChunkDecision', 'InformationExtractor')
 		workflow.add_edge('InformationExtractor', 'CharacteristicInference')
 		workflow.add_edge('CharacteristicInference', 'OutputAggregator')  # Added edge
 		workflow.add_edge('OutputAggregator', END)
@@ -480,7 +621,7 @@ class CVProcessorWorkflow:
 			'messages': [],
 			'raw_cv_content': cv_content,
 			'processed_cv_text': None,
-			'identified_sections': None,
+			'chunking_result': LLMChunkingResult(chunks=[]),
 			'personal_info_item': None,
 			'education_items': ListEducationItem(),
 			'work_experience_items': ListWorkExperienceItem(),
