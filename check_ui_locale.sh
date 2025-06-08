@@ -30,12 +30,44 @@ grep -o "t(['\"][a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z0-9.]*['\"])" |
 sed "s/t(['\"]//; s/['\"])$//" | 
 sort -u >> "$extracted_file"
 
-# More comprehensive pattern matching for dot notation with different quote types
-find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn "t('[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z0-9.]*')" {} \; | 
-sed "s/.*t('\\([a-zA-Z][a-zA-Z0-9]*\\.[a-zA-Z0-9.]*\\)').*/\\1/" >> "$extracted_file"
+# Comprehensive pattern matching for all quote types and template literals with variable interpolation
+# Match t('any.key') patterns
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn "t('[^']*')" {} \; | 
+sed "s/.*t('\\([^']*\\)').*/\\1/" | grep '\.' >> "$extracted_file"
 
-find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't("[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z0-9.]*")' {} \; | 
-sed 's/.*t("\\([a-zA-Z][a-zA-Z0-9]*\\.[a-zA-Z0-9.]*\\)").*/\\1/' >> "$extracted_file"
+# Match t("any.key") patterns  
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't("[^"]*")' {} \; | 
+sed 's/.*t("\\([^"]*\\)").*/\\1/' | grep '\.' >> "$extracted_file"
+
+# Match t(`any.key`) patterns (template literals) - simple case
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't(`[^`]*`)' {} \; | 
+sed 's/.*t(`\\([^`]*\\)`).*/\\1/' | grep '\.' >> "$extracted_file"
+
+# Match template literals with variable interpolation like t(`footer.${section.key}.${link}`)
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't(`[^`]*\${[^}]*}[^`]*`)' {} \; | 
+sed 's/.*t(`\([^`]*\)`).*/\1/' | 
+# Extract base patterns by replacing ${...} with placeholder and find common prefixes
+sed 's/\${[^}]*}/*/g' | grep '\.' >> "$extracted_file"
+
+# Also extract the literal parts from template literals for analysis
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't(`[^`]*\${[^}]*}[^`]*`)' {} \; | 
+sed 's/.*t(`\([^`]*\)`).*/\1/' | 
+# Extract patterns like "footer." from "footer.${section.key}.${link}"
+sed 's/\${[^}]*}//g' | sed 's/\.\./\./g' | sed 's/\.$//g' | grep '\.' >> "$extracted_file"
+
+# Update usage_file patterns for all quote types
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn "t('[^']*')" {} \; | 
+sed -n "s/\(.*\):\(.*\).*t('\\([^']*\\)')/\\1:\\2:\\3/p" | grep '.*:.*:.*\.' >> "$usage_file"
+
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't("[^"]*")' {} \; | 
+sed -n "s/\(.*\):\(.*\).*t(\"\\([^\"]*\\)\")/\\1:\\2:\\3/p" | grep '.*:.*:.*\.' >> "$usage_file"
+
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't(`[^`]*`)' {} \; | 
+sed -n "s/\(.*\):\(.*\).*t(\`\\([^\`]*\\)\`)/\\1:\\2:\\3/p" | grep '.*:.*:.*\.' >> "$usage_file"
+
+# Add template literal patterns to usage file (mark as dynamic)
+find ./frontend/src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) -exec grep -Hn 't(`[^`]*\${[^}]*}[^`]*`)' {} \; | 
+sed -n "s/\(.*\):\(.*\).*t(\`\\([^\`]*\\)\`)/\\1:\\2:\\3 [DYNAMIC]/p" >> "$usage_file"
 
 # Remove duplicates and sort
 sort -u "$extracted_file" -o "$extracted_file"

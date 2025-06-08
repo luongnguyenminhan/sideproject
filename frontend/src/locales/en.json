@@ -1,294 +1,242 @@
 {
   "aboutUs": {
-    "contact": "Contact Us",
     "social": {
-      "about": "About",
-      "followers": "followers"
+      "about": "Waiting for translation",
+      "followers": "Waiting for translation"
     },
-    "title": "About Us"
+    "title": "Waiting for translation"
   },
   "auth": {
-    "allowPopups": "Please allow popups and try again",
-    "bySigningIn": "By signing in, you agree to our Terms of Service and Privacy Policy",
-    "connectingToGoogle": "Connecting to Google",
-    "email": "Email",
-    "login": "Login",
-    "loginSuccess": "Login successful! Welcome back.",
-    "loginWithGoogle": "Sign in with your Google account to get started",
-    "logout": "Logout",
-    "name": "Name",
-    "openingGoogleLogin": "Opening Google login...",
-    "pleaseWait": "Please wait while we connect you to Google...",
-    "role": "Role",
-    "signingIn": "Signing in...",
-    "signInWithGoogle": "Sign in with Google",
-    "unableToConnect": "Unable to connect to Google. Please try again.",
-    "username": "Username"
+    "allowPopups": "Waiting for translation",
+    "bySigningIn": "Waiting for translation",
+    "connectingToGoogle": "Waiting for translation",
+    "email": "Waiting for translation",
+    "login": "Waiting for translation",
+    "loginSuccess": "Waiting for translation",
+    "loginWithGoogle": "Waiting for translation",
+    "logout": "Waiting for translation",
+    "name": "Waiting for translation",
+    "openingGoogleLogin": "Waiting for translation",
+    "pleaseWait": "Waiting for translation",
+    "role": "Waiting for translation",
+    "signingIn": "Waiting for translation",
+    "signInWithGoogle": "Waiting for translation",
+    "unableToConnect": "Waiting for translation",
+    "username": "Waiting for translation"
+  },
+  "carousel": {
+    "currentImage": "Waiting for translation",
+    "description": "Waiting for translation",
+    "nextImage": "Waiting for translation",
+    "prevImage": "Waiting for translation",
+    "subtitle": "Waiting for translation",
+    "title": "Waiting for translation"
   },
   "chat": {
     "agentManagement": {
-      "agentConfig": "Agent Configuration",
-      "agentError": "Agent Error",
-      "agentLoading": "Loading agent...",
-      "agentTab": "Agent",
+      "agentConfig": "Waiting for translation",
+      "agentError": "Waiting for translation",
+      "agentLoading": "Waiting for translation",
+      "agentTab": "Waiting for translation",
       "apiKeyManagement": {
-        "apiKeyPlaceholder": "Enter your API key here...",
-        "currentKey": "Current API Key",
-        "description": "Manage your API keys for different AI providers",
-        "enterApiKey": "Enter API Key",
-        "hideKey": "Hide Key",
-        "keyUpdated": "API key updated successfully",
-        "noKeySet": "No API key set",
-        "selectProvider": "Select Provider",
-        "showKey": "Show Key",
-        "title": "API Key Management",
-        "update": "Update",
-        "updateFailed": "Failed to update API key"
+        "apiKeyPlaceholder": "Waiting for translation",
+        "currentKey": "Waiting for translation",
+        "description": "Waiting for translation",
+        "enterApiKey": "Waiting for translation",
+        "hideKey": "Waiting for translation",
+        "keyUpdated": "Waiting for translation",
+        "noKeySet": "Waiting for translation",
+        "selectProvider": "Waiting for translation",
+        "showKey": "Waiting for translation",
+        "title": "Waiting for translation",
+        "update": "Waiting for translation",
+        "updateFailed": "Waiting for translation"
       },
-      "apiKeyTab": "API Key",
-      "currentAgent": "Current Agent",
-      "manage": "Manage",
-      "maxTokens": "Max Tokens",
-      "modelName": "Model Name",
-      "noAgentConfigured": "No agent configured",
-      "provider": "Provider",
-      "selectModel": "Select Model",
-      "selectProvider": "Select Provider",
-      "subtitle": "Configure and manage your AI agent settings",
-      "temperature": "Temperature",
-      "title": "Agent Management",
-      "updateAgent": "Update Agent",
-      "validateAgent": "Validate Agent",
-      "validationCompleted": "Validation completed",
-      "validationFailed": "Validation Failed",
-      "validationSuccess": "Validation Successful",
-      "validationTab": "Validation"
+      "apiKeyTab": "Waiting for translation",
+      "currentAgent": "Waiting for translation",
+      "manage": "Waiting for translation",
+      "maxTokens": "Waiting for translation",
+      "modelName": "Waiting for translation",
+      "noAgentConfigured": "Waiting for translation",
+      "provider": "Waiting for translation",
+      "selectModel": "Waiting for translation",
+      "selectProvider": "Waiting for translation",
+      "subtitle": "Waiting for translation",
+      "temperature": "Waiting for translation",
+      "title": "Waiting for translation",
+      "updateAgent": "Waiting for translation",
+      "validateAgent": "Waiting for translation",
+      "validationCompleted": "Waiting for translation",
+      "validationFailed": "Waiting for translation",
+      "validationSuccess": "Waiting for translation",
+      "validationTab": "Waiting for translation"
     },
-    "chats": "Chats",
-    "conversations": "Conversations",
-    "copy": "Copy",
-    "copied": "Copied!",
-    "createFirstChat": "Create your first conversation to get started",
-    "defaultChatTitle": "Chat",
-    "files": "Files",
-    "filesAssociated": "Files uploaded here will be associated with this conversation",
-    "messages": "messages",
-    "newConversation": "New",
-    "noConversationsYet": "No conversations yet",
-    "noFilesUploaded": "No files uploaded",
-    "noMessages": "No messages yet",
-    "assistant": "Assistant",
-    "sending": "Sending...",
-    "startConversation": "Send a message to start the conversation",
+    "assistant": "Waiting for translation",
+    "chats": "Waiting for translation",
+    "conversations": "Waiting for translation",
+    "copied": "Waiting for translation",
+    "copy": "Waiting for translation",
+    "createFirstChat": "Waiting for translation",
+    "defaultChatTitle": "Waiting for translation",
+    "files": "Waiting for translation",
+    "filesAssociated": "Waiting for translation",
+    "htmlRenderError": "Waiting for translation",
+    "messages": "Waiting for translation",
+    "newConversation": "Waiting for translation",
+    "noConversationsYet": "Waiting for translation",
+    "noFilesUploaded": "Waiting for translation",
+    "noMessages": "Waiting for translation",
+    "preview": "Waiting for translation",
+    "sending": "Waiting for translation",
+    "showCode": "Waiting for translation",
+    "startConversation": "Waiting for translation",
     "systemPrompt": {
-      "conversationPrompt": "Conversation Prompt",
-      "description": "Configure the system prompt for this conversation",
-      "placeholder": "Enter system prompt...",
-      "title": "System Prompt"
+      "conversationPrompt": "Waiting for translation",
+      "description": "Waiting for translation",
+      "placeholder": "Waiting for translation",
+      "title": "Waiting for translation"
     },
-    "thisConversation": "This conversation",
+    "thisConversation": "Waiting for translation",
     "tooltips": {
-      "deleteConversation": "Delete conversation",
-      "editName": "Edit name",
-      "editSystemPrompt": "Edit system prompt",
-      "hasCustomSystemPrompt": "Has custom system prompt"
+      "deleteConversation": "Waiting for translation",
+      "editName": "Waiting for translation",
+      "editSystemPrompt": "Waiting for translation",
+      "hasCustomSystemPrompt": "Waiting for translation"
     },
-    "typeMessage": "Type your message...",
-    "typing": "AI is typing...",
-    "uploadedFiles": "Uploaded Files",
-    "uploadFilesDescription": "Upload files to attach to your conversations",
-    "welcomeDescription": "Select a conversation or create a new one to start chatting",
-    "welcomeTitle": "Welcome to AI Chat"
-  },
-  "carousel": {
-    "title": "Image Gallery",
-    "subtitle": "High-quality design resources", 
-    "description": "Explore our carefully curated collection of diverse images and icons",
-    "nextImage": "Next image",
-    "prevImage": "Previous image",
-    "currentImage": "Current image"
+    "typeMessage": "Waiting for translation",
+    "typing": "Waiting for translation",
+    "uploadedFiles": "Waiting for translation",
+    "uploadFilesDescription": "Waiting for translation",
+    "welcomeDescription": "Waiting for translation",
+    "welcomeTitle": "Waiting for translation"
   },
   "common": {
-    "branding": "Can Giuoc High School Media Club",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "download": "Download",
-    "loading": "Loading...",
-    "no": "No",
-    "save": "Save",
-    "upload": "Upload",
-    "yes": "Yes"
-  },
-  "home": {
-    "authenticatedDescription": "Explore all the features available to you as a member of the club.",
-    "confirmed": "Confirmed",
-    "description": "Official website of Can Giuoc High School's Media and Events Club. A place to connect, share, and develop the student community through creative media activities.",
-    "email": "Email",
-    "facebookPostCountPrefix": "Showing",
-    "facebookPostCountSuffix": "posts from this page.",
-    "getStarted": "Join Now",
-    "learnMore": "Learn More",
-    "post": "Facebook Post",
-    "title": "Welcome to Can Giuoc High School Media Club",
-    "unknownTime": "Unknown time",
-    "userInformation": "Member Information",
-    "username": "Member name",
-    "welcomeBack": "Welcome back",
-    "demo": {
-      "title": "Our Activities",
-      "subtitle": "Can Giuoc High School Media and Events Club",
-      "description": "We are a media club at Can Giuoc High School, specializing in organizing events and media activities to connect students and the school community.",
-      "viewAssets": "View activity images",
-      "totalAssets": "event images available"
-    },
-    "features": {
-      "title": "Key Features",
-      "subtitle": "What makes our club special",
-      "modernStack": {
-        "title": "Modern Media",
-        "description": "Using modern media tools and platforms to create quality and engaging content"
-      },
-      "fastPerformance": {
-        "title": "Quality Events",
-        "description": "Organizing carefully planned events and activities that provide excellent experiences for students"
-      },
-      "globalReady": {
-        "title": "Community Connection",
-        "description": "Building bridges between students and the community through meaningful activities"
-      },
-      "darkMode": {
-        "title": "Unlimited Creativity",
-        "description": "Encouraging creativity and innovation in all media and event organization activities"
-      }
-    }
-  },
-  "navigation": {
-    "about": "About",
-    "chat": "Chat",
-    "help": "Help",
-    "menu": "Menu",
-    "profile": "Profile",
-    "settings": "Settings"
-  },
-  "profile": {
-    "changePassword": "Change Password",
-    "changePhoto": "Change Photo",
-    "editProfile": "Edit Profile",
-    "title": "Profile"
-  },
-  "server": {
-    "currentTime": "Current Time",
-    "locale": "Locale",
-    "serverRendered": "Server Rendered"
-  },
-  "settings": {
-    "account": "Account Settings",
-    "appearance": "Appearance",
-    "changePassword": "Change Password",
-    "currentUser": "Currently signed in as",
-    "deleteAccount": "Delete Account",
-    "downloadData": "Download My Data",
-    "emailNotifications": "Email Notifications",
-    "emailNotificationsDescription": "Receive notifications via email",
-    "enableTwoFactor": "Enable Two-Factor Authentication",
-    "language": "Language",
-    "languageDescription": "Choose your preferred language",
-    "notifications": "Notifications",
-    "pushNotifications": "Push Notifications",
-    "pushNotificationsDescription": "Receive push notifications in your browser",
-    "security": "Security",
-    "theme": "Theme",
-    "themeDescription": "Choose your preferred theme",
-    "title": "Settings",
-    "updateAccount": "Update Account"
-  },
-  "survey": {
-    "complete": "Complete",
-    "continue": "Continue",
-    "previous": "Previous",
-    "step": "Step }",
-    "submitting": "Submitting...",
-    "results": {
-      "completed": "Completed",
-      "description": "We've received your feedback and will review it carefully.",
-      "retake": "Retake Survey",
-      "title": "Thank you!"
-    }
-  },
-  "team": {
-    "title": "Our Team",
-    "subtitle": "Meet the people behind our amazing products",
-    "leadership": {
-      "title": "Leadership Team",
-      "ceo": {
-        "name": "Nguyen Le An",
-        "role": "CEO & Founder",
-        "bio": "With over 10 years of experience in technology, An leads the team to create innovative solutions that positively impact the community.",
-        "experience": "10+ years experience"
-      },
-      "cto": {
-        "name": "Le Minh Techie",
-        "role": "Chief Technology Officer",
-        "bio": "Expert in system architecture and AI, Techie is responsible for technology direction and ensuring the highest product quality.",
-        "experience": "8+ years experience"
-      },
-      "designer": {
-        "name": "Nguyen Creative",
-        "role": "Chief Design Officer",
-        "bio": "With a refined aesthetic eye, Creative creates unique and engaging user experiences.",
-        "experience": "6+ years experience"
-      }
-    },
-    "values": {
-      "title": "Core Values",
-      "innovation": {
-        "title": "Innovation",
-        "description": "Always seeking new solutions and unique approaches"
-      },
-      "quality": {
-        "title": "Quality",
-        "description": "Committed to delivering the highest quality products and services"
-      },
-      "community": {
-        "title": "Community",
-        "description": "Building and growing together with our user community"
-      }
-    }
+    "branding": "Waiting for translation",
+    "cancel": "Waiting for translation",
+    "delete": "Waiting for translation",
+    "download": "Waiting for translation",
+    "loading": "Waiting for translation",
+    "no": "Waiting for translation",
+    "save": "Waiting for translation",
+    "upload": "Waiting for translation",
+    "yes": "Waiting for translation"
   },
   "footer": {
-    "company": {
-      "title": "Company",
-      "about": "About us",
-      "team": "Team",
-      "careers": "Careers",
-      "contact": "Contact"
-    },
-    "products": {
-      "title": "Products",
-      "webDevelopment": "Web Development",
-      "mobileApps": "Mobile Apps",
-      "aiSolutions": "AI Solutions",
-      "consulting": "Consulting"
-    },
-    "resources": {
-      "title": "Resources",
-      "documentation": "Documentation",
-      "blog": "Blog",
-      "support": "Support",
-      "community": "Community"
-    },
-    "social": {
-      "title": "Social Media",
-      "followUs": "Follow us"
-    },
+    "copyright": "Waiting for translation",
     "legal": {
-      "title": "Legal",
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "cookies": "Cookie Policy"
+      "cookies": "Waiting for translation",
+      "privacy": "Waiting for translation",
+      "terms": "Waiting for translation"
     },
-    "copyright": "© 2024 AnLNM Website. All rights reserved.",
-    "madeWith": "Made with",
-    "location": "Vietnam"
+    "location": "Waiting for translation",
+    "madeWith": "Waiting for translation",
+    "social": {
+      "followUs": "Waiting for translation"
+    },
+    "title": "Waiting for translation"
+  },
+  "home": {
+    "authenticatedDescription": "Waiting for translation",
+    "confirmed": "Waiting for translation",
+    "description": "Waiting for translation",
+    "email": "Waiting for translation",
+    "facebookPostCountPrefix": "Waiting for translation",
+    "facebookPostCountSuffix": "Waiting for translation",
+    "features": {
+      "darkMode": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "fastPerformance": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "globalReady": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "modernStack": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "subtitle": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "getStarted": "Waiting for translation",
+    "learnMore": "Waiting for translation",
+    "post": "Waiting for translation",
+    "title": "Waiting for translation",
+    "unknownTime": "Waiting for translation",
+    "userInformation": "Waiting for translation",
+    "username": "Waiting for translation",
+    "welcomeBack": "Waiting for translation"
+  },
+  "navigation": {
+    "about": "Waiting for translation",
+    "chat": "Waiting for translation",
+    "help": "Waiting for translation",
+    "menu": "Waiting for translation",
+    "profile": "Waiting for translation",
+    "settings": "Waiting for translation"
+  },
+  "profile": {
+    "changePassword": "Waiting for translation",
+    "changePhoto": "Waiting for translation",
+    "editProfile": "Waiting for translation",
+    "title": "Waiting for translation"
+  },
+  "server": {
+    "currentTime": "Waiting for translation",
+    "locale": "Waiting for translation",
+    "serverRendered": "Waiting for translation"
+  },
+  "settings": {
+    "account": "Waiting for translation",
+    "appearance": "Waiting for translation",
+    "changePassword": "Waiting for translation",
+    "currentUser": "Waiting for translation",
+    "deleteAccount": "Waiting for translation",
+    "downloadData": "Waiting for translation",
+    "emailNotifications": "Waiting for translation",
+    "emailNotificationsDescription": "Waiting for translation",
+    "enableTwoFactor": "Waiting for translation",
+    "language": "Waiting for translation",
+    "languageDescription": "Waiting for translation",
+    "notifications": "Waiting for translation",
+    "pushNotifications": "Waiting for translation",
+    "pushNotificationsDescription": "Waiting for translation",
+    "security": "Waiting for translation",
+    "theme": "Waiting for translation",
+    "themeDescription": "Waiting for translation",
+    "title": "Waiting for translation",
+    "updateAccount": "Waiting for translation"
+  },
+  "survey": {
+    "complete": "Waiting for translation",
+    "continue": "Waiting for translation",
+    "previous": "Waiting for translation",
+    "results": {
+      "completed": "Waiting for translation",
+      "description": "Waiting for translation",
+      "retake": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "step": "Waiting for translation",
+    "submitting": "Waiting for translation"
+  },
+  "team": {
+    "leadership": {
+      "bio": "Waiting for translation",
+      "experience": "Waiting for translation",
+      "name": "Waiting for translation",
+      "role": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "subtitle": "Waiting for translation",
+    "title": "Waiting for translation",
+    "values": {
+      "description": "Waiting for translation",
+      "title": "Waiting for translation"
+    }
   }
 }

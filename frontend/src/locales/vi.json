@@ -1,294 +1,242 @@
 {
   "aboutUs": {
-    "contact": "Liên Hệ",
     "social": {
-      "about": "Giới thiệu",
-      "followers": "người theo dõi"
+      "about": "Waiting for translation",
+      "followers": "Waiting for translation"
     },
-    "title": "Về Chúng Tôi"
+    "title": "Waiting for translation"
   },
   "auth": {
-    "allowPopups": "Vui lòng cho phép popup và thử lại",
-    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với Điều khoản Dịch vụ và Chính sách Quyền riêng tư của chúng tôi",
-    "connectingToGoogle": "Đang kết nối với Google",
-    "email": "Email",
-    "login": "Đăng nhập",
-    "loginSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
-    "loginWithGoogle": "Đăng nhập bằng tài khoản Google của bạn để bắt đầu",
-    "logout": "Đăng xuất",
-    "name": "Tên",
-    "openingGoogleLogin": "Đang mở đăng nhập Google...",
-    "pleaseWait": "Vui lòng đợi trong khi chúng tôi kết nối bạn với Google...",
-    "role": "Vai trò",
-    "signingIn": "Đang đăng nhập...",
-    "signInWithGoogle": "Đăng nhập bằng Google",
-    "unableToConnect": "Không thể kết nối với Google. Vui lòng thử lại.",
-    "username": "Tên người dùng"
+    "allowPopups": "Waiting for translation",
+    "bySigningIn": "Waiting for translation",
+    "connectingToGoogle": "Waiting for translation",
+    "email": "Waiting for translation",
+    "login": "Waiting for translation",
+    "loginSuccess": "Waiting for translation",
+    "loginWithGoogle": "Waiting for translation",
+    "logout": "Waiting for translation",
+    "name": "Waiting for translation",
+    "openingGoogleLogin": "Waiting for translation",
+    "pleaseWait": "Waiting for translation",
+    "role": "Waiting for translation",
+    "signingIn": "Waiting for translation",
+    "signInWithGoogle": "Waiting for translation",
+    "unableToConnect": "Waiting for translation",
+    "username": "Waiting for translation"
+  },
+  "carousel": {
+    "currentImage": "Waiting for translation",
+    "description": "Waiting for translation",
+    "nextImage": "Waiting for translation",
+    "prevImage": "Waiting for translation",
+    "subtitle": "Waiting for translation",
+    "title": "Waiting for translation"
   },
   "chat": {
     "agentManagement": {
-      "agentConfig": "Cấu Hình Agent",
-      "agentError": "Lỗi Agent",
-      "agentLoading": "Đang tải agent...",
-      "agentTab": "Agent",
+      "agentConfig": "Waiting for translation",
+      "agentError": "Waiting for translation",
+      "agentLoading": "Waiting for translation",
+      "agentTab": "Waiting for translation",
       "apiKeyManagement": {
-        "apiKeyPlaceholder": "Nhập API key của bạn tại đây...",
-        "currentKey": "API Key Hiện Tại",
-        "description": "Quản lý API key của bạn cho các nhà cung cấp AI khác nhau",
-        "enterApiKey": "Nhập API Key",
-        "hideKey": "Ẩn Key",
-        "keyUpdated": "API key đã được cập nhật thành công",
-        "noKeySet": "Chưa có API key nào được thiết lập",
-        "selectProvider": "Chọn Nhà Cung Cấp",
-        "showKey": "Hiện Key",
-        "title": "Quản Lý API Key",
-        "update": "Cập nhật",
-        "updateFailed": "Cập nhật API key thất bại"
+        "apiKeyPlaceholder": "Waiting for translation",
+        "currentKey": "Waiting for translation",
+        "description": "Waiting for translation",
+        "enterApiKey": "Waiting for translation",
+        "hideKey": "Waiting for translation",
+        "keyUpdated": "Waiting for translation",
+        "noKeySet": "Waiting for translation",
+        "selectProvider": "Waiting for translation",
+        "showKey": "Waiting for translation",
+        "title": "Waiting for translation",
+        "update": "Waiting for translation",
+        "updateFailed": "Waiting for translation"
       },
-      "apiKeyTab": "API Key",
-      "currentAgent": "Agent Hiện Tại",
-      "manage": "Quản lý",
-      "maxTokens": "Số Token Tối Đa",
-      "modelName": "Tên Model",
-      "noAgentConfigured": "Chưa có agent nào được cấu hình",
-      "provider": "Nhà Cung Cấp",
-      "selectModel": "Chọn Model",
-      "selectProvider": "Chọn Nhà Cung Cấp",
-      "subtitle": "Cấu hình và quản lý cài đặt AI agent của bạn",
-      "temperature": "Nhiệt độ",
-      "title": "Quản Lý Agent",
-      "updateAgent": "Cập Nhật Agent",
-      "validateAgent": "Xác Thực Agent",
-      "validationCompleted": "Xác thực hoàn tất",
-      "validationFailed": "Xác Thực Thất Bại",
-      "validationSuccess": "Xác Thực Thành Công",
-      "validationTab": "Xác Thực"
+      "apiKeyTab": "Waiting for translation",
+      "currentAgent": "Waiting for translation",
+      "manage": "Waiting for translation",
+      "maxTokens": "Waiting for translation",
+      "modelName": "Waiting for translation",
+      "noAgentConfigured": "Waiting for translation",
+      "provider": "Waiting for translation",
+      "selectModel": "Waiting for translation",
+      "selectProvider": "Waiting for translation",
+      "subtitle": "Waiting for translation",
+      "temperature": "Waiting for translation",
+      "title": "Waiting for translation",
+      "updateAgent": "Waiting for translation",
+      "validateAgent": "Waiting for translation",
+      "validationCompleted": "Waiting for translation",
+      "validationFailed": "Waiting for translation",
+      "validationSuccess": "Waiting for translation",
+      "validationTab": "Waiting for translation"
     },
-    "chats": "Trò chuyện",
-    "conversations": "Cuộc trò chuyện",
-    "copy": "Sao chép",
-    "copied": "Đã sao chép!",
-    "createFirstChat": "Tạo cuộc trò chuyện đầu tiên để bắt đầu",
-    "defaultChatTitle": "Trò chuyện",
-    "files": "Tập tin",
-    "filesAssociated": "Các tập tin được tải lên ở đây sẽ được liên kết với cuộc trò chuyện này",
-    "messages": "tin nhắn",
-    "newConversation": "Mới",
-    "noConversationsYet": "Chưa có cuộc trò chuyện nào",
-    "noFilesUploaded": "Chưa có tập tin nào được tải lên",
-    "noMessages": "Chưa có tin nhắn nào",
-    "assistant": "Trợ lý",
-    "sending": "Đang gửi...",
-    "startConversation": "Gửi tin nhắn để bắt đầu cuộc trò chuyện",
+    "assistant": "Waiting for translation",
+    "chats": "Waiting for translation",
+    "conversations": "Waiting for translation",
+    "copied": "Waiting for translation",
+    "copy": "Waiting for translation",
+    "createFirstChat": "Waiting for translation",
+    "defaultChatTitle": "Waiting for translation",
+    "files": "Waiting for translation",
+    "filesAssociated": "Waiting for translation",
+    "htmlRenderError": "Waiting for translation",
+    "messages": "Waiting for translation",
+    "newConversation": "Waiting for translation",
+    "noConversationsYet": "Waiting for translation",
+    "noFilesUploaded": "Waiting for translation",
+    "noMessages": "Waiting for translation",
+    "preview": "Waiting for translation",
+    "sending": "Waiting for translation",
+    "showCode": "Waiting for translation",
+    "startConversation": "Waiting for translation",
     "systemPrompt": {
-      "conversationPrompt": "Prompt Cuộc Trò Chuyện",
-      "description": "Cấu hình Prompt hệ thống cho cuộc trò chuyện này",
-      "placeholder": "Nhập Prompt hệ thống...",
-      "title": "Prompt Hệ Thống"
+      "conversationPrompt": "Waiting for translation",
+      "description": "Waiting for translation",
+      "placeholder": "Waiting for translation",
+      "title": "Waiting for translation"
     },
-    "thisConversation": "Cuộc trò chuyện này",
+    "thisConversation": "Waiting for translation",
     "tooltips": {
-      "deleteConversation": "Xóa cuộc trò chuyện",
-      "editName": "Chỉnh sửa tên",
-      "editSystemPrompt": "Chỉnh sửa Prompt hệ thống",
-      "hasCustomSystemPrompt": "Có Prompt hệ thống tùy chỉnh"
+      "deleteConversation": "Waiting for translation",
+      "editName": "Waiting for translation",
+      "editSystemPrompt": "Waiting for translation",
+      "hasCustomSystemPrompt": "Waiting for translation"
     },
-    "typeMessage": "Nhập tin nhắn của bạn...",
-    "typing": "AI đang nhập...",
-    "uploadedFiles": "Tập Tin Đã Tải Lên",
-    "uploadFilesDescription": "Tải lên tập tin để đính kèm vào cuộc trò chuyện của bạn",
-    "welcomeDescription": "Chọn một cuộc trò chuyện hoặc tạo mới để bắt đầu trò chuyện",
-    "welcomeTitle": "Chào Mừng Đến Với AI Chat"
-  },
-  "carousel": {
-    "title": "Bộ Sưu Tập Hình Ảnh",
-    "subtitle": "Tài nguyên thiết kế chất lượng cao",
-    "description": "Khám phá thư viện hình ảnh và biểu tượng đa dạng được tuyển chọn kỹ lưỡng",
-    "nextImage": "Hình tiếp theo",
-    "prevImage": "Hình trước đó",
-    "currentImage": "Hình hiện tại"
+    "typeMessage": "Waiting for translation",
+    "typing": "Waiting for translation",
+    "uploadedFiles": "Waiting for translation",
+    "uploadFilesDescription": "Waiting for translation",
+    "welcomeDescription": "Waiting for translation",
+    "welcomeTitle": "Waiting for translation"
   },
   "common": {
-    "branding": "CLB Truyền Thông & Sự Kiện THPT Cần Giuộc",
-    "cancel": "Hủy",
-    "delete": "Xóa",
-    "download": "Tải xuống",
-    "loading": "Đang tải...",
-    "no": "Không",
-    "save": "Lưu",
-    "upload": "Tải lên",
-    "yes": "Có"
-  },
-  "home": {
-    "authenticatedDescription": "Khám phá tất cả các tính năng có sẵn cho bạn với tư cách là thành viên của câu lạc bộ.",
-    "confirmed": "Đã xác nhận",
-    "description": "Trang web chính thức của Câu lạc bộ truyền thông và sự kiện trường THPT Cần Giuộc. Nơi kết nối, chia sẻ và phát triển cộng đồng học sinh thông qua các hoạt động truyền thông sáng tạo.",
-    "email": "Email",
-    "facebookPostCountPrefix": "Hiển thị",
-    "facebookPostCountSuffix": "bài viết từ trang này.",
-    "getStarted": "Tham Gia Ngay",
-    "learnMore": "Tìm Hiểu Thêm",
-    "post": "Bài Viết Facebook",
-    "title": "Chào Mừng Đến Với CLB Truyền Thông THPT Cần Giuộc",
-    "unknownTime": "Thời gian không xác định",
-    "userInformation": "Thông Tin Thành Viên",
-    "username": "Tên thành viên",
-    "welcomeBack": "Chào mừng trở lại",
-    "demo": {
-      "title": "Hoạt động của chúng tôi",
-      "subtitle": "Câu lạc bộ truyền thông và sự kiện trường THPT Cần Giuộc",
-      "description": "Chúng tôi là một câu lạc bộ truyền thông tại trường THPT Cần Giuộc, chuyên tổ chức các sự kiện và hoạt động truyền thông để kết nối học sinh và cộng đồng trường.",
-      "viewAssets": "Xem hình ảnh hoạt động",
-      "totalAssets": "hình ảnh sự kiện có sẵn"
-    },
-    "features": {
-      "title": "Đặc Điểm Nổi Bật",
-      "subtitle": "Điều gì làm CLB chúng tôi đặc biệt",
-      "modernStack": {
-        "title": "Truyền Thông Hiện Đại",
-        "description": "Sử dụng các công cụ và nền tảng truyền thông hiện đại để tạo ra những nội dung chất lượng và thu hút"
-      },
-      "fastPerformance": {
-        "title": "Sự Kiện Chất Lượng",
-        "description": "Tổ chức các sự kiện và hoạt động được lên kế hoạch kỹ lưỡng, mang lại trải nghiệm tuyệt vời cho học sinh"
-      },
-      "globalReady": {
-        "title": "Kết Nối Cộng Đồng",
-        "description": "Xây dựng cầu nối giữa học sinh với nhau và với cộng đồng thông qua các hoạt động ý nghĩa"
-      },
-      "darkMode": {
-        "title": "Sáng Tạo Không Giới Hạn",
-        "description": "Khuyến khích sự sáng tạo và đổi mới trong mọi hoạt động truyền thông và tổ chức sự kiện"
-      }
-    }
-  },
-  "navigation": {
-    "about": "Giới thiệu",
-    "chat": "Trò chuyện",
-    "help": "Trợ giúp",
-    "menu": "Menu",
-    "profile": "Hồ sơ",
-    "settings": "Cài đặt"
-  },
-  "profile": {
-    "changePassword": "Đổi Mật Khẩu",
-    "changePhoto": "Đổi Ảnh",
-    "editProfile": "Chỉnh Sửa Hồ Sơ",
-    "title": "Hồ Sơ"
-  },
-  "server": {
-    "currentTime": "Thời Gian Hiện Tại",
-    "locale": "Ngôn ngữ",
-    "serverRendered": "Được Render Từ Server"
-  },
-  "settings": {
-    "account": "Cài Đặt Tài Khoản",
-    "appearance": "Giao Diện",
-    "changePassword": "Đổi Mật Khẩu",
-    "currentUser": "Hiện đang đăng nhập với tư cách",
-    "deleteAccount": "Xóa Tài Khoản",
-    "downloadData": "Tải Xuống Dữ Liệu Của Tôi",
-    "emailNotifications": "Thông Báo Email",
-    "emailNotificationsDescription": "Nhận thông báo qua email",
-    "enableTwoFactor": "Bật Xác Thực Hai Yếu Tố",
-    "language": "Ngôn ngữ",
-    "languageDescription": "Chọn ngôn ngữ ưa thích của bạn",
-    "notifications": "Thông Báo",
-    "pushNotifications": "Thông Báo Đẩy",
-    "pushNotificationsDescription": "Nhận thông báo đẩy trong trình duyệt của bạn",
-    "security": "Bảo Mật",
-    "theme": "Chủ đề",
-    "themeDescription": "Chọn chủ đề ưa thích của bạn",
-    "title": "Cài Đặt",
-    "updateAccount": "Cập Nhật Tài Khoản"
-  },
-  "survey": {
-    "complete": "Hoàn thành",
-    "continue": "Tiếp tục",
-    "previous": "Trước",
-    "step": "Bước",
-    "submitting": "Đang gửi...",
-    "results": {
-      "completed": "Hoàn thành",
-      "title": "Cảm ơn bạn!",
-      "description": "Chúng tôi đã nhận được phản hồi của bạn và sẽ xem xét cẩn thận.",
-      "retake": "Làm lại khảo sát"
-    }
-  },
-  "team": {
-    "title": "Đội Ngũ Của Chúng Tôi",
-    "subtitle": "Gặp gỡ những con người đứng sau những sản phẩm tuyệt vời",
-    "leadership": {
-      "title": "Ban Lãnh Đạo",
-      "ceo": {
-        "name": "Nguyễn Lê An",
-        "role": "Giám Đốc Điều Hành & Nhà Sáng Lập",
-        "bio": "Với hơn 10 năm kinh nghiệm trong lĩnh vực công nghệ, An dẫn dắt đội ngũ tạo ra những giải pháp sáng tạo và có tác động tích cực đến cộng đồng.",
-        "experience": "10+ năm kinh nghiệm"
-      },
-      "cto": {
-        "name": "Lê Minh Techie",
-        "role": "Giám Đốc Công Nghệ",
-        "bio": "Chuyên gia về kiến trúc hệ thống và AI, Techie chịu trách nhiệm định hướng công nghệ và đảm bảo chất lượng sản phẩm cao nhất.",
-        "experience": "8+ năm kinh nghiệm"
-      },
-      "designer": {
-        "name": "Nguyễn Creative",
-        "role": "Giám Đốc Thiết Kế",
-        "bio": "Với con mắt thẩm mỹ tinh tế, Creative tạo ra những trải nghiệm người dùng độc đáo và thu hút.",
-        "experience": "6+ năm kinh nghiệm"
-      }
-    },
-    "values": {
-      "title": "Giá Trị Cốt Lõi",
-      "innovation": {
-        "title": "Sáng Tạo",
-        "description": "Luôn tìm kiếm những giải pháp mới và cách tiếp cận độc đáo"
-      },
-      "quality": {
-        "title": "Chất Lượng",
-        "description": "Cam kết mang đến sản phẩm và dịch vụ chất lượng cao nhất"
-      },
-      "community": {
-        "title": "Cộng Đồng",
-        "description": "Xây dựng và phát triển cùng cộng đồng người dùng"
-      }
-    }
+    "branding": "Waiting for translation",
+    "cancel": "Waiting for translation",
+    "delete": "Waiting for translation",
+    "download": "Waiting for translation",
+    "loading": "Waiting for translation",
+    "no": "Waiting for translation",
+    "save": "Waiting for translation",
+    "upload": "Waiting for translation",
+    "yes": "Waiting for translation"
   },
   "footer": {
-    "company": {
-      "title": "Công Ty",
-      "about": "Về chúng tôi",
-      "team": "Đội ngũ",
-      "careers": "Tuyển dụng",
-      "contact": "Liên hệ"
-    },
-    "products": {
-      "title": "Sản Phẩm",
-      "webDevelopment": "Phát triển Web",
-      "mobileApps": "Ứng dụng Di động",
-      "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn"
-    },
-    "resources": {
-      "title": "Tài Nguyên",
-      "documentation": "Tài liệu",
-      "blog": "Blog",
-      "support": "Hỗ trợ",
-      "community": "Cộng đồng"
-    },
-    "social": {
-      "title": "Mạng Xã Hội",
-      "followUs": "Theo dõi chúng tôi"
-    },
+    "copyright": "Waiting for translation",
     "legal": {
-      "title": "Pháp Lý",
-      "privacy": "Chính sách bảo mật",
-      "terms": "Điều khoản sử dụng",
-      "cookies": "Chính sách Cookie"
+      "cookies": "Waiting for translation",
+      "privacy": "Waiting for translation",
+      "terms": "Waiting for translation"
     },
-    "copyright": "© 2024 AnLNM Website. Tất cả quyền được bảo lưu.",
-    "madeWith": "Được tạo với",
-    "location": "Việt Nam"
+    "location": "Waiting for translation",
+    "madeWith": "Waiting for translation",
+    "social": {
+      "followUs": "Waiting for translation"
+    },
+    "title": "Waiting for translation"
+  },
+  "home": {
+    "authenticatedDescription": "Waiting for translation",
+    "confirmed": "Waiting for translation",
+    "description": "Waiting for translation",
+    "email": "Waiting for translation",
+    "facebookPostCountPrefix": "Waiting for translation",
+    "facebookPostCountSuffix": "Waiting for translation",
+    "features": {
+      "darkMode": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "fastPerformance": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "globalReady": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "modernStack": {
+        "description": "Waiting for translation",
+        "title": "Waiting for translation"
+      },
+      "subtitle": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "getStarted": "Waiting for translation",
+    "learnMore": "Waiting for translation",
+    "post": "Waiting for translation",
+    "title": "Waiting for translation",
+    "unknownTime": "Waiting for translation",
+    "userInformation": "Waiting for translation",
+    "username": "Waiting for translation",
+    "welcomeBack": "Waiting for translation"
+  },
+  "navigation": {
+    "about": "Waiting for translation",
+    "chat": "Waiting for translation",
+    "help": "Waiting for translation",
+    "menu": "Waiting for translation",
+    "profile": "Waiting for translation",
+    "settings": "Waiting for translation"
+  },
+  "profile": {
+    "changePassword": "Waiting for translation",
+    "changePhoto": "Waiting for translation",
+    "editProfile": "Waiting for translation",
+    "title": "Waiting for translation"
+  },
+  "server": {
+    "currentTime": "Waiting for translation",
+    "locale": "Waiting for translation",
+    "serverRendered": "Waiting for translation"
+  },
+  "settings": {
+    "account": "Waiting for translation",
+    "appearance": "Waiting for translation",
+    "changePassword": "Waiting for translation",
+    "currentUser": "Waiting for translation",
+    "deleteAccount": "Waiting for translation",
+    "downloadData": "Waiting for translation",
+    "emailNotifications": "Waiting for translation",
+    "emailNotificationsDescription": "Waiting for translation",
+    "enableTwoFactor": "Waiting for translation",
+    "language": "Waiting for translation",
+    "languageDescription": "Waiting for translation",
+    "notifications": "Waiting for translation",
+    "pushNotifications": "Waiting for translation",
+    "pushNotificationsDescription": "Waiting for translation",
+    "security": "Waiting for translation",
+    "theme": "Waiting for translation",
+    "themeDescription": "Waiting for translation",
+    "title": "Waiting for translation",
+    "updateAccount": "Waiting for translation"
+  },
+  "survey": {
+    "complete": "Waiting for translation",
+    "continue": "Waiting for translation",
+    "previous": "Waiting for translation",
+    "results": {
+      "completed": "Waiting for translation",
+      "description": "Waiting for translation",
+      "retake": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "step": "Waiting for translation",
+    "submitting": "Waiting for translation"
+  },
+  "team": {
+    "leadership": {
+      "bio": "Waiting for translation",
+      "experience": "Waiting for translation",
+      "name": "Waiting for translation",
+      "role": "Waiting for translation",
+      "title": "Waiting for translation"
+    },
+    "subtitle": "Waiting for translation",
+    "title": "Waiting for translation",
+    "values": {
+      "description": "Waiting for translation",
+      "title": "Waiting for translation"
+    }
   }
 }
