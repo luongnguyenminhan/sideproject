@@ -4,7 +4,7 @@
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu Chatbot Triết học"
+    "title": "Giới thiệu CLB Truyền thông THPT Cần Giuộc"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -29,8 +29,8 @@
     "description": "Mô tả",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Khám phá triết học một cách tương tác",
-    "title": "Trình mô phỏng tranh luận triết học"
+    "subtitle": "Khám phá thế giới truyền thông sáng tạo",
+    "title": "Nền tảng truyền thông THPT Cần Giuộc"
   },
   "chat": {
     "agentManagement": {
@@ -61,9 +61,9 @@
       "provider": "Nhà cung cấp",
       "selectModel": "Chọn mô hình",
       "selectProvider": "Chọn nhà cung cấp",
-      "subtitle": "Cấu hình AI cho tranh luận triết học.",
+      "subtitle": "Cấu hình AI cho hỗ trợ truyền thông.",
       "temperature": "Nhiệt độ",
-      "title": "Quản lý tác nhân",
+      "title": "Quản lý trợ lý AI",
       "updateAgent": "Cập nhật tác nhân",
       "validateAgent": "Xác thực tác nhân",
       "validationCompleted": "Đã hoàn tất xác thực",
@@ -71,13 +71,13 @@
       "validationSuccess": "Xác thực thành công",
       "validationTab": "Xác thực"
     },
-    "assistant": "Trợ lý Triết học",
+    "assistant": "Trợ lý Truyền thông",
     "chats": "Trò chuyện",
     "conversations": "Cuộc hội thoại",
     "copied": "Đã sao chép",
     "copy": "Sao chép",
-    "createFirstChat": "Bắt đầu tranh luận triết học đầu tiên của bạn",
-    "defaultChatTitle": "Trò chuyện triết học mới",
+    "createFirstChat": "Bắt đầu cuộc trò chuyện đầu tiên của bạn",
+    "defaultChatTitle": "Trò chuyện mới",
     "files": "Tệp",
     "filesAssociated": "Tệp liên quan",
     "htmlRenderError": "Lỗi hiển thị nội dung",
@@ -91,9 +91,9 @@
     "showCode": "Hiện mã",
     "startConversation": "Bắt đầu hội thoại",
     "systemPrompt": {
-      "conversationPrompt": "Đặt bối cảnh triết học",
-      "description": "Tùy chỉnh kịch bản hoặc câu hỏi tranh luận.",
-      "placeholder": "Nhập câu hỏi hoặc tình huống triết học...",
+      "conversationPrompt": "Đặt chủ đề thảo luận",
+      "description": "Tùy chỉnh chủ đề hoặc câu hỏi thảo luận.",
+      "placeholder": "Nhập chủ đề hoặc câu hỏi muốn thảo luận...",
       "title": "Lời nhắc hệ thống"
     },
     "thisConversation": "Cuộc hội thoại này",
@@ -103,15 +103,15 @@
       "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
       "hasCustomSystemPrompt": "Lời nhắc hệ thống tùy chỉnh"
     },
-    "typeMessage": "Nhập câu hỏi triết học của bạn...",
+    "typeMessage": "Nhập câu hỏi của bạn...",
     "typing": "Đang nhập...",
     "uploadedFiles": "Tệp đã tải lên",
-    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận sâu hơn",
-    "welcomeDescription": "Đặt câu hỏi về triết học Mác - Lênin hoặc mô phỏng tranh luận giữa các trường phái (ví dụ: Duy vật vs. Duy tâm). Trợ lý AI chỉ trả lời theo góc nhìn triết học, hỗ trợ học sâu và tranh luận.",
-    "welcomeTitle": "Chào mừng đến với Chatbot Triết học"
+    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
+    "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
+    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông"
   },
   "common": {
-    "branding": "Chatbot Triết học",
+    "branding": "CLB Truyền thông THPT Cần Giuộc",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -122,31 +122,31 @@
     "yes": "Có"
   },
   "footer": {
-    "copyright": "© 2024 Chatbot Triết học",
+    "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
-    "location": "Việt Nam",
-    "madeWith": "Được tạo ra với đam mê triết học",
+    "location": "THPT Cần Giuộc, Long An",
+    "madeWith": "Được tạo ra với đam mê truyền thông",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "Chatbot Triết học",
+    "title": "CLB Truyền thông THPT Cần Giuộc",
     "company": {
-      "title": "Công ty",
+      "title": "CLB",
       "about": "Về chúng tôi",
-      "team": "Đội ngũ",
-      "careers": "Tuyển dụng",
+      "team": "Thành viên",
+      "careers": "Tham gia",
       "contact": "Liên hệ"
     },
     "products": {
-      "title": "Sản phẩm",
+      "title": "Hoạt động",
       "webDevelopment": "Phát triển web",
       "mobileApps": "Ứng dụng di động",
       "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn"
+      "consulting": "Tư vấn truyền thông"
     },
     "resources": {
       "title": "Tài nguyên",
@@ -157,9 +157,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình triết học của bạn.",
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "Môn Triết học thường bị xem là khô khan, thiếu thực tiễn, khó tiếp cận với sinh viên. Nền tảng web tương tác này giúp bạn tạo và trả lời các câu hỏi triết học, mô phỏng tranh luận giữa các trường phái bằng AI. Nâng cao tư duy phản biện và làm cho triết học trở nên thú vị!",
+    "description": "CLB Truyền thông THPT Cần Giuộc - nơi kết nối các bạn học sinh yêu thích truyền thông, sáng tạo nội dung và chia sẻ kiến thức. Nền tảng AI hỗ trợ tạo nội dung, viết bài và quản lý hoạt động CLB hiệu quả.",
     "email": "Email",
     "facebookPostCountPrefix": "Bài đăng:",
     "facebookPostCountSuffix": "trên Facebook",
@@ -206,7 +206,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "Chatbot Triết học: AI Triết học Mác - Lênin",
+    "title": "CLB Truyền thông THPT Cần Giuộc - Nền tảng AI",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",
@@ -271,42 +271,42 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Ban lãnh đạo",
+      "title": "Người sáng lập",
       "ceo": {
-        "name": "Alex Nguyễn",
-        "role": "Giám đốc điều hành",
-        "bio": "Alex đam mê đưa triết học đến gần hơn với mọi người. Với nền tảng giáo dục và công nghệ, Alex dẫn dắt đội ngũ bằng tầm nhìn và sự tận tâm.",
-        "experience": "Hơn 10 năm kinh nghiệm trong công nghệ giáo dục và quản lý dự án."
+        "name": "Lê Dương Tịnh Nghi",
+        "role": "Trưởng CLB Truyền thông",
+        "bio": "Nghi là người có tầm nhìn và đam mê mạnh mẽ với lĩnh vực truyền thông. Với khả năng lãnh đạo tự nhiên và sự sáng tạo, Nghi đã dẫn dắt CLB phát triển vượt bậc.",
+        "experience": "Kinh nghiệm hoạt động đoàn thể và quản lý dự án truyền thông."
       },
       "cto": {
-        "name": "Minh Trần",
-        "role": "Giám đốc công nghệ",
-        "bio": "Minh là chuyên gia về AI và phát triển web, định hướng kỹ thuật cho dự án và đảm bảo giải pháp vững chắc, mở rộng.",
-        "experience": "Hơn 8 năm kinh nghiệm về AI, kỹ thuật phần mềm và kiến trúc hệ thống."
+        "name": "Lương Nguyễn Minh An",
+        "role": "Phó Trưởng CLB - Kỹ thuật",
+        "bio": "An là chuyên gia về công nghệ trong CLB, phụ trách phát triển các giải pháp kỹ thuật và hệ thống hỗ trợ hoạt động CLB.",
+        "experience": "Kinh nghiệm lập trình, thiết kế web và quản lý hệ thống."
       },
       "designer": {
-        "name": "Linh Phạm",
-        "role": "Trưởng nhóm thiết kế",
-        "bio": "Linh mang đến sự sáng tạo và thiết kế lấy người dùng làm trung tâm, giúp triết học trở nên hấp dẫn và trực quan.",
-        "experience": "Hơn 7 năm kinh nghiệm thiết kế UI/UX và xây dựng thương hiệu số."
+        "name": "Đặng Phan Gia Đức",
+        "role": "Phó Trưởng CLB - Nội dung",
+        "bio": "Đức chuyên về sáng tạo nội dung và thiết kế truyền thông, mang đến những ý tưởng độc đáo và hấp dẫn cho các hoạt động CLB.",
+        "experience": "Kinh nghiệm sáng tạo nội dung, thiết kế đồ họa và quản lý mạng xã hội."
       }
     },
-    "subtitle": "Gặp gỡ đội ngũ của chúng tôi",
-    "title": "Đội ngũ",
+    "subtitle": "Gặp gỡ thành viên sáng lập",
+    "title": "Thành viên CLB",
     "values": {
-      "description": "Chúng tôi tin vào việc làm cho triết học trở nên dễ tiếp cận và hấp dẫn cho mọi người.",
+      "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
       "title": "Giá trị cốt lõi",
       "innovation": {
-        "title": "Đổi mới",
-        "description": "Chúng tôi luôn tìm tòi, ứng dụng ý tưởng và công nghệ mới để nâng cao trải nghiệm học và tranh luận triết học."
+        "title": "Sáng tạo",
+        "description": "Chúng tôi luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao chất lượng nội dung truyền thông."
       },
       "quality": {
         "title": "Chất lượng",
-        "description": "Chúng tôi cam kết mang đến nền tảng chất lượng cao, ổn định và hiệu quả cho mọi người dùng."
+        "description": "Chúng tôi cam kết tạo ra những sản phẩm truyền thông chất lượng cao, chuyên nghiệp và ý nghĩa."
       },
       "community": {
         "title": "Cộng đồng",
-        "description": "Chúng tôi xây dựng một cộng đồng hỗ trợ, cởi mở cho người học, giáo viên và những người yêu triết học."
+        "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
       }
     }
   }

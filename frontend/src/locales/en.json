@@ -4,7 +4,7 @@
       "about": "About us",
       "followers": "Followers"
     },
-    "title": "About the Philosophy Chatbot"
+    "title": "About Can Giuoc High School Media Club"
   },
   "auth": {
     "allowPopups": "Allow popups to sign in",
@@ -29,8 +29,8 @@
     "description": "Description",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Explore philosophy interactively",
-    "title": "Philosophy Debate Simulator"
+    "subtitle": "Explore creative media world",
+    "title": "Can Giuoc High School Media Platform"
   },
   "chat": {
     "agentManagement": {
@@ -61,9 +61,9 @@
       "provider": "Provider",
       "selectModel": "Select model",
       "selectProvider": "Select provider",
-      "subtitle": "Configure your AI agent for philosophical debates.",
+      "subtitle": "Configure your AI agent for media support.",
       "temperature": "Temperature",
-      "title": "Agent Management",
+      "title": "AI Assistant Management",
       "updateAgent": "Update agent",
       "validateAgent": "Validate agent",
       "validationCompleted": "Validation completed",
@@ -71,13 +71,13 @@
       "validationSuccess": "Validation successful",
       "validationTab": "Validation"
     },
-    "assistant": "Philosophy Assistant",
+    "assistant": "Media Assistant",
     "chats": "Chats",
     "conversations": "Conversations",
     "copied": "Copied",
     "copy": "Copy",
-    "createFirstChat": "Start your first philosophical debate",
-    "defaultChatTitle": "New Philosophy Chat",
+    "createFirstChat": "Start your first conversation",
+    "defaultChatTitle": "New Chat",
     "files": "Files",
     "filesAssociated": "Files associated",
     "htmlRenderError": "Error rendering content",
@@ -91,9 +91,9 @@
     "showCode": "Show code",
     "startConversation": "Start a conversation",
     "systemPrompt": {
-      "conversationPrompt": "Set the philosophical context",
-      "description": "Customize the debate scenario or question.",
-      "placeholder": "Enter a philosophical question or scenario...",
+      "conversationPrompt": "Set the discussion topic",
+      "description": "Customize the discussion topic or question.",
+      "placeholder": "Enter a topic or question to discuss...",
       "title": "System Prompt"
     },
     "thisConversation": "This conversation",
@@ -103,15 +103,15 @@
       "editSystemPrompt": "Edit system prompt",
       "hasCustomSystemPrompt": "Custom system prompt"
     },
-    "typeMessage": "Type your philosophical question...",
+    "typeMessage": "Type your question...",
     "typing": "Typing...",
     "uploadedFiles": "Uploaded files",
     "uploadFilesDescription": "Attach documents for deeper discussion",
-    "welcomeDescription": "Ask any question about Marxist-Leninist philosophy or simulate debates between philosophical schools (e.g., Materialism vs. Idealism). The AI assistant answers only from a philosophical perspective, supporting deep learning and debate.",
-    "welcomeTitle": "Welcome to the Philosophy Chatbot"
+    "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
+    "welcomeTitle": "Welcome to the Media Club Platform"
   },
   "common": {
-    "branding": "Philosophy Chatbot",
+    "branding": "Can Giuoc High School Media Club",
     "cancel": "Cancel",
     "delete": "Delete",
     "download": "Download",
@@ -122,31 +122,31 @@
     "yes": "Yes"
   },
   "footer": {
-    "copyright": "© 2024 Philosophy Chatbot",
+    "copyright": "© 2024 Can Giuoc High School Media Club",
     "legal": {
       "cookies": "Cookies Policy",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     },
-    "location": "Vietnam",
-    "madeWith": "Made with passion for philosophy",
+    "location": "Can Giuoc High School, Long An",
+    "madeWith": "Made with passion for media",
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Philosophy Chatbot",
+    "title": "Can Giuoc High School Media Club",
     "company": {
-      "title": "Company",
+      "title": "Club",
       "about": "About Us",
-      "team": "Team",
-      "careers": "Careers",
+      "team": "Members",
+      "careers": "Join Us",
       "contact": "Contact"
     },
     "products": {
-      "title": "Products",
+      "title": "Activities",
       "webDevelopment": "Web Development",
       "mobileApps": "Mobile Apps",
       "aiSolutions": "AI Solutions",
-      "consulting": "Consulting"
+      "consulting": "Media Consulting"
     },
     "resources": {
       "title": "Resources",
@@ -157,9 +157,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Welcome back! Continue your philosophical journey.",
+    "authenticatedDescription": "Welcome back! Continue your media journey.",
     "confirmed": "Confirmed",
-    "description": "Philosophy is often seen as dry and impractical, making it hard for students to engage. Our interactive web platform helps you create and answer philosophical questions, and simulates debates between schools of thought using AI. Deepen your critical thinking and make philosophy exciting!",
+    "description": "Can Giuoc High School Media Club - where students passionate about media connect, create content and share knowledge. AI platform supports content creation, article writing and efficient club activity management.",
     "email": "Email",
     "facebookPostCountPrefix": "Posts:",
     "facebookPostCountSuffix": "on Facebook",
@@ -206,7 +206,7 @@
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Post",
-    "title": "Philosophy Chatbot: Marxist-Leninist Philosophy AI",
+    "title": "Can Giuoc High School Media Club - AI Platform",
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",
@@ -271,42 +271,42 @@
       "experience": "Experience",
       "name": "Name",
       "role": "Role",
-      "title": "Leadership",
+      "title": "Founders",
       "ceo": {
-        "name": "Alex Nguyen",
-        "role": "Chief Executive Officer",
-        "bio": "Alex is passionate about making philosophy accessible to everyone. With a background in education and technology, Alex leads the team with vision and dedication.",
-        "experience": "10+ years in educational technology and project leadership."
+        "name": "Le Duong Tinh Nghi",
+        "role": "Media Club President",
+        "bio": "Nghi is a visionary with a strong passion for media. With natural leadership skills and creativity, Nghi has led the club to outstanding development.",
+        "experience": "Experience in youth activities and media project management."
       },
       "cto": {
-        "name": "Minh Tran",
-        "role": "Chief Technology Officer",
-        "bio": "Minh is an expert in AI and web development, driving the technical direction of the project and ensuring robust, scalable solutions.",
-        "experience": "8+ years in AI, software engineering, and system architecture."
+        "name": "Luong Nguyen Minh An",
+        "role": "Vice President - Technology",
+        "bio": "An is the technology expert in the club, responsible for developing technical solutions and systems that support club activities.",
+        "experience": "Experience in programming, web design and system management."
       },
       "designer": {
-        "name": "Linh Pham",
-        "role": "Lead Designer",
-        "bio": "Linh brings creativity and user-centric design to the platform, making philosophy engaging and visually appealing.",
-        "experience": "7+ years in UI/UX design and digital product branding."
+        "name": "Dang Phan Gia Duc",
+        "role": "Vice President - Content",
+        "bio": "Duc specializes in content creation and media design, bringing unique and engaging ideas to club activities.",
+        "experience": "Experience in content creation, graphic design and social media management."
       }
     },
-    "subtitle": "Meet our team",
-    "title": "Our Team",
+    "subtitle": "Meet our founding members",
+    "title": "Club Members",
     "values": {
-      "description": "We believe in making philosophy accessible and engaging for everyone.",
-      "title": "Our Values",
+      "description": "We believe in connecting students and developing media skills creatively.",
+      "title": "Core Values",
       "innovation": {
-        "title": "Innovation",
-        "description": "We constantly explore new ideas and technologies to enhance philosophical learning and debate."
+        "title": "Creativity",
+        "description": "We constantly explore new ideas and apply technology to improve media content quality."
       },
       "quality": {
         "title": "Quality",
-        "description": "We are committed to delivering a high-quality, reliable, and effective platform for all users."
+        "description": "We are committed to creating high-quality, professional and meaningful media products."
       },
       "community": {
         "title": "Community",
-        "description": "We foster a supportive and inclusive community for learners, educators, and philosophy enthusiasts."
+        "description": "We build a cohesive student community that supports each other in learning and skill development."
       }
     }
   }
