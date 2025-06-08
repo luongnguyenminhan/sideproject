@@ -97,15 +97,15 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
           <div className="mb-8">
             <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-green)] text-[color:var(--feature-green-text)] px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
               <Check className="w-5 h-5" />
-              <span>{t('survey.results.completed') || 'Survey Completed'}</span>
+              <span>{t('survey.results.completed')}</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-6">
-              {t('survey.results.title') || 'Thank You!'}
+              {t('survey.results.title')}
             </h1>
             
             <p className="text-xl text-[color:var(--muted-foreground)] max-w-2xl mx-auto mb-8">
-              {t('survey.results.description') || 'Your responses have been submitted successfully. We appreciate your time and feedback.'}
+              {t('survey.results.description')}
             </p>
 
             {/* Success animation */}
@@ -126,7 +126,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
               }}
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
             >
-              {t('survey.results.retake') || 'Retake Survey'}
+              {t('survey.results.retake')}
             </button>
                 </div>
               </div>

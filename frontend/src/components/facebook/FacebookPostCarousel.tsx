@@ -34,10 +34,10 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[color:var(--foreground)] mb-2">
-            {t('noPostsTitle') || 'No Facebook Posts Available'}
+            {t('noPostsTitle')}
           </h3>
           <p className="text-[color:var(--muted-foreground)] text-sm">
-            {t('noPostsDescription') || 'There are no Facebook posts to display at the moment.'}
+            {t('noPostsDescription')}
           </p>
         </div>
       </div>
@@ -66,7 +66,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
       {posts.length > 0 && (
         <div className="text-center">
           <p className="text-sm text-[color:var(--muted-foreground)]">
-            {t('home.facebookPostCountPrefix') || 'Showing'} {posts.length} {t('home.facebookPostCountSuffix') || 'posts from this page.'}
+            {t('home.facebookPostCountPrefix')} {posts.length} {t('home.facebookPostCountSuffix')}
           </p>
         </div>
       )}

@@ -18,7 +18,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-xl p-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-            {t('profile.title') || 'Profile'}
+            {t('profile.title')}
           </h1>
           
           <div className="flex flex-col md:flex-row gap-8">
@@ -34,7 +34,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
                 />
               </div>
               <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
-                {t('profile.changePhoto') || 'Change Photo'}
+                {t('profile.changePhoto')}
               </button>
             </div>
 
@@ -43,7 +43,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('auth.name') || 'Name'}
+                    {t('auth.name')}
                   </label>
                   <input
                     type="text"
@@ -55,7 +55,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('auth.username') || 'Username'}
+                    {t('auth.username')}
                   </label>
                   <input
                     type="text"
@@ -67,7 +67,7 @@ async function ProfilePage({ user }: ProfilePageProps) {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('auth.email') || 'Email'}
+                    {t('auth.email')}
                   </label>
                   <input
                     type="email"
@@ -79,11 +79,11 @@ async function ProfilePage({ user }: ProfilePageProps) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('auth.role') || 'Role'}
+                    {t('auth.role')}
                   </label>
                   <input
                     type="text"
-                    value={user.role || 'User'}
+                    value={user.role}
                     readOnly
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
@@ -92,10 +92,10 @@ async function ProfilePage({ user }: ProfilePageProps) {
               
               <div className="flex gap-4 pt-6">
                 <button className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                  {t('profile.editProfile') || 'Edit Profile'}
+                  {t('profile.editProfile')}
                 </button>
                 <button className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
-                  {t('profile.changePassword') || 'Change Password'}
+                  {t('profile.changePassword')}
                 </button>
               </div>
             </div>

@@ -107,7 +107,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
           />
         </div>
         <span className="text-sm font-medium text-[color:var(--foreground)]">
-            {t('chat.assistant') || 'Assistant'}
+            {t('chat.assistant')}
         </span>
         <span className="text-xs text-[color:var(--muted-foreground)]">
           {message.timestamp.toLocaleTimeString()}

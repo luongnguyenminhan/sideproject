@@ -164,14 +164,14 @@ async function Home({ user, isAuthenticated }: HomeProps) {
         isAuthenticated={isAuthenticated}
         welcomeTitle={isAuthenticated 
           ? t('home.welcomeBack', { name: user?.name || user?.username || '' })
-          : t('home.title') || 'Welcome to Our Platform'
+          : t('home.title')
         }
         description={isAuthenticated 
-          ? t('home.authenticatedDescription') || 'Welcome back! Discover new features and updates.'
-          : t('home.description') || 'Experience the future of web applications with our modern platform.'
+          ? t('home.authenticatedDescription')
+          : t('home.description')
         }
-        getStartedText={t('home.getStarted') || 'Get Started'}
-        learnMoreText={t('home.learnMore') || 'Learn More'}
+        getStartedText={t('home.getStarted')}
+        learnMoreText={t('home.learnMore')}
       />
 
       <AboutUsSectionWrapper postInformation={postInformation} />
@@ -179,7 +179,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
       <FacebookPostsSection
         postInformation={postInformation}
         locale={locale}
-        postsTitle={t('home.post') || 'Latest Posts'}
+        postsTitle={t('home.post')}
         postsDescription={`${t('home.facebookPostCountPrefix')} 9 ${t('home.facebookPostCountSuffix')}`}
       />
 

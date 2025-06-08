@@ -23,7 +23,7 @@ export function TypingIndicator({ typingText }: TypingIndicatorProps) {
           />
         </div>
         <span className="text-sm font-medium text-[color:var(--foreground)]">
-          {t('chat.assistant') || 'Assistant'}
+          {t('chat.assistant')}
         </span>
       </div>
       <div className="ml-11">

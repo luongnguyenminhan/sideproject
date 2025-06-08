@@ -72,8 +72,8 @@ export function ChatInterface({
   if (!conversation && !activeConversationId) {
     return (
       <ChatWelcome 
-        welcomeTitle={t('chat.welcomeTitle') || 'Welcome to Chat'}
-        welcomeDescription={t('chat.welcomeDescription') || 'Start a new conversation to begin chatting'}
+        welcomeTitle={t('chat.welcomeTitle')}
+        welcomeDescription={t('chat.welcomeDescription')}
       />
     );
   }
@@ -83,7 +83,7 @@ export function ChatInterface({
       {/* Chat Header */}
       <ChatHeader 
         conversationName={conversation?.name}
-        defaultTitle={t('chat.defaultChatTitle') || 'Chat'}
+        defaultTitle={t('chat.defaultChatTitle')}
         onOpenMobileSidebar={onOpenMobileSidebar}
       />
 
@@ -93,11 +93,11 @@ export function ChatInterface({
         user={user || undefined}
         isTyping={isTyping}
         error={error}
-        copyText={t('chat.copy') || 'Copy'}
-        copiedText={t('chat.copied') || 'Copied!'}
-        typingText={t('chat.typing') || 'Assistant is typing...'}
-        noMessagesText={t('chat.noMessages') || 'No messages yet'}
-        startConversationText={t('chat.startConversation') || 'Start a conversation'}
+        copyText={t('chat.copy')}
+        copiedText={t('chat.copied')}
+        typingText={t('chat.typing')}
+        noMessagesText={t('chat.noMessages')}
+        startConversationText={t('chat.startConversation')}
       />
 
       {/* Input Area */}
@@ -105,8 +105,8 @@ export function ChatInterface({
         onSendMessage={onSendMessage}
         isLoading={isLoading}
         canSendMessage={canSendMessage()}
-        placeholder={t('chat.typeMessage') || 'Type your message...'}
-        sendingText={t('chat.sending') || 'Sending...'}
+        placeholder={t('chat.typeMessage')}
+        sendingText={t('chat.sending')}
       />
     </div>
   );

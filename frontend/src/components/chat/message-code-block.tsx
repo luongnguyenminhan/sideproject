@@ -128,7 +128,7 @@ export function MessageCodeBlock({
       console.error('Error rendering HTML:', error);
       return (
         <div className="p-4 bg-red-50 border-t border-[color:var(--border)] text-red-600">
-          {t('chat.htmlRenderError') || 'Error rendering HTML content'}
+          {t('chat.htmlRenderError')}
         </div>
       );
     }
@@ -162,7 +162,7 @@ export function MessageCodeBlock({
                   icon={showRendered ? faCode : faEye} 
                   className="w-3 h-3" 
                 />
-                {showRendered ? (t('chat.showCode') || 'Code') : (t('chat.preview') || 'Preview')}
+                {showRendered ? (t('chat.showCode')) : (t('chat.preview'))}
               </Button>
             )}
             <Button
@@ -175,7 +175,7 @@ export function MessageCodeBlock({
                 icon={faDownload} 
                 className="w-3 h-3" 
               />
-              {t('common.download') || 'Download'}
+              {t('common.download')}
             </Button>
             <Button
               variant="ghost"
@@ -187,7 +187,7 @@ export function MessageCodeBlock({
                 icon={copied ? faCheck : faCopy} 
                 className="w-3 h-3" 
               />
-              {copied ? (t('chat.copied') || 'Copied!') : (t('chat.copy') || 'Copy')}
+              {copied ? (t('chat.copied')) : (t('chat.copy'))}
             </Button>
           </div>
         </div>
@@ -296,7 +296,7 @@ export function MessageCodeBlock({
                 icon={copied ? faCheck : faCopy} 
                 className="w-3 h-3 mr-1"
               />
-              {copied ? (t('chat.copied') || 'Copied!') : (t('chat.copy') || 'Copy')}
+              {copied ? (t('chat.copied')) : (t('chat.copy'))}
             </Button>
           </div>
         </div>
