@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash, faCheck, faTimes, faComments, faRobot, faCog, faSpinner, faFileText } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faTrash, faCheck, faTimes, faComments, faRobot, faCog, faSpinner, faFileText, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 
 interface Message {
@@ -40,6 +40,8 @@ interface ConversationSidebarProps {
   } | null
   agentStatus?: 'loading' | 'error' | 'success' | 'none'
   onOpenAgentManagement?: () => void
+  isCollapsed?: boolean
+  onToggleCollapse?: () => void
 }
 
 export function ConversationSidebar({
@@ -52,7 +54,9 @@ export function ConversationSidebar({
   onOpenSystemPromptEditor,
   currentAgent,
   agentStatus,
-  onOpenAgentManagement
+  onOpenAgentManagement,
+  isCollapsed = false,
+  onToggleCollapse
 }: ConversationSidebarProps) {
   const { t } = useTranslation()
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -76,25 +80,34 @@ export function ConversationSidebar({
     setEditingName('')
   }
 
+  // No expand button here; handled in chat-interface.tsx
+
   return (
-    <div className="h-full flex flex-col bg-[color:var(--card)]/50 backdrop-blur-sm border-r border-[color:var(--border)]">
+    <div className="h-full flex flex-col bg-[color:var(--card)]/50 backdrop-blur-sm relative">
       {/* Header */}
       <div className="p-4 border-b border-[color:var(--border)]">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-[color:var(--gradient-text-from)] to-[color:var(--gradient-text-to)] rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faComments} className="text-white text-sm" />
-            </div>
-            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{t('chat.conversations')}</h2>
-          </div>
           <Button
             onClick={onCreateConversation}
             size="sm"
-            className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
+            className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 flex-1 mr-2"
           >
             <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
             <span className="text-white">{t('chat.newConversation')}</span>
           </Button>
+          
+          {/* Collapse button */}
+          {!isCollapsed && (
+            <Button
+              onClick={onToggleCollapse}
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200"
+              title={t('chat.tooltips.collapseSidebar') || 'Collapse sidebar'}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} className="text-sm text-[color:var(--muted-foreground)]" />
+            </Button>
+          )}
         </div>
 
         {/* Agent Status Section */}

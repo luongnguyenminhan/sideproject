@@ -58,6 +58,10 @@ export function ChatClientWrapper() {
   const [isSystemPromptEditorOpen, setIsSystemPromptEditorOpen] = useState(false)
   const [editingConversationSystemPrompt, setEditingConversationSystemPrompt] = useState<string | null>(null)
 
+  // Sidebar collapse states
+  const [isConversationSidebarCollapsed, setIsConversationSidebarCollapsed] = useState(false)
+  const [isFileSidebarCollapsed, setIsFileSidebarCollapsed] = useState(false)
+
   // Load initial data
   useEffect(() => {
     loadConversations()
@@ -542,8 +546,6 @@ export function ChatClientWrapper() {
     }
   }
 
-  // Save API key
-
   // Handle agent updates from AgentManagement component
   const handleAgentUpdate = useCallback((updatedAgent: {
     model_name: string;
@@ -586,6 +588,15 @@ export function ChatClientWrapper() {
     return conversation?.systemPrompt || ''
   }
 
+  // Sidebar toggle handlers
+  const handleToggleConversationSidebar = () => {
+    setIsConversationSidebarCollapsed(prev => !prev)
+  }
+
+  const handleToggleFileSidebar = () => {
+    setIsFileSidebarCollapsed(prev => !prev)
+  }
+
   // Cleanup WebSocket on unmount
   useEffect(() => {
     return () => {
@@ -598,7 +609,9 @@ export function ChatClientWrapper() {
   return (
     <div className="flex h-full">
       {/* Desktop Conversation Sidebar */}
-      <div className="hidden md:block w-80 border-r border-[color:var(--border)]">
+      <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ${
+        isConversationSidebarCollapsed ? 'w-0' : 'w-80'
+      }`}>
         <ConversationSidebar
           conversations={state.conversations}
           activeConversationId={state.activeConversationId || ''}
@@ -610,6 +623,8 @@ export function ChatClientWrapper() {
           currentAgent={currentAgent}
           agentStatus={agentStatus === 'none' ? undefined : agentStatus}
           onOpenAgentManagement={() => setIsAgentManagementOpen(true)}
+          isCollapsed={isConversationSidebarCollapsed}
+          onToggleCollapse={handleToggleConversationSidebar}
         />
       </div>
 
@@ -628,13 +643,17 @@ export function ChatClientWrapper() {
       </div>
 
       {/* Desktop File Sidebar */}
-      <div className="hidden lg:block w-80 border-l border-[color:var(--border)]">
+      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ${
+        isFileSidebarCollapsed ? 'w-0' : 'w-80'
+      }`}>
         <FileSidebar
           uploadedFiles={state.uploadedFiles}
           isLoading={fileLoadingStates[state.activeConversationId || ''] || false}
           conversationId={state.activeConversationId}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
+          isCollapsed={isFileSidebarCollapsed}
+          onToggleCollapse={handleToggleFileSidebar}
         />
       </div>
 

@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFile, faTrash, faDownload, faFolder, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faFile, faTrash, faDownload, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 
 interface UploadedFile {
@@ -21,6 +21,8 @@ interface FileSidebarProps {
   conversationId?: string | null
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
+  isCollapsed?: boolean
+  onToggleCollapse?: () => void
 }
 
 export function FileSidebar({ 
@@ -28,7 +30,9 @@ export function FileSidebar({
   isLoading = false,
   conversationId,
   onDeleteFile, 
-  onUploadFiles
+  onUploadFiles,
+  isCollapsed = false,
+  onToggleCollapse
 }: FileSidebarProps) {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -61,45 +65,52 @@ export function FileSidebar({
     }
   }
 
+  // No expand button here; handled in chat-interface.tsx
+
   return (
-    <div className="h-full flex flex-col bg-[color:var(--card)]/50 backdrop-blur-sm border-l border-[color:var(--border)]">
+    <div className="h-full flex flex-col bg-[color:var(--card)]/50 backdrop-blur-sm relative">
       {/* Header */}
       <div className="p-4 border-b border-[color:var(--border)]">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-[color:var(--gradient-text-from)] to-[color:var(--gradient-text-to)] rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faFolder} className="text-white text-sm" />
-            </div>
-            <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{t('chat.uploadedFiles')}</h2>
-          </div>
-          
           {/* Upload Button */}
           <Button
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200"
+            className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 flex-1 mr-2"
           >
             <FontAwesomeIcon icon={faPlus} className="mr-2 text-white" />
             <span className="text-white">{t('common.upload')}</span>
           </Button>
+
+          {/* Collapse button */}
+          {!isCollapsed && (
+            <Button
+              onClick={onToggleCollapse}
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200"
+              title={t('chat.tooltips.collapseSidebar') || 'Collapse sidebar'}
+            >
+              <FontAwesomeIcon icon={faChevronRight} className="text-sm text-[color:var(--muted-foreground)]" />
+            </Button>
+          )}
         </div>
         
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-[color:var(--muted-foreground)]">
-            {uploadedFiles.length} {t('chat.files')}
-          </p>
-          {conversationId && (
-            <span className="text-xs text-[color:var(--muted-foreground)] bg-[color:var(--muted)] px-2 py-1 rounded">
-              {t('chat.thisConversation')}
-            </span>
-          )}
-          {isLoading && (
-            <span className="text-xs text-[color:var(--muted-foreground)]">
-              {t('common.loading')}
-            </span>
-          )}
-        </div>
-
+        {conversationId && (
+          <div className="flex items-center gap-2">
+            {conversationId && (
+              <span className="text-xs text-[color:var(--muted-foreground)] bg-[color:var(--muted)] px-2 py-1 rounded">
+                {t('chat.thisConversation')}
+              </span>
+            )}
+            {isLoading && (
+              <span className="text-xs text-[color:var(--muted-foreground)]">
+                {t('common.loading')}
+              </span>
+            )}
+          </div>
+        )}
+        
         {/* Hidden File Input */}
         <input
           type="file"
