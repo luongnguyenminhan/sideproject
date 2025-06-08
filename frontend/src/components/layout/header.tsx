@@ -9,7 +9,7 @@ import ThemeSwapper from '@/components/global/themeSwapper';
 import AuthHeader from '@/components/layout/authHeader';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faComments, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faComments, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { TranslationProvider } from '@/contexts/TranslationContext';
 import { ReduxProvider } from '@/redux/provider';
 
@@ -51,7 +51,7 @@ export default async function Header() {
           </Link>
         </div>
 
-        {/* Navigation Menu */}
+        {/* Navigation Menu (Desktop) */}
         <nav className="hidden lg:flex items-center gap-1">
           {navigationItems.map((item) => (
             <Link
@@ -66,33 +66,10 @@ export default async function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Mobile Navigation Dropdown */}
-          <div className="lg:hidden relative group">
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[color:var(--foreground)] hover:bg-[color:var(--muted)] transition-all duration-200">
-              <FontAwesomeIcon icon={faHome} className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('navigation.menu')}</span>
-            </button>
-            
-            {/* Dropdown Menu */}
-            <div className="absolute right-0 top-full mt-2 w-48 bg-[color:var(--card)] border border-[color:var(--border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 text-sm text-[color:var(--card-foreground)] hover:bg-[color:var(--muted)] first:rounded-t-lg last:rounded-b-lg transition-colors duration-200"
-                >
-                  <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
           {/* Theme and Language Switchers moved here for compact header */}
-          <div className="fixed min-h-0 bottom-4 right-4 z-[9999]">
-            <ThemeSwapper />
-          </div>
-          
+        <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999]">
+          <ThemeSwapper />
+        </div>
           <TranslationProvider dictionary={dictionary} locale={locale}>
             <AuthHeader
               user={user}
@@ -101,6 +78,29 @@ export default async function Header() {
           </TranslationProvider>
         </div>
       </header>
+
+      {/* Bottom Navigation for Mobile */}
+      <nav className="flex lg:hidden fixed bottom-0 p-4 py-10 left-0 w-full z-50 bg-[color:var(--card)] border-t border-[color:var(--border)] shadow-t-md h-16 justify-around items-center">
+        {navigationItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex flex-col items-center justify-center flex-1 py-2 group transition-all duration-200"
+          >
+            <span
+              className="flex items-center justify-center w-10 h-10 rounded-full mb-1
+                bg-gradient-to-br from-[color:var(--gradient-bg-from)] to-[color:var(--gradient-bg-to)]
+                text-[color:var(--primary)] group-hover:scale-110 group-hover:shadow-lg group-hover:text-[color:var(--accent)]
+                transition-all duration-200 animate-fade-in"
+            >
+              <FontAwesomeIcon icon={item.icon} className="w-6 h-6" />
+            </span>
+            <span className="text-xs text-[color:var(--muted-foreground)] group-hover:text-[color:var(--primary)] transition-all duration-200 animate-fade-in">
+              {item.label}
+            </span>
+          </Link>
+        ))}
+      </nav>
     </ReduxProvider>
   );
 }

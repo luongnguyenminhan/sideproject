@@ -27,8 +27,8 @@
   "carousel": {
     "currentImage": "Current image",
     "description": "Description",
-    "nextImage": "Next image",
-    "prevImage": "Previous image",
+    "nextImage": " ",
+    "prevImage": " ",
     "subtitle": "Explore philosophy interactively",
     "title": "Philosophy Debate Simulator"
   },
