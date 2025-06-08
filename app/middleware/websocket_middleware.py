@@ -2,7 +2,7 @@ import json
 import logging
 from fastapi import WebSocket
 from typing import Callable, Any
-from app.exceptions.exception import ValidationException, AuthenticationException
+from app.exceptions.exception import ValidationException
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +80,6 @@ async def websocket_error_middleware(websocket: WebSocket, call_next: Callable) 
     """Middleware to handle WebSocket errors consistently"""
     try:
         return await call_next()
-    except AuthenticationException as e:
-        logger.error(f"WebSocket authentication error: {e}")
-        await WebSocketErrorHandler.handle_auth_error(websocket, reason=str(e))
     except ValidationException as e:
         logger.error(f"WebSocket validation error: {e}")
         await WebSocketErrorHandler.handle_validation_error(websocket, e)

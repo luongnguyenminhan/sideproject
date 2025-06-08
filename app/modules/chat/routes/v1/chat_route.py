@@ -10,7 +10,7 @@ from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
 from app.http.oauth2 import get_current_user, verify_websocket_token
 from app.middleware.translation_manager import _
-from app.exceptions.exception import ValidationException, AuthenticationException
+from app.exceptions.exception import ValidationException
 from app.middleware.websocket_middleware import WebSocketErrorHandler
 import logging
 
