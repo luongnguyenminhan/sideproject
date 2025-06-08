@@ -81,7 +81,7 @@ export default async function Header() {
 
       {/* Bottom Navigation for Mobile */}
       <nav className="flex lg:hidden fixed bottom-0 p-4 py-10 left-0 w-full z-50 bg-[color:var(--card)] border-t border-[color:var(--border)] shadow-t-md h-16 justify-around items-center">
-        {navigationItems.map((item, idx) => (
+        {navigationItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
