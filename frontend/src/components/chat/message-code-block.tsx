@@ -12,16 +12,12 @@ import DOMPurify from 'dompurify';
 interface MessageCodeBlockProps {
   code: string;
   language: string;
-  inline?: boolean;
-  children?: React.ReactNode;
   variant?: 'header' | 'floating' | 'inline';
 }
 
 export function MessageCodeBlock({
   code,
   language,
-  inline = false,
-  children,
   variant = 'header'
 }: MessageCodeBlockProps) {
   const { t } = useTranslation();
@@ -134,15 +130,8 @@ export function MessageCodeBlock({
     }
   };
 
-  if (inline) {
-    return (
-      <code 
-        className="bg-[color:var(--muted)] !background-transparent text-[color:var(--foreground)] px-1.5 py-0.5 rounded text-sm font-mono border border-[color:var(--border)]/50 shadow-sm" 
-      >
-        {children}
-      </code>
-    );
-  }
+  // This component now only handles block code, inline code is handled in chat-message.tsx
+  // Remove inline handling since it's now processed upstream
 
   if (variant === 'header') {
     return (

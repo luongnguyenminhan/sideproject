@@ -60,9 +60,9 @@ export function ChatInterface({
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  // Check if user can send messages
+  // Check if user can send messages - block when bot is responding
   const canSendMessage = (): boolean => {
-    return Boolean(activeConversationId && !isLoading);
+    return Boolean(activeConversationId && !isLoading && !isTyping);
   };
 
   // Auto scroll when conversation changes
@@ -118,7 +118,6 @@ export function ChatInterface({
         isLoading={isLoading}
         canSendMessage={canSendMessage()}
         placeholder={t('chat.typeMessage')}
-        sendingText={t('chat.sending')}
       />
     </div>
   );

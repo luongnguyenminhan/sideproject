@@ -126,16 +126,25 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
                 const codeContent = String(children).replace(/\n$/, '');
                 const language = match ? match[1] : 'text';
                 
+                // Handle inline code with simple styling
+                if (inline) {
+                  return (
+                    <code 
+                      className="bg-[color:var(--muted)] text-[color:var(--foreground)] px-1.5 py-0.5 rounded text-sm font-mono border border-[color:var(--border)]/50 shadow-sm" 
+                      {...rest}
+                    >
+                      {children}
+                    </code>
+                  );
+                }
+                
+                // Handle block code with MessageCodeBlock
                 return (
                   <MessageCodeBlock
                     code={codeContent}
                     language={language}
-                    inline={inline}
-                    variant={!inline && match ? 'header' : 'floating'}
-                    {...rest}
-                  >
-                    {children}
-                  </MessageCodeBlock>
+                    variant={match ? 'header' : 'floating'}
+                  />
                 );
               },
               img: (props: any) => (

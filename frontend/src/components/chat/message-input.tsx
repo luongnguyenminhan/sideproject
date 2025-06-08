@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { DotsTypingIndicator } from '@/components/ui/TypingIndicator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,7 +10,6 @@ interface MessageInputProps {
   isLoading: boolean;
   canSendMessage: boolean;
   placeholder: string;
-  sendingText: string;
 }
 
 export function MessageInput({
@@ -19,14 +17,13 @@ export function MessageInput({
   isLoading,
   canSendMessage,
   placeholder,
-  sendingText
 }: MessageInputProps) {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || !canSendMessage) return;
 
     onSendMessage(input);
     setInput('');
@@ -35,7 +32,7 @@ export function MessageInput({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (input.trim() && canSendMessage && !isLoading) {
+      if (input.trim() && canSendMessage) {
         onSendMessage(input);
         setInput('');
       }
@@ -59,10 +56,10 @@ export function MessageInput({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            placeholder={!canSendMessage ? "" : placeholder}
             disabled={!canSendMessage}
             rows={1}
-            className="flex-1 px-4 py-3 bg-[color:var(--background)] border border-[color:var(--border)] rounded-xl text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none transition-all duration-200 disabled:opacity-50 resize-none min-h-[48px] max-h-[150px] overflow-y-auto"
+            className="flex-1 px-4 py-3 bg-[color:var(--background)] border border-[color:var(--border)] rounded-xl text-[color:var(--foreground)] placeholder:text-[color:var(--muted-foreground)] focus:ring-2 focus:ring-[color:var(--ring)] focus:outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[color:var(--muted)]/20 resize-none min-h-[48px] max-h-[150px] overflow-y-auto"
           />
           <Button
             type="submit"
@@ -80,11 +77,6 @@ export function MessageInput({
             )}
           </Button>
         </form>
-        {isLoading && (
-          <div className="flex items-center justify-center mt-2 text-sm text-[color:var(--muted-foreground)]">
-            <DotsTypingIndicator text={sendingText} />
-          </div>
-        )}
       </div>
     </div>
   );
