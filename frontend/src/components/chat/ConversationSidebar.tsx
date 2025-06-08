@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash, faCheck, faTimes, faComments, faRobot, faCog, faSpinner, faFileText, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
+import { faCheck, faCog, faComments, faEdit, faFileText, faPlus, faRobot, faSpinner, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useState } from 'react'
 
 interface Message {
   id: string
@@ -55,8 +55,8 @@ export function ConversationSidebar({
   currentAgent,
   agentStatus,
   onOpenAgentManagement,
-  isCollapsed = false,
-  onToggleCollapse
+  // isCollapsed = false,
+  // onToggleCollapse
 }: ConversationSidebarProps) {
   const { t } = useTranslation()
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -80,8 +80,6 @@ export function ConversationSidebar({
     setEditingName('')
   }
 
-  // No expand button here; handled in chat-interface.tsx
-
   return (
     <div className="h-full flex flex-col bg-[color:var(--card)]/50 backdrop-blur-sm relative transition-all duration-300 ease-in-out">
       {/* Header */}
@@ -95,22 +93,6 @@ export function ConversationSidebar({
             <FontAwesomeIcon icon={faPlus} className="mr-2 text-white group-hover:scale-110 transition-transform duration-200" />
             <span className="text-white">{t('chat.newConversation')}</span>
           </Button>
-          
-          {/* Collapse button */}
-          {!isCollapsed && (
-            <Button
-              onClick={onToggleCollapse}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group"
-              title={t('chat.tooltips.collapseSidebar') || 'Collapse sidebar'}
-            >
-              <FontAwesomeIcon 
-                icon={faChevronLeft} 
-                className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] group-hover:scale-110 transition-all duration-200" 
-              />
-            </Button>
-          )}
         </div>
 
         {/* Agent Status Section */}

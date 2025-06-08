@@ -2,28 +2,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import chatApi from '@/apis/chatApi'
+import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/contexts/TranslationContext'
+import {
+  type ChatState,
+  type Message,
+  type WebSocketResponse,
+  convertToUIConversation,
+  convertToUIFile,
+  convertToUIMessage
+} from '@/types/chat.type'
+import { getErrorMessage } from '@/utils/apiHandler'
+import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
+import { faChevronRight, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useCallback, useEffect, useState } from 'react'
+import { AgentManagement } from './AgentManagement'
 import { ChatInterface } from './ChatInterface'
 import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
-import { AgentManagement } from './AgentManagement'
 import { SystemPromptEditor } from './SystemPromptEditor'
-import chatApi from '@/apis/chatApi'
-import { createChatWebSocket, ChatWebSocket } from '@/utils/websocket'
-import { 
-  type Message, 
-  type ChatState,
-  type WebSocketResponse,
-  convertToUIMessage,
-  convertToUIFile,
-  convertToUIConversation
-} from '@/types/chat.type'
-import { getErrorMessage } from '@/utils/apiHandler'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRobot, faTimes, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '@/components/ui/button'
-import { useTranslation } from '@/contexts/TranslationContext'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -678,24 +678,6 @@ export function ChatClientWrapper() {
           onToggleCollapse={handleToggleFileSidebar}
         />
       </div>
-
-      {/* Expand button for File Sidebar when collapsed */}
-      {isFileSidebarCollapsed && (
-        <div className="hidden lg:flex items-center justify-center w-12 border-l border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
-          <Button
-            onClick={handleToggleFileSidebar}
-            size="sm"
-            variant="ghost"
-            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group"
-            title={t('chat.tooltips.expandSidebar') || 'Expand sidebar'}
-          >
-            <FontAwesomeIcon 
-              icon={faChevronLeft} 
-              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
-            />
-          </Button>
-        </div>
-      )}
 
       {/* Mobile Sidebar */}
       <MobileSidebar

@@ -12,7 +12,7 @@ export function EmptyChatState({ noMessagesText, startConversationText }: EmptyC
     <div className="text-center text-[color:var(--muted-foreground)] mt-8">
       <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center overflow-hidden">
         <Image
-          src="/Logo CLB 2023.png"
+          src="/assets/logo/logo_web.png"
           alt="Logo"
           width={48}
           height={48}

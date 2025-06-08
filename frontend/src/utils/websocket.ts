@@ -22,8 +22,8 @@ export class ChatWebSocket {
   }
 
   private buildWebSocketUrl(conversationId: string, token: string): string {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const basePath = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('http://', '').replace('https://', '').replace('/api', '') || 'localhost:8000'
+    const protocol = window.location.protocol === 'https:' ? 'ws:' : 'ws:'
+    const basePath = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('http://', '').replace('https://', '').replace('/api', '') || '160.191.88.194:11111'
     
     // Match the backend WebSocket route: /api/v1/chat/ws/{conversation_id}
     return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?token=${encodeURIComponent(token)}`
