@@ -1,242 +1,262 @@
 {
   "aboutUs": {
     "social": {
-      "about": "Waiting for translation",
-      "followers": "Waiting for translation"
+      "about": "About us",
+      "followers": "Followers"
     },
-    "title": "Waiting for translation"
+    "title": "About the Philosophy Chatbot"
   },
   "auth": {
-    "allowPopups": "Waiting for translation",
-    "bySigningIn": "Waiting for translation",
-    "connectingToGoogle": "Waiting for translation",
-    "email": "Waiting for translation",
-    "login": "Waiting for translation",
-    "loginSuccess": "Waiting for translation",
-    "loginWithGoogle": "Waiting for translation",
-    "logout": "Waiting for translation",
-    "name": "Waiting for translation",
-    "openingGoogleLogin": "Waiting for translation",
-    "pleaseWait": "Waiting for translation",
-    "role": "Waiting for translation",
-    "signingIn": "Waiting for translation",
-    "signInWithGoogle": "Waiting for translation",
-    "unableToConnect": "Waiting for translation",
-    "username": "Waiting for translation"
+    "allowPopups": "Allow popups to sign in",
+    "bySigningIn": "By signing in, you agree to our terms.",
+    "connectingToGoogle": "Connecting to Google...",
+    "email": "Email",
+    "login": "Login",
+    "loginSuccess": "Login successful",
+    "loginWithGoogle": "Login with Google",
+    "logout": "Logout",
+    "name": "Name",
+    "openingGoogleLogin": "Opening Google login...",
+    "pleaseWait": "Please wait...",
+    "role": "Role",
+    "signingIn": "Signing in...",
+    "signInWithGoogle": "Sign in with Google",
+    "unableToConnect": "Unable to connect",
+    "username": "Username"
   },
   "carousel": {
-    "currentImage": "Waiting for translation",
-    "description": "Waiting for translation",
-    "nextImage": "Waiting for translation",
-    "prevImage": "Waiting for translation",
-    "subtitle": "Waiting for translation",
-    "title": "Waiting for translation"
+    "currentImage": "Current image",
+    "description": "Description",
+    "nextImage": "Next image",
+    "prevImage": "Previous image",
+    "subtitle": "Explore philosophy interactively",
+    "title": "Philosophy Debate Simulator"
   },
   "chat": {
     "agentManagement": {
-      "agentConfig": "Waiting for translation",
-      "agentError": "Waiting for translation",
-      "agentLoading": "Waiting for translation",
-      "agentTab": "Waiting for translation",
+      "agentConfig": "Agent configuration",
+      "agentError": "Agent error",
+      "agentLoading": "Loading agent...",
+      "agentTab": "Agent",
       "apiKeyManagement": {
-        "apiKeyPlaceholder": "Waiting for translation",
-        "currentKey": "Waiting for translation",
-        "description": "Waiting for translation",
-        "enterApiKey": "Waiting for translation",
-        "hideKey": "Waiting for translation",
-        "keyUpdated": "Waiting for translation",
-        "noKeySet": "Waiting for translation",
-        "selectProvider": "Waiting for translation",
-        "showKey": "Waiting for translation",
-        "title": "Waiting for translation",
-        "update": "Waiting for translation",
-        "updateFailed": "Waiting for translation"
+        "apiKeyPlaceholder": "Enter your API key",
+        "currentKey": "Current API key",
+        "description": "Manage your API keys for AI providers.",
+        "enterApiKey": "Enter API key",
+        "hideKey": "Hide key",
+        "keyUpdated": "API key updated",
+        "noKeySet": "No API key set",
+        "selectProvider": "Select provider",
+        "showKey": "Show key",
+        "title": "API Key Management",
+        "update": "Update",
+        "updateFailed": "Update failed"
       },
-      "apiKeyTab": "Waiting for translation",
-      "currentAgent": "Waiting for translation",
-      "manage": "Waiting for translation",
-      "maxTokens": "Waiting for translation",
-      "modelName": "Waiting for translation",
-      "noAgentConfigured": "Waiting for translation",
-      "provider": "Waiting for translation",
-      "selectModel": "Waiting for translation",
-      "selectProvider": "Waiting for translation",
-      "subtitle": "Waiting for translation",
-      "temperature": "Waiting for translation",
-      "title": "Waiting for translation",
-      "updateAgent": "Waiting for translation",
-      "validateAgent": "Waiting for translation",
-      "validationCompleted": "Waiting for translation",
-      "validationFailed": "Waiting for translation",
-      "validationSuccess": "Waiting for translation",
-      "validationTab": "Waiting for translation"
+      "apiKeyTab": "API Key",
+      "currentAgent": "Current agent",
+      "manage": "Manage",
+      "maxTokens": "Max tokens",
+      "modelName": "Model name",
+      "noAgentConfigured": "No agent configured",
+      "provider": "Provider",
+      "selectModel": "Select model",
+      "selectProvider": "Select provider",
+      "subtitle": "Configure your AI agent for philosophical debates.",
+      "temperature": "Temperature",
+      "title": "Agent Management",
+      "updateAgent": "Update agent",
+      "validateAgent": "Validate agent",
+      "validationCompleted": "Validation completed",
+      "validationFailed": "Validation failed",
+      "validationSuccess": "Validation successful",
+      "validationTab": "Validation"
     },
-    "assistant": "Waiting for translation",
-    "chats": "Waiting for translation",
-    "conversations": "Waiting for translation",
-    "copied": "Waiting for translation",
-    "copy": "Waiting for translation",
-    "createFirstChat": "Waiting for translation",
-    "defaultChatTitle": "Waiting for translation",
-    "files": "Waiting for translation",
-    "filesAssociated": "Waiting for translation",
-    "htmlRenderError": "Waiting for translation",
-    "messages": "Waiting for translation",
-    "newConversation": "Waiting for translation",
-    "noConversationsYet": "Waiting for translation",
-    "noFilesUploaded": "Waiting for translation",
-    "noMessages": "Waiting for translation",
-    "preview": "Waiting for translation",
-    "sending": "Waiting for translation",
-    "showCode": "Waiting for translation",
-    "startConversation": "Waiting for translation",
+    "assistant": "Philosophy Assistant",
+    "chats": "Chats",
+    "conversations": "Conversations",
+    "copied": "Copied",
+    "copy": "Copy",
+    "createFirstChat": "Start your first philosophical debate",
+    "defaultChatTitle": "New Philosophy Chat",
+    "files": "Files",
+    "filesAssociated": "Files associated",
+    "htmlRenderError": "Error rendering content",
+    "messages": "Messages",
+    "newConversation": "New Conversation",
+    "noConversationsYet": "No conversations yet",
+    "noFilesUploaded": "No files uploaded",
+    "noMessages": "No messages",
+    "preview": "Preview",
+    "sending": "Sending...",
+    "showCode": "Show code",
+    "startConversation": "Start a conversation",
     "systemPrompt": {
-      "conversationPrompt": "Waiting for translation",
-      "description": "Waiting for translation",
-      "placeholder": "Waiting for translation",
-      "title": "Waiting for translation"
+      "conversationPrompt": "Set the philosophical context",
+      "description": "Customize the debate scenario or question.",
+      "placeholder": "Enter a philosophical question or scenario...",
+      "title": "System Prompt"
     },
-    "thisConversation": "Waiting for translation",
+    "thisConversation": "This conversation",
     "tooltips": {
-      "deleteConversation": "Waiting for translation",
-      "editName": "Waiting for translation",
-      "editSystemPrompt": "Waiting for translation",
-      "hasCustomSystemPrompt": "Waiting for translation"
+      "deleteConversation": "Delete conversation",
+      "editName": "Edit name",
+      "editSystemPrompt": "Edit system prompt",
+      "hasCustomSystemPrompt": "Custom system prompt"
     },
-    "typeMessage": "Waiting for translation",
-    "typing": "Waiting for translation",
-    "uploadedFiles": "Waiting for translation",
-    "uploadFilesDescription": "Waiting for translation",
-    "welcomeDescription": "Waiting for translation",
-    "welcomeTitle": "Waiting for translation"
+    "typeMessage": "Type your philosophical question...",
+    "typing": "Typing...",
+    "uploadedFiles": "Uploaded files",
+    "uploadFilesDescription": "Attach documents for deeper discussion",
+    "welcomeDescription": "Ask any question about Marxist-Leninist philosophy or simulate debates between philosophical schools (e.g., Materialism vs. Idealism). The AI assistant answers only from a philosophical perspective, supporting deep learning and debate.",
+    "welcomeTitle": "Welcome to the Philosophy Chatbot"
   },
   "common": {
-    "branding": "Waiting for translation",
-    "cancel": "Waiting for translation",
-    "delete": "Waiting for translation",
-    "download": "Waiting for translation",
-    "loading": "Waiting for translation",
-    "no": "Waiting for translation",
-    "save": "Waiting for translation",
-    "upload": "Waiting for translation",
-    "yes": "Waiting for translation"
+    "branding": "Philosophy Chatbot",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "download": "Download",
+    "loading": "Loading...",
+    "no": "No",
+    "save": "Save",
+    "upload": "Upload",
+    "yes": "Yes"
   },
   "footer": {
-    "copyright": "Waiting for translation",
+    "copyright": "© 2024 Philosophy Chatbot",
     "legal": {
-      "cookies": "Waiting for translation",
-      "privacy": "Waiting for translation",
-      "terms": "Waiting for translation"
+      "cookies": "Cookies Policy",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
     },
-    "location": "Waiting for translation",
-    "madeWith": "Waiting for translation",
+    "location": "Vietnam",
+    "madeWith": "Made with passion for philosophy",
     "social": {
-      "followUs": "Waiting for translation"
+      "followUs": "Follow us"
     },
-    "title": "Waiting for translation"
+    "title": "Philosophy Chatbot"
   },
   "home": {
-    "authenticatedDescription": "Waiting for translation",
-    "confirmed": "Waiting for translation",
-    "description": "Waiting for translation",
-    "email": "Waiting for translation",
-    "facebookPostCountPrefix": "Waiting for translation",
-    "facebookPostCountSuffix": "Waiting for translation",
+    "authenticatedDescription": "Welcome back! Continue your philosophical journey.",
+    "confirmed": "Confirmed",
+    "description": "Philosophy is often seen as dry and impractical, making it hard for students to engage. Our interactive web platform helps you create and answer philosophical questions, and simulates debates between schools of thought using AI. Deepen your critical thinking and make philosophy exciting!",
+    "email": "Email",
+    "facebookPostCountPrefix": "Posts:",
+    "facebookPostCountSuffix": "on Facebook",
     "features": {
       "darkMode": {
-        "description": "Waiting for translation",
-        "title": "Waiting for translation"
+        "description": "Comfortable reading in any lighting",
+        "title": "Dark Mode",
+        "features": {
+          "darkLightThemes": "Switch between dark and light themes",
+          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions",
+          "automaticSwitching": "Automatic theme switching based on system settings"
+        }
       },
       "fastPerformance": {
-        "description": "Waiting for translation",
-        "title": "Waiting for translation"
+        "description": "Instant responses and smooth experience",
+        "title": "Fast Performance",
+        "features": {
+          "optimizedPerformance": "Optimized for fast response times",
+          "lightningFastLoading": "Lightning-fast loading speeds",
+          "seamlessUserExperience": "Seamless and uninterrupted user experience"
+        }
       },
       "globalReady": {
-        "description": "Waiting for translation",
-        "title": "Waiting for translation"
+        "description": "Supports multiple languages for global learners",
+        "title": "Global Ready",
+        "features": {
+          "multiLanguageSupport": "Multi-language support",
+          "globalAccessibility": "Accessible from anywhere in the world",
+          "culturalAdaptation": "Culturally adapted content"
+        }
       },
       "modernStack": {
-        "description": "Waiting for translation",
-        "title": "Waiting for translation"
+        "description": "Built with the latest web technologies",
+        "title": "Modern Stack",
+        "features": {
+          "nextjsReact": "Powered by Next.js & React",
+          "typescriptSupport": "TypeScript support for reliability",
+          "modernDevelopmentTools": "Modern development tools and best practices"
+        }
       },
-      "subtitle": "Waiting for translation",
-      "title": "Waiting for translation"
+      "subtitle": "Key Features",
+      "title": "Features"
     },
-    "getStarted": "Waiting for translation",
-    "learnMore": "Waiting for translation",
-    "post": "Waiting for translation",
-    "title": "Waiting for translation",
-    "unknownTime": "Waiting for translation",
-    "userInformation": "Waiting for translation",
-    "username": "Waiting for translation",
-    "welcomeBack": "Waiting for translation"
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "post": "Post",
+    "title": "Philosophy Chatbot: Marxist-Leninist Philosophy AI",
+    "unknownTime": "Unknown time",
+    "userInformation": "User Information",
+    "username": "Username",
+    "welcomeBack": "Welcome back!"
   },
   "navigation": {
-    "about": "Waiting for translation",
-    "chat": "Waiting for translation",
-    "help": "Waiting for translation",
-    "menu": "Waiting for translation",
-    "profile": "Waiting for translation",
-    "settings": "Waiting for translation"
+    "about": "About",
+    "chat": "Chat",
+    "help": "Help",
+    "menu": "Menu",
+    "profile": "Profile",
+    "settings": "Settings"
   },
   "profile": {
-    "changePassword": "Waiting for translation",
-    "changePhoto": "Waiting for translation",
-    "editProfile": "Waiting for translation",
-    "title": "Waiting for translation"
+    "changePassword": "Change password",
+    "changePhoto": "Change photo",
+    "editProfile": "Edit profile",
+    "title": "Profile"
   },
   "server": {
-    "currentTime": "Waiting for translation",
-    "locale": "Waiting for translation",
-    "serverRendered": "Waiting for translation"
+    "currentTime": "Current server time",
+    "locale": "Locale",
+    "serverRendered": "Server rendered"
   },
   "settings": {
-    "account": "Waiting for translation",
-    "appearance": "Waiting for translation",
-    "changePassword": "Waiting for translation",
-    "currentUser": "Waiting for translation",
-    "deleteAccount": "Waiting for translation",
-    "downloadData": "Waiting for translation",
-    "emailNotifications": "Waiting for translation",
-    "emailNotificationsDescription": "Waiting for translation",
-    "enableTwoFactor": "Waiting for translation",
-    "language": "Waiting for translation",
-    "languageDescription": "Waiting for translation",
-    "notifications": "Waiting for translation",
-    "pushNotifications": "Waiting for translation",
-    "pushNotificationsDescription": "Waiting for translation",
-    "security": "Waiting for translation",
-    "theme": "Waiting for translation",
-    "themeDescription": "Waiting for translation",
-    "title": "Waiting for translation",
-    "updateAccount": "Waiting for translation"
+    "account": "Account",
+    "appearance": "Appearance",
+    "changePassword": "Change password",
+    "currentUser": "Current user",
+    "deleteAccount": "Delete account",
+    "downloadData": "Download data",
+    "emailNotifications": "Email notifications",
+    "emailNotificationsDescription": "Receive updates and news via email.",
+    "enableTwoFactor": "Enable two-factor authentication",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language.",
+    "notifications": "Notifications",
+    "pushNotifications": "Push notifications",
+    "pushNotificationsDescription": "Get instant updates on your device.",
+    "security": "Security",
+    "theme": "Theme",
+    "themeDescription": "Switch between light and dark mode.",
+    "title": "Settings",
+    "updateAccount": "Update account"
   },
   "survey": {
-    "complete": "Waiting for translation",
-    "continue": "Waiting for translation",
-    "previous": "Waiting for translation",
+    "complete": "Complete",
+    "continue": "Continue",
+    "previous": "Previous",
     "results": {
-      "completed": "Waiting for translation",
-      "description": "Waiting for translation",
-      "retake": "Waiting for translation",
-      "title": "Waiting for translation"
+      "completed": "Survey completed",
+      "description": "See your results and insights.",
+      "retake": "Retake survey",
+      "title": "Survey Results"
     },
-    "step": "Waiting for translation",
-    "submitting": "Waiting for translation"
+    "step": "Step",
+    "submitting": "Submitting..."
   },
   "team": {
     "leadership": {
-      "bio": "Waiting for translation",
-      "experience": "Waiting for translation",
-      "name": "Waiting for translation",
-      "role": "Waiting for translation",
-      "title": "Waiting for translation"
+      "bio": "Bio",
+      "experience": "Experience",
+      "name": "Name",
+      "role": "Role",
+      "title": "Leadership"
     },
-    "subtitle": "Waiting for translation",
-    "title": "Waiting for translation",
+    "subtitle": "Meet our team",
+    "title": "Our Team",
     "values": {
-      "description": "Waiting for translation",
-      "title": "Waiting for translation"
+      "description": "We believe in making philosophy accessible and engaging for everyone.",
+      "title": "Our Values"
     }
   }
 }

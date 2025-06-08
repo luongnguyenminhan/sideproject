@@ -47,7 +47,7 @@ services:
       - cgsem-network
     depends_on:
       - minio
-      # - qdrant
+      - qdrant
 
   minio:
     image: minio/minio
@@ -109,5 +109,5 @@ networks:
 volumes:
   minio-data:
   audio_data:  # Add new volume for audio files
-  # qdrant-data:  # Add volume for QdrantDB storage
+  qdrant-data:  # Add volume for QdrantDB storage
 

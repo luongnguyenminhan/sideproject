@@ -20,7 +20,11 @@ export const createFeaturesData = (t: (key: string) => string): FeatureData[] =>
     ),
     color: '--feature-blue',
     colorText: '--feature-blue-text',
-    features: ['Optimized performance', 'Lightning-fast loading', 'Seamless user experience']
+    features: [
+      t('home.features.fastPerformance.features.optimizedPerformance'),
+      t('home.features.fastPerformance.features.lightningFastLoading'),
+      t('home.features.fastPerformance.features.seamlessUserExperience')
+    ]
   },
   {
     title: t('home.features.globalReady.title'),
@@ -32,7 +36,11 @@ export const createFeaturesData = (t: (key: string) => string): FeatureData[] =>
     ),
     color: '--feature-green',
     colorText: '--feature-green-text',
-    features: ['Multi-language support', 'Global accessibility', 'Cultural adaptation']
+    features: [
+      t('home.features.globalReady.features.multiLanguageSupport'),
+      t('home.features.globalReady.features.globalAccessibility'),
+      t('home.features.globalReady.features.culturalAdaptation')
+    ]
   },
   {
     title: t('home.features.modernStack.title'),
@@ -45,7 +53,11 @@ export const createFeaturesData = (t: (key: string) => string): FeatureData[] =>
     ),
     color: '--feature-purple',
     colorText: '--feature-purple-text',
-    features: ['Next.js & React', 'TypeScript support', 'Modern development tools']
+    features: [
+      t('home.features.modernStack.features.nextjsReact'),
+      t('home.features.modernStack.features.typescriptSupport'),
+      t('home.features.modernStack.features.modernDevelopmentTools')
+    ]
   },
   {
     title: t('home.features.darkMode.title'),
@@ -57,6 +69,10 @@ export const createFeaturesData = (t: (key: string) => string): FeatureData[] =>
     ),
     color: '--feature-yellow',
     colorText: '--feature-yellow-text',
-    features: ['Dark & light themes', 'Eye-friendly design', 'Automatic switching']
+    features: [
+      t('home.features.darkMode.features.darkLightThemes'),
+      t('home.features.darkMode.features.eyeFriendlyDesign'),
+      t('home.features.darkMode.features.automaticSwitching')
+    ]
   }
 ];
