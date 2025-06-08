@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { processMessageText } from '@/utils/text-processing';
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -25,7 +26,9 @@ export function MessageInput({
     e.preventDefault();
     if (!input.trim() || !canSendMessage) return;
 
-    onSendMessage(input);
+    // Process the input text before sending
+    const processedInput = processMessageText(input);
+    onSendMessage(processedInput);
     setInput('');
   };
 
@@ -33,7 +36,9 @@ export function MessageInput({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (input.trim() && canSendMessage) {
-        onSendMessage(input);
+        // Process the input text before sending
+        const processedInput = processMessageText(input);
+        onSendMessage(processedInput);
         setInput('');
       }
     }

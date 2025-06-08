@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
 import { MessageCodeBlock } from './message-code-block';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { processMessageText } from '@/utils/text-processing';
 
 interface Message {
   id: string;
@@ -253,7 +254,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
               )
             }}
           >
-            {message.content}
+            {processMessageText(message.content)}
           </ReactMarkdown>
         </div>
         
