@@ -27,6 +27,7 @@ export default async function Header({ withChatBubble = false }: { withChatBubbl
   const dictionary = await getDictionary(locale);
   const t = createTranslator(dictionary);
   const user = await getMeServer();
+  const isAuthenticated = !!user;
 
   const navigationItems = [
     { href: `/${locale}/chat`, label: t('navigation.chat'), icon: faComments },
@@ -71,8 +72,8 @@ export default async function Header({ withChatBubble = false }: { withChatBubbl
           <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999] flex flex-col gap-2 items-end">
             <ThemeSwapper />
             <TranslationProvider dictionary={dictionary} locale={locale}>
-              {/* Only render FloatingChatBubble if withChatBubble is true */}
-              {withChatBubble && <FloatingChatBubble />}
+              {/* Show chat bubble only if withChatBubble and authenticated */}
+              {withChatBubble && isAuthenticated && <FloatingChatBubble />}
             </TranslationProvider>
           </div>
           <TranslationProvider dictionary={dictionary} locale={locale}>
