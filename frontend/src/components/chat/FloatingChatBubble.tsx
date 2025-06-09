@@ -21,6 +21,7 @@ import { SlideIn } from '@/components/animations/SlideIn';
 import { AnimatedButton } from '@/components/animations/AnimatedButton';
 import { AnimatedList } from '@/components/animations/AnimatedList';
 import { motion, AnimatePresence } from 'framer-motion';
+import { processMessageText } from '@/utils/text-processing';
 
 export default function FloatingChatBubble() {
   const { t } = useTranslation();
@@ -367,7 +368,7 @@ export default function FloatingChatBubble() {
                                   },
                                 }}
                               >
-                                {msg.content}
+                                {processMessageText(msg.content)}
                               </ReactMarkdown>
                             </div>
                           )}
