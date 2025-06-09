@@ -6,6 +6,7 @@ import React from 'react';
 import { cookies } from 'next/headers';
 import authApi from '@/apis/authApi';
 import ThemeSwapper from '@/components/global/themeSwapper';
+import FloatingChatBubble from '@/components/chat/FloatingChatBubble';
 import AuthHeader from '@/components/layout/authHeader';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -67,8 +68,9 @@ export default async function Header() {
 
         <div className="flex items-center gap-2">
           {/* Theme and Language Switchers moved here for compact header */}
-        <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999]">
+        <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999] flex flex-col gap-2 items-end">
           <ThemeSwapper />
+          <FloatingChatBubble />
         </div>
           <TranslationProvider dictionary={dictionary} locale={locale}>
             <AuthHeader

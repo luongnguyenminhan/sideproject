@@ -264,26 +264,18 @@ async def send_message(
 	chat_repo = ChatRepo(db)
 	user_id = current_user.get('user_id')
 
-
-	# Verify user has access to conversation
 	try:
+		# Verify user has access to conversation
 		conversation = chat_repo.get_conversation_by_id(request.conversation_id, user_id)
-	except Exception as e:
-		raise
 
-	# Create user message
-	try:
+		# Create user message
 		user_message = chat_repo.create_message(
 			conversation_id=request.conversation_id,
 			user_id=user_id,
 			content=request.content,
 			role='user',
-			file_ids=request.file_ids,
 		)
-	except Exception as e:
-		raise
 
-	try:
 		# Get AI response using Agent system (non-streaming)
 		ai_response = await chat_repo.get_ai_response(
 			conversation_id=request.conversation_id,
@@ -302,6 +294,7 @@ async def send_message(
 			tokens_used=json.dumps(ai_response.get('usage', {})),
 			response_time_ms=str(ai_response.get('response_time_ms', 0)),
 		)
+
 		return APIResponse(
 			error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 			message=_('message_sent_successfully'),
@@ -311,8 +304,11 @@ async def send_message(
 			),
 		)
 
+	except ValidationException:
+		# Re-raise validation exceptions
+		raise
 	except Exception as e:
-		logger.error(f'Error sending message: {e}')
+		logger.error(f'Error in send_message: {e}')
 		raise ValidationException(_('failed_to_send_message'))
 
 
