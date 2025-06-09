@@ -4,7 +4,7 @@
       "about": "About us",
       "followers": "Followers"
     },
-    "title": "About Can Giuoc High School Media Club"
+    "title": "About MLN101 Philosophy Chatbot"
   },
   "auth": {
     "allowPopups": "Allow popups to sign in",
@@ -29,8 +29,8 @@
     "description": "Description",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Explore creative media world",
-    "title": "Can Giuoc High School Media Platform"
+    "subtitle": "Explore the world of philosophy",
+    "title": "MLN101 Philosophy Chatbot Platform"
   },
   "chat": {
     "agentManagement": {
@@ -61,7 +61,7 @@
       "provider": "Provider",
       "selectModel": "Select model",
       "selectProvider": "Select provider",
-      "subtitle": "Configure your AI agent for media support.",
+      "subtitle": "Configure your AI agent for philosophy support.",
       "temperature": "Temperature",
       "title": "AI Assistant Management",
       "updateAgent": "Update agent",
@@ -71,13 +71,13 @@
       "validationSuccess": "Validation successful",
       "validationTab": "Validation"
     },
-    "assistant": "Media Assistant",
+    "assistant": "Philosophy Chatbot",
     "chats": "Chats",
     "conversations": "Conversations",
     "copied": "Copied",
     "copy": "Copy",
-    "createFirstChat": "Start your first conversation",
-    "defaultChatTitle": "New Chat",
+    "createFirstChat": "Start your first philosophical conversation",
+    "defaultChatTitle": "New Philosophy Chat",
     "files": "Files",
     "filesAssociated": "Files associated",
     "htmlRenderError": "Error rendering content",
@@ -90,11 +90,11 @@
     "refresh": "Refresh",
     "sending": "Sending...",
     "showCode": "Show code",
-    "startConversation": "Start a conversation",
+    "startConversation": "Start a philosophical discussion",
     "systemPrompt": {
-      "conversationPrompt": "Set the discussion topic",
-      "description": "Customize the discussion topic or question.",
-      "placeholder": "Enter a topic or question to discuss...",
+      "conversationPrompt": "Set the philosophical topic",
+      "description": "Customize the philosophical question or debate topic.",
+      "placeholder": "Enter a philosophical question or topic...",
       "title": "System Prompt"
     },
     "thisConversation": "This conversation",
@@ -112,12 +112,12 @@
       "collapseSidebar": "Collapse sidebar",
       "expandSidebar": "Expand sidebar"
     },
-    "typeMessage": "Type your question...",
+    "typeMessage": "Type your philosophical question...",
     "typing": "Typing...",
     "uploadedFiles": "Uploaded files",
-    "uploadFilesDescription": "Attach documents for deeper discussion",
-    "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
-    "welcomeTitle": "Welcome to the Media Club Platform",
+    "uploadFilesDescription": "Attach philosophy texts or notes for deeper discussion",
+    "welcomeDescription": "Practice philosophy: generate multiple-choice & open-ended questions for revision, simulate debates between schools of thought (e.g., Materialism vs. Idealism), and chat with an AI assistant that only answers from philosophical perspectives.",
+    "welcomeTitle": "Welcome to the MLN101 Philosophy Chatbot",
     "errorCreateConversation": "Failed to create conversation",
     "errorDeleteConversation": "Failed to delete conversation",
     "errorLoadConversations": "Failed to load conversations",
@@ -128,7 +128,7 @@
     "errorUploadFile": "Failed to upload file"
   },
   "common": {
-    "branding": "Can Giuoc High School Media Club",
+    "branding": "MLN101 Philosophy Chatbot",
     "cancel": "Cancel",
     "delete": "Delete",
     "download": "Download",
@@ -140,31 +140,31 @@
     "yes": "Yes"
   },
   "footer": {
-    "copyright": "© 2024 Can Giuoc High School Media Club",
+    "copyright": "© 2024 MLN101 Philosophy Chatbot",
     "legal": {
       "cookies": "Cookies Policy",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     },
-    "location": "Can Giuoc High School, Long An",
-    "madeWith": "Made with passion for media",
+    "location": "Online",
+    "madeWith": "Made with a passion for philosophy",
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Can Giuoc High School Media Club",
+    "title": "MLN101 Philosophy Chatbot",
     "company": {
-      "title": "Club",
+      "title": "About",
       "about": "About Us",
-      "team": "Members",
+      "team": "Team",
       "careers": "Join Us",
       "contact": "Contact"
     },
     "products": {
-      "title": "Activities",
-      "webDevelopment": "Web Development",
-      "mobileApps": "Mobile Apps",
-      "aiSolutions": "AI Solutions",
-      "consulting": "Media Consulting"
+      "title": "Features",
+      "webDevelopment": "Question Generation",
+      "mobileApps": "Debate Simulation",
+      "aiSolutions": "AI Philosophy Assistant",
+      "consulting": "Philosophy Practice"
     },
     "resources": {
       "title": "Resources",
@@ -175,9 +175,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Welcome back! Continue your media journey.",
+    "authenticatedDescription": "Welcome back! Continue your philosophical journey.",
     "confirmed": "Confirmed",
-    "description": "Can Giuoc High School Media Club - where students passionate about media connect, create content and share knowledge. AI platform supports content creation, article writing and efficient club activity management.",
+    "description": "Philosophy can be dry, impractical, and hard to approach for students. This interactive web platform helps you practice philosophy by generating questions, simulating debates (e.g., materialism vs. idealism), and providing an AI assistant that only answers from philosophical perspectives. Enhance your critical thinking and engagement with the MLN101 course.",
     "email": "Email",
     "facebookPageName": "Facebook Page",
     "facebookPostCountPrefix": "Posts:",
@@ -225,7 +225,7 @@
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Post",
-    "title": "Can Giuoc High School Media Club - AI Platform",
+    "title": "MLN101 Philosophy Chatbot Platform",
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",
@@ -290,42 +290,42 @@
       "experience": "Experience",
       "name": "Name",
       "role": "Role",
-      "title": "Founders",
+      "title": "Team",
       "ceo": {
-        "name": "Le Duong Tinh Nghi",
-        "role": "Media Club President",
-        "bio": "Nghi is a visionary with a strong passion for media. With natural leadership skills and creativity, Nghi has led the club to outstanding development.",
-        "experience": "Experience in youth activities and media project management."
+        "name": "Philosophy Instructor",
+        "role": "Course Leader",
+        "bio": "An expert in philosophy, passionate about helping students think critically and engage with philosophical ideas.",
+        "experience": "Experience in teaching, research, and philosophical debate."
       },
       "cto": {
-        "name": "Luong Nguyen Minh An",
-        "role": "Vice President - Technology",
-        "bio": "An is the technology expert in the club, responsible for developing technical solutions and systems that support club activities.",
-        "experience": "Experience in programming, web design and system management."
+        "name": "AI Developer",
+        "role": "Technical Lead",
+        "bio": "Responsible for developing the AI systems that power the chatbot and debate simulations.",
+        "experience": "Experience in AI, programming, and educational technology."
       },
       "designer": {
-        "name": "Dang Phan Gia Duc",
-        "role": "Vice President - Content",
-        "bio": "Duc specializes in content creation and media design, bringing unique and engaging ideas to club activities.",
-        "experience": "Experience in content creation, graphic design and social media management."
+        "name": "Content Specialist",
+        "role": "Content Lead",
+        "bio": "Creates and curates philosophical questions and debate scenarios for effective learning.",
+        "experience": "Experience in philosophy content creation and educational design."
       }
     },
-    "subtitle": "Meet our founding members",
-    "title": "Club Members",
+    "subtitle": "Meet the MLN101 Philosophy Chatbot team",
+    "title": "Team",
     "values": {
-      "description": "We believe in connecting students and developing media skills creatively.",
+      "description": "We believe in fostering critical thinking and making philosophy accessible and engaging.",
       "title": "Core Values",
       "innovation": {
         "title": "Creativity",
-        "description": "We constantly explore new ideas and apply technology to improve media content quality."
+        "description": "We constantly explore new ideas and apply technology to improve philosophy learning."
       },
       "quality": {
         "title": "Quality",
-        "description": "We are committed to creating high-quality, professional and meaningful media products."
+        "description": "We are committed to creating high-quality, meaningful, and practical philosophy resources."
       },
       "community": {
         "title": "Community",
-        "description": "We build a cohesive student community that supports each other in learning and skill development."
+        "description": "We build a supportive learning community for all philosophy students."
       }
     }
   }

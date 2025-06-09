@@ -64,12 +64,10 @@ async def get_websocket_token(
 	email = current_user.get('email')
 	role = current_user.get('role', 'user')
 
-
 	# Create token with all required user data
 	user_data = {'user_id': user_id, 'email': email, 'role': role}
 
 	token = create_websocket_token(user_data)
-
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
@@ -91,7 +89,6 @@ async def websocket_chat_endpoint(
 		# Get token from query parameters
 		query_params = dict(websocket.query_params)
 		token = query_params.get('token')
-
 
 		# Verify WebSocket token
 		try:
@@ -140,7 +137,6 @@ async def websocket_chat_endpoint(
 				if message_data.get('type') == 'chat_message':
 					content = message_data.get('content', '').strip()
 					api_key = message_data.get('api_key')
-
 
 					if not content:
 						await websocket_manager.send_message(
@@ -252,6 +248,7 @@ async def websocket_chat_endpoint(
 			await WebSocketErrorHandler.handle_auth_error(websocket, 1011, 'Internal server error')
 		except:
 			pass
+
 
 @route.post('/send-message', response_model=APIResponse)
 @handle_exceptions

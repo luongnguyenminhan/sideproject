@@ -43,7 +43,7 @@ class WorkflowConfig:
 
 	# Persona settings
 	persona_enabled: bool = True
-	persona_type: PersonaType = PersonaType.CGSEM_ASSISTANT
+	persona_type: PersonaType = PersonaType.MARXIS_LENISMS_ASSISTANT
 
 	def get_persona_prompt(self) -> Optional[str]:
 		"""Get persona-based system prompt"""

@@ -229,7 +229,7 @@ export default function FloatingChatBubble() {
             {/* SlideIn giữ lại để nút mở chat vẫn có hiệu ứng, nhưng khung chat chính dùng motion.div */}
             {/* ...bắt đầu khung chat... */}
             <div
-              className="relative w-lg max-h-[80vh] flex flex-col max-w-lg overflow-hidden bg-[color:var(--card)] border border-[color:var(--border)] rounded-2xl shadow-2xl transform transition-all duration-300 scale-100"
+              className="relative w-lg max-h-[80vh] flex flex-col max-w-[90vw] overflow-hidden bg-[color:var(--card)] border border-[color:var(--border)] rounded-2xl shadow-2xl transform transition-all duration-300 scale-100"
               ref={chatWindowRef}
               onDrop={handleDrop}
               onDragOver={e => e.preventDefault()}

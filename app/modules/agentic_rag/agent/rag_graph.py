@@ -44,6 +44,10 @@ class AgentState(TypedDict):
 	sources: List[Dict[str, Any]]
 	messages: List[Any]
 	error: Optional[str]
+	plans: Optional[List[str]]  # <-- Add plans to state
+	current_plan_index: Optional[int]  # <-- Track which plan is being processed
+	all_contexts: Optional[List[str]]  # <-- Store all contexts for aggregation
+	plan_loop_count: Optional[int]  # <-- Add loop counter
 
 
 class RAGAgentGraph:
@@ -77,13 +81,57 @@ class RAGAgentGraph:
 		self.workflow = self._build_graph()
 		logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph] RAG agent graph initialized successfully for collection: {self.collection_id}{LogColors.ENDC}')
 
-	async def _retrieval_node(self, state: AgentState) -> Dict[str, Any]:
-		"""Retrieve relevant documents based on the query."""
-		logger.info(f'{LogColors.HEADER}[RAGAgentGraph-RetrievalNode] Starting document retrieval process{LogColors.ENDC}')
-
-		# Get the user query and collection_id
+	async def _planning_node(self, state: AgentState) -> Dict[str, Any]:
+		"""Plan a list of sub-queries to maximize information retrieval."""
+		logger.info(f'{LogColors.HEADER}[RAGAgentGraph-PlanningNode] Starting planning process{LogColors.ENDC}')
 		query = state.get('query', '')
 		collection_id = state.get('collection_id', self.collection_id)
+
+		if not query:
+			logger.info(f'{LogColors.WARNING}[RAGAgentGraph-PlanningNode] No query provided for planning{LogColors.ENDC}')
+			return {
+				'error': 'No query provided',
+				'messages': state.get('messages', []) + [AIMessage(content='Error: No query provided')],
+			}
+
+		# Use LLM to generate a list of sub-queries (plans) with structured output
+		from pydantic import BaseModel, Field
+
+		class PlanningOutput(BaseModel):
+			sub_queries: list[str] = Field(..., description='A list of focused sub-questions or search queries.')
+
+		planning_prompt = PromptTemplate(
+			input_variables=['question'],
+			template=("You are an expert assistant. Given the following user question, break it down into a list of 2-5 focused sub-questions or search queries that, if answered, would help provide the most comprehensive and informative answer. Return only the list as a JSON array under the key 'sub_queries'.\n\nUser Question: {question}\n\n"),
+		)
+
+		# Use the new RunnableSequence pattern instead of LLMChain
+		chain = planning_prompt | self.llm.with_structured_output(PlanningOutput)
+		result = chain.invoke({'question': query})
+		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-PlanningNode] result : {result}{LogColors.ENDC}')
+		plans = result.sub_queries if isinstance(result, PlanningOutput) else []
+		logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-PlanningNode] Planning completed. Plans: {plans}{LogColors.ENDC}')
+		return {
+			'plans': plans,
+			'current_plan_index': 0,
+			'all_contexts': [],
+			'messages': state.get('messages', []) + [AIMessage(content=f'Planned sub-queries: {plans}')],
+		}
+
+	async def _retrieval_node(self, state: AgentState) -> Dict[str, Any]:
+		"""Retrieve relevant documents based on the current plan sub-query."""
+		logger.info(f'{LogColors.HEADER}[RAGAgentGraph-RetrievalNode] Starting document retrieval process{LogColors.ENDC}')
+		print(f'State: {state}')
+		plans = state.get('plans', [])
+		current_plan_index = state.get('current_plan_index', 0)
+		collection_id = state.get('collection_id', self.collection_id)
+		# Use the current plan sub-query if available, else fallback to main query
+		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-RetrievalNode] Current plan index: {current_plan_index}, Total plans: {len(plans)}{LogColors.ENDC}')
+		if plans and 0 <= current_plan_index < len(plans):
+			query = plans[current_plan_index]
+			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-RetrievalNode] Using plan sub-query: "{query}..." for collection {collection_id}{LogColors.ENDC}')
+		else:
+			query = state.get('query', '')
 
 		if not query:
 			logger.info(f'{LogColors.WARNING}[RAGAgentGraph-RetrievalNode] No query provided in state{LogColors.ENDC}')
@@ -91,7 +139,7 @@ class RAGAgentGraph:
 				'error': 'No query provided',
 				'messages': state.get('messages', []) + [AIMessage(content='Error: No query provided')],
 			}
-
+		# Log the query being processed
 		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-RetrievalNode] Processing query for collection {collection_id}: "{query[:100]}..."{LogColors.ENDC}')
 
 		try:
@@ -114,10 +162,24 @@ class RAGAgentGraph:
 				retrieved_docs.append(doc)
 				logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-RetrievalNode] Document {i + 1} converted - ID: {item.id}, Collection: {collection_id}{LogColors.ENDC}')
 
-			logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-RetrievalNode] Document retrieval completed successfully for collection {collection_id} - Retrieved {len(retrieved_docs)} documents{LogColors.ENDC}')
+			# Prepare context for this plan
+			context_parts = []
+			for i, doc in enumerate(retrieved_docs):
+				doc_id = getattr(doc, 'id', f'doc_{i}')
+				context_part = f'Document {i + 1} (ID: {doc_id}, Collection: {collection_id}):\n{doc.page_content}'
+				context_parts.append(context_part)
+			context = '\n\n'.join(context_parts)
+
+			# Aggregate all contexts
+			all_contexts = state.get('all_contexts', [])
+			all_contexts = all_contexts + [context] if context else all_contexts
+
 			return {
 				'retrieved_documents': retrieved_docs,
-				'messages': state.get('messages', []) + [AIMessage(content=f'Retrieved {len(retrieved_docs)} documents from collection {collection_id}')],
+				'all_contexts': all_contexts,
+				'current_plan_index': current_plan_index + 1,
+				'all_contexts': all_contexts,
+				'messages': state.get('messages', []) + [AIMessage(content=f'Retrieved {len(retrieved_docs)} documents for plan: "{query}"')],
 			}
 		except Exception as e:
 			logger.info(f'{LogColors.FAIL}[RAGAgentGraph-RetrievalNode] Error during document retrieval for collection {collection_id}: {e}{LogColors.ENDC}')
@@ -127,37 +189,27 @@ class RAGAgentGraph:
 			}
 
 	async def _generation_node(self, state: AgentState) -> Dict[str, Any]:
-		"""Generate an answer based on retrieved documents."""
+		"""Generate an answer based on all aggregated contexts."""
 		logger.info(f'{LogColors.HEADER}[RAGAgentGraph-GenerationNode] Starting answer generation process{LogColors.ENDC}')
 
-		# Check if we have an error or documents
 		if state.get('error'):
 			logger.info(f'{LogColors.WARNING}[RAGAgentGraph-GenerationNode] Error detected in state, skipping generation{LogColors.ENDC}')
 			return state
 
-		docs = state.get('retrieved_documents', [])
+		all_contexts = state.get('all_contexts', [])
 		collection_id = state.get('collection_id', self.collection_id)
 
-		if not docs:
-			logger.info(f'{LogColors.WARNING}[RAGAgentGraph-GenerationNode] No documents found for generation in collection {collection_id}{LogColors.ENDC}')
+		if not all_contexts:
+			logger.info(f'{LogColors.WARNING}[RAGAgentGraph-GenerationNode] No contexts found for generation in collection {collection_id}{LogColors.ENDC}')
 			return {
 				'answer': f"I don't have enough information to answer this question based on the available knowledge in collection '{collection_id}'.",
 				'sources': [],
 				'messages': state.get('messages', []) + [AIMessage(content=f'No relevant information found for this query in collection {collection_id}.')],
 			}
 
-		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-GenerationNode] Processing {len(docs)} documents for context preparation in collection {collection_id}{LogColors.ENDC}')
-
-		# Prepare context from retrieved documents
-		context_parts = []
-		for i, doc in enumerate(docs):
-			doc_id = getattr(doc, 'id', f'doc_{i}')
-			context_part = f'Document {i + 1} (ID: {doc_id}, Collection: {collection_id}):\n{doc.page_content}'
-			context_parts.append(context_part)
-			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-GenerationNode] Document {i + 1} added to context - ID: {doc_id}, Collection: {collection_id}{LogColors.ENDC}')
-
-		context = '\n\n'.join(context_parts)
-		logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] Context prepared for collection {collection_id} - Total length: {len(context)} characters{LogColors.ENDC}')
+		# Concatenate all contexts
+		context = '\n\n'.join(all_contexts)
+		logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] Aggregated context prepared for collection {collection_id} - Total length: {len(context)} characters{LogColors.ENDC}')
 
 		# Define the generation prompt
 		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-GenerationNode] Setting up generation prompt template{LogColors.ENDC}')
@@ -174,42 +226,20 @@ class RAGAgentGraph:
         Helpful Answer:"""
 
 		prompt = PromptTemplate(input_variables=['context', 'question'], template=template)
-		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-GenerationNode] Prompt template configured for collection {collection_id}{LogColors.ENDC}')
-
 		try:
-			# Prepare the prompt inputs
 			query = state.get('query', '')
 			prompt_inputs = {'context': context, 'question': query}
-			logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-GenerationNode] Prompt inputs prepared for query: "{query[:50]}..." in collection {collection_id}{LogColors.ENDC}')
-
-			# Invoke the LLM
-			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-GenerationNode] Creating and invoking LLM chain{LogColors.ENDC}')
 			from langchain.chains import LLMChain
 
 			chain = LLMChain(llm=self.llm, prompt=prompt)
 			result = chain.invoke(prompt_inputs)
-			logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] LLM chain invocation completed for collection {collection_id}{LogColors.ENDC}')
-
-			# Extract the answer
 			answer = result.get('text', '')
-			logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] Answer generated for collection {collection_id} - Length: {len(answer)} characters{LogColors.ENDC}')
 
-			# Prepare source information for each document
-			logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-GenerationNode] Preparing source information for {len(docs)} documents{LogColors.ENDC}')
+			# Prepare sources from all retrieved documents
 			sources = []
-			for i, doc in enumerate(docs):
-				doc_id = getattr(doc, 'id', 'unknown')
-				doc_score = getattr(doc, 'score', 0.0)
-				source = {
-					'id': doc_id,
-					'content': (doc.page_content[:200] + '...' if len(doc.page_content) > 200 else doc.page_content),
-					'score': doc_score,
-					'metadata': {**doc.metadata, 'collection_id': collection_id},
-				}
-				sources.append(source)
-				logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-GenerationNode] Source {i + 1} prepared - ID: {doc_id}, Collection: {collection_id}{LogColors.ENDC}')
-
-			logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] Answer generation completed successfully for collection {collection_id} with {len(sources)} sources{LogColors.ENDC}')
+			# Optionally, you can collect all docs from all retrievals if you want to show sources
+			# For now, just leave empty or aggregate if you want
+			logger.info(f'{LogColors.OKGREEN}[RAGAgentGraph-GenerationNode] Answer generation completed successfully for collection {collection_id}{LogColors.ENDC}')
 			return {
 				'answer': answer,
 				'sources': sources,
@@ -221,6 +251,12 @@ class RAGAgentGraph:
 				'error': str(e),
 				'messages': state.get('messages', []) + [AIMessage(content=f'Error generating answer for collection {collection_id}: {e}')],
 			}
+
+	def _should_continue_plans(self, state: AgentState) -> bool:
+		"""Check if there are more plans to process."""
+		plans = state.get('plans', [])
+		current_plan_index = state.get('current_plan_index', 0)
+		return bool(plans) and current_plan_index + 1 < len(plans)
 
 	def _should_end(self, state: AgentState) -> bool:
 		"""Determine if the workflow should end."""
@@ -240,6 +276,9 @@ class RAGAgentGraph:
 		graph = StateGraph(AgentState)
 
 		# Add nodes
+		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-BuildGraph] Adding planning node to graph{LogColors.ENDC}')
+		graph.add_node('planning', self._planning_node)
+
 		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-BuildGraph] Adding retrieval node to graph{LogColors.ENDC}')
 		graph.add_node('retrieval', self._retrieval_node)
 
@@ -248,21 +287,44 @@ class RAGAgentGraph:
 
 		# Define the edges
 		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-BuildGraph] Setting up graph edges{LogColors.ENDC}')
-		graph.add_edge('retrieval', 'generation')
+		# Planning -> Retrieval
+		graph.add_edge('planning', 'retrieval')
 
-		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-BuildGraph] Adding conditional edges for workflow termination{LogColors.ENDC}')
+		# Retrieval -> Next plan or Generation
+		MAX_PLAN_LOOP = 5  # Set your recursion/iteration limit here
+
+		def plan_conditional(state: AgentState):
+			plans = state.get('plans', [])
+			current_plan_index = state.get('current_plan_index', 0)
+			plan_loop_count = state.get('plan_loop_count', 0) or 0
+
+			# Only increment loop count if we are actually looping
+			if plans and current_plan_index + 1 < len(plans):
+				plan_loop_count += 1
+				state['plan_loop_count'] = plan_loop_count
+				if plan_loop_count >= MAX_PLAN_LOOP:
+					logger.warning(f'[RAGAgentGraph-BuildGraph] Plan loop limit reached ({plan_loop_count}), breaking recursion.')
+					return 'generation'
+				state['current_plan_index'] = current_plan_index + 1
+				return 'retrieval'
+			else:
+				return 'generation'
+
 		graph.add_conditional_edges(
-			'generation',
-			self._should_end,
+			'retrieval',
+			plan_conditional,
 			{
-				True: END,
-				False: 'retrieval',  # We could loop back for refinement, but for now we'll end
+				'retrieval': 'retrieval',
+				'generation': 'generation',
 			},
 		)
 
+		# Generation -> END
+		graph.add_edge('generation', END)
+
 		# Set the entry point
-		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-BuildGraph] Setting retrieval as entry point{LogColors.ENDC}')
-		graph.set_entry_point('retrieval')
+		logger.info(f'{LogColors.OKBLUE}[RAGAgentGraph-BuildGraph] Setting planning as entry point{LogColors.ENDC}')
+		graph.set_entry_point('planning')
 
 		# Compile the graph
 		logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-BuildGraph] Compiling workflow graph{LogColors.ENDC}')
@@ -290,6 +352,7 @@ class RAGAgentGraph:
 					HumanMessage(content=query),
 				],
 				'error': None,
+				'plan_loop_count': 0,  # <-- Initialize loop counter
 			}
 			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph] Workflow state initialized for collection {collection_id}{LogColors.ENDC}')
 

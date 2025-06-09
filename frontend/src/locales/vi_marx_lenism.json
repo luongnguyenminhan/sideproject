@@ -4,7 +4,7 @@
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu CLB Truyền thông THPT Cần Giuộc"
+    "title": "Giới thiệu Chatbot Triết học MLN101"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -29,8 +29,8 @@
     "description": "Mô tả",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Khám phá thế giới truyền thông sáng tạo",
-    "title": "Nền tảng truyền thông THPT Cần Giuộc"
+    "subtitle": "Khám phá thế giới triết học",
+    "title": "Nền tảng Chatbot Triết học MLN101"
   },
   "chat": {
     "agentManagement": {
@@ -61,7 +61,7 @@
       "provider": "Nhà cung cấp",
       "selectModel": "Chọn mô hình",
       "selectProvider": "Chọn nhà cung cấp",
-      "subtitle": "Cấu hình AI cho hỗ trợ truyền thông.",
+      "subtitle": "Cấu hình AI cho hỗ trợ triết học.",
       "temperature": "Nhiệt độ",
       "title": "Quản lý trợ lý AI",
       "updateAgent": "Cập nhật tác nhân",
@@ -71,13 +71,13 @@
       "validationSuccess": "Xác thực thành công",
       "validationTab": "Xác thực"
     },
-    "assistant": "Trợ lý Truyền thông",
+    "assistant": "Chatbot Triết học",
     "chats": "Trò chuyện",
     "conversations": "Cuộc hội thoại",
     "copied": "Đã sao chép",
     "copy": "Sao chép",
-    "createFirstChat": "Bắt đầu cuộc trò chuyện đầu tiên của bạn",
-    "defaultChatTitle": "Trò chuyện mới",
+    "createFirstChat": "Bắt đầu cuộc trò chuyện triết học đầu tiên của bạn",
+    "defaultChatTitle": "Trò chuyện Triết học mới",
     "files": "Tệp",
     "filesAssociated": "Tệp liên quan",
     "htmlRenderError": "Lỗi hiển thị nội dung",
@@ -89,11 +89,11 @@
     "preview": "Xem trước",
     "sending": "Đang gửi...",
     "showCode": "Hiện mã",
-    "startConversation": "Bắt đầu hội thoại",
+    "startConversation": "Bắt đầu thảo luận triết học",
     "systemPrompt": {
-      "conversationPrompt": "Đặt chủ đề thảo luận",
-      "description": "Tùy chỉnh chủ đề hoặc câu hỏi thảo luận.",
-      "placeholder": "Nhập chủ đề hoặc câu hỏi muốn thảo luận...",
+      "conversationPrompt": "Đặt chủ đề triết học",
+      "description": "Tùy chỉnh câu hỏi hoặc chủ đề tranh luận triết học.",
+      "placeholder": "Nhập câu hỏi hoặc chủ đề triết học...",
       "title": "Lời nhắc hệ thống"
     },
     "thisConversation": "Cuộc hội thoại này",
@@ -111,12 +111,12 @@
       "collapseSidebar": "Thu gọn thanh bên",
       "expandSidebar": "Mở rộng thanh bên"
     },
-    "typeMessage": "Nhập câu hỏi của bạn...",
+    "typeMessage": "Nhập câu hỏi triết học của bạn...",
     "typing": "Đang nhập...",
     "uploadedFiles": "Tệp đã tải lên",
-    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
-    "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
-    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông",
+    "uploadFilesDescription": "Đính kèm văn bản triết học hoặc ghi chú để thảo luận sâu hơn",
+    "welcomeDescription": "Luyện tập triết học: sinh câu hỏi trắc nghiệm & mở để ôn tập, mô phỏng tranh luận giữa các trường phái (VD: Duy vật vs Duy tâm), và trò chuyện với AI chỉ trả lời theo góc nhìn triết học.",
+    "welcomeTitle": "Chào mừng đến với Chatbot Triết học MLN101",
     "errorCreateConversation": "Không thể tạo cuộc hội thoại",
     "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
     "errorLoadConversations": "Không thể tải cuộc hội thoại",
@@ -129,7 +129,7 @@
     "uploadDragDrop": "Kéo và thả tệp để tải lên"
   },
   "common": {
-    "branding": "CLB Truyền thông THPT Cần Giuộc",
+    "branding": "Chatbot Triết học MLN101",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -141,31 +141,31 @@
     "yes": "Có"
   },
   "footer": {
-    "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
+    "copyright": "© 2024 Chatbot Triết học MLN101",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
-    "location": "THPT Cần Giuộc, Long An",
-    "madeWith": "Được tạo ra với đam mê truyền thông",
+    "location": "Trực tuyến",
+    "madeWith": "Được tạo ra với đam mê triết học",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "CLB Truyền thông THPT Cần Giuộc",
+    "title": "Chatbot Triết học MLN101",
     "company": {
-      "title": "CLB",
+      "title": "Giới thiệu",
       "about": "Về chúng tôi",
-      "team": "Thành viên",
+      "team": "Nhóm phát triển",
       "careers": "Tham gia",
       "contact": "Liên hệ"
     },
     "products": {
-      "title": "Hoạt động",
-      "webDevelopment": "Phát triển web",
-      "mobileApps": "Ứng dụng di động",
-      "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn truyền thông"
+      "title": "Tính năng",
+      "webDevelopment": "Sinh câu hỏi triết học",
+      "mobileApps": "Mô phỏng tranh luận",
+      "aiSolutions": "Trợ lý AI triết học",
+      "consulting": "Luyện tập triết học"
     },
     "resources": {
       "title": "Tài nguyên",
@@ -176,9 +176,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình triết học của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "CLB Truyền thông THPT Cần Giuộc - nơi kết nối các bạn học sinh yêu thích truyền thông, sáng tạo nội dung và chia sẻ kiến thức. Nền tảng AI hỗ trợ tạo nội dung, viết bài và quản lý hoạt động CLB hiệu quả.",
+    "description": "Môn Triết học thường khô khan, thiếu thực tiễn và khó tiếp cận với sinh viên. Nền tảng web tương tác này giúp bạn luyện tập triết học bằng cách sinh câu hỏi, mô phỏng tranh luận (VD: duy vật vs. duy tâm), và cung cấp trợ lý AI chỉ trả lời theo góc nhìn triết học. Nâng cao tư duy phản biện và sự hứng thú với môn MLN101.",
     "email": "Email",
     "facebookPageName": "Trang Facebook",
     "facebookPostCountPrefix": "Bài đăng:",
@@ -226,7 +226,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "CLB Truyền thông THPT Cần Giuộc - Nền tảng AI",
+    "title": "Nền tảng Chatbot Triết học MLN101",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",
@@ -291,42 +291,42 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Người sáng lập",
+      "title": "Nhóm phát triển",
       "ceo": {
-        "name": "Lê Dương Tịnh Nghi",
-        "role": "Trưởng CLB Truyền thông",
-        "bio": "Nghi là người có tầm nhìn và đam mê mạnh mẽ với lĩnh vực truyền thông. Với khả năng lãnh đạo tự nhiên và sự sáng tạo, Nghi đã dẫn dắt CLB phát triển vượt bậc.",
-        "experience": "Kinh nghiệm hoạt động đoàn thể và quản lý dự án truyền thông."
+        "name": "Giảng viên Triết học",
+        "role": "Trưởng nhóm",
+        "bio": "Chuyên gia triết học, đam mê giúp sinh viên phát triển tư duy phản biện và tiếp cận triết học.",
+        "experience": "Kinh nghiệm giảng dạy, nghiên cứu và tranh luận triết học."
       },
       "cto": {
-        "name": "Lương Nguyễn Minh An",
-        "role": "Phó Trưởng CLB - Kỹ thuật",
-        "bio": "An là chuyên gia về công nghệ trong CLB, phụ trách phát triển các giải pháp kỹ thuật và hệ thống hỗ trợ hoạt động CLB.",
-        "experience": "Kinh nghiệm lập trình, thiết kế web và quản lý hệ thống."
+        "name": "Lập trình viên AI",
+        "role": "Kỹ thuật trưởng",
+        "bio": "Phụ trách phát triển hệ thống AI cho chatbot và mô phỏng tranh luận.",
+        "experience": "Kinh nghiệm về AI, lập trình và công nghệ giáo dục."
       },
       "designer": {
-        "name": "Đặng Phan Gia Đức",
-        "role": "Phó Trưởng CLB - Nội dung",
-        "bio": "Đức chuyên về sáng tạo nội dung và thiết kế truyền thông, mang đến những ý tưởng độc đáo và hấp dẫn cho các hoạt động CLB.",
-        "experience": "Kinh nghiệm sáng tạo nội dung, thiết kế đồ họa và quản lý mạng xã hội."
+        "name": "Chuyên viên nội dung",
+        "role": "Phụ trách nội dung",
+        "bio": "Tạo và biên soạn câu hỏi, kịch bản tranh luận triết học cho việc học hiệu quả.",
+        "experience": "Kinh nghiệm xây dựng nội dung triết học và thiết kế giáo dục."
       }
     },
-    "subtitle": "Gặp gỡ thành viên sáng lập",
-    "title": "Thành viên CLB",
+    "subtitle": "Gặp gỡ nhóm phát triển Chatbot Triết học MLN101",
+    "title": "Nhóm phát triển",
     "values": {
-      "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
+      "description": "Chúng tôi tin vào việc phát triển tư duy phản biện và giúp triết học trở nên gần gũi, hấp dẫn.",
       "title": "Giá trị cốt lõi",
       "innovation": {
         "title": "Sáng tạo",
-        "description": "Chúng tôi luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao chất lượng nội dung truyền thông."
+        "description": "Luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao việc học triết học."
       },
       "quality": {
         "title": "Chất lượng",
-        "description": "Chúng tôi cam kết tạo ra những sản phẩm truyền thông chất lượng cao, chuyên nghiệp và ý nghĩa."
+        "description": "Cam kết tạo ra tài nguyên triết học chất lượng, ý nghĩa và thực tiễn."
       },
       "community": {
         "title": "Cộng đồng",
-        "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
+        "description": "Xây dựng cộng đồng học tập hỗ trợ cho mọi sinh viên triết học."
       }
     }
   }

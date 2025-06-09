@@ -4,7 +4,7 @@
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu CLB Truyền thông THPT Cần Giuộc"
+    "title": "Giới thiệu Meobeo.ai - Nền tảng ghi chú cuộc họp AI"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -29,8 +29,8 @@
     "description": "Mô tả",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Khám phá thế giới truyền thông sáng tạo",
-    "title": "Nền tảng truyền thông THPT Cần Giuộc"
+    "subtitle": "Trải nghiệm cuộc họp thông minh với AI",
+    "title": "Meobeo.ai - Nền tảng ghi chú cuộc họp AI"
   },
   "chat": {
     "agentManagement": {
@@ -61,7 +61,7 @@
       "provider": "Nhà cung cấp",
       "selectModel": "Chọn mô hình",
       "selectProvider": "Chọn nhà cung cấp",
-      "subtitle": "Cấu hình AI cho hỗ trợ truyền thông.",
+      "subtitle": "Cấu hình AI cho ghi chú cuộc họp.",
       "temperature": "Nhiệt độ",
       "title": "Quản lý trợ lý AI",
       "updateAgent": "Cập nhật tác nhân",
@@ -71,55 +71,55 @@
       "validationSuccess": "Xác thực thành công",
       "validationTab": "Xác thực"
     },
-    "assistant": "Trợ lý Truyền thông",
-    "chats": "Trò chuyện",
-    "conversations": "Cuộc hội thoại",
+    "assistant": "Trợ lý ghi chú cuộc họp",
+    "chats": "Cuộc họp",
+    "conversations": "Cuộc trò chuyện",
     "copied": "Đã sao chép",
     "copy": "Sao chép",
-    "createFirstChat": "Bắt đầu cuộc trò chuyện đầu tiên của bạn",
-    "defaultChatTitle": "Trò chuyện mới",
+    "createFirstChat": "Tạo ghi chú cuộc họp đầu tiên của bạn",
+    "defaultChatTitle": "Ghi chú cuộc họp mới",
     "files": "Tệp",
     "filesAssociated": "Tệp liên quan",
     "htmlRenderError": "Lỗi hiển thị nội dung",
     "messages": "Tin nhắn",
-    "newConversation": "Cuộc hội thoại mới",
-    "noConversationsYet": "Chưa có cuộc hội thoại nào",
+    "newConversation": "Cuộc họp mới",
+    "noConversationsYet": "Chưa có cuộc họp nào",
     "noFilesUploaded": "Chưa tải lên tệp nào",
     "noMessages": "Chưa có tin nhắn",
     "preview": "Xem trước",
     "sending": "Đang gửi...",
     "showCode": "Hiện mã",
-    "startConversation": "Bắt đầu hội thoại",
+    "startConversation": "Tạo ghi chú cuộc họp",
     "systemPrompt": {
-      "conversationPrompt": "Đặt chủ đề thảo luận",
-      "description": "Tùy chỉnh chủ đề hoặc câu hỏi thảo luận.",
-      "placeholder": "Nhập chủ đề hoặc câu hỏi muốn thảo luận...",
+      "conversationPrompt": "Đặt chủ đề cuộc họp",
+      "description": "Tùy chỉnh chủ đề hoặc nội dung cuộc họp.",
+      "placeholder": "Nhập chủ đề hoặc nội dung cuộc họp...",
       "title": "Lời nhắc hệ thống"
     },
-    "thisConversation": "Cuộc hội thoại này",
+    "thisConversation": "Cuộc họp này",
     "tooltips": {
-      "deleteConversation": "Xóa cuộc hội thoại",
+      "deleteConversation": "Xóa cuộc họp",
       "editName": "Chỉnh sửa tên",
-      "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
-      "addConversation": "Thêm hội thoại",
-      "refreshConversation": "Làm mới hội thoại",
-      "closeChat": "Đóng cửa sổ chat",
-      "openChat": "Mở cửa sổ chat",
+      "editSystemPrompt": "Chỉnh sửa lời nhắc cuộc họp",
+      "addConversation": "Thêm cuộc họp",
+      "refreshConversation": "Làm mới cuộc họp",
+      "closeChat": "Đóng cửa sổ cuộc họp",
+      "openChat": "Mở cửa sổ cuộc họp",
       "uploadFile": "Tải lên tệp",
       "sendMessage": "Gửi tin nhắn",
-      "hasCustomSystemPrompt": "Lời nhắc hệ thống tùy chỉnh",
+      "hasCustomSystemPrompt": "Lời nhắc cuộc họp tùy chỉnh",
       "collapseSidebar": "Thu gọn thanh bên",
       "expandSidebar": "Mở rộng thanh bên"
     },
-    "typeMessage": "Nhập câu hỏi của bạn...",
+    "typeMessage": "Nhập ghi chú hoặc hành động cuộc họp...",
     "typing": "Đang nhập...",
     "uploadedFiles": "Tệp đã tải lên",
-    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
-    "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
-    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông",
-    "errorCreateConversation": "Không thể tạo cuộc hội thoại",
-    "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
-    "errorLoadConversations": "Không thể tải cuộc hội thoại",
+    "uploadFilesDescription": "Đính kèm file ghi âm hoặc tài liệu để ghi chú tự động",
+    "welcomeDescription": "Meobeo.ai giúp bạn ghi lại, tóm tắt và tổ chức cuộc họp tự động bằng AI. Ghi âm, chuyển lời nói thành văn bản và nhận thông tin hành động ngay lập tức.",
+    "welcomeTitle": "Chào mừng đến với Meobeo.ai - Ghi chú cuộc họp AI",
+    "errorCreateConversation": "Không thể tạo cuộc họp",
+    "errorDeleteConversation": "Không thể xóa cuộc họp",
+    "errorLoadConversations": "Không thể tải cuộc họp",
     "errorLoadFiles": "Không thể tải tệp",
     "errorLoadMessages": "Không thể tải tin nhắn",
     "errorSendMessage": "Không thể gửi tin nhắn",
@@ -129,7 +129,7 @@
     "uploadDragDrop": "Kéo và thả tệp để tải lên"
   },
   "common": {
-    "branding": "CLB Truyền thông THPT Cần Giuộc",
+    "branding": "Meobeo.ai - Ghi chú cuộc họp AI",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -141,31 +141,31 @@
     "yes": "Có"
   },
   "footer": {
-    "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
+    "copyright": "© 2024 Meobeo.ai",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
-    "location": "THPT Cần Giuộc, Long An",
-    "madeWith": "Được tạo ra với đam mê truyền thông",
+    "location": "Toàn cầu",
+    "madeWith": "Được tạo bởi AI cho năng suất",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "CLB Truyền thông THPT Cần Giuộc",
+    "title": "Meobeo.ai",
     "company": {
-      "title": "CLB",
+      "title": "Công ty",
       "about": "Về chúng tôi",
-      "team": "Thành viên",
-      "careers": "Tham gia",
+      "team": "Nhóm phát triển",
+      "careers": "Tuyển dụng",
       "contact": "Liên hệ"
     },
     "products": {
-      "title": "Hoạt động",
-      "webDevelopment": "Phát triển web",
-      "mobileApps": "Ứng dụng di động",
-      "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn truyền thông"
+      "title": "Tính năng",
+      "webDevelopment": "Tự động chuyển lời nói thành văn bản",
+      "mobileApps": "Tóm tắt thông minh",
+      "aiSolutions": "AI phát hiện hành động",
+      "consulting": "Phân tích cuộc họp"
     },
     "resources": {
       "title": "Tài nguyên",
@@ -176,48 +176,48 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục cuộc họp thông minh của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "CLB Truyền thông THPT Cần Giuộc - nơi kết nối các bạn học sinh yêu thích truyền thông, sáng tạo nội dung và chia sẻ kiến thức. Nền tảng AI hỗ trợ tạo nội dung, viết bài và quản lý hoạt động CLB hiệu quả.",
+    "description": "Meobeo.ai là nền tảng ghi chú cuộc họp tự động bằng AI. Ghi âm, chuyển lời nói thành văn bản, tóm tắt và tổ chức cuộc họp dễ dàng. Nhận hành động, điểm nổi bật và tìm kiếm ghi chú tức thì.",
     "email": "Email",
     "facebookPageName": "Trang Facebook",
     "facebookPostCountPrefix": "Bài đăng:",
     "facebookPostCountSuffix": "trên Facebook",
     "features": {
       "darkMode": {
-        "description": "Dễ đọc trong mọi điều kiện ánh sáng",
+        "description": "Dễ nhìn trong mọi điều kiện ánh sáng",
         "title": "Chế độ tối",
         "features": {
           "darkLightThemes": "Chuyển đổi giữa giao diện tối và sáng",
-          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi đọc lâu",
+          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi sử dụng lâu",
           "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống"
         }
       },
       "fastPerformance": {
-        "description": "Phản hồi tức thì, trải nghiệm mượt mà",
+        "description": "Kết quả AI tức thì",
         "title": "Hiệu năng cao",
         "features": {
-          "optimizedPerformance": "Tối ưu hóa cho tốc độ phản hồi nhanh",
-          "lightningFastLoading": "Tải trang cực nhanh",
+          "optimizedPerformance": "Tối ưu hóa cho chuyển lời nói thành văn bản thời gian thực",
+          "lightningFastLoading": "Tạo ghi chú cực nhanh",
           "seamlessUserExperience": "Trải nghiệm liền mạch, không gián đoạn"
         }
       },
       "globalReady": {
-        "description": "Hỗ trợ đa ngôn ngữ cho người học toàn cầu",
+        "description": "Hỗ trợ đa ngôn ngữ cho nhóm toàn cầu",
         "title": "Sẵn sàng toàn cầu",
         "features": {
-          "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ",
-          "globalAccessibility": "Truy cập từ mọi nơi trên thế giới",
-          "culturalAdaptation": "Nội dung phù hợp với từng nền văn hóa"
+          "multiLanguageSupport": "Chuyển lời nói nhiều ngôn ngữ",
+          "globalAccessibility": "Truy cập từ mọi nơi",
+          "culturalAdaptation": "Tóm tắt phù hợp từng văn hóa"
         }
       },
       "modernStack": {
-        "description": "Xây dựng bằng công nghệ web hiện đại",
+        "description": "Xây dựng bằng công nghệ AI mới nhất",
         "title": "Công nghệ hiện đại",
         "features": {
           "nextjsReact": "Phát triển với Next.js & React",
-          "typescriptSupport": "Hỗ trợ TypeScript đảm bảo ổn định",
-          "modernDevelopmentTools": "Công cụ phát triển hiện đại, chuẩn quốc tế"
+          "typescriptSupport": "TypeScript đảm bảo ổn định",
+          "modernDevelopmentTools": "Hạ tầng AI và cloud hiện đại"
         }
       },
       "subtitle": "Tính năng nổi bật",
@@ -226,7 +226,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "CLB Truyền thông THPT Cần Giuộc - Nền tảng AI",
+    "title": "Meobeo.ai - Nền tảng ghi chú cuộc họp AI",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",
@@ -234,7 +234,7 @@
   },
   "navigation": {
     "about": "Giới thiệu",
-    "chat": "Trò chuyện",
+    "chat": "Cuộc họp",
     "help": "Trợ giúp",
     "menu": "Menu",
     "profile": "Hồ sơ",
@@ -259,13 +259,13 @@
     "deleteAccount": "Xóa tài khoản",
     "downloadData": "Tải dữ liệu",
     "emailNotifications": "Thông báo qua email",
-    "emailNotificationsDescription": "Nhận cập nhật và tin tức qua email.",
+    "emailNotificationsDescription": "Nhận cập nhật và thông báo cuộc họp qua email.",
     "enableTwoFactor": "Bật xác thực hai yếu tố",
     "language": "Ngôn ngữ",
     "languageDescription": "Chọn ngôn ngữ bạn muốn.",
     "notifications": "Thông báo",
     "pushNotifications": "Thông báo đẩy",
-    "pushNotificationsDescription": "Nhận cập nhật tức thì trên thiết bị của bạn.",
+    "pushNotificationsDescription": "Nhận cập nhật cuộc họp tức thì trên thiết bị.",
     "security": "Bảo mật",
     "theme": "Chủ đề",
     "themeDescription": "Chuyển đổi giữa chế độ sáng và tối.",
@@ -291,42 +291,42 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Người sáng lập",
+      "title": "Nhóm phát triển",
       "ceo": {
-        "name": "Lê Dương Tịnh Nghi",
-        "role": "Trưởng CLB Truyền thông",
-        "bio": "Nghi là người có tầm nhìn và đam mê mạnh mẽ với lĩnh vực truyền thông. Với khả năng lãnh đạo tự nhiên và sự sáng tạo, Nghi đã dẫn dắt CLB phát triển vượt bậc.",
-        "experience": "Kinh nghiệm hoạt động đoàn thể và quản lý dự án truyền thông."
+        "name": "Nhà sáng lập Meobeo.ai",
+        "role": "CEO",
+        "bio": "Lãnh đạo có tầm nhìn, đam mê AI và năng suất. Xây dựng công cụ giúp cuộc họp thông minh hơn.",
+        "experience": "Kinh nghiệm về AI, SaaS và giải pháp năng suất."
       },
       "cto": {
-        "name": "Lương Nguyễn Minh An",
-        "role": "Phó Trưởng CLB - Kỹ thuật",
-        "bio": "An là chuyên gia về công nghệ trong CLB, phụ trách phát triển các giải pháp kỹ thuật và hệ thống hỗ trợ hoạt động CLB.",
-        "experience": "Kinh nghiệm lập trình, thiết kế web và quản lý hệ thống."
+        "name": "Kỹ sư AI",
+        "role": "CTO",
+        "bio": "Chuyên gia AI và cloud, chịu trách nhiệm kỹ thuật cho Meobeo.ai.",
+        "experience": "Kinh nghiệm phát triển AI, hạ tầng cloud và tự động hóa."
       },
       "designer": {
-        "name": "Đặng Phan Gia Đức",
-        "role": "Phó Trưởng CLB - Nội dung",
-        "bio": "Đức chuyên về sáng tạo nội dung và thiết kế truyền thông, mang đến những ý tưởng độc đáo và hấp dẫn cho các hoạt động CLB.",
-        "experience": "Kinh nghiệm sáng tạo nội dung, thiết kế đồ họa và quản lý mạng xã hội."
+        "name": "Nhà thiết kế sản phẩm",
+        "role": "Trưởng nhóm thiết kế",
+        "bio": "Thiết kế trải nghiệm ghi chú cuộc họp trực quan, dễ dùng.",
+        "experience": "Kinh nghiệm UX/UI, SaaS và ứng dụng năng suất."
       }
     },
-    "subtitle": "Gặp gỡ thành viên sáng lập",
-    "title": "Thành viên CLB",
+    "subtitle": "Gặp gỡ đội ngũ Meobeo.ai",
+    "title": "Nhóm phát triển",
     "values": {
-      "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
+      "description": "Chúng tôi tin vào việc giúp cuộc họp hiệu quả và hành động hơn nhờ AI.",
       "title": "Giá trị cốt lõi",
       "innovation": {
-        "title": "Sáng tạo",
-        "description": "Chúng tôi luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao chất lượng nội dung truyền thông."
+        "title": "Đổi mới",
+        "description": "Không ngừng sáng tạo để mang lại giải pháp cuộc họp thông minh."
       },
       "quality": {
         "title": "Chất lượng",
-        "description": "Chúng tôi cam kết tạo ra những sản phẩm truyền thông chất lượng cao, chuyên nghiệp và ý nghĩa."
+        "description": "Cam kết ghi chú cuộc họp chất lượng, tin cậy và bảo mật."
       },
       "community": {
         "title": "Cộng đồng",
-        "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
+        "description": "Hỗ trợ cộng đồng nhóm làm việc toàn cầu."
       }
     }
   }

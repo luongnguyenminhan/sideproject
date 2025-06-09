@@ -4,7 +4,7 @@
       "about": "About us",
       "followers": "Followers"
     },
-    "title": "About Can Giuoc High School Media Club"
+    "title": "About Meobeo.ai - AI Meeting Notes Platform"
   },
   "auth": {
     "allowPopups": "Allow popups to sign in",
@@ -29,8 +29,8 @@
     "description": "Description",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Explore creative media world",
-    "title": "Can Giuoc High School Media Platform"
+    "subtitle": "Experience smarter meetings with AI",
+    "title": "Meobeo.ai - AI Meeting Notes Platform"
   },
   "chat": {
     "agentManagement": {
@@ -61,7 +61,7 @@
       "provider": "Provider",
       "selectModel": "Select model",
       "selectProvider": "Select provider",
-      "subtitle": "Configure your AI agent for media support.",
+      "subtitle": "Configure your AI agent for meeting notes.",
       "temperature": "Temperature",
       "title": "AI Assistant Management",
       "updateAgent": "Update agent",
@@ -71,56 +71,56 @@
       "validationSuccess": "Validation successful",
       "validationTab": "Validation"
     },
-    "assistant": "Media Assistant",
-    "chats": "Chats",
+    "assistant": "Meeting Notes Assistant",
+    "chats": "Meetings",
     "conversations": "Conversations",
     "copied": "Copied",
     "copy": "Copy",
-    "createFirstChat": "Start your first conversation",
-    "defaultChatTitle": "New Chat",
+    "createFirstChat": "Start your first meeting note",
+    "defaultChatTitle": "New Meeting Note",
     "files": "Files",
     "filesAssociated": "Files associated",
     "htmlRenderError": "Error rendering content",
     "messages": "Messages",
-    "newConversation": "New Conversation",
-    "noConversationsYet": "No conversations yet",
+    "newConversation": "New Meeting",
+    "noConversationsYet": "No meetings yet",
     "noFilesUploaded": "No files uploaded",
     "noMessages": "No messages",
     "preview": "Preview",
     "refresh": "Refresh",
     "sending": "Sending...",
     "showCode": "Show code",
-    "startConversation": "Start a conversation",
+    "startConversation": "Start a meeting note",
     "systemPrompt": {
-      "conversationPrompt": "Set the discussion topic",
-      "description": "Customize the discussion topic or question.",
-      "placeholder": "Enter a topic or question to discuss...",
+      "conversationPrompt": "Set meeting topic",
+      "description": "Customize the meeting topic or agenda.",
+      "placeholder": "Enter a meeting topic or agenda...",
       "title": "System Prompt"
     },
-    "thisConversation": "This conversation",
+    "thisConversation": "This meeting",
     "tooltips": {
-      "deleteConversation": "Delete conversation",
+      "deleteConversation": "Delete meeting",
       "editName": "Edit name",
-      "editSystemPrompt": "Edit system prompt",
-      "addConversation": "Add conversation",
-      "refreshConversation": "Refresh conversation",
-      "closeChat": "Close chat window",
-      "openChat": "Open chat window",
+      "editSystemPrompt": "Edit meeting prompt",
+      "addConversation": "Add meeting",
+      "refreshConversation": "Refresh meeting",
+      "closeChat": "Close meeting window",
+      "openChat": "Open meeting window",
       "uploadFile": "Upload file",
       "sendMessage": "Send message",
-      "hasCustomSystemPrompt": "Custom system prompt",
+      "hasCustomSystemPrompt": "Custom meeting prompt",
       "collapseSidebar": "Collapse sidebar",
       "expandSidebar": "Expand sidebar"
     },
-    "typeMessage": "Type your question...",
+    "typeMessage": "Type your meeting note or action item...",
     "typing": "Typing...",
     "uploadedFiles": "Uploaded files",
-    "uploadFilesDescription": "Attach documents for deeper discussion",
-    "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
-    "welcomeTitle": "Welcome to the Media Club Platform",
-    "errorCreateConversation": "Failed to create conversation",
-    "errorDeleteConversation": "Failed to delete conversation",
-    "errorLoadConversations": "Failed to load conversations",
+    "uploadFilesDescription": "Attach meeting recordings or documents for automatic notes",
+    "welcomeDescription": "Meobeo.ai helps you capture, summarize, and organize your meetings automatically with AI. Record, transcribe, and get actionable insights instantly.",
+    "welcomeTitle": "Welcome to Meobeo.ai - AI Meeting Notes",
+    "errorCreateConversation": "Failed to create meeting",
+    "errorDeleteConversation": "Failed to delete meeting",
+    "errorLoadConversations": "Failed to load meetings",
     "errorLoadFiles": "Failed to load files",
     "errorLoadMessages": "Failed to load messages",
     "errorSendMessage": "Failed to send message",
@@ -128,7 +128,7 @@
     "errorUploadFile": "Failed to upload file"
   },
   "common": {
-    "branding": "Can Giuoc High School Media Club",
+    "branding": "Meobeo.ai - AI Meeting Notes",
     "cancel": "Cancel",
     "delete": "Delete",
     "download": "Download",
@@ -140,31 +140,31 @@
     "yes": "Yes"
   },
   "footer": {
-    "copyright": "© 2024 Can Giuoc High School Media Club",
+    "copyright": "© 2024 Meobeo.ai",
     "legal": {
       "cookies": "Cookies Policy",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     },
-    "location": "Can Giuoc High School, Long An",
-    "madeWith": "Made with passion for media",
+    "location": "Global",
+    "madeWith": "Made with AI for productivity",
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Can Giuoc High School Media Club",
+    "title": "Meobeo.ai",
     "company": {
-      "title": "Club",
+      "title": "Company",
       "about": "About Us",
-      "team": "Members",
-      "careers": "Join Us",
+      "team": "Team",
+      "careers": "Careers",
       "contact": "Contact"
     },
     "products": {
-      "title": "Activities",
-      "webDevelopment": "Web Development",
-      "mobileApps": "Mobile Apps",
-      "aiSolutions": "AI Solutions",
-      "consulting": "Media Consulting"
+      "title": "Features",
+      "webDevelopment": "Automatic Transcription",
+      "mobileApps": "Smart Summaries",
+      "aiSolutions": "AI Action Items",
+      "consulting": "Meeting Analytics"
     },
     "resources": {
       "title": "Resources",
@@ -175,48 +175,48 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Welcome back! Continue your media journey.",
+    "authenticatedDescription": "Welcome back! Continue your smart meetings.",
     "confirmed": "Confirmed",
-    "description": "Can Giuoc High School Media Club - where students passionate about media connect, create content and share knowledge. AI platform supports content creation, article writing and efficient club activity management.",
+    "description": "Meobeo.ai is an AI-powered platform for automatic meeting notes. Record, transcribe, summarize, and organize your meetings effortlessly. Get action items, highlights, and searchable notes instantly.",
     "email": "Email",
     "facebookPageName": "Facebook Page",
     "facebookPostCountPrefix": "Posts:",
     "facebookPostCountSuffix": "on Facebook",
     "features": {
       "darkMode": {
-        "description": "Comfortable reading in any lighting",
+        "description": "Comfortable viewing in any lighting",
         "title": "Dark Mode",
         "features": {
           "darkLightThemes": "Switch between dark and light themes",
-          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions",
+          "eyeFriendlyDesign": "Eye-friendly design for long sessions",
           "automaticSwitching": "Automatic theme switching based on system settings"
         }
       },
       "fastPerformance": {
-        "description": "Instant responses and smooth experience",
+        "description": "Instant AI-powered results",
         "title": "Fast Performance",
         "features": {
-          "optimizedPerformance": "Optimized for fast response times",
-          "lightningFastLoading": "Lightning-fast loading speeds",
-          "seamlessUserExperience": "Seamless and uninterrupted user experience"
+          "optimizedPerformance": "Optimized for real-time transcription",
+          "lightningFastLoading": "Lightning-fast note generation",
+          "seamlessUserExperience": "Seamless and uninterrupted workflow"
         }
       },
       "globalReady": {
-        "description": "Supports multiple languages for global learners",
+        "description": "Supports multiple languages for global teams",
         "title": "Global Ready",
         "features": {
-          "multiLanguageSupport": "Multi-language support",
-          "globalAccessibility": "Accessible from anywhere in the world",
-          "culturalAdaptation": "Culturally adapted content"
+          "multiLanguageSupport": "Multi-language transcription",
+          "globalAccessibility": "Accessible from anywhere",
+          "culturalAdaptation": "Culturally adapted summaries"
         }
       },
       "modernStack": {
-        "description": "Built with the latest web technologies",
+        "description": "Built with the latest AI technologies",
         "title": "Modern Stack",
         "features": {
           "nextjsReact": "Powered by Next.js & React",
-          "typescriptSupport": "TypeScript support for reliability",
-          "modernDevelopmentTools": "Modern development tools and best practices"
+          "typescriptSupport": "TypeScript for reliability",
+          "modernDevelopmentTools": "Modern AI and cloud infrastructure"
         }
       },
       "subtitle": "Key Features",
@@ -225,7 +225,7 @@
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Post",
-    "title": "Can Giuoc High School Media Club - AI Platform",
+    "title": "Meobeo.ai - AI Meeting Notes Platform",
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",
@@ -233,7 +233,7 @@
   },
   "navigation": {
     "about": "About",
-    "chat": "Chat",
+    "chat": "Meetings",
     "help": "Help",
     "menu": "Menu",
     "profile": "Profile",
@@ -258,13 +258,13 @@
     "deleteAccount": "Delete account",
     "downloadData": "Download data",
     "emailNotifications": "Email notifications",
-    "emailNotificationsDescription": "Receive updates and news via email.",
+    "emailNotificationsDescription": "Receive meeting updates and news via email.",
     "enableTwoFactor": "Enable two-factor authentication",
     "language": "Language",
     "languageDescription": "Choose your preferred language.",
     "notifications": "Notifications",
     "pushNotifications": "Push notifications",
-    "pushNotificationsDescription": "Get instant updates on your device.",
+    "pushNotificationsDescription": "Get instant meeting updates on your device.",
     "security": "Security",
     "theme": "Theme",
     "themeDescription": "Switch between light and dark mode.",
@@ -290,42 +290,42 @@
       "experience": "Experience",
       "name": "Name",
       "role": "Role",
-      "title": "Founders",
+      "title": "Team",
       "ceo": {
-        "name": "Le Duong Tinh Nghi",
-        "role": "Media Club President",
-        "bio": "Nghi is a visionary with a strong passion for media. With natural leadership skills and creativity, Nghi has led the club to outstanding development.",
-        "experience": "Experience in youth activities and media project management."
+        "name": "Meobeo.ai Founder",
+        "role": "CEO",
+        "bio": "Visionary leader passionate about AI and productivity. Building tools to make meetings smarter.",
+        "experience": "Experience in AI, SaaS, and productivity solutions."
       },
       "cto": {
-        "name": "Luong Nguyen Minh An",
-        "role": "Vice President - Technology",
-        "bio": "An is the technology expert in the club, responsible for developing technical solutions and systems that support club activities.",
-        "experience": "Experience in programming, web design and system management."
+        "name": "AI Engineer",
+        "role": "CTO",
+        "bio": "Expert in AI and cloud technologies, responsible for Meobeo.ai's technical excellence.",
+        "experience": "Experience in AI development, cloud infrastructure, and automation."
       },
       "designer": {
-        "name": "Dang Phan Gia Duc",
-        "role": "Vice President - Content",
-        "bio": "Duc specializes in content creation and media design, bringing unique and engaging ideas to club activities.",
-        "experience": "Experience in content creation, graphic design and social media management."
+        "name": "Product Designer",
+        "role": "Lead Designer",
+        "bio": "Designs intuitive and user-friendly meeting note experiences.",
+        "experience": "Experience in UX/UI, SaaS, and productivity apps."
       }
     },
-    "subtitle": "Meet our founding members",
-    "title": "Club Members",
+    "subtitle": "Meet the Meobeo.ai Team",
+    "title": "Team",
     "values": {
-      "description": "We believe in connecting students and developing media skills creatively.",
+      "description": "We believe in making meetings more productive and actionable with AI.",
       "title": "Core Values",
       "innovation": {
-        "title": "Creativity",
-        "description": "We constantly explore new ideas and apply technology to improve media content quality."
+        "title": "Innovation",
+        "description": "We constantly innovate to deliver smarter meeting solutions."
       },
       "quality": {
         "title": "Quality",
-        "description": "We are committed to creating high-quality, professional and meaningful media products."
+        "description": "We are committed to high-quality, reliable, and secure meeting notes."
       },
       "community": {
         "title": "Community",
-        "description": "We build a cohesive student community that supports each other in learning and skill development."
+        "description": "We support a global community of productive teams."
       }
     }
   }
