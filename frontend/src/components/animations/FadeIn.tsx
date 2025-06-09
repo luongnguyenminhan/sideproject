@@ -1,5 +1,5 @@
 // FadeIn.tsx - copy từ React Bits
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 
 interface FadeInProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;

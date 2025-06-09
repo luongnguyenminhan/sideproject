@@ -1,5 +1,5 @@
 // ScrambledText.tsx - copy từ React Bits
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useRef, useState } from 'react';
 
 interface ScrambledTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: string;

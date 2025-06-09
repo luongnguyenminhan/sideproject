@@ -1,5 +1,5 @@
 // SlideIn.tsx - copy từ React Bits
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 
 type Direction = 'left' | 'right' | 'up' | 'down';
 
