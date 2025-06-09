@@ -88,7 +88,7 @@ const Footer: React.FC = async () => {
                     <h4 className="font-semibold text-[color:var(--card-foreground)]">
                       {t('footer.social.followUs')}
                     </h4>
-                    <div className="flex space-x-4">
+                    <div className="flex space-x-4 ">
                       {socialLinks.map((social, index) => (
                         <FallingText key={social.name} variant="scale" delay={0.1 * index}>
                           <MagneticCard strength={10}>
@@ -101,7 +101,7 @@ const Footer: React.FC = async () => {
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                               <FontAwesomeIcon 
                                 icon={social.icon} 
-                                className="relative z-10 w-5 h-5" 
+                                className="relative z-10 w-5 h-5 text-[color:var(--foreground)]" 
                               />
                             </a>
                           </MagneticCard>

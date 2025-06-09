@@ -180,7 +180,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
         postInformation={postInformation}
         locale={locale}
         postsTitle={t('home.post')}
-        postsDescription={`${t('home.facebookPostCountPrefix')} 9 ${t('home.facebookPostCountSuffix')}`}
+        profilePictureUrl={postInformation?.picture?.data?.url}
       />
 
       <FeaturesSection

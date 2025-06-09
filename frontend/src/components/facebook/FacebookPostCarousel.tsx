@@ -10,6 +10,7 @@ interface FacebookPostCarouselProps {
   maxMessageLength?: number;
   pageInfo?: FacebookPageInfo | null;
   locale?: string;
+  profilePictureUrl?: string;
 }
 
 const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({ 
@@ -18,6 +19,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
   truncateMessage = true,
   maxMessageLength = 150,
   pageInfo,
+  profilePictureUrl,
 
 }) => {
   const locale = await getCurrentLocale()
@@ -57,8 +59,9 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
           locale={locale}
           translation={{
             unknownTime: t('home.unknownTime'),
-            post: t('home.post'),
+            post: pageInfo?.name || t('home.facebookPageName'),
           }}
+          profilePictureUrl={profilePictureUrl}
         />
       </div>
 

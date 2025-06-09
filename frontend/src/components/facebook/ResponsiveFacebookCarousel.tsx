@@ -10,6 +10,7 @@ interface ResponsiveFacebookCarouselProps {
   truncateMessage?: boolean;
   maxMessageLength?: number;
   locale: string;
+  profilePictureUrl?: string;
   translation: {
     unknownTime: string;
     post: string;
@@ -46,6 +47,7 @@ const ResponsiveFacebookCarousel: React.FC<ResponsiveFacebookCarouselProps> = ({
   maxMessageLength = 150,
   locale,
   translation,
+  profilePictureUrl,
 }) => {
 //   const itemsPerView = useResponsiveItemsPerView();  
   return (
@@ -64,6 +66,7 @@ const ResponsiveFacebookCarousel: React.FC<ResponsiveFacebookCarouselProps> = ({
           maxMessageLength={maxMessageLength}
           locale={locale}
           translation={translation}
+          profilePictureUrl={profilePictureUrl}
         />
       ))}
     </Carousel>

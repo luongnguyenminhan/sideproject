@@ -7,14 +7,14 @@ interface FacebookPostsSectionProps {
   postInformation: FacebookPageInfo | null;
   locale: string;
   postsTitle: string;
-  postsDescription: string;
+  profilePictureUrl?: string;
 }
 
 export default function FacebookPostsSection({
   postInformation,
   locale,
   postsTitle,
-  postsDescription
+  profilePictureUrl,
 }: FacebookPostsSectionProps) {
   return (
     <ScrollReveal direction="up" delay={0.4}>
@@ -25,9 +25,6 @@ export default function FacebookPostsSection({
               <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] mb-3 sm:mb-4 leading-tight">
                 {postsTitle}
               </div>
-              <p className="text-base sm:text-lg lg:text-xl text-[color:var(--muted-foreground)] max-w-full sm:max-w-2xl mx-auto px-2 sm:px-0 leading-relaxed">
-                {postsDescription}
-              </p>
             </div>
           </FallingText>          
           <FacebookPostCarousel 
@@ -37,6 +34,7 @@ export default function FacebookPostsSection({
             maxMessageLength={80}
             pageInfo={postInformation}
             locale={locale}
+            profilePictureUrl={profilePictureUrl}
           />
         </div>
       </section>

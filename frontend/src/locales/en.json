@@ -101,6 +101,12 @@
       "deleteConversation": "Delete conversation",
       "editName": "Edit name",
       "editSystemPrompt": "Edit system prompt",
+      "addConversation": "Add conversation",
+      "refreshConversation": "Refresh conversation",
+      "closeChat": "Close chat window",
+      "openChat": "Open chat window",
+      "uploadFile": "Upload file",
+      "sendMessage": "Send message",
       "hasCustomSystemPrompt": "Custom system prompt"
     },
     "typeMessage": "Type your question...",

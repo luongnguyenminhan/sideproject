@@ -101,6 +101,12 @@
       "deleteConversation": "Xóa cuộc hội thoại",
       "editName": "Chỉnh sửa tên",
       "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
+      "addConversation": "Thêm hội thoại",
+      "refreshConversation": "Làm mới hội thoại",
+      "closeChat": "Đóng cửa sổ chat",
+      "openChat": "Mở cửa sổ chat",
+      "uploadFile": "Tải lên tệp",
+      "sendMessage": "Gửi tin nhắn",
       "hasCustomSystemPrompt": "Lời nhắc hệ thống tùy chỉnh"
     },
     "typeMessage": "Nhập câu hỏi của bạn...",
