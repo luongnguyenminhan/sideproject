@@ -22,7 +22,7 @@ async function getMeServer(): Promise<UserResponse | null> {
   return await authApi.getMe({ Authorization: `Bearer ${accessToken}` });
 }
 
-export default async function Header({Boolean: withChatBubble = true}) {
+export default async function Header({ withChatBubble = false }: { withChatBubble?: boolean }) {
   const locale = await getCurrentLocale();
   const dictionary = await getDictionary(locale);
   const t = createTranslator(dictionary);
@@ -68,12 +68,13 @@ export default async function Header({Boolean: withChatBubble = true}) {
 
         <div className="flex items-center gap-2">
           {/* Theme and Language Switchers moved here for compact header */}
-        <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999] flex flex-col gap-2 items-end">
-          <ThemeSwapper />
-          <TranslationProvider dictionary={dictionary} locale={locale}>
-            {withChatBubble && <FloatingChatBubble />}
-          </TranslationProvider>
-        </div>
+          <div className="fixed min-h-0 bottom-25 lg:bottom-4 right-4 z-[9999] flex flex-col gap-2 items-end">
+            <ThemeSwapper />
+            <TranslationProvider dictionary={dictionary} locale={locale}>
+              {/* Only render FloatingChatBubble if withChatBubble is true */}
+              {withChatBubble && <FloatingChatBubble />}
+            </TranslationProvider>
+          </div>
           <TranslationProvider dictionary={dictionary} locale={locale}>
             <AuthHeader
               user={user}
