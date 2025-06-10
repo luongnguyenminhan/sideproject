@@ -2,28 +2,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import chatApi from '@/apis/chatApi'
+import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/contexts/TranslationContext'
+import {
+  type ChatState,
+  type Message,
+  type WebSocketResponse,
+  convertToUIConversation,
+  convertToUIFile,
+  convertToUIMessage
+} from '@/types/chat.type'
+import { getErrorMessage } from '@/utils/apiHandler'
+import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
+import { faChevronRight, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useCallback, useEffect, useState } from 'react'
+import { AgentManagement } from './AgentManagement'
 import { ChatInterface } from './ChatInterface'
 import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
-import { AgentManagement } from './AgentManagement'
 import { SystemPromptEditor } from './SystemPromptEditor'
-import chatApi from '@/apis/chatApi'
-import { createChatWebSocket, ChatWebSocket } from '@/utils/websocket'
-import { 
-  type Message, 
-  type ChatState,
-  type WebSocketResponse,
-  convertToUIMessage,
-  convertToUIFile,
-  convertToUIConversation
-} from '@/types/chat.type'
-import { getErrorMessage } from '@/utils/apiHandler'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '@/components/ui/button'
-import { useTranslation } from '@/contexts/TranslationContext'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -57,6 +57,10 @@ export function ChatClientWrapper() {
   const [isAgentManagementOpen, setIsAgentManagementOpen] = useState(false)
   const [isSystemPromptEditorOpen, setIsSystemPromptEditorOpen] = useState(false)
   const [editingConversationSystemPrompt, setEditingConversationSystemPrompt] = useState<string | null>(null)
+
+  // Sidebar collapse states
+  const [isConversationSidebarCollapsed, setIsConversationSidebarCollapsed] = useState(false)
+  const [isFileSidebarCollapsed, setIsFileSidebarCollapsed] = useState(false)
 
   // Load initial data
   useEffect(() => {
@@ -542,8 +546,6 @@ export function ChatClientWrapper() {
     }
   }
 
-  // Save API key
-
   // Handle agent updates from AgentManagement component
   const handleAgentUpdate = useCallback((updatedAgent: {
     model_name: string;
@@ -586,6 +588,15 @@ export function ChatClientWrapper() {
     return conversation?.systemPrompt || ''
   }
 
+  // Sidebar toggle handlers
+  const handleToggleConversationSidebar = () => {
+    setIsConversationSidebarCollapsed(prev => !prev)
+  }
+
+  const handleToggleFileSidebar = () => {
+    setIsFileSidebarCollapsed(prev => !prev)
+  }
+
   // Cleanup WebSocket on unmount
   useEffect(() => {
     return () => {
@@ -597,8 +608,28 @@ export function ChatClientWrapper() {
 
   return (
     <div className="flex h-full">
+      {/* Expand button for Conversation Sidebar when collapsed */}
+      {isConversationSidebarCollapsed && (
+        <div className="hidden md:flex items-center justify-center w-12 border-r border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
+          <Button
+            onClick={handleToggleConversationSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group"
+            title={t('chat.tooltips.expandSidebar') || 'Expand sidebar'}
+          >
+            <FontAwesomeIcon 
+              icon={faChevronRight} 
+              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
+            />
+          </Button>
+        </div>
+      )}
+
       {/* Desktop Conversation Sidebar */}
-      <div className="hidden md:block w-80 border-r border-[color:var(--border)]">
+      <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+        isConversationSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+      }`}>
         <ConversationSidebar
           conversations={state.conversations}
           activeConversationId={state.activeConversationId || ''}
@@ -610,11 +641,13 @@ export function ChatClientWrapper() {
           currentAgent={currentAgent}
           agentStatus={agentStatus === 'none' ? undefined : agentStatus}
           onOpenAgentManagement={() => setIsAgentManagementOpen(true)}
+          isCollapsed={isConversationSidebarCollapsed}
+          onToggleCollapse={handleToggleConversationSidebar}
         />
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <ChatInterface
           conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
           activeConversationId={state.activeConversationId}
@@ -624,17 +657,25 @@ export function ChatClientWrapper() {
           error={state.error}
           onSendMessage={handleSendMessage}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          isConversationSidebarCollapsed={isConversationSidebarCollapsed}
+          isFileSidebarCollapsed={isFileSidebarCollapsed}
+          onToggleConversationSidebar={handleToggleConversationSidebar}
+          onToggleFileSidebar={handleToggleFileSidebar}
         />
       </div>
 
       {/* Desktop File Sidebar */}
-      <div className="hidden lg:block w-80 border-l border-[color:var(--border)]">
+      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+        isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+      }`}>
         <FileSidebar
           uploadedFiles={state.uploadedFiles}
           isLoading={fileLoadingStates[state.activeConversationId || ''] || false}
           conversationId={state.activeConversationId}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
+          isCollapsed={isFileSidebarCollapsed}
+          onToggleCollapse={handleToggleFileSidebar}
         />
       </div>
 

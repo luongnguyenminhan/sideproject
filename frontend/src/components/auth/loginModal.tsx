@@ -43,7 +43,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl, onSuccess, t 
             // Verify origin for security
             const apiBaseUrl =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
-                "http://localhost:8000/api/v1";
+                "https://api.wc504.io.vn/api/v1";
             const allowedOrigins = [
                 new URL(apiBaseUrl).origin,
                 window.location.origin,
@@ -150,7 +150,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl, onSuccess, t 
             
             const apiBaseUrl =
                 process.env.NEXT_PUBLIC_API_BASE_URL ||
-                "http://localhost:8000/api/v1";
+                "https://api.wc504.io.vn/api/v1";
             const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;
 
             // Show loading message

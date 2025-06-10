@@ -1,0 +1,333 @@
+{
+  "aboutUs": {
+    "social": {
+      "about": "Về chúng tôi",
+      "followers": "Người theo dõi"
+    },
+    "title": "Giới thiệu Meobeo.ai - Nền tảng ghi chú cuộc họp AI"
+  },
+  "auth": {
+    "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
+    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với điều khoản của chúng tôi.",
+    "connectingToGoogle": "Đang kết nối với Google...",
+    "email": "Email",
+    "login": "Đăng nhập",
+    "loginSuccess": "Đăng nhập thành công",
+    "loginWithGoogle": "Đăng nhập với Google",
+    "logout": "Đăng xuất",
+    "name": "Tên",
+    "openingGoogleLogin": "Đang mở đăng nhập Google...",
+    "pleaseWait": "Vui lòng chờ...",
+    "role": "Vai trò",
+    "signingIn": "Đang đăng nhập...",
+    "signInWithGoogle": "Đăng nhập với Google",
+    "unableToConnect": "Không thể kết nối",
+    "username": "Tên đăng nhập"
+  },
+  "carousel": {
+    "currentImage": "Hình hiện tại",
+    "description": "Mô tả",
+    "nextImage": " ",
+    "prevImage": " ",
+    "subtitle": "Trải nghiệm cuộc họp thông minh với AI",
+    "title": "Meobeo.ai - Nền tảng ghi chú cuộc họp AI"
+  },
+  "chat": {
+    "agentManagement": {
+      "agentConfig": "Cấu hình tác nhân",
+      "agentError": "Lỗi tác nhân",
+      "agentLoading": "Đang tải tác nhân...",
+      "agentTab": "Tác nhân",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Nhập API key của bạn",
+        "currentKey": "API key hiện tại",
+        "description": "Quản lý API key cho các nhà cung cấp AI.",
+        "enterApiKey": "Nhập API key",
+        "hideKey": "Ẩn key",
+        "keyUpdated": "API key đã được cập nhật",
+        "noKeySet": "Chưa thiết lập API key",
+        "selectProvider": "Chọn nhà cung cấp",
+        "showKey": "Hiện key",
+        "title": "Quản lý API Key",
+        "update": "Cập nhật",
+        "updateFailed": "Cập nhật thất bại"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Tác nhân hiện tại",
+      "manage": "Quản lý",
+      "maxTokens": "Số token tối đa",
+      "modelName": "Tên mô hình",
+      "noAgentConfigured": "Chưa cấu hình tác nhân",
+      "provider": "Nhà cung cấp",
+      "selectModel": "Chọn mô hình",
+      "selectProvider": "Chọn nhà cung cấp",
+      "subtitle": "Cấu hình AI cho ghi chú cuộc họp.",
+      "temperature": "Nhiệt độ",
+      "title": "Quản lý trợ lý AI",
+      "updateAgent": "Cập nhật tác nhân",
+      "validateAgent": "Xác thực tác nhân",
+      "validationCompleted": "Đã hoàn tất xác thực",
+      "validationFailed": "Xác thực thất bại",
+      "validationSuccess": "Xác thực thành công",
+      "validationTab": "Xác thực"
+    },
+    "assistant": "Trợ lý ghi chú cuộc họp",
+    "chats": "Cuộc họp",
+    "conversations": "Cuộc trò chuyện",
+    "copied": "Đã sao chép",
+    "copy": "Sao chép",
+    "createFirstChat": "Tạo ghi chú cuộc họp đầu tiên của bạn",
+    "defaultChatTitle": "Ghi chú cuộc họp mới",
+    "files": "Tệp",
+    "filesAssociated": "Tệp liên quan",
+    "htmlRenderError": "Lỗi hiển thị nội dung",
+    "messages": "Tin nhắn",
+    "newConversation": "Cuộc họp mới",
+    "noConversationsYet": "Chưa có cuộc họp nào",
+    "noFilesUploaded": "Chưa tải lên tệp nào",
+    "noMessages": "Chưa có tin nhắn",
+    "preview": "Xem trước",
+    "sending": "Đang gửi...",
+    "showCode": "Hiện mã",
+    "startConversation": "Tạo ghi chú cuộc họp",
+    "systemPrompt": {
+      "conversationPrompt": "Đặt chủ đề cuộc họp",
+      "description": "Tùy chỉnh chủ đề hoặc nội dung cuộc họp.",
+      "placeholder": "Nhập chủ đề hoặc nội dung cuộc họp...",
+      "title": "Lời nhắc hệ thống"
+    },
+    "thisConversation": "Cuộc họp này",
+    "tooltips": {
+      "deleteConversation": "Xóa cuộc họp",
+      "editName": "Chỉnh sửa tên",
+      "editSystemPrompt": "Chỉnh sửa lời nhắc cuộc họp",
+      "addConversation": "Thêm cuộc họp",
+      "refreshConversation": "Làm mới cuộc họp",
+      "closeChat": "Đóng cửa sổ cuộc họp",
+      "openChat": "Mở cửa sổ cuộc họp",
+      "uploadFile": "Tải lên tệp",
+      "sendMessage": "Gửi tin nhắn",
+      "hasCustomSystemPrompt": "Lời nhắc cuộc họp tùy chỉnh",
+      "collapseSidebar": "Thu gọn thanh bên",
+      "expandSidebar": "Mở rộng thanh bên"
+    },
+    "typeMessage": "Nhập ghi chú hoặc hành động cuộc họp...",
+    "typing": "Đang nhập...",
+    "uploadedFiles": "Tệp đã tải lên",
+    "uploadFilesDescription": "Đính kèm file ghi âm hoặc tài liệu để ghi chú tự động",
+    "welcomeDescription": "Meobeo.ai giúp bạn ghi lại, tóm tắt và tổ chức cuộc họp tự động bằng AI. Ghi âm, chuyển lời nói thành văn bản và nhận thông tin hành động ngay lập tức.",
+    "welcomeTitle": "Chào mừng đến với Meobeo.ai - Ghi chú cuộc họp AI",
+    "errorCreateConversation": "Không thể tạo cuộc họp",
+    "errorDeleteConversation": "Không thể xóa cuộc họp",
+    "errorLoadConversations": "Không thể tải cuộc họp",
+    "errorLoadFiles": "Không thể tải tệp",
+    "errorLoadMessages": "Không thể tải tin nhắn",
+    "errorSendMessage": "Không thể gửi tin nhắn",
+    "errorUpdatePrompt": "Không thể cập nhật lời nhắc",
+    "errorUploadFile": "Không thể tải lên tệp",
+    "refresh": "Làm mới",
+    "uploadDragDrop": "Kéo và thả tệp để tải lên"
+  },
+  "common": {
+    "branding": "Meobeo.ai - Ghi chú cuộc họp AI",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "download": "Tải xuống",
+    "loading": "Đang tải...",
+    "no": "Không",
+    "refresh": "Làm mới",
+    "save": "Lưu",
+    "upload": "Tải lên",
+    "yes": "Có"
+  },
+  "footer": {
+    "copyright": "© 2024 Meobeo.ai",
+    "legal": {
+      "cookies": "Chính sách Cookie",
+      "privacy": "Chính sách Bảo mật",
+      "terms": "Điều khoản Dịch vụ"
+    },
+    "location": "Toàn cầu",
+    "madeWith": "Được tạo bởi AI cho năng suất",
+    "social": {
+      "followUs": "Theo dõi chúng tôi"
+    },
+    "title": "Meobeo.ai",
+    "company": {
+      "title": "Công ty",
+      "about": "Về chúng tôi",
+      "team": "Nhóm phát triển",
+      "careers": "Tuyển dụng",
+      "contact": "Liên hệ"
+    },
+    "products": {
+      "title": "Tính năng",
+      "webDevelopment": "Tự động chuyển lời nói thành văn bản",
+      "mobileApps": "Tóm tắt thông minh",
+      "aiSolutions": "AI phát hiện hành động",
+      "consulting": "Phân tích cuộc họp"
+    },
+    "resources": {
+      "title": "Tài nguyên",
+      "documentation": "Tài liệu",
+      "blog": "Blog",
+      "support": "Hỗ trợ",
+      "community": "Cộng đồng"
+    }
+  },
+  "home": {
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục cuộc họp thông minh của bạn.",
+    "confirmed": "Đã xác nhận",
+    "description": "Meobeo.ai là nền tảng ghi chú cuộc họp tự động bằng AI. Ghi âm, chuyển lời nói thành văn bản, tóm tắt và tổ chức cuộc họp dễ dàng. Nhận hành động, điểm nổi bật và tìm kiếm ghi chú tức thì.",
+    "email": "Email",
+    "facebookPageName": "Trang Facebook",
+    "facebookPostCountPrefix": "Bài đăng:",
+    "facebookPostCountSuffix": "trên Facebook",
+    "features": {
+      "darkMode": {
+        "description": "Dễ nhìn trong mọi điều kiện ánh sáng",
+        "title": "Chế độ tối",
+        "features": {
+          "darkLightThemes": "Chuyển đổi giữa giao diện tối và sáng",
+          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi sử dụng lâu",
+          "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống"
+        }
+      },
+      "fastPerformance": {
+        "description": "Kết quả AI tức thì",
+        "title": "Hiệu năng cao",
+        "features": {
+          "optimizedPerformance": "Tối ưu hóa cho chuyển lời nói thành văn bản thời gian thực",
+          "lightningFastLoading": "Tạo ghi chú cực nhanh",
+          "seamlessUserExperience": "Trải nghiệm liền mạch, không gián đoạn"
+        }
+      },
+      "globalReady": {
+        "description": "Hỗ trợ đa ngôn ngữ cho nhóm toàn cầu",
+        "title": "Sẵn sàng toàn cầu",
+        "features": {
+          "multiLanguageSupport": "Chuyển lời nói nhiều ngôn ngữ",
+          "globalAccessibility": "Truy cập từ mọi nơi",
+          "culturalAdaptation": "Tóm tắt phù hợp từng văn hóa"
+        }
+      },
+      "modernStack": {
+        "description": "Xây dựng bằng công nghệ AI mới nhất",
+        "title": "Công nghệ hiện đại",
+        "features": {
+          "nextjsReact": "Phát triển với Next.js & React",
+          "typescriptSupport": "TypeScript đảm bảo ổn định",
+          "modernDevelopmentTools": "Hạ tầng AI và cloud hiện đại"
+        }
+      },
+      "subtitle": "Tính năng nổi bật",
+      "title": "Tính năng"
+    },
+    "getStarted": "Bắt đầu",
+    "learnMore": "Tìm hiểu thêm",
+    "post": "Bài đăng",
+    "title": "Meobeo.ai - Nền tảng ghi chú cuộc họp AI",
+    "unknownTime": "Không rõ thời gian",
+    "userInformation": "Thông tin người dùng",
+    "username": "Tên đăng nhập",
+    "welcomeBack": "Chào mừng trở lại!"
+  },
+  "navigation": {
+    "about": "Giới thiệu",
+    "chat": "Cuộc họp",
+    "help": "Trợ giúp",
+    "menu": "Menu",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
+  },
+  "profile": {
+    "changePassword": "Đổi mật khẩu",
+    "changePhoto": "Đổi ảnh",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "title": "Hồ sơ"
+  },
+  "server": {
+    "currentTime": "Thời gian máy chủ hiện tại",
+    "locale": "Ngôn ngữ",
+    "serverRendered": "Kết xuất từ máy chủ"
+  },
+  "settings": {
+    "account": "Tài khoản",
+    "appearance": "Giao diện",
+    "changePassword": "Đổi mật khẩu",
+    "currentUser": "Người dùng hiện tại",
+    "deleteAccount": "Xóa tài khoản",
+    "downloadData": "Tải dữ liệu",
+    "emailNotifications": "Thông báo qua email",
+    "emailNotificationsDescription": "Nhận cập nhật và thông báo cuộc họp qua email.",
+    "enableTwoFactor": "Bật xác thực hai yếu tố",
+    "language": "Ngôn ngữ",
+    "languageDescription": "Chọn ngôn ngữ bạn muốn.",
+    "notifications": "Thông báo",
+    "pushNotifications": "Thông báo đẩy",
+    "pushNotificationsDescription": "Nhận cập nhật cuộc họp tức thì trên thiết bị.",
+    "security": "Bảo mật",
+    "theme": "Chủ đề",
+    "themeDescription": "Chuyển đổi giữa chế độ sáng và tối.",
+    "title": "Cài đặt",
+    "updateAccount": "Cập nhật tài khoản"
+  },
+  "survey": {
+    "complete": "Hoàn thành",
+    "continue": "Tiếp tục",
+    "previous": "Trước",
+    "results": {
+      "completed": "Đã hoàn thành khảo sát",
+      "description": "Xem kết quả và nhận xét.",
+      "retake": "Làm lại khảo sát",
+      "title": "Kết quả khảo sát"
+    },
+    "step": "Bước",
+    "submitting": "Đang gửi..."
+  },
+  "team": {
+    "leadership": {
+      "bio": "Tiểu sử",
+      "experience": "Kinh nghiệm",
+      "name": "Tên",
+      "role": "Vai trò",
+      "title": "Nhóm phát triển",
+      "ceo": {
+        "name": "Nhà sáng lập Meobeo.ai",
+        "role": "CEO",
+        "bio": "Lãnh đạo có tầm nhìn, đam mê AI và năng suất. Xây dựng công cụ giúp cuộc họp thông minh hơn.",
+        "experience": "Kinh nghiệm về AI, SaaS và giải pháp năng suất."
+      },
+      "cto": {
+        "name": "Kỹ sư AI",
+        "role": "CTO",
+        "bio": "Chuyên gia AI và cloud, chịu trách nhiệm kỹ thuật cho Meobeo.ai.",
+        "experience": "Kinh nghiệm phát triển AI, hạ tầng cloud và tự động hóa."
+      },
+      "designer": {
+        "name": "Nhà thiết kế sản phẩm",
+        "role": "Trưởng nhóm thiết kế",
+        "bio": "Thiết kế trải nghiệm ghi chú cuộc họp trực quan, dễ dùng.",
+        "experience": "Kinh nghiệm UX/UI, SaaS và ứng dụng năng suất."
+      }
+    },
+    "subtitle": "Gặp gỡ đội ngũ Meobeo.ai",
+    "title": "Nhóm phát triển",
+    "values": {
+      "description": "Chúng tôi tin vào việc giúp cuộc họp hiệu quả và hành động hơn nhờ AI.",
+      "title": "Giá trị cốt lõi",
+      "innovation": {
+        "title": "Đổi mới",
+        "description": "Không ngừng sáng tạo để mang lại giải pháp cuộc họp thông minh."
+      },
+      "quality": {
+        "title": "Chất lượng",
+        "description": "Cam kết ghi chú cuộc họp chất lượng, tin cậy và bảo mật."
+      },
+      "community": {
+        "title": "Cộng đồng",
+        "description": "Hỗ trợ cộng đồng nhóm làm việc toàn cầu."
+      }
+    }
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "aboutUs": {
+    "social": {
+      "about": "Về chúng tôi",
+      "followers": "Người theo dõi"
+    },
+    "title": "Giới thiệu Chatbot Triết học MLN101"
+  },
+  "auth": {
+    "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
+    "bySigningIn": "Bằng việc đăng nhập, bạn đồng ý với điều khoản của chúng tôi.",
+    "connectingToGoogle": "Đang kết nối với Google...",
+    "email": "Email",
+    "login": "Đăng nhập",
+    "loginSuccess": "Đăng nhập thành công",
+    "loginWithGoogle": "Đăng nhập với Google",
+    "logout": "Đăng xuất",
+    "name": "Tên",
+    "openingGoogleLogin": "Đang mở đăng nhập Google...",
+    "pleaseWait": "Vui lòng chờ...",
+    "role": "Vai trò",
+    "signingIn": "Đang đăng nhập...",
+    "signInWithGoogle": "Đăng nhập với Google",
+    "unableToConnect": "Không thể kết nối",
+    "username": "Tên đăng nhập"
+  },
+  "carousel": {
+    "currentImage": "Hình hiện tại",
+    "description": "Mô tả",
+    "nextImage": " ",
+    "prevImage": " ",
+    "subtitle": "Khám phá thế giới triết học",
+    "title": "Nền tảng Chatbot Triết học MLN101"
+  },
+  "chat": {
+    "agentManagement": {
+      "agentConfig": "Cấu hình tác nhân",
+      "agentError": "Lỗi tác nhân",
+      "agentLoading": "Đang tải tác nhân...",
+      "agentTab": "Tác nhân",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Nhập API key của bạn",
+        "currentKey": "API key hiện tại",
+        "description": "Quản lý API key cho các nhà cung cấp AI.",
+        "enterApiKey": "Nhập API key",
+        "hideKey": "Ẩn key",
+        "keyUpdated": "API key đã được cập nhật",
+        "noKeySet": "Chưa thiết lập API key",
+        "selectProvider": "Chọn nhà cung cấp",
+        "showKey": "Hiện key",
+        "title": "Quản lý API Key",
+        "update": "Cập nhật",
+        "updateFailed": "Cập nhật thất bại"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Tác nhân hiện tại",
+      "manage": "Quản lý",
+      "maxTokens": "Số token tối đa",
+      "modelName": "Tên mô hình",
+      "noAgentConfigured": "Chưa cấu hình tác nhân",
+      "provider": "Nhà cung cấp",
+      "selectModel": "Chọn mô hình",
+      "selectProvider": "Chọn nhà cung cấp",
+      "subtitle": "Cấu hình AI cho hỗ trợ triết học.",
+      "temperature": "Nhiệt độ",
+      "title": "Quản lý trợ lý AI",
+      "updateAgent": "Cập nhật tác nhân",
+      "validateAgent": "Xác thực tác nhân",
+      "validationCompleted": "Đã hoàn tất xác thực",
+      "validationFailed": "Xác thực thất bại",
+      "validationSuccess": "Xác thực thành công",
+      "validationTab": "Xác thực"
+    },
+    "assistant": "Chatbot Triết học",
+    "chats": "Trò chuyện",
+    "conversations": "Cuộc hội thoại",
+    "copied": "Đã sao chép",
+    "copy": "Sao chép",
+    "createFirstChat": "Bắt đầu cuộc trò chuyện triết học đầu tiên của bạn",
+    "defaultChatTitle": "Trò chuyện Triết học mới",
+    "files": "Tệp",
+    "filesAssociated": "Tệp liên quan",
+    "htmlRenderError": "Lỗi hiển thị nội dung",
+    "messages": "Tin nhắn",
+    "newConversation": "Cuộc hội thoại mới",
+    "noConversationsYet": "Chưa có cuộc hội thoại nào",
+    "noFilesUploaded": "Chưa tải lên tệp nào",
+    "noMessages": "Chưa có tin nhắn",
+    "preview": "Xem trước",
+    "sending": "Đang gửi...",
+    "showCode": "Hiện mã",
+    "startConversation": "Bắt đầu thảo luận triết học",
+    "systemPrompt": {
+      "conversationPrompt": "Đặt chủ đề triết học",
+      "description": "Tùy chỉnh câu hỏi hoặc chủ đề tranh luận triết học.",
+      "placeholder": "Nhập câu hỏi hoặc chủ đề triết học...",
+      "title": "Lời nhắc hệ thống"
+    },
+    "thisConversation": "Cuộc hội thoại này",
+    "tooltips": {
+      "deleteConversation": "Xóa cuộc hội thoại",
+      "editName": "Chỉnh sửa tên",
+      "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
+      "addConversation": "Thêm hội thoại",
+      "refreshConversation": "Làm mới hội thoại",
+      "closeChat": "Đóng cửa sổ chat",
+      "openChat": "Mở cửa sổ chat",
+      "uploadFile": "Tải lên tệp",
+      "sendMessage": "Gửi tin nhắn",
+      "hasCustomSystemPrompt": "Lời nhắc hệ thống tùy chỉnh",
+      "collapseSidebar": "Thu gọn thanh bên",
+      "expandSidebar": "Mở rộng thanh bên"
+    },
+    "typeMessage": "Nhập câu hỏi triết học của bạn...",
+    "typing": "Đang nhập...",
+    "uploadedFiles": "Tệp đã tải lên",
+    "uploadFilesDescription": "Đính kèm văn bản triết học hoặc ghi chú để thảo luận sâu hơn",
+    "welcomeDescription": "Luyện tập triết học: sinh câu hỏi trắc nghiệm & mở để ôn tập, mô phỏng tranh luận giữa các trường phái (VD: Duy vật vs Duy tâm), và trò chuyện với AI chỉ trả lời theo góc nhìn triết học.",
+    "welcomeTitle": "Chào mừng đến với Chatbot Triết học MLN101",
+    "errorCreateConversation": "Không thể tạo cuộc hội thoại",
+    "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
+    "errorLoadConversations": "Không thể tải cuộc hội thoại",
+    "errorLoadFiles": "Không thể tải tệp",
+    "errorLoadMessages": "Không thể tải tin nhắn",
+    "errorSendMessage": "Không thể gửi tin nhắn",
+    "errorUpdatePrompt": "Không thể cập nhật lời nhắc",
+    "errorUploadFile": "Không thể tải lên tệp",
+    "refresh": "Làm mới",
+    "uploadDragDrop": "Kéo và thả tệp để tải lên"
+  },
+  "common": {
+    "branding": "Chatbot Triết học MLN101",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "download": "Tải xuống",
+    "loading": "Đang tải...",
+    "no": "Không",
+    "refresh": "Làm mới",
+    "save": "Lưu",
+    "upload": "Tải lên",
+    "yes": "Có"
+  },
+  "footer": {
+    "copyright": "© 2024 Chatbot Triết học MLN101",
+    "legal": {
+      "cookies": "Chính sách Cookie",
+      "privacy": "Chính sách Bảo mật",
+      "terms": "Điều khoản Dịch vụ"
+    },
+    "location": "Trực tuyến",
+    "madeWith": "Được tạo ra với đam mê triết học",
+    "social": {
+      "followUs": "Theo dõi chúng tôi"
+    },
+    "title": "Chatbot Triết học MLN101",
+    "company": {
+      "title": "Giới thiệu",
+      "about": "Về chúng tôi",
+      "team": "Nhóm phát triển",
+      "careers": "Tham gia",
+      "contact": "Liên hệ"
+    },
+    "products": {
+      "title": "Tính năng",
+      "webDevelopment": "Sinh câu hỏi triết học",
+      "mobileApps": "Mô phỏng tranh luận",
+      "aiSolutions": "Trợ lý AI triết học",
+      "consulting": "Luyện tập triết học"
+    },
+    "resources": {
+      "title": "Tài nguyên",
+      "documentation": "Tài liệu",
+      "blog": "Blog",
+      "support": "Hỗ trợ",
+      "community": "Cộng đồng"
+    }
+  },
+  "home": {
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình triết học của bạn.",
+    "confirmed": "Đã xác nhận",
+    "description": "Môn Triết học thường khô khan, thiếu thực tiễn và khó tiếp cận với sinh viên. Nền tảng web tương tác này giúp bạn luyện tập triết học bằng cách sinh câu hỏi, mô phỏng tranh luận (VD: duy vật vs. duy tâm), và cung cấp trợ lý AI chỉ trả lời theo góc nhìn triết học. Nâng cao tư duy phản biện và sự hứng thú với môn MLN101.",
+    "email": "Email",
+    "facebookPageName": "Trang Facebook",
+    "facebookPostCountPrefix": "Bài đăng:",
+    "facebookPostCountSuffix": "trên Facebook",
+    "features": {
+      "darkMode": {
+        "description": "Dễ đọc trong mọi điều kiện ánh sáng",
+        "title": "Chế độ tối",
+        "features": {
+          "darkLightThemes": "Chuyển đổi giữa giao diện tối và sáng",
+          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi đọc lâu",
+          "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống"
+        }
+      },
+      "fastPerformance": {
+        "description": "Phản hồi tức thì, trải nghiệm mượt mà",
+        "title": "Hiệu năng cao",
+        "features": {
+          "optimizedPerformance": "Tối ưu hóa cho tốc độ phản hồi nhanh",
+          "lightningFastLoading": "Tải trang cực nhanh",
+          "seamlessUserExperience": "Trải nghiệm liền mạch, không gián đoạn"
+        }
+      },
+      "globalReady": {
+        "description": "Hỗ trợ đa ngôn ngữ cho người học toàn cầu",
+        "title": "Sẵn sàng toàn cầu",
+        "features": {
+          "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ",
+          "globalAccessibility": "Truy cập từ mọi nơi trên thế giới",
+          "culturalAdaptation": "Nội dung phù hợp với từng nền văn hóa"
+        }
+      },
+      "modernStack": {
+        "description": "Xây dựng bằng công nghệ web hiện đại",
+        "title": "Công nghệ hiện đại",
+        "features": {
+          "nextjsReact": "Phát triển với Next.js & React",
+          "typescriptSupport": "Hỗ trợ TypeScript đảm bảo ổn định",
+          "modernDevelopmentTools": "Công cụ phát triển hiện đại, chuẩn quốc tế"
+        }
+      },
+      "subtitle": "Tính năng nổi bật",
+      "title": "Tính năng"
+    },
+    "getStarted": "Bắt đầu",
+    "learnMore": "Tìm hiểu thêm",
+    "post": "Bài đăng",
+    "title": "Nền tảng Chatbot Triết học MLN101",
+    "unknownTime": "Không rõ thời gian",
+    "userInformation": "Thông tin người dùng",
+    "username": "Tên đăng nhập",
+    "welcomeBack": "Chào mừng trở lại!"
+  },
+  "navigation": {
+    "about": "Giới thiệu",
+    "chat": "Trò chuyện",
+    "help": "Trợ giúp",
+    "menu": "Menu",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
+  },
+  "profile": {
+    "changePassword": "Đổi mật khẩu",
+    "changePhoto": "Đổi ảnh",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "title": "Hồ sơ"
+  },
+  "server": {
+    "currentTime": "Thời gian máy chủ hiện tại",
+    "locale": "Ngôn ngữ",
+    "serverRendered": "Kết xuất từ máy chủ"
+  },
+  "settings": {
+    "account": "Tài khoản",
+    "appearance": "Giao diện",
+    "changePassword": "Đổi mật khẩu",
+    "currentUser": "Người dùng hiện tại",
+    "deleteAccount": "Xóa tài khoản",
+    "downloadData": "Tải dữ liệu",
+    "emailNotifications": "Thông báo qua email",
+    "emailNotificationsDescription": "Nhận cập nhật và tin tức qua email.",
+    "enableTwoFactor": "Bật xác thực hai yếu tố",
+    "language": "Ngôn ngữ",
+    "languageDescription": "Chọn ngôn ngữ bạn muốn.",
+    "notifications": "Thông báo",
+    "pushNotifications": "Thông báo đẩy",
+    "pushNotificationsDescription": "Nhận cập nhật tức thì trên thiết bị của bạn.",
+    "security": "Bảo mật",
+    "theme": "Chủ đề",
+    "themeDescription": "Chuyển đổi giữa chế độ sáng và tối.",
+    "title": "Cài đặt",
+    "updateAccount": "Cập nhật tài khoản"
+  },
+  "survey": {
+    "complete": "Hoàn thành",
+    "continue": "Tiếp tục",
+    "previous": "Trước",
+    "results": {
+      "completed": "Đã hoàn thành khảo sát",
+      "description": "Xem kết quả và nhận xét.",
+      "retake": "Làm lại khảo sát",
+      "title": "Kết quả khảo sát"
+    },
+    "step": "Bước",
+    "submitting": "Đang gửi..."
+  },
+  "team": {
+    "leadership": {
+      "bio": "Tiểu sử",
+      "experience": "Kinh nghiệm",
+      "name": "Tên",
+      "role": "Vai trò",
+      "title": "Nhóm phát triển",
+      "ceo": {
+        "name": "Giảng viên Triết học",
+        "role": "Trưởng nhóm",
+        "bio": "Chuyên gia triết học, đam mê giúp sinh viên phát triển tư duy phản biện và tiếp cận triết học.",
+        "experience": "Kinh nghiệm giảng dạy, nghiên cứu và tranh luận triết học."
+      },
+      "cto": {
+        "name": "Lập trình viên AI",
+        "role": "Kỹ thuật trưởng",
+        "bio": "Phụ trách phát triển hệ thống AI cho chatbot và mô phỏng tranh luận.",
+        "experience": "Kinh nghiệm về AI, lập trình và công nghệ giáo dục."
+      },
+      "designer": {
+        "name": "Chuyên viên nội dung",
+        "role": "Phụ trách nội dung",
+        "bio": "Tạo và biên soạn câu hỏi, kịch bản tranh luận triết học cho việc học hiệu quả.",
+        "experience": "Kinh nghiệm xây dựng nội dung triết học và thiết kế giáo dục."
+      }
+    },
+    "subtitle": "Gặp gỡ nhóm phát triển Chatbot Triết học MLN101",
+    "title": "Nhóm phát triển",
+    "values": {
+      "description": "Chúng tôi tin vào việc phát triển tư duy phản biện và giúp triết học trở nên gần gũi, hấp dẫn.",
+      "title": "Giá trị cốt lõi",
+      "innovation": {
+        "title": "Sáng tạo",
+        "description": "Luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao việc học triết học."
+      },
+      "quality": {
+        "title": "Chất lượng",
+        "description": "Cam kết tạo ra tài nguyên triết học chất lượng, ý nghĩa và thực tiễn."
+      },
+      "community": {
+        "title": "Cộng đồng",
+        "description": "Xây dựng cộng đồng học tập hỗ trợ cho mọi sinh viên triết học."
+      }
+    }
+  }
+}

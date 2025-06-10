@@ -1,5 +1,4 @@
-import FacebookPost from './FacebookPost';
-import { Carousel } from '@/components/ui';
+import ResponsiveFacebookCarousel from './ResponsiveFacebookCarousel';
 import { FacebookPageInfo } from '@/types/facebook.type';
 import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import getDictionary, { createTranslator } from '@/utils/translation';
@@ -11,6 +10,7 @@ interface FacebookPostCarouselProps {
   maxMessageLength?: number;
   pageInfo?: FacebookPageInfo | null;
   locale?: string;
+  profilePictureUrl?: string;
 }
 
 const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({ 
@@ -19,6 +19,7 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
   truncateMessage = true,
   maxMessageLength = 150,
   pageInfo,
+  profilePictureUrl,
 
 }) => {
   const locale = await getCurrentLocale()
@@ -35,10 +36,10 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[color:var(--foreground)] mb-2">
-            {t('noPostsTitle') || 'No Facebook Posts Available'}
+            {t('noPostsTitle')}
           </h3>
           <p className="text-[color:var(--muted-foreground)] text-sm">
-            {t('noPostsDescription') || 'There are no Facebook posts to display at the moment.'}
+            {t('noPostsDescription')}
           </p>
         </div>
       </div>
@@ -48,36 +49,27 @@ const FacebookPostCarousel: React.FC<FacebookPostCarouselProps> = async ({
   const posts = pageInfo.posts.data.slice(0, limit);
 
   return (
-    <div className="w-full space-y-6">
-      {/* Posts Carousel with Fade Effect */}
+    <div className="w-full space-y-6">      {/* Posts Carousel with Responsive Items Per View */}
       <div className="relative">
-        <Carousel
+        <ResponsiveFacebookCarousel
+          posts={posts}
           autoPlay={autoPlay}
-          autoPlayInterval={6000}
-          itemsPerView={3}
-          className="w-full"
-        >
-          {posts.map((post) => (
-            <FacebookPost
-              key={post.id}
-              post={post}
-              truncateMessage={truncateMessage}
-              maxMessageLength={maxMessageLength}
-              locale={locale}
-              translation={{
-                unknownTime: t('home.unknownTime'),
-                post: t('home.post'),
-              }}
-            />
-          ))}
-        </Carousel>
+          truncateMessage={truncateMessage}
+          maxMessageLength={maxMessageLength}
+          locale={locale}
+          translation={{
+            unknownTime: t('home.unknownTime'),
+            post: pageInfo?.name || t('home.facebookPageName'),
+          }}
+          profilePictureUrl={profilePictureUrl}
+        />
       </div>
 
       {/* Post Count Info */}
       {posts.length > 0 && (
         <div className="text-center">
           <p className="text-sm text-[color:var(--muted-foreground)]">
-            {t('home.facebookPostCountPrefix') || 'Showing'} {posts.length} {t('home.facebookPostCountSuffix') || 'posts from this page.'}
+            {t('home.facebookPostCountPrefix')} {posts.length} {t('home.facebookPostCountSuffix')}
           </p>
         </div>
       )}

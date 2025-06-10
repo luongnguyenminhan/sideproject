@@ -1,0 +1,332 @@
+{
+  "aboutUs": {
+    "social": {
+      "about": "About us",
+      "followers": "Followers"
+    },
+    "title": "About Meobeo.ai - AI Meeting Notes Platform"
+  },
+  "auth": {
+    "allowPopups": "Allow popups to sign in",
+    "bySigningIn": "By signing in, you agree to our terms.",
+    "connectingToGoogle": "Connecting to Google...",
+    "email": "Email",
+    "login": "Login",
+    "loginSuccess": "Login successful",
+    "loginWithGoogle": "Login with Google",
+    "logout": "Logout",
+    "name": "Name",
+    "openingGoogleLogin": "Opening Google login...",
+    "pleaseWait": "Please wait...",
+    "role": "Role",
+    "signingIn": "Signing in...",
+    "signInWithGoogle": "Sign in with Google",
+    "unableToConnect": "Unable to connect",
+    "username": "Username"
+  },
+  "carousel": {
+    "currentImage": "Current image",
+    "description": "Description",
+    "nextImage": " ",
+    "prevImage": " ",
+    "subtitle": "Experience smarter meetings with AI",
+    "title": "Meobeo.ai - AI Meeting Notes Platform"
+  },
+  "chat": {
+    "agentManagement": {
+      "agentConfig": "Agent configuration",
+      "agentError": "Agent error",
+      "agentLoading": "Loading agent...",
+      "agentTab": "Agent",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Enter your API key",
+        "currentKey": "Current API key",
+        "description": "Manage your API keys for AI providers.",
+        "enterApiKey": "Enter API key",
+        "hideKey": "Hide key",
+        "keyUpdated": "API key updated",
+        "noKeySet": "No API key set",
+        "selectProvider": "Select provider",
+        "showKey": "Show key",
+        "title": "API Key Management",
+        "update": "Update",
+        "updateFailed": "Update failed"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Current agent",
+      "manage": "Manage",
+      "maxTokens": "Max tokens",
+      "modelName": "Model name",
+      "noAgentConfigured": "No agent configured",
+      "provider": "Provider",
+      "selectModel": "Select model",
+      "selectProvider": "Select provider",
+      "subtitle": "Configure your AI agent for meeting notes.",
+      "temperature": "Temperature",
+      "title": "AI Assistant Management",
+      "updateAgent": "Update agent",
+      "validateAgent": "Validate agent",
+      "validationCompleted": "Validation completed",
+      "validationFailed": "Validation failed",
+      "validationSuccess": "Validation successful",
+      "validationTab": "Validation"
+    },
+    "assistant": "Meeting Notes Assistant",
+    "chats": "Meetings",
+    "conversations": "Conversations",
+    "copied": "Copied",
+    "copy": "Copy",
+    "createFirstChat": "Start your first meeting note",
+    "defaultChatTitle": "New Meeting Note",
+    "files": "Files",
+    "filesAssociated": "Files associated",
+    "htmlRenderError": "Error rendering content",
+    "messages": "Messages",
+    "newConversation": "New Meeting",
+    "noConversationsYet": "No meetings yet",
+    "noFilesUploaded": "No files uploaded",
+    "noMessages": "No messages",
+    "preview": "Preview",
+    "refresh": "Refresh",
+    "sending": "Sending...",
+    "showCode": "Show code",
+    "startConversation": "Start a meeting note",
+    "systemPrompt": {
+      "conversationPrompt": "Set meeting topic",
+      "description": "Customize the meeting topic or agenda.",
+      "placeholder": "Enter a meeting topic or agenda...",
+      "title": "System Prompt"
+    },
+    "thisConversation": "This meeting",
+    "tooltips": {
+      "deleteConversation": "Delete meeting",
+      "editName": "Edit name",
+      "editSystemPrompt": "Edit meeting prompt",
+      "addConversation": "Add meeting",
+      "refreshConversation": "Refresh meeting",
+      "closeChat": "Close meeting window",
+      "openChat": "Open meeting window",
+      "uploadFile": "Upload file",
+      "sendMessage": "Send message",
+      "hasCustomSystemPrompt": "Custom meeting prompt",
+      "collapseSidebar": "Collapse sidebar",
+      "expandSidebar": "Expand sidebar"
+    },
+    "typeMessage": "Type your meeting note or action item...",
+    "typing": "Typing...",
+    "uploadedFiles": "Uploaded files",
+    "uploadFilesDescription": "Attach meeting recordings or documents for automatic notes",
+    "welcomeDescription": "Meobeo.ai helps you capture, summarize, and organize your meetings automatically with AI. Record, transcribe, and get actionable insights instantly.",
+    "welcomeTitle": "Welcome to Meobeo.ai - AI Meeting Notes",
+    "errorCreateConversation": "Failed to create meeting",
+    "errorDeleteConversation": "Failed to delete meeting",
+    "errorLoadConversations": "Failed to load meetings",
+    "errorLoadFiles": "Failed to load files",
+    "errorLoadMessages": "Failed to load messages",
+    "errorSendMessage": "Failed to send message",
+    "errorUpdatePrompt": "Failed to update prompt",
+    "errorUploadFile": "Failed to upload file"
+  },
+  "common": {
+    "branding": "Meobeo.ai - AI Meeting Notes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "download": "Download",
+    "loading": "Loading...",
+    "no": "No",
+    "refresh": "Refresh",
+    "save": "Save",
+    "upload": "Upload",
+    "yes": "Yes"
+  },
+  "footer": {
+    "copyright": "© 2024 Meobeo.ai",
+    "legal": {
+      "cookies": "Cookies Policy",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "location": "Global",
+    "madeWith": "Made with AI for productivity",
+    "social": {
+      "followUs": "Follow us"
+    },
+    "title": "Meobeo.ai",
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "team": "Team",
+      "careers": "Careers",
+      "contact": "Contact"
+    },
+    "products": {
+      "title": "Features",
+      "webDevelopment": "Automatic Transcription",
+      "mobileApps": "Smart Summaries",
+      "aiSolutions": "AI Action Items",
+      "consulting": "Meeting Analytics"
+    },
+    "resources": {
+      "title": "Resources",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "support": "Support",
+      "community": "Community"
+    }
+  },
+  "home": {
+    "authenticatedDescription": "Welcome back! Continue your smart meetings.",
+    "confirmed": "Confirmed",
+    "description": "Meobeo.ai is an AI-powered platform for automatic meeting notes. Record, transcribe, summarize, and organize your meetings effortlessly. Get action items, highlights, and searchable notes instantly.",
+    "email": "Email",
+    "facebookPageName": "Facebook Page",
+    "facebookPostCountPrefix": "Posts:",
+    "facebookPostCountSuffix": "on Facebook",
+    "features": {
+      "darkMode": {
+        "description": "Comfortable viewing in any lighting",
+        "title": "Dark Mode",
+        "features": {
+          "darkLightThemes": "Switch between dark and light themes",
+          "eyeFriendlyDesign": "Eye-friendly design for long sessions",
+          "automaticSwitching": "Automatic theme switching based on system settings"
+        }
+      },
+      "fastPerformance": {
+        "description": "Instant AI-powered results",
+        "title": "Fast Performance",
+        "features": {
+          "optimizedPerformance": "Optimized for real-time transcription",
+          "lightningFastLoading": "Lightning-fast note generation",
+          "seamlessUserExperience": "Seamless and uninterrupted workflow"
+        }
+      },
+      "globalReady": {
+        "description": "Supports multiple languages for global teams",
+        "title": "Global Ready",
+        "features": {
+          "multiLanguageSupport": "Multi-language transcription",
+          "globalAccessibility": "Accessible from anywhere",
+          "culturalAdaptation": "Culturally adapted summaries"
+        }
+      },
+      "modernStack": {
+        "description": "Built with the latest AI technologies",
+        "title": "Modern Stack",
+        "features": {
+          "nextjsReact": "Powered by Next.js & React",
+          "typescriptSupport": "TypeScript for reliability",
+          "modernDevelopmentTools": "Modern AI and cloud infrastructure"
+        }
+      },
+      "subtitle": "Key Features",
+      "title": "Features"
+    },
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "post": "Post",
+    "title": "Meobeo.ai - AI Meeting Notes Platform",
+    "unknownTime": "Unknown time",
+    "userInformation": "User Information",
+    "username": "Username",
+    "welcomeBack": "Welcome back!"
+  },
+  "navigation": {
+    "about": "About",
+    "chat": "Meetings",
+    "help": "Help",
+    "menu": "Menu",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "profile": {
+    "changePassword": "Change password",
+    "changePhoto": "Change photo",
+    "editProfile": "Edit profile",
+    "title": "Profile"
+  },
+  "server": {
+    "currentTime": "Current server time",
+    "locale": "Locale",
+    "serverRendered": "Server rendered"
+  },
+  "settings": {
+    "account": "Account",
+    "appearance": "Appearance",
+    "changePassword": "Change password",
+    "currentUser": "Current user",
+    "deleteAccount": "Delete account",
+    "downloadData": "Download data",
+    "emailNotifications": "Email notifications",
+    "emailNotificationsDescription": "Receive meeting updates and news via email.",
+    "enableTwoFactor": "Enable two-factor authentication",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language.",
+    "notifications": "Notifications",
+    "pushNotifications": "Push notifications",
+    "pushNotificationsDescription": "Get instant meeting updates on your device.",
+    "security": "Security",
+    "theme": "Theme",
+    "themeDescription": "Switch between light and dark mode.",
+    "title": "Settings",
+    "updateAccount": "Update account"
+  },
+  "survey": {
+    "complete": "Complete",
+    "continue": "Continue",
+    "previous": "Previous",
+    "results": {
+      "completed": "Survey completed",
+      "description": "See your results and insights.",
+      "retake": "Retake survey",
+      "title": "Survey Results"
+    },
+    "step": "Step",
+    "submitting": "Submitting..."
+  },
+  "team": {
+    "leadership": {
+      "bio": "Bio",
+      "experience": "Experience",
+      "name": "Name",
+      "role": "Role",
+      "title": "Team",
+      "ceo": {
+        "name": "Meobeo.ai Founder",
+        "role": "CEO",
+        "bio": "Visionary leader passionate about AI and productivity. Building tools to make meetings smarter.",
+        "experience": "Experience in AI, SaaS, and productivity solutions."
+      },
+      "cto": {
+        "name": "AI Engineer",
+        "role": "CTO",
+        "bio": "Expert in AI and cloud technologies, responsible for Meobeo.ai's technical excellence.",
+        "experience": "Experience in AI development, cloud infrastructure, and automation."
+      },
+      "designer": {
+        "name": "Product Designer",
+        "role": "Lead Designer",
+        "bio": "Designs intuitive and user-friendly meeting note experiences.",
+        "experience": "Experience in UX/UI, SaaS, and productivity apps."
+      }
+    },
+    "subtitle": "Meet the Meobeo.ai Team",
+    "title": "Team",
+    "values": {
+      "description": "We believe in making meetings more productive and actionable with AI.",
+      "title": "Core Values",
+      "innovation": {
+        "title": "Innovation",
+        "description": "We constantly innovate to deliver smarter meeting solutions."
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "We are committed to high-quality, reliable, and secure meeting notes."
+      },
+      "community": {
+        "title": "Community",
+        "description": "We support a global community of productive teams."
+      }
+    }
+  }
+}

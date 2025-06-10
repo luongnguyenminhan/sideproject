@@ -183,10 +183,10 @@ export function AgentManagement({ onAgentUpdate }: AgentManagementProps) {
                   <FontAwesomeIcon icon={faRobot} className="w-6 h-6 text-white" />
                 </div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent">
-                  {t('chat.agentManagement.title') || 'Agent Management'}
+                  {t('chat.agentManagement.title')}
                 </h1>
                 <p className="text-[color:var(--muted-foreground)] text-sm">
-                  {t('chat.agentManagement.subtitle') || 'Configure and manage your AI agent settings'}
+                  {t('chat.agentManagement.subtitle')}
                 </p>
               </div>
 
@@ -467,8 +467,8 @@ export function AgentManagement({ onAgentUpdate }: AgentManagementProps) {
                                 : 'text-red-600 dark:text-red-400'
                             }`}>
                               {validationResult.status === 'valid' 
-                                ? t('chat.agentManagement.validationSuccess') || 'Validation Successful'
-                                : t('chat.agentManagement.validationFailed') || 'Validation Failed'
+                                ? t('chat.agentManagement.validationSuccess')
+                                : t('chat.agentManagement.validationFailed')
                               }
                             </p>
                             <p className="text-[color:var(--muted-foreground)] text-xs">{validationResult.message}</p>

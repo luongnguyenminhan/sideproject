@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
 import { MessageCodeBlock } from './message-code-block';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { processMessageText } from '@/utils/text-processing';
 
 interface Message {
   id: string;
@@ -99,7 +100,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
       <div className="flex items-center gap-3 px-2">
         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 overflow-hidden">
           <Image
-            src="/Logo CLB 2023.png"
+            src="/assets/logo/logo_web.png"
             alt="Assistant Logo"
             width={24}
             height={24}
@@ -107,7 +108,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
           />
         </div>
         <span className="text-sm font-medium text-[color:var(--foreground)]">
-            {t('chat.assistant') || 'Assistant'}
+            {t('chat.assistant')}
         </span>
         <span className="text-xs text-[color:var(--muted-foreground)]">
           {message.timestamp.toLocaleTimeString()}
@@ -126,16 +127,25 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
                 const codeContent = String(children).replace(/\n$/, '');
                 const language = match ? match[1] : 'text';
                 
+                // Handle inline code with simple styling
+                if (inline) {
+                  return (
+                    <code 
+                      className="bg-[color:var(--muted)] text-[color:var(--foreground)] px-1.5 py-0.5 rounded text-sm font-mono border border-[color:var(--border)]/50 shadow-sm" 
+                      {...rest}
+                    >
+                      {children}
+                    </code>
+                  );
+                }
+                
+                // Handle block code with MessageCodeBlock
                 return (
                   <MessageCodeBlock
                     code={codeContent}
                     language={language}
-                    inline={inline}
-                    variant={!inline && match ? 'header' : 'floating'}
-                    {...rest}
-                  >
-                    {children}
-                  </MessageCodeBlock>
+                    variant={match ? 'header' : 'floating'}
+                  />
                 );
               },
               img: (props: any) => (
@@ -244,7 +254,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
               )
             }}
           >
-            {message.content}
+            {processMessageText(message.content)}
           </ReactMarkdown>
         </div>
         

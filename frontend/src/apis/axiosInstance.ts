@@ -9,7 +9,7 @@ import { ApiError } from "@/types/common.type";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "http://localhost:8000/api/v1";
+  "https://api.wc504.io.vn/api/v1";
 
 
 const axiosInstance = axios.create({

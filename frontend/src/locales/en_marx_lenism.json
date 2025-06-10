@@ -1,0 +1,332 @@
+{
+  "aboutUs": {
+    "social": {
+      "about": "About us",
+      "followers": "Followers"
+    },
+    "title": "About MLN101 Philosophy Chatbot"
+  },
+  "auth": {
+    "allowPopups": "Allow popups to sign in",
+    "bySigningIn": "By signing in, you agree to our terms.",
+    "connectingToGoogle": "Connecting to Google...",
+    "email": "Email",
+    "login": "Login",
+    "loginSuccess": "Login successful",
+    "loginWithGoogle": "Login with Google",
+    "logout": "Logout",
+    "name": "Name",
+    "openingGoogleLogin": "Opening Google login...",
+    "pleaseWait": "Please wait...",
+    "role": "Role",
+    "signingIn": "Signing in...",
+    "signInWithGoogle": "Sign in with Google",
+    "unableToConnect": "Unable to connect",
+    "username": "Username"
+  },
+  "carousel": {
+    "currentImage": "Current image",
+    "description": "Description",
+    "nextImage": " ",
+    "prevImage": " ",
+    "subtitle": "Explore the world of philosophy",
+    "title": "MLN101 Philosophy Chatbot Platform"
+  },
+  "chat": {
+    "agentManagement": {
+      "agentConfig": "Agent configuration",
+      "agentError": "Agent error",
+      "agentLoading": "Loading agent...",
+      "agentTab": "Agent",
+      "apiKeyManagement": {
+        "apiKeyPlaceholder": "Enter your API key",
+        "currentKey": "Current API key",
+        "description": "Manage your API keys for AI providers.",
+        "enterApiKey": "Enter API key",
+        "hideKey": "Hide key",
+        "keyUpdated": "API key updated",
+        "noKeySet": "No API key set",
+        "selectProvider": "Select provider",
+        "showKey": "Show key",
+        "title": "API Key Management",
+        "update": "Update",
+        "updateFailed": "Update failed"
+      },
+      "apiKeyTab": "API Key",
+      "currentAgent": "Current agent",
+      "manage": "Manage",
+      "maxTokens": "Max tokens",
+      "modelName": "Model name",
+      "noAgentConfigured": "No agent configured",
+      "provider": "Provider",
+      "selectModel": "Select model",
+      "selectProvider": "Select provider",
+      "subtitle": "Configure your AI agent for philosophy support.",
+      "temperature": "Temperature",
+      "title": "AI Assistant Management",
+      "updateAgent": "Update agent",
+      "validateAgent": "Validate agent",
+      "validationCompleted": "Validation completed",
+      "validationFailed": "Validation failed",
+      "validationSuccess": "Validation successful",
+      "validationTab": "Validation"
+    },
+    "assistant": "Philosophy Chatbot",
+    "chats": "Chats",
+    "conversations": "Conversations",
+    "copied": "Copied",
+    "copy": "Copy",
+    "createFirstChat": "Start your first philosophical conversation",
+    "defaultChatTitle": "New Philosophy Chat",
+    "files": "Files",
+    "filesAssociated": "Files associated",
+    "htmlRenderError": "Error rendering content",
+    "messages": "Messages",
+    "newConversation": "New Conversation",
+    "noConversationsYet": "No conversations yet",
+    "noFilesUploaded": "No files uploaded",
+    "noMessages": "No messages",
+    "preview": "Preview",
+    "refresh": "Refresh",
+    "sending": "Sending...",
+    "showCode": "Show code",
+    "startConversation": "Start a philosophical discussion",
+    "systemPrompt": {
+      "conversationPrompt": "Set the philosophical topic",
+      "description": "Customize the philosophical question or debate topic.",
+      "placeholder": "Enter a philosophical question or topic...",
+      "title": "System Prompt"
+    },
+    "thisConversation": "This conversation",
+    "tooltips": {
+      "deleteConversation": "Delete conversation",
+      "editName": "Edit name",
+      "editSystemPrompt": "Edit system prompt",
+      "addConversation": "Add conversation",
+      "refreshConversation": "Refresh conversation",
+      "closeChat": "Close chat window",
+      "openChat": "Open chat window",
+      "uploadFile": "Upload file",
+      "sendMessage": "Send message",
+      "hasCustomSystemPrompt": "Custom system prompt",
+      "collapseSidebar": "Collapse sidebar",
+      "expandSidebar": "Expand sidebar"
+    },
+    "typeMessage": "Type your philosophical question...",
+    "typing": "Typing...",
+    "uploadedFiles": "Uploaded files",
+    "uploadFilesDescription": "Attach philosophy texts or notes for deeper discussion",
+    "welcomeDescription": "Practice philosophy: generate multiple-choice & open-ended questions for revision, simulate debates between schools of thought (e.g., Materialism vs. Idealism), and chat with an AI assistant that only answers from philosophical perspectives.",
+    "welcomeTitle": "Welcome to the MLN101 Philosophy Chatbot",
+    "errorCreateConversation": "Failed to create conversation",
+    "errorDeleteConversation": "Failed to delete conversation",
+    "errorLoadConversations": "Failed to load conversations",
+    "errorLoadFiles": "Failed to load files",
+    "errorLoadMessages": "Failed to load messages",
+    "errorSendMessage": "Failed to send message",
+    "errorUpdatePrompt": "Failed to update prompt",
+    "errorUploadFile": "Failed to upload file"
+  },
+  "common": {
+    "branding": "MLN101 Philosophy Chatbot",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "download": "Download",
+    "loading": "Loading...",
+    "no": "No",
+    "refresh": "Refresh",
+    "save": "Save",
+    "upload": "Upload",
+    "yes": "Yes"
+  },
+  "footer": {
+    "copyright": "© 2024 MLN101 Philosophy Chatbot",
+    "legal": {
+      "cookies": "Cookies Policy",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "location": "Online",
+    "madeWith": "Made with a passion for philosophy",
+    "social": {
+      "followUs": "Follow us"
+    },
+    "title": "MLN101 Philosophy Chatbot",
+    "company": {
+      "title": "About",
+      "about": "About Us",
+      "team": "Team",
+      "careers": "Join Us",
+      "contact": "Contact"
+    },
+    "products": {
+      "title": "Features",
+      "webDevelopment": "Question Generation",
+      "mobileApps": "Debate Simulation",
+      "aiSolutions": "AI Philosophy Assistant",
+      "consulting": "Philosophy Practice"
+    },
+    "resources": {
+      "title": "Resources",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "support": "Support",
+      "community": "Community"
+    }
+  },
+  "home": {
+    "authenticatedDescription": "Welcome back! Continue your philosophical journey.",
+    "confirmed": "Confirmed",
+    "description": "Philosophy can be dry, impractical, and hard to approach for students. This interactive web platform helps you practice philosophy by generating questions, simulating debates (e.g., materialism vs. idealism), and providing an AI assistant that only answers from philosophical perspectives. Enhance your critical thinking and engagement with the MLN101 course.",
+    "email": "Email",
+    "facebookPageName": "Facebook Page",
+    "facebookPostCountPrefix": "Posts:",
+    "facebookPostCountSuffix": "on Facebook",
+    "features": {
+      "darkMode": {
+        "description": "Comfortable reading in any lighting",
+        "title": "Dark Mode",
+        "features": {
+          "darkLightThemes": "Switch between dark and light themes",
+          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions",
+          "automaticSwitching": "Automatic theme switching based on system settings"
+        }
+      },
+      "fastPerformance": {
+        "description": "Instant responses and smooth experience",
+        "title": "Fast Performance",
+        "features": {
+          "optimizedPerformance": "Optimized for fast response times",
+          "lightningFastLoading": "Lightning-fast loading speeds",
+          "seamlessUserExperience": "Seamless and uninterrupted user experience"
+        }
+      },
+      "globalReady": {
+        "description": "Supports multiple languages for global learners",
+        "title": "Global Ready",
+        "features": {
+          "multiLanguageSupport": "Multi-language support",
+          "globalAccessibility": "Accessible from anywhere in the world",
+          "culturalAdaptation": "Culturally adapted content"
+        }
+      },
+      "modernStack": {
+        "description": "Built with the latest web technologies",
+        "title": "Modern Stack",
+        "features": {
+          "nextjsReact": "Powered by Next.js & React",
+          "typescriptSupport": "TypeScript support for reliability",
+          "modernDevelopmentTools": "Modern development tools and best practices"
+        }
+      },
+      "subtitle": "Key Features",
+      "title": "Features"
+    },
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "post": "Post",
+    "title": "MLN101 Philosophy Chatbot Platform",
+    "unknownTime": "Unknown time",
+    "userInformation": "User Information",
+    "username": "Username",
+    "welcomeBack": "Welcome back!"
+  },
+  "navigation": {
+    "about": "About",
+    "chat": "Chat",
+    "help": "Help",
+    "menu": "Menu",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "profile": {
+    "changePassword": "Change password",
+    "changePhoto": "Change photo",
+    "editProfile": "Edit profile",
+    "title": "Profile"
+  },
+  "server": {
+    "currentTime": "Current server time",
+    "locale": "Locale",
+    "serverRendered": "Server rendered"
+  },
+  "settings": {
+    "account": "Account",
+    "appearance": "Appearance",
+    "changePassword": "Change password",
+    "currentUser": "Current user",
+    "deleteAccount": "Delete account",
+    "downloadData": "Download data",
+    "emailNotifications": "Email notifications",
+    "emailNotificationsDescription": "Receive updates and news via email.",
+    "enableTwoFactor": "Enable two-factor authentication",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language.",
+    "notifications": "Notifications",
+    "pushNotifications": "Push notifications",
+    "pushNotificationsDescription": "Get instant updates on your device.",
+    "security": "Security",
+    "theme": "Theme",
+    "themeDescription": "Switch between light and dark mode.",
+    "title": "Settings",
+    "updateAccount": "Update account"
+  },
+  "survey": {
+    "complete": "Complete",
+    "continue": "Continue",
+    "previous": "Previous",
+    "results": {
+      "completed": "Survey completed",
+      "description": "See your results and insights.",
+      "retake": "Retake survey",
+      "title": "Survey Results"
+    },
+    "step": "Step",
+    "submitting": "Submitting..."
+  },
+  "team": {
+    "leadership": {
+      "bio": "Bio",
+      "experience": "Experience",
+      "name": "Name",
+      "role": "Role",
+      "title": "Team",
+      "ceo": {
+        "name": "Philosophy Instructor",
+        "role": "Course Leader",
+        "bio": "An expert in philosophy, passionate about helping students think critically and engage with philosophical ideas.",
+        "experience": "Experience in teaching, research, and philosophical debate."
+      },
+      "cto": {
+        "name": "AI Developer",
+        "role": "Technical Lead",
+        "bio": "Responsible for developing the AI systems that power the chatbot and debate simulations.",
+        "experience": "Experience in AI, programming, and educational technology."
+      },
+      "designer": {
+        "name": "Content Specialist",
+        "role": "Content Lead",
+        "bio": "Creates and curates philosophical questions and debate scenarios for effective learning.",
+        "experience": "Experience in philosophy content creation and educational design."
+      }
+    },
+    "subtitle": "Meet the MLN101 Philosophy Chatbot team",
+    "title": "Team",
+    "values": {
+      "description": "We believe in fostering critical thinking and making philosophy accessible and engaging.",
+      "title": "Core Values",
+      "innovation": {
+        "title": "Creativity",
+        "description": "We constantly explore new ideas and apply technology to improve philosophy learning."
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "We are committed to creating high-quality, meaningful, and practical philosophy resources."
+      },
+      "community": {
+        "title": "Community",
+        "description": "We build a supportive learning community for all philosophy students."
+      }
+    }
+  }
+}
