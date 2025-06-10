@@ -9,9 +9,16 @@ class GroupMemberRoleEnum(str, Enum):
 	LEADER = 'leader'
 	MEMBER = 'member'
  
-class GroupMemberStatus(str, Enum):
-    """Member status enumeration"""
-    
-    PENDING = 'pending'
-    ACCEPTED = 'accepted'
-    REJECTED = 'rejected'
+class GroupRequestType(str, Enum):
+    """Loại request"""
+    JOIN = "join"          # User request tham gia group
+    INVITE = "invite"      # Leader mời user vào group
+    PROMOTE = "promote"    # Request phong user lên leader
+    TRANSFER = "transfer"  # Chuyển quyền leader
+
+class GroupRequestStatus(str, Enum):
+    """Trạng thái request"""
+    PENDING = "pending"     # Đang chờ xử lý
+    APPROVED = "approved"   # Đã chấp nhận
+    REJECTED = "rejected"   # Đã từ chối
+    CANCELLED = "cancelled" # Đã hủy

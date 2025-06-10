@@ -21,10 +21,10 @@ from app.middleware.translation_manager import _
 class GroupResponse(ResponseSchema):
     """Group info Response model"""
 
-    group_id: int = Field(
+    group_id: str = Field(
         ...,
         description='Group ID',
-        examples=[1],
+        examples=['d9fc5dc0-e4b7-4a7d-83a1-7dda5fed129b'],
     )
     group_name: str = Field(..., description='Group name', examples=['Developers'])
     group_picture: str | None = Field(default=None, description='Group picture URL', examples=['https://example.com/group.jpg'])

@@ -1,10 +1,11 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from datetime import datetime, timezone
 
 from app.core.base_dal import BaseDAL
-from app.modules.groups.models.groups import Group, GroupMember
-from app.enums.group_enums import GroupMemberStatus, GroupMemberRoleEnum
+from app.modules.groups.models.groups import Group, GroupMember, GroupRequest
+from app.enums.group_enums import GroupMemberStatus, GroupMemberRoleEnum, GroupRequestType, GroupRequestStatus
 
 class GroupDAL(BaseDAL[Group]):
     """Group Data Access Layer"""
@@ -12,7 +13,7 @@ class GroupDAL(BaseDAL[Group]):
     def __init__(self, db: Session):
         super().__init__(db, Group)
     
-    def create_group(self, group_name: str, leader_id: int, group_picture: str = None) -> Group:
+    def create_group(self, group_name: str, leader_id: str, group_picture: str = None) -> Group:
         """Tạo group mới"""
         group = Group(
             group_name=group_name,
@@ -23,11 +24,10 @@ class GroupDAL(BaseDAL[Group]):
         self.db.commit()
         self.db.refresh(group)
         
-        # Thêm leader vào group
+        # Thêm leader vào group_members
         leader_member = GroupMember(
-            group_id=group.group_id,
+            group_id=group.id,  # Sử dụng id từ BaseEntity
             user_id=leader_id,
-            status=GroupMemberStatus.ACCEPTED,
             role=GroupMemberRoleEnum.LEADER
         )
         self.db.add(leader_member)
@@ -35,18 +35,15 @@ class GroupDAL(BaseDAL[Group]):
         
         return group
     
-    def get_group_by_id(self, group_id: int) -> Optional[Group]:
+    def get_group_by_id(self, group_id: str) -> Optional[Group]:
         """Lấy group theo ID"""
-        return self.db.query(Group).filter(Group.group_id == group_id).first()
+        return self.db.query(Group).filter(Group.id == group_id).first()
     
-    def get_user_groups(self, user_id: int) -> List[Group]:
+    def get_user_groups(self, user_id: str) -> List[Group]:
         """Lấy danh sách group của user"""
         return (self.db.query(Group)
                 .join(GroupMember)
-                .filter(and_(
-                    GroupMember.user_id == user_id,
-                    GroupMember.status == GroupMemberStatus.ACCEPTED
-                ))
+                .filter(GroupMember.user_id == user_id)
                 .all())
 
 class GroupMemberDAL(BaseDAL[GroupMember]):
@@ -55,13 +52,40 @@ class GroupMemberDAL(BaseDAL[GroupMember]):
     def __init__(self, db: Session):
         super().__init__(db, GroupMember)
     
-    def invite_member(self, group_id: int, user_id: int, invited_by: int, nickname: str = None) -> GroupMember:
-        """Mời thành viên vào group"""
+    def get_group_members(self, group_id: str) -> List[GroupMember]:
+        """Lấy danh sách thành viên trong group"""
+        return self.db.query(GroupMember).filter(GroupMember.group_id == group_id).all()
+    
+    def get_group_leaders(self, group_id: str) -> List[GroupMember]:
+        """Lấy danh sách leader trong group"""
+        return self.db.query(GroupMember).filter(and_(
+            GroupMember.group_id == group_id,
+            GroupMember.role == GroupMemberRoleEnum.LEADER
+        )).all()
+    
+    def is_member(self, group_id: str, user_id: str) -> bool:
+        """Kiểm tra user có phải member không"""
+        member = self.db.query(GroupMember).filter(and_(
+            GroupMember.group_id == group_id,
+            GroupMember.user_id == user_id
+        )).first()
+        return member is not None
+    
+    def is_leader(self, group_id: str, user_id: str) -> bool:
+        """Kiểm tra user có phải leader không"""
+        member = self.db.query(GroupMember).filter(and_(
+            GroupMember.group_id == group_id,
+            GroupMember.user_id == user_id,
+            GroupMember.role == GroupMemberRoleEnum.LEADER
+        )).first()
+        return member is not None
+    
+    def add_member(self, group_id: str, user_id: str, nickname: str = None, invited_by: str = None) -> GroupMember:
+        """Thêm thành viên vào group"""
         member = GroupMember(
             group_id=group_id,
             user_id=user_id,
             nickname=nickname,
-            status=GroupMemberStatus.PENDING,
             role=GroupMemberRoleEnum.MEMBER,
             invited_by=invited_by
         )
@@ -70,36 +94,7 @@ class GroupMemberDAL(BaseDAL[GroupMember]):
         self.db.refresh(member)
         return member
     
-    def request_join(self, group_id: int, user_id: int, nickname: str = None) -> GroupMember:
-        """Request tham gia group"""
-        member = GroupMember(
-            group_id=group_id,
-            user_id=user_id,
-            nickname=nickname,
-            status=GroupMemberStatus.PENDING,
-            role=GroupMemberRoleEnum.MEMBER
-        )
-        self.db.add(member)
-        self.db.commit()
-        self.db.refresh(member)
-        return member
-    
-    def accept_invite_or_request(self, group_id: int, user_id: int) -> Optional[GroupMember]:
-        """Accept lời mời hoặc duyệt request"""
-        member = self.db.query(GroupMember).filter(and_(
-            GroupMember.group_id == group_id,
-            GroupMember.user_id == user_id,
-            GroupMember.status == GroupMemberStatus.PENDING
-        )).first()
-        
-        if member:
-            member.status = GroupMemberStatus.ACCEPTED
-            self.db.commit()
-            self.db.refresh(member)
-        
-        return member
-    
-    def remove_member(self, group_id: int, user_id: int) -> bool:
+    def remove_member(self, group_id: str, user_id: str) -> bool:
         """Xóa thành viên khỏi group"""
         member = self.db.query(GroupMember).filter(and_(
             GroupMember.group_id == group_id,
@@ -112,12 +107,11 @@ class GroupMemberDAL(BaseDAL[GroupMember]):
             return True
         return False
     
-    def promote_to_leader(self, group_id: int, user_id: int) -> Optional[GroupMember]:
+    def promote_to_leader(self, group_id: str, user_id: str) -> Optional[GroupMember]:
         """Phong user lên làm leader"""
         member = self.db.query(GroupMember).filter(and_(
             GroupMember.group_id == group_id,
-            GroupMember.user_id == user_id,
-            GroupMember.status == GroupMemberStatus.ACCEPTED
+            GroupMember.user_id == user_id
         )).first()
         
         if member:
@@ -127,7 +121,7 @@ class GroupMemberDAL(BaseDAL[GroupMember]):
         
         return member
     
-    def update_nickname(self, group_id: int, user_id: int, nickname: str) -> Optional[GroupMember]:
+    def update_nickname(self, group_id: str, user_id: str, nickname: str) -> Optional[GroupMember]:
         """Cập nhật nickname trong group"""
         member = self.db.query(GroupMember).filter(and_(
             GroupMember.group_id == group_id,
@@ -140,34 +134,94 @@ class GroupMemberDAL(BaseDAL[GroupMember]):
             self.db.refresh(member)
         
         return member
+
+class GroupRequestDAL(BaseDAL[GroupRequest]):
+    """Group Request Data Access Layer"""
     
-    def get_group_members(self, group_id: int) -> List[GroupMember]:
-        """Lấy danh sách thành viên trong group"""
-        return self.db.query(GroupMember).filter(GroupMember.group_id == group_id).all()
+    def __init__(self, db: Session):
+        super().__init__(db, GroupRequest)
     
-    def get_group_leaders(self, group_id: int) -> List[GroupMember]:
-        """Lấy danh sách leader trong group"""
-        return self.db.query(GroupMember).filter(and_(
-            GroupMember.group_id == group_id,
-            GroupMember.role == GroupMemberRoleEnum.LEADER,
-            GroupMember.status == GroupMemberStatus.ACCEPTED
+    def create_invite_request(self, group_id: str, user_id: str, requested_by: str, message: str = None) -> GroupRequest:
+        """Tạo lời mời vào group"""
+        request = GroupRequest(
+            group_id=group_id,
+            user_id=user_id,
+            request_type=GroupRequestType.INVITE,
+            status=GroupRequestStatus.PENDING,
+            message=message,
+            requested_by=requested_by
+        )
+        self.db.add(request)
+        self.db.commit()
+        self.db.refresh(request)
+        return request
+    
+    def create_join_request(self, group_id: str, user_id: str, message: str = None) -> GroupRequest:
+        """Tạo yêu cầu tham gia group"""
+        request = GroupRequest(
+            group_id=group_id,
+            user_id=user_id,
+            request_type=GroupRequestType.JOIN,
+            status=GroupRequestStatus.PENDING,
+            message=message,
+            requested_by=user_id  # User tự request
+        )
+        self.db.add(request)
+        self.db.commit()
+        self.db.refresh(request)
+        return request
+    
+    def get_pending_requests(self, group_id: str) -> List[GroupRequest]:
+        """Lấy danh sách request pending của group"""
+        return self.db.query(GroupRequest).filter(and_(
+            GroupRequest.group_id == group_id,
+            GroupRequest.status == GroupRequestStatus.PENDING
         )).all()
     
-    def is_member(self, group_id: int, user_id: int) -> bool:
-        """Kiểm tra user có phải member không"""
-        member = self.db.query(GroupMember).filter(and_(
-            GroupMember.group_id == group_id,
-            GroupMember.user_id == user_id,
-            GroupMember.status == GroupMemberStatus.ACCEPTED
-        )).first()
-        return member is not None
+    def get_user_pending_requests(self, user_id: str) -> List[GroupRequest]:
+        """Lấy danh sách request pending của user"""
+        return self.db.query(GroupRequest).filter(and_(
+            GroupRequest.user_id == user_id,
+            GroupRequest.status == GroupRequestStatus.PENDING
+        )).all()
     
-    def is_leader(self, group_id: int, user_id: int) -> bool:
-        """Kiểm tra user có phải leader không"""
-        member = self.db.query(GroupMember).filter(and_(
-            GroupMember.group_id == group_id,
-            GroupMember.user_id == user_id,
-            GroupMember.role == GroupMemberRoleEnum.LEADER,
-            GroupMember.status == GroupMemberStatus.ACCEPTED
-        )).first()
-        return member is not None
+    def approve_request(self, request_id: str, processed_by: str) -> Optional[GroupRequest]:
+        """Chấp nhận request"""
+        request = self.db.query(GroupRequest).filter(GroupRequest.id == request_id).first()
+        
+        if request and request.status == GroupRequestStatus.PENDING:
+            request.status = GroupRequestStatus.APPROVED
+            request.processed_at = datetime.now(timezone.utc)
+            request.processed_by = processed_by
+            self.db.commit()
+            self.db.refresh(request)
+        
+        return request
+    
+    def reject_request(self, request_id: str, processed_by: str) -> Optional[GroupRequest]:
+        """Từ chối request"""
+        request = self.db.query(GroupRequest).filter(GroupRequest.id == request_id).first()
+        
+        if request and request.status == GroupRequestStatus.PENDING:
+            request.status = GroupRequestStatus.REJECTED
+            request.processed_by = processed_by
+            request.processed_at = datetime.now(timezone.utc)
+            self.db.commit()
+            self.db.refresh(request)
+        
+        return request
+    
+    def cancel_request(self, request_id: str) -> Optional[GroupRequest]:
+        """Hủy request"""
+        request = self.db.query(GroupRequest).filter(GroupRequest.id == request_id).first()
+        
+        if request and request.status == GroupRequestStatus.PENDING:
+            request.status = GroupRequestStatus.CANCELLED
+            self.db.commit()
+            self.db.refresh(request)
+        
+        return request
+    
+    def get_request_by_id(self, request_id: str) -> Optional[GroupRequest]:
+        """Lấy request theo ID"""
+        return self.db.query(GroupRequest).filter(GroupRequest.id == request_id).first()
