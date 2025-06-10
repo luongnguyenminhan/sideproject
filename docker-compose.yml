@@ -11,7 +11,8 @@ services:
     volumes:
       - .:/app
       - audio_data:/data/audio 
-      - /home/configCompose/client-secret.json:/app/app/core/client-secret.json
+      # - /home/configCompose/client-secret.json:/app/app/core/client-secret.json
+      - ./app/core/client-secret.json:/app/app/core/client-secret.json
     environment:
       - ENV=development
       - RUN_TESTS=false  
