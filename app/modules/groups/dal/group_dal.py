@@ -6,6 +6,10 @@ from datetime import datetime, timezone
 from app.core.base_dal import BaseDAL
 from app.modules.groups.models.groups import Group, GroupMember, GroupRequest
 from app.enums.group_enums import GroupMemberStatus, GroupMemberRoleEnum, GroupRequestType, GroupRequestStatus
+import logging
+from app.utils.pagination import Pagination
+from app.utils.dynamic_filter import apply_dynamic_filters
+from app.constants import Constants
 
 class GroupDAL(BaseDAL[Group]):
     """Group Data Access Layer"""
@@ -45,6 +49,30 @@ class GroupDAL(BaseDAL[Group]):
                 .join(GroupMember)
                 .filter(GroupMember.user_id == user_id)
                 .all())
+
+    def search_groups(self, params: dict) -> Pagination[Group]:
+        """Search groups with dynamic filters based on any Group model field"""
+
+        logger = logging.getLogger(__name__)
+        logger.info(f'Searching groups with parameters: {params}')
+        page = int(params.get('page', 1))
+        page_size = int(params.get('page_size', Constants.PAGE_SIZE))
+
+        query = self.db.query(Group)
+
+        # Apply dynamic filters
+        query = apply_dynamic_filters(query, Group, params)
+
+        # Sort by creation date descending if available
+        if hasattr(Group, "create_date"):
+            query = query.order_by(Group.create_date.desc())
+
+        total_count = query.count()
+        groups = query.offset((page - 1) * page_size).limit(page_size).all()
+
+        logger.info(f'Found {total_count} groups, returning page {page} with {len(groups)} items')
+
+        return Pagination(items=groups, total_count=total_count, page=page, page_size=page_size)
 
 class GroupMemberDAL(BaseDAL[GroupMember]):
     """Group Member Data Access Layer"""

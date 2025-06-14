@@ -10,9 +10,10 @@ from app.modules.groups.models.groups import Group, GroupMember, GroupRequest
 from app.modules.groups.schemas.groups import (
     GroupCreate, GroupUpdate, InviteMemberRequest, JoinGroupRequest,
     ApproveRequestRequest, UpdateNicknameRequest, GroupMemberFilter,
-    GroupRequestFilter, BulkInviteRequest
+    GroupRequestFilter, BulkInviteRequest, SearchGroupRequest
 )
 from app.enums.group_enums import GroupMemberRoleEnum, GroupRequestType, GroupRequestStatus
+from app.core.base_model import Pagination
 
 logger = logging.getLogger(__name__)
 class GroupRepo(BaseRepo):
@@ -118,6 +119,13 @@ class GroupRepo(BaseRepo):
             )
         except Exception as ex:
             logger.error(f"Error inviting member: {ex}")
+            raise ex
+        
+    def search_groups(self, request : SearchGroupRequest) -> Pagination[Group]:
+        try:
+            result = self.group_dal.search_groups(request.model_dump())
+            return result
+        except Exception as ex:
             raise ex
         
     
