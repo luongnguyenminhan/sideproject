@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ApiResponse } from './common.type';
 
-// Admin Document Data
+// Document Data
 export interface AdminDocumentData {
   id?: string;
   title: string;
@@ -9,51 +9,30 @@ export interface AdminDocumentData {
   category: string;
   tags: string[];
   source?: string;
+  create_date?: string;
 }
 
 // Request Types
-export interface IndexAdminDocumentsRequest {
-  documents: AdminDocumentData[];
-}
-
 export interface SearchGlobalKBRequest {
-  query: string;
+  query?: string;
   top_k?: number;
   category?: string;
 }
 
-export interface InitializeGlobalKBRequest {
-  include_defaults?: boolean;
-}
-
 // Response Types
-export interface GlobalKBSearchResult {
+export interface GlobalKBResponse {
+  id: string;
+  title: string;
   content: string;
-  metadata: Record<string, any>;
-  similarity_score: number;
-  source: string;
-  doc_id: string;
-}
-
-export interface GlobalKBSearchResponse {
-  results: GlobalKBSearchResult[];
-  query: string;
-  total_results: number;
-}
-
-export interface GlobalKBIndexResponse {
-  successful_docs: string[];
-  failed_docs: Array<{ id: string; error: string }>;
-  total_documents: number;
-  indexed_count: number;
-  collection_name: string;
+  category: string;
+  tags: string[];
+  source?: string;
+  create_date: string;
 }
 
 export interface GlobalKBStats {
-  collection_name: string;
-  exists: boolean;
-  status: string;
-  error?: string;
+  total_documents: number;
+  [key: string]: any;
 }
 
 export interface UploadGlobalKBFileResponse {
@@ -62,11 +41,9 @@ export interface UploadGlobalKBFileResponse {
   content: string;
   category: string;
   tags: string[];
-  source: string; // file url
+  source: string;
+  create_date: string;
 }
 
 // API Response Types
-export type IndexAdminDocumentsResponse = ApiResponse<GlobalKBIndexResponse>;
-export type SearchGlobalKBResponse = ApiResponse<GlobalKBSearchResponse>;
-export type InitializeGlobalKBResponse = ApiResponse<any>;
 export type GetGlobalKBStatsResponse = ApiResponse<GlobalKBStats>;

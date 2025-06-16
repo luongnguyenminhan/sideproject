@@ -1,36 +1,48 @@
 import axiosInstance from './axiosInstance';
 import type {
-  IndexAdminDocumentsRequest,
+  AdminDocumentData,
   SearchGlobalKBRequest,
-  InitializeGlobalKBRequest,
-  IndexAdminDocumentsResponse,
-  SearchGlobalKBResponse,
-  InitializeGlobalKBResponse,
+  GlobalKBResponse,
   GetGlobalKBStatsResponse,
   UploadGlobalKBFileResponse,
+  ApiResponse,
 } from '@/types/global-kb.type';
 
 export const globalKBAPI = {
-  // Initialize Global Knowledge Base
-  initialize: async (
-    data: InitializeGlobalKBRequest
-  ): Promise<InitializeGlobalKBResponse> => {
-    const response = await axiosInstance.post('/global-kb/initialize', data);
+  // List all documents
+  list: async (): Promise<ApiResponse<GlobalKBResponse[]>> => {
+    const response = await axiosInstance.get('/global-kb/');
     return response.data;
   },
 
-  // Index Admin Documents
-  indexAdminDocuments: async (
-    data: IndexAdminDocumentsRequest
-  ): Promise<IndexAdminDocumentsResponse> => {
-    const response = await axiosInstance.post('/global-kb/admin-documents', data);
+  // Get a single document
+  get: async (docId: string): Promise<ApiResponse<GlobalKBResponse>> => {
+    const response = await axiosInstance.get(`/global-kb/${docId}`);
+    return response.data;
+  },
+
+  // Create a document
+  create: async (data: AdminDocumentData): Promise<ApiResponse<GlobalKBResponse>> => {
+    const response = await axiosInstance.post('/global-kb/', data);
+    return response.data;
+  },
+
+  // Update a document
+  update: async (docId: string, data: Partial<AdminDocumentData>): Promise<ApiResponse<GlobalKBResponse>> => {
+    const response = await axiosInstance.put(`/global-kb/${docId}`, data);
+    return response.data;
+  },
+
+  // Delete a document
+  delete: async (docId: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`/global-kb/${docId}`);
     return response.data;
   },
 
   // Search Global Knowledge Base
   search: async (
     data: SearchGlobalKBRequest
-  ): Promise<SearchGlobalKBResponse> => {
+  ): Promise<ApiResponse<GlobalKBResponse[]>> => {
     const response = await axiosInstance.post('/global-kb/search', data);
     return response.data;
   },
@@ -41,7 +53,7 @@ export const globalKBAPI = {
     return response.data;
   },
 
-  // Upload file to Global KB (admin)
+  // Upload file to Global KB
   uploadFile: async (file: File, title?: string, category?: string, tags?: string[]): Promise<UploadGlobalKBFileResponse> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -58,8 +70,8 @@ export const globalKBAPI = {
     }
   },
 
-  // Xóa file/document khỏi Global KB
-  deleteFile: async (docId: string) => {
+  // Delete file/document from Global KB
+  deleteFile: async (docId: string): Promise<ApiResponse<null>> => {
     const response = await axiosInstance.delete(`/global-kb/file/${docId}`);
     return response.data;
   },

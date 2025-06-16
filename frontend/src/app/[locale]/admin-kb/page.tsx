@@ -46,7 +46,6 @@ async function AdminKBPage() {
             {translations.description}
           </p>
         </div>
-
         <AdminKBClient translations={translations} />
       </div>
     </div>

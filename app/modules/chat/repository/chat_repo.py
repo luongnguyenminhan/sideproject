@@ -136,7 +136,7 @@ class ChatRepo:
 			# Get CV context and integrate into system prompt
 			cv_service = CVIntegrationService(self.db)
 			cv_context = cv_service.get_cv_context_for_prompt(conversation_id, user_id)
-			print(f"\033[91m Debug: CV Context {cv_context}\033[0m")
+			print(f'\033[91m Debug: CV Context {cv_context}\033[0m')
 
 			if cv_context:
 				# Append CV context to system prompt
@@ -146,12 +146,12 @@ class ChatRepo:
 					conversation_system_prompt = cv_context
 
 			# Call agent workflow system
-			print(f"\033[91m Debug: Conversation System Prompt {conversation_system_prompt}\033[0m")
+			print(f'\033[91m Debug: Conversation System Prompt {conversation_system_prompt}\033[0m')
 			result = await self.conversation_workflow_repo.execute_chat_workflow(
 				conversation_id=conversation_id,
 				user_message=user_message,
 				conversation_system_prompt=conversation_system_prompt,
-				conversation_history=conversation_history,  
+				conversation_history=conversation_history,
 			)
 
 			return result

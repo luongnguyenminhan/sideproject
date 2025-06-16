@@ -96,14 +96,14 @@ class CVIntegrationService:
 
 			# Update conversation extra_metadata
 			existing_metadata = json.loads(conversation.extra_metadata or '{}')
-			
+
 			# Convert cv_analysis to dict trước khi lưu
-			cv_context['full_cv_analysis'] = cv_analysis.model_dump() 
-			print("Debug: ", cv_context['full_cv_analysis'])
-			cv_context['cv_summary'] = cv_analysis.cv_summary 
-			print("Debug: ", cv_context['cv_summary'])  
+			cv_context['full_cv_analysis'] = cv_analysis.model_dump()
+			print('Debug: ', cv_context['full_cv_analysis'])
+			cv_context['cv_summary'] = cv_analysis.cv_summary
+			print('Debug: ', cv_context['cv_summary'])
 			cv_context['personal_info'] = cv_analysis.personal_information.model_dump()
-			print("Debug: ", cv_context['personal_info'])
+			print('Debug: ', cv_context['personal_info'])
 			existing_metadata['cv_context'] = cv_context
 			print(f'[CVIntegrationService] Updated conversation extra_metadata: {existing_metadata}')
 
