@@ -394,7 +394,7 @@ async def upload_cv_for_chat(
         cv_file_url = minio_handler.get_file_url(object_path, expires=3600)
 
         # Use cv_extraction module for CV processing
-        from app.modules.cv_extraction.repositories.cv_repo import CVRepository
+        from app.modules.cv_extraction.repository.cv_repo import CVRepository
         from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 
         cv_repo = CVRepository()

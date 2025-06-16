@@ -4,7 +4,7 @@ import uuid
 import os
 from app.core.base_model import APIResponse
 from app.middleware.translation_manager import _
-from app.modules.cv_extraction.repositories.cv_agent import CVAnalyzer
+from app.modules.cv_extraction.repository.cv_agent import CVAnalyzer
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 from app.utils.pdf import (
 	PDFToTextConverter,

@@ -5,7 +5,7 @@ from typing import Dict, List, Any, Optional
 from pydantic import BaseModel, Field
 from typing import Literal
 
-from app.modules.cv_extraction.repositories.cv_agent.agent_schema import (
+from app.modules.cv_extraction.repository.cv_agent.agent_schema import (
 	CVState,
 	ListInferredItem,
 	PersonalInfoItem,
@@ -18,8 +18,8 @@ from app.modules.cv_extraction.repositories.cv_agent.agent_schema import (
 	ListInterestItem,  # Added import
 	ListKeywordItem,  # Added import
 )
-from app.modules.cv_extraction.repositories.cv_agent.llm_setup import initialize_llm
-from app.modules.cv_extraction.repositories.cv_agent.prompts import (
+from app.modules.cv_extraction.repository.cv_agent.llm_setup import initialize_llm
+from app.modules.cv_extraction.repository.cv_agent.prompts import (
 	CV_CLEANING_PROMPT,
 	SECTION_IDENTIFICATION_PROMPT,
 	GENERAL_EXTRACTION_SYSTEM_PROMPT,
@@ -29,7 +29,7 @@ from app.modules.cv_extraction.repositories.cv_agent.prompts import (
 	INFERENCE_SYSTEM_PROMPT,
 	INFERENCE_PROMPT,
 )
-from app.modules.cv_extraction.repositories.cv_agent.utils import (
+from app.modules.cv_extraction.repository.cv_agent.utils import (
 	TokenTracker,
 	count_tokens,
 	calculate_price,

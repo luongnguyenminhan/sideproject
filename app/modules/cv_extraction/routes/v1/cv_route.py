@@ -4,7 +4,7 @@ from app.core.base_model import APIResponse
 from app.core.config import FERNET_KEY
 from app.middleware.translation_manager import _
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
-from app.modules.cv_extraction.repositories.cv_repo import CVRepository
+from app.modules.cv_extraction.repository.cv_repo import CVRepository
 
 
 route = APIRouter(prefix='/cv', tags=['CV'])

@@ -240,7 +240,7 @@ async def rag_query_node(state, config):
 
 		# Import RAG dependencies
 		from app.modules.agentic_rag.agent.rag_graph import RAGAgentGraph
-		from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+		from app.modules.agentic_rag.repository.kb_repo import KBRepository
 
 		# Initialize RAG agent for the collection
 		kb_repo = KBRepository(collection_name=collection_id)

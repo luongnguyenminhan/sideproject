@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
 from app.modules.chat.models.conversation import Conversation
 from app.utils.minio.minio_handler import minio_handler
-from app.modules.cv_extraction.repositories.cv_agent.cv_processor import (
+from app.modules.cv_extraction.repository.cv_agent.cv_processor import (
 	CVProcessorWorkflow,
 )
 
