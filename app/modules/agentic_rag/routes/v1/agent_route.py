@@ -7,7 +7,7 @@ from app.middleware.translation_manager import _
 from app.exceptions.handlers import handle_exceptions
 from app.modules.agentic_rag.schemas.rag_schema import RAGRequest
 from app.modules.agentic_rag.agent.rag_graph import RAGAgentGraph
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.agentic_rag.core.config import DEFAULT_COLLECTION
 
 # Router for Agentic RAG agent operations

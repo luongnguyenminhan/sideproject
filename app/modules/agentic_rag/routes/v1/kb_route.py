@@ -14,7 +14,7 @@ from app.modules.agentic_rag.schemas.kb_schema import (
 	UploadDocumentResponse,
 	ViewDocumentResponse,
 )
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 
 # Router for Agentic RAG knowledge base operations
 route: APIRouter = APIRouter(prefix='/kb', tags=['Agentic RAG'])

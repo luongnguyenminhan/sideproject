@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.modules.agent.services.file_indexing_service import (
 	ConversationFileIndexingService,
 )
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.chat.repository.file_repo import FileRepo
 from app.modules.chat.models.file import File
 

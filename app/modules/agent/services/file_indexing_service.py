@@ -10,7 +10,7 @@ from langchain_core.documents import Document
 from datetime import datetime
 
 from app.modules.chat.services.file_extraction_service import file_extraction_service
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.agentic_rag.schemas.kb_schema import (
 	AddDocumentsRequest,
 	DocumentModel,

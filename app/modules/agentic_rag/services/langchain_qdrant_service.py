@@ -29,7 +29,7 @@ class LangChainQdrantService:
 		logger.info(f"LangChainQdrantService - Indexing {len(documents)} documents to collection '{collection_name}'")
 
 		try:
-			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+			from app.modules.agentic_rag.repository.kb_repo import KBRepository
 			from app.modules.agentic_rag.schemas.kb_schema import (
 				AddDocumentsRequest,
 				DocumentModel,
@@ -97,7 +97,7 @@ class LangChainQdrantService:
 		logger.info(f"LangChainQdrantService - Searching in collection '{collection_name}': '{query[:50]}...'")
 
 		try:
-			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+			from app.modules.agentic_rag.repository.kb_repo import KBRepository
 			from app.modules.agentic_rag.schemas.kb_schema import QueryRequest
 
 			# Initialize KB Repository and perform search
@@ -129,7 +129,7 @@ class LangChainQdrantService:
 	def list_collections(self) -> List[str]:
 		"""List all collections via KB Repository"""
 		try:
-			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+			from app.modules.agentic_rag.repository.kb_repo import KBRepository
 
 			kb_repo = KBRepository()
 			collections = kb_repo.list_collections()
@@ -146,7 +146,7 @@ class LangChainQdrantService:
 	def collection_exists(self, collection_name: str) -> bool:
 		"""Check if collection exists via KB Repository"""
 		try:
-			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+			from app.modules.agentic_rag.repository.kb_repo import KBRepository
 
 			kb_repo = KBRepository()
 			return kb_repo.collection_exists(collection_name)
@@ -161,7 +161,7 @@ class LangChainQdrantService:
 	def create_collection(self, collection_name: str) -> bool:
 		"""Create collection via KB Repository"""
 		try:
-			from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+			from app.modules.agentic_rag.repository.kb_repo import KBRepository
 
 			kb_repo = KBRepository()
 			result = kb_repo.create_collection(collection_name)

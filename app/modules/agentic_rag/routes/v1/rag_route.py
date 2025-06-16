@@ -6,7 +6,7 @@ from app.core.base_model import APIResponse
 from app.middleware.translation_manager import _
 from app.exceptions.handlers import handle_exceptions
 from app.modules.agentic_rag.schemas.rag_schema import RAGRequest
-from app.modules.agentic_rag.repositories.rag_repo import RAGRepo
+from app.modules.agentic_rag.repository.rag_repo import RAGRepo
 
 # Router for Agentic RAG operations
 route: APIRouter = APIRouter(prefix='/rag', tags=['Agentic RAG'])

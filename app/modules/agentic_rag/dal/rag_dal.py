@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 
 from app.core.base_dal import BaseDAL
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.agentic_rag.schemas.kb_schema import AddDocumentsRequest, DocumentModel, QueryRequest, QueryResponse
 
 logger = logging.getLogger(__name__)

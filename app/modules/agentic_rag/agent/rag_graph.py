@@ -16,7 +16,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from app.middleware.translation_manager import _
 from app.exceptions.exception import CustomHTTPException
 from app.core.config import GOOGLE_API_KEY
-from app.modules.agentic_rag.repositories.kb_repo import KBRepository
+from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.agentic_rag.core.config import DEFAULT_COLLECTION
 
 logger = logging.getLogger(__name__)
