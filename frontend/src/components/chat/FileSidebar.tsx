@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFile, faTrash, faDownload, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faFile, faTrash, faDownload, faPlus, faChevronRight, faUser, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 
 interface UploadedFile {
@@ -21,8 +21,10 @@ interface FileSidebarProps {
   conversationId?: string | null
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
+  onUploadCV?: (file: File) => void
   isCollapsed?: boolean
   onToggleCollapse?: () => void
+  isCVUploading?: boolean
 }
 
 export function FileSidebar({ 
@@ -31,11 +33,14 @@ export function FileSidebar({
   conversationId,
   onDeleteFile, 
   onUploadFiles,
+  onUploadCV,
   isCollapsed = false,
-  onToggleCollapse
+  onToggleCollapse,
+  isCVUploading = false
 }: FileSidebarProps) {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cvInputRef = useRef<HTMLInputElement>(null)
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
@@ -65,6 +70,25 @@ export function FileSidebar({
     }
   }
 
+  const handleCVSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0 && onUploadCV) {
+      const file = files[0]
+      // Validate CV file types
+      const cvExtensions = ['.pdf', '.doc', '.docx']
+      const isValidCV = cvExtensions.some(ext => file.name.toLowerCase().endsWith(ext))
+      
+      if (isValidCV) {
+        onUploadCV(file)
+      } else {
+        alert(t('chat.invalidCVFileType') || 'Please select a valid CV file (PDF, DOC, DOCX)')
+      }
+    }
+    if (cvInputRef.current) {
+      cvInputRef.current.value = ''
+    }
+  }
+
   // No expand button here; handled in chat-interface.tsx
 
   return (
@@ -72,15 +96,37 @@ export function FileSidebar({
       {/* Header */}
       <div className="p-4 border-b border-[color:var(--border)]">
         <div className="flex items-center justify-between mb-4">
-          {/* Upload Button */}
-          <Button
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 flex-1 mr-2 group"
-          >
-            <FontAwesomeIcon icon={faPlus} className="mr-2 text-white group-hover:scale-110 transition-transform duration-200" />
-            <span className="text-white">{t('common.upload')}</span>
-          </Button>
+          {/* Upload Buttons */}
+          <div className="flex gap-2 flex-1 mr-2">
+            <Button
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 flex-1 group"
+            >
+              <FontAwesomeIcon icon={faPlus} className="mr-2 text-white group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-white">{t('common.upload')}</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={() => cvInputRef.current?.click()}
+              disabled={isCVUploading}
+              className="bg-gradient-to-r from-[color:var(--feature-blue)] to-[color:var(--feature-purple)] hover:shadow-[var(--button-hover-shadow)] transition-all duration-200 flex-1 group disabled:opacity-70 disabled:cursor-not-allowed"
+              title={isCVUploading ? (t('chat.uploadingCV') || 'Uploading CV...') : (t('chat.uploadCVTooltip') || 'Upload CV (PDF, DOC, DOCX) for AI context enhancement')}
+            >
+              <FontAwesomeIcon 
+                icon={isCVUploading ? faSpinner : faUser} 
+                className={`mr-2 text-[color:var(--foreground)] transition-transform duration-200 ${
+                  isCVUploading 
+                    ? 'animate-spin' 
+                    : 'group-hover:scale-110'
+                }`} 
+              />
+              <span className="text-[color:var(--foreground)]">
+                {isCVUploading ? (t('chat.uploading') || 'Uploading...') : (t('chat.cv') || 'CV')}
+              </span>
+            </Button>
+          </div>
 
           {/* Collapse button */}
           {!isCollapsed && (
@@ -120,6 +166,15 @@ export function FileSidebar({
           ref={fileInputRef}
           onChange={handleFileSelect}
           multiple
+          className="hidden"
+        />
+
+        {/* Hidden CV File Input */}
+        <input
+          type="file"
+          ref={cvInputRef}
+          onChange={handleCVSelect}
+          accept=".pdf,.doc,.docx"
           className="hidden"
         />
       </div>

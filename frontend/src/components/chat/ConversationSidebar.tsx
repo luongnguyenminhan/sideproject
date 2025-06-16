@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useTranslation } from '@/contexts/TranslationContext'
-import { faCheck, faCog, faComments, faEdit, faFileText, faPlus, faRobot, faSpinner, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCog, faComments, faEdit, faFileText, faPlus, faRobot, faSpinner, faTimes, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
 
@@ -31,6 +31,7 @@ interface ConversationSidebarProps {
   onUpdateConversationName: (id: string, name: string) => void
   onDeleteConversation: (id: string) => void
   onOpenSystemPromptEditor?: (conversationId: string) => void
+  onOpenCVModal?: (conversationId: string) => void
   currentAgent?: {
     model_name: string
     provider: string
@@ -52,6 +53,7 @@ export function ConversationSidebar({
   onUpdateConversationName,
   onDeleteConversation,
   onOpenSystemPromptEditor,
+  onOpenCVModal,
   currentAgent,
   agentStatus,
   onOpenAgentManagement,
@@ -269,6 +271,20 @@ export function ConversationSidebar({
                           title={t('chat.tooltips.editSystemPrompt')}
                         >
                           <FontAwesomeIcon icon={faFileText} className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)]" />
+                        </Button>
+                      )}
+                      {onOpenCVModal && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onOpenCVModal(conversation.id)
+                          }}
+                          className="h-6 w-6 p-0 hover:bg-[color:var(--accent)] hover:scale-110 transition-all duration-200"
+                          title={t('chat.tooltips.viewCV') || 'View CV Analysis'}
+                        >
+                          <FontAwesomeIcon icon={faEye} className="text-xs text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)]" />
                         </Button>
                       )}
                       <Button

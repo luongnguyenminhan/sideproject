@@ -45,8 +45,24 @@ tools = [
 
 
 def get_tools(config: Dict[str, Any] = None) -> List:
-	"""Get tools for the workflow"""
-	return tools
+	"""Get tools for the workflow - include CV Context Tool if db_session available"""
+	basic_tools = tools.copy()
+
+	# Add CV Tools if db_session is available in config
+	if config and hasattr(config, 'db_session') and config.db_session:
+		try:
+			from .cv_context_tool import CVContextTool
+			from .cv_rag_enhancement_tool import CVRAGEnhancementTool
+
+			cv_context_tool = CVContextTool(db_session=config.db_session)
+			cv_rag_tool = CVRAGEnhancementTool(db_session=config.db_session)
+
+			basic_tools.extend([cv_context_tool, cv_rag_tool])
+			logger.info('CV Context Tool and CV RAG Enhancement Tool added to workflow tools')
+		except ImportError as e:
+			logger.warning(f'Could not import CV Tools: {e}')
+
+	return basic_tools
 
 
 def get_tool_definitions(config: Dict[str, Any] = None) -> List[Dict]:

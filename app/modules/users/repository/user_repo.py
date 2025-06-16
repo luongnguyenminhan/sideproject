@@ -47,7 +47,7 @@ class UserRepo(BaseRepo):
 		    The user model if found, otherwise None
 		"""
 		try:
-			return self.user_dal.get_user_by_id(user_id)
+			return self.user_dal.get_by_id(user_id)
 		except Exception as ex:
 			raise ex
 
@@ -63,7 +63,7 @@ class UserRepo(BaseRepo):
 		    The updated user model
 		"""
 		try:
-			user = self.user_dal.get_user_by_id(user_id)
+			user = self.user_dal.get_by_id(user_id)
 			if not user:
 				raise CustomHTTPException(message=_('user_not_found'))
 

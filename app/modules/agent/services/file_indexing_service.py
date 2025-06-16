@@ -52,8 +52,6 @@ class ConversationFileIndexingService:
 		    Dict chứa kết quả indexing
 		"""
 		try:
-			logger.info(f'[FileIndexingService] Starting Agentic RAG indexing {len(files_data)} files for conversation: {conversation_id}')
-
 			collection_id = self.get_conversation_collection_name(conversation_id)
 
 			# Extract text từ tất cả files
@@ -89,7 +87,6 @@ class ConversationFileIndexingService:
 						documents_to_add.append(doc)
 						successful_files.append(file_data['file_id'])
 
-						logger.info(f'[FileIndexingService] Extracted {extraction_result["char_count"]} chars from {file_data["file_name"]}')
 					else:
 						failed_files.append({
 							'file_id': file_data['file_id'],
@@ -118,8 +115,6 @@ class ConversationFileIndexingService:
 						'document_ids': document_ids,
 						'collection_id': collection_id,
 					}
-
-					logger.info(f'[FileIndexingService] Successfully indexed {len(document_ids)} documents to Agentic RAG collection: {collection_id}')
 
 				except Exception as e:
 					logger.error(f'[FileIndexingService] Error indexing documents to Agentic RAG: {str(e)}')
@@ -188,7 +183,6 @@ class ConversationFileIndexingService:
 					)
 					documents.append(doc)
 
-			logger.info(f'[FileIndexingService] Found {len(documents)} relevant documents via Agentic RAG for query in conversation: {conversation_id}')
 			return documents
 
 		except Exception as e:
@@ -238,7 +232,6 @@ class ConversationFileIndexingService:
 			for doc in documents:
 				kb_repo.delete_document(doc.id, collection_id=collection_id)
 
-			logger.info(f'[FileIndexingService] Successfully deleted {len(documents)} documents from Agentic RAG collection: {collection_id}')
 			return True
 
 		except Exception as e:

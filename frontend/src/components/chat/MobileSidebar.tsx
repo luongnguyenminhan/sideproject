@@ -42,6 +42,8 @@ interface MobileSidebarProps {
   uploadedFiles: UploadedFile[]
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
+  onUploadCV?: (file: File) => void
+  isCVUploading?: boolean
 }
 
 export function MobileSidebar({
@@ -55,7 +57,9 @@ export function MobileSidebar({
   onDeleteConversation,
   uploadedFiles,
   onDeleteFile,
-  onUploadFiles
+  onUploadFiles,
+  onUploadCV,
+  isCVUploading = false
 }: MobileSidebarProps) {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<'conversations' | 'files'>('conversations')
@@ -125,6 +129,8 @@ export function MobileSidebar({
               uploadedFiles={uploadedFiles}
               onDeleteFile={onDeleteFile}
               onUploadFiles={onUploadFiles}
+              onUploadCV={onUploadCV}
+              isCVUploading={isCVUploading}
             />
           )}
         </div>

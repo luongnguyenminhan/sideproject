@@ -56,6 +56,8 @@ class ChatWorkflow:
 
 		self.db_session = db_session
 		self.config = config or WorkflowConfig.from_env()
+		# Pass db_session to config for CV Context Tool
+		self.config.db_session = db_session
 		print('^^' * 100, f'Config: {self.config.to_dict()}')
 
 		color_logger.info(

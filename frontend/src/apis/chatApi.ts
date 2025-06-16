@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from '@/apis/axiosInstance'
 import { handleApiCall, handleApiCallNoData } from '@/utils/apiHandler'
 import type { 
@@ -129,6 +130,137 @@ class ChatApi {
       )
     )
   }
+
+  async uploadCV(file: File, conversationId?: string) {
+    const formData = new FormData()
+    formData.append('file', file)
+    if (conversationId) {
+      formData.append('conversation_id', conversationId)
+    }
+
+    return handleApiCall<{
+      file_path: string
+      cv_file_url: string
+      extracted_text: string
+      cv_analysis_result: {
+        raw_cv_content?: string
+        processed_cv_text?: string
+        personal_information?: {
+          full_name?: string
+          email?: string
+          phone_number?: string
+          linkedin_url?: string
+          github_url?: string
+          portfolio_url?: string
+          other_url?: string[]
+          address?: string
+        }
+        education_history?: {
+          items: Array<{
+            institution_name?: string
+            degree_name?: string
+            major?: string
+            graduation_date?: string
+            gpa?: string
+            relevant_courses?: string[]
+            description?: string
+          }>
+        }
+        work_experience_history?: {
+          items: Array<{
+            company_name?: string
+            job_title?: string
+            start_date?: string
+            end_date?: string
+            duration?: string
+            responsibilities_achievements?: string[]
+            location?: string
+          }>
+        }
+        skills_summary?: {
+          items: Array<{
+            skill_name?: string
+            proficiency_level?: string
+            category?: string
+          }>
+        }
+        projects_showcase?: {
+          items: Array<{
+            project_name?: string
+            description?: string
+            technologies_used?: string[]
+            role?: string
+            project_url?: string
+            start_date?: string
+            end_date?: string
+          }>
+        }
+        certificates_and_courses?: {
+          items: Array<{
+            certificate_name?: string
+            issuing_organization?: string
+            issue_date?: string
+            expiration_date?: string
+            credential_id?: string
+          }>
+        }
+        cv_summary?: string
+        extracted_keywords?: {
+          items: Array<{ keyword: string }>
+        }
+        inferred_characteristics?: {
+          items: Array<{
+            characteristic_type?: string
+            statement?: string
+            evidence?: string[]
+          }>
+        }
+        llm_token_usage?: {
+          input_tokens?: number
+          output_tokens?: number
+          total_tokens?: number
+          price_usd?: number
+        }
+      }
+      personal_info: {
+        full_name?: string
+        email?: string
+        phone_number?: string
+        linkedin_url?: string
+        github_url?: string
+        portfolio_url?: string
+        other_url?: string[]
+        address?: string
+      }
+      skills_count: number
+      experience_count: number
+      cv_summary: string
+    }>(() =>
+      axiosInstance.post<CommonResponse<{
+        file_path: string
+        cv_file_url: string
+        extracted_text: string
+        cv_analysis_result: Record<string, any>
+        personal_info: Record<string, any>
+        skills_count: number
+        experience_count: number
+        cv_summary: string
+      }>>('/chat/upload-cv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    )
+  }
+
+  async getCVMetadata(conversationId: string) {
+    return handleApiCall<any | null>(() =>
+      axiosInstance.get<CommonResponse<any | null>>(
+        `/chat/conversation/${conversationId}/cv-metadata`
+      )
+    )
+  }
+
   // ============================================
   // WEBSOCKET TOKEN
   // ============================================
