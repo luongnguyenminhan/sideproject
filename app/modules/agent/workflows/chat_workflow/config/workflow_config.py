@@ -27,6 +27,9 @@ class WorkflowConfig:
 	max_retrieved_docs: int = 5
 	collection_name: str = 'global_knowledge'
 
+	# CV Integration settings
+	db_session: Optional[Any] = None  # For CV Context Tool integration
+
 	# Query processing
 	enable_query_optimization: bool = True
 	max_queries_per_request: int = 3

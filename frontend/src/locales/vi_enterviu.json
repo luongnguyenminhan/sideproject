@@ -78,15 +78,26 @@
     "copy": "Sao chép",
     "createFirstChat": "Bắt đầu cuộc trò chuyện đầu tiên của bạn",
     "defaultChatTitle": "Trò chuyện mới",
+    "errorCreateConversation": "Không thể tạo cuộc hội thoại",
+    "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
+    "errorLoadConversations": "Không thể tải cuộc hội thoại",
+    "errorLoadFiles": "Không thể tải tệp",
+    "errorLoadMessages": "Không thể tải tin nhắn",
+    "errorSendMessage": "Không thể gửi tin nhắn",
+    "errorUpdatePrompt": "Không thể cập nhật lời nhắc",
+    "errorUploadFile": "Không thể tải lên tệp",
     "files": "Tệp",
     "filesAssociated": "Tệp liên quan",
     "htmlRenderError": "Lỗi hiển thị nội dung",
+    "invalidCVFileType": "Định dạng tệp CV không hợp lệ",
     "messages": "Tin nhắn",
     "newConversation": "Cuộc hội thoại mới",
+    "noCVDataFound": "Không tìm thấy dữ liệu CV",
     "noConversationsYet": "Chưa có cuộc hội thoại nào",
     "noFilesUploaded": "Chưa tải lên tệp nào",
     "noMessages": "Chưa có tin nhắn",
     "preview": "Xem trước",
+    "refresh": "Làm mới",
     "sending": "Đang gửi...",
     "showCode": "Hiện mã",
     "startConversation": "Bắt đầu hội thoại",
@@ -98,35 +109,29 @@
     },
     "thisConversation": "Cuộc hội thoại này",
     "tooltips": {
+      "addConversation": "Thêm hội thoại",
+      "closeChat": "Đóng cửa sổ chat",
+      "collapseSidebar": "Thu gọn thanh bên",
       "deleteConversation": "Xóa cuộc hội thoại",
       "editName": "Chỉnh sửa tên",
       "editSystemPrompt": "Chỉnh sửa lời nhắc hệ thống",
-      "addConversation": "Thêm hội thoại",
-      "refreshConversation": "Làm mới hội thoại",
-      "closeChat": "Đóng cửa sổ chat",
-      "openChat": "Mở cửa sổ chat",
-      "uploadFile": "Tải lên tệp",
-      "sendMessage": "Gửi tin nhắn",
+      "expandSidebar": "Mở rộng thanh bên",
       "hasCustomSystemPrompt": "Lời nhắc hệ thống tùy chỉnh",
-      "collapseSidebar": "Thu gọn thanh bên",
-      "expandSidebar": "Mở rộng thanh bên"
+      "openChat": "Mở cửa sổ chat",
+      "refreshConversation": "Làm mới hội thoại",
+      "sendMessage": "Gửi tin nhắn",
+      "uploadFile": "Tải lên tệp",
+      "viewCV": "Xem CV"
     },
     "typeMessage": "Nhập câu hỏi của bạn...",
     "typing": "Đang nhập...",
-    "uploadedFiles": "Tệp đã tải lên",
+    "uploadCVTooltip": "Tải CV lên",
+    "uploadDragDrop": "Kéo và thả tệp để tải lên",
     "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
+    "uploading": "Đang tải lên",
+    "uploadingCV": "Đang tải CV lên",
     "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
-    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông",
-    "errorCreateConversation": "Không thể tạo cuộc hội thoại",
-    "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
-    "errorLoadConversations": "Không thể tải cuộc hội thoại",
-    "errorLoadFiles": "Không thể tải tệp",
-    "errorLoadMessages": "Không thể tải tin nhắn",
-    "errorSendMessage": "Không thể gửi tin nhắn",
-    "errorUpdatePrompt": "Không thể cập nhật lời nhắc",
-    "errorUploadFile": "Không thể tải lên tệp",
-    "refresh": "Làm mới",
-    "uploadDragDrop": "Kéo và thả tệp để tải lên"
+    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông"
   },
   "common": {
     "branding": "CLB Truyền thông THPT Cần Giuộc",
@@ -140,6 +145,20 @@
     "upload": "Tải lên",
     "yes": "Có"
   },
+  "cv": {
+    "analysisStats": "Thống kê phân tích",
+    "certificates": "Chứng chỉ",
+    "cvAnalysis": "Phân tích CV",
+    "education": "Học vấn",
+    "experience": "Kinh nghiệm",
+    "insights": "Thông tin chi tiết",
+    "keywords": "Từ khóa",
+    "personalInfo": "Thông tin cá nhân",
+    "projects": "Dự án",
+    "skills": "Kỹ năng",
+    "summary": "Tóm tắt",
+    "workExperience": "Kinh nghiệm làm việc"
+  },
   "footer": {
     "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
     "legal": {
@@ -152,28 +171,7 @@
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "CLB Truyền thông THPT Cần Giuộc",
-    "company": {
-      "title": "CLB",
-      "about": "Về chúng tôi",
-      "team": "Thành viên",
-      "careers": "Tham gia",
-      "contact": "Liên hệ"
-    },
-    "products": {
-      "title": "Hoạt động",
-      "webDevelopment": "Phát triển web",
-      "mobileApps": "Ứng dụng di động",
-      "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn truyền thông"
-    },
-    "resources": {
-      "title": "Tài nguyên",
-      "documentation": "Tài liệu",
-      "blog": "Blog",
-      "support": "Hỗ trợ",
-      "community": "Cộng đồng"
-    }
+    "title": "CLB Truyền thông THPT Cần Giuộc"
   },
   "home": {
     "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
@@ -186,39 +184,39 @@
     "features": {
       "darkMode": {
         "description": "Dễ đọc trong mọi điều kiện ánh sáng",
-        "title": "Chế độ tối",
         "features": {
+          "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống",
           "darkLightThemes": "Chuyển đổi giữa giao diện tối và sáng",
-          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi đọc lâu",
-          "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống"
-        }
+          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi đọc lâu"
+        },
+        "title": "Chế độ tối"
       },
       "fastPerformance": {
         "description": "Phản hồi tức thì, trải nghiệm mượt mà",
-        "title": "Hiệu năng cao",
         "features": {
-          "optimizedPerformance": "Tối ưu hóa cho tốc độ phản hồi nhanh",
           "lightningFastLoading": "Tải trang cực nhanh",
+          "optimizedPerformance": "Tối ưu hóa cho tốc độ phản hồi nhanh",
           "seamlessUserExperience": "Trải nghiệm liền mạch, không gián đoạn"
-        }
+        },
+        "title": "Hiệu năng cao"
       },
       "globalReady": {
         "description": "Hỗ trợ đa ngôn ngữ cho người học toàn cầu",
-        "title": "Sẵn sàng toàn cầu",
         "features": {
-          "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ",
+          "culturalAdaptation": "Nội dung phù hợp với từng nền văn hóa",
           "globalAccessibility": "Truy cập từ mọi nơi trên thế giới",
-          "culturalAdaptation": "Nội dung phù hợp với từng nền văn hóa"
-        }
+          "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ"
+        },
+        "title": "Sẵn sàng toàn cầu"
       },
       "modernStack": {
         "description": "Xây dựng bằng công nghệ web hiện đại",
-        "title": "Công nghệ hiện đại",
         "features": {
+          "modernDevelopmentTools": "Công cụ phát triển hiện đại, chuẩn quốc tế",
           "nextjsReact": "Phát triển với Next.js & React",
-          "typescriptSupport": "Hỗ trợ TypeScript đảm bảo ổn định",
-          "modernDevelopmentTools": "Công cụ phát triển hiện đại, chuẩn quốc tế"
-        }
+          "typescriptSupport": "Hỗ trợ TypeScript đảm bảo ổn định"
+        },
+        "title": "Công nghệ hiện đại"
       },
       "subtitle": "Tính năng nổi bật",
       "title": "Tính năng"
@@ -291,43 +289,13 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Người sáng lập",
-      "ceo": {
-        "name": "Lê Dương Tịnh Nghi",
-        "role": "Trưởng CLB Truyền thông",
-        "bio": "Nghi là người có tầm nhìn và đam mê mạnh mẽ với lĩnh vực truyền thông. Với khả năng lãnh đạo tự nhiên và sự sáng tạo, Nghi đã dẫn dắt CLB phát triển vượt bậc.",
-        "experience": "Kinh nghiệm hoạt động đoàn thể và quản lý dự án truyền thông."
-      },
-      "cto": {
-        "name": "Lương Nguyễn Minh An",
-        "role": "Phó Trưởng CLB - Kỹ thuật",
-        "bio": "An là chuyên gia về công nghệ trong CLB, phụ trách phát triển các giải pháp kỹ thuật và hệ thống hỗ trợ hoạt động CLB.",
-        "experience": "Kinh nghiệm lập trình, thiết kế web và quản lý hệ thống."
-      },
-      "designer": {
-        "name": "Đặng Phan Gia Đức",
-        "role": "Phó Trưởng CLB - Nội dung",
-        "bio": "Đức chuyên về sáng tạo nội dung và thiết kế truyền thông, mang đến những ý tưởng độc đáo và hấp dẫn cho các hoạt động CLB.",
-        "experience": "Kinh nghiệm sáng tạo nội dung, thiết kế đồ họa và quản lý mạng xã hội."
-      }
+      "title": "Người sáng lập"
     },
     "subtitle": "Gặp gỡ thành viên sáng lập",
     "title": "Thành viên CLB",
     "values": {
       "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
-      "title": "Giá trị cốt lõi",
-      "innovation": {
-        "title": "Sáng tạo",
-        "description": "Chúng tôi luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao chất lượng nội dung truyền thông."
-      },
-      "quality": {
-        "title": "Chất lượng",
-        "description": "Chúng tôi cam kết tạo ra những sản phẩm truyền thông chất lượng cao, chuyên nghiệp và ý nghĩa."
-      },
-      "community": {
-        "title": "Cộng đồng",
-        "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
-      }
+      "title": "Giá trị cốt lõi"
     }
   }
 }

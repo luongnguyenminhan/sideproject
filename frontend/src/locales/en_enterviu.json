@@ -78,6 +78,14 @@
     "copy": "Copy",
     "createFirstChat": "Start your first conversation",
     "defaultChatTitle": "New Chat",
+    "errorCreateConversation": "Failed to create conversation",
+    "errorDeleteConversation": "Failed to delete conversation",
+    "errorLoadConversations": "Failed to load conversations",
+    "errorLoadFiles": "Failed to load files",
+    "errorLoadMessages": "Failed to load messages",
+    "errorSendMessage": "Failed to send message",
+    "errorUpdatePrompt": "Failed to update prompt",
+    "errorUploadFile": "Failed to upload file",
     "files": "Files",
     "filesAssociated": "Files associated",
     "htmlRenderError": "Error rendering content",
@@ -117,15 +125,7 @@
     "uploadedFiles": "Uploaded files",
     "uploadFilesDescription": "Attach documents for deeper discussion",
     "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
-    "welcomeTitle": "Welcome to the Media Club Platform",
-    "errorCreateConversation": "Failed to create conversation",
-    "errorDeleteConversation": "Failed to delete conversation",
-    "errorLoadConversations": "Failed to load conversations",
-    "errorLoadFiles": "Failed to load files",
-    "errorLoadMessages": "Failed to load messages",
-    "errorSendMessage": "Failed to send message",
-    "errorUpdatePrompt": "Failed to update prompt",
-    "errorUploadFile": "Failed to upload file"
+    "welcomeTitle": "Welcome to the Media Club Platform"
   },
   "common": {
     "branding": "Can Giuoc High School Media Club",
@@ -187,9 +187,9 @@
         "description": "Comfortable reading in any lighting",
         "title": "Dark Mode",
         "features": {
+          "automaticSwitching": "Automatic theme switching based on system settings",
           "darkLightThemes": "Switch between dark and light themes",
-          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions",
-          "automaticSwitching": "Automatic theme switching based on system settings"
+          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions"
         }
       },
       "fastPerformance": {

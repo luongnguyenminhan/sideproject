@@ -24,6 +24,7 @@ import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
 import { SystemPromptEditor } from './SystemPromptEditor'
+import { CVModal } from '@/components/chat/CVModal'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -42,6 +43,9 @@ export function ChatClientWrapper() {
   const [conversationFiles, setConversationFiles] = useState<Record<string, any[]>>({})
   const [, setEditingConversation] = useState<string | null>(null)
   const [fileLoadingStates, setFileLoadingStates] = useState<Record<string, boolean>>({})
+  const [isCVUploading, setIsCVUploading] = useState(false)
+  const [cvModalVisible, setCvModalVisible] = useState(false)
+  const [cvData, setCvData] = useState<any>(null)
 
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
@@ -522,6 +526,63 @@ export function ChatClientWrapper() {
     }
   }
 
+  // Upload CV with conversation association
+  const handleUploadCV = async (file: File) => {
+    try {
+      setIsCVUploading(true)
+      
+      const response = await chatApi.uploadCV(file, state.activeConversationId || undefined)
+      if (response) {
+        // Show success message with detailed CV summary
+        const cvAnalysis = response.cv_analysis_result
+        const personalInfo = cvAnalysis?.personal_information
+        
+        setState(prev => ({ 
+          ...prev, 
+          error: null
+        }))
+        
+        // Enhanced logging with detailed CV analysis results
+        console.log('CV uploaded and analyzed successfully:', {
+          personalInfo: {
+            name: personalInfo?.full_name,
+            email: personalInfo?.email,
+            phone: personalInfo?.phone_number
+          },
+          summary: {
+            skillsCount: response.skills_count,
+            experienceCount: response.experience_count,
+            cvSummary: response.cv_summary?.substring(0, 100) + '...'
+          },
+          fileInfo: {
+            filePath: response.file_path,
+            cvFileUrl: response.cv_file_url
+          }
+        })
+        
+        // Store CV data and show modal
+        setCvData(response)
+        setCvModalVisible(true)
+        
+        // Show success notification
+        console.log('✅ CV Analysis completed:', {
+          personal_info: personalInfo,
+          skills_count: response.skills_count,
+          experience_count: response.experience_count,
+          cv_summary: response.cv_summary
+        })
+      }
+    } catch (error) {
+      console.error('❌ CV upload failed:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: 'Failed to upload CV. Please try again.' 
+      }))
+    } finally {
+      setIsCVUploading(false)
+    }
+  }
+
   // Delete file with UI updates
   const handleDeleteFile = async (id: string) => {
     try {
@@ -581,6 +642,28 @@ export function ChatClientWrapper() {
     setIsSystemPromptEditorOpen(true)
   }
 
+  const handleOpenCVModal = async (conversationId: string) => {
+    try {
+      const response = await chatApi.getCVMetadata(conversationId)
+      if (response) {
+        setCvData(response)
+        setCvModalVisible(true)
+      } else {
+        // No CV data found
+        setState(prev => ({ 
+          ...prev, 
+          error: t('chat.noCVDataFound') || 'No CV data found for this conversation'
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to load CV metadata:', error)
+      setState(prev => ({ 
+        ...prev, 
+        error: getErrorMessage(error)
+      }))
+    }
+  }
+
   // Get current conversation system prompt
   const getCurrentConversationSystemPrompt = () => {
     if (!editingConversationSystemPrompt) return ''
@@ -638,6 +721,7 @@ export function ChatClientWrapper() {
           onUpdateConversationName={handleUpdateConversationName}
           onDeleteConversation={handleDeleteConversation}
           onOpenSystemPromptEditor={handleOpenSystemPromptEditor}
+          onOpenCVModal={handleOpenCVModal}
           currentAgent={currentAgent}
           agentStatus={agentStatus === 'none' ? undefined : agentStatus}
           onOpenAgentManagement={() => setIsAgentManagementOpen(true)}
@@ -670,10 +754,12 @@ export function ChatClientWrapper() {
       }`}>
         <FileSidebar
           uploadedFiles={state.uploadedFiles}
-          isLoading={fileLoadingStates[state.activeConversationId || ''] || false}
+          isLoading={fileLoadingStates.files || false}
           conversationId={state.activeConversationId}
           onDeleteFile={handleDeleteFile}
           onUploadFiles={handleUploadFiles}
+          onUploadCV={handleUploadCV}
+          isCVUploading={isCVUploading}
           isCollapsed={isFileSidebarCollapsed}
           onToggleCollapse={handleToggleFileSidebar}
         />
@@ -692,6 +778,8 @@ export function ChatClientWrapper() {
         uploadedFiles={state.uploadedFiles}
         onDeleteFile={handleDeleteFile}
         onUploadFiles={handleUploadFiles}
+        onUploadCV={handleUploadCV}
+        isCVUploading={isCVUploading}
       />
 
       {/* Agent Management Modal */}
@@ -734,6 +822,16 @@ export function ChatClientWrapper() {
           isOpen={isSystemPromptEditorOpen}
         />
       )}
+
+      {/* CV Modal */}
+      <CVModal
+        isVisible={cvModalVisible}
+        onClose={() => {
+          setCvModalVisible(false)
+          setCvData(null)
+        }}
+        cvData={cvData}
+      />
     </div>
   )
 }

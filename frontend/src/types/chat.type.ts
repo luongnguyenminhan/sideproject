@@ -88,6 +88,143 @@ export interface FileListRequest extends FilterableRequestSchema {
   search?: string
 }
 
+// ============================================
+// CV UPLOAD TYPES
+// ============================================
+
+export interface UploadCVRequest extends RequestSchema {
+  conversation_id?: string
+}
+
+export interface PersonalInformation {
+  full_name?: string
+  email?: string
+  phone_number?: string
+  linkedin_url?: string
+  github_url?: string
+  portfolio_url?: string
+  other_url?: string[]
+  address?: string
+}
+
+export interface EducationItem {
+  institution_name?: string
+  degree_name?: string
+  major?: string
+  graduation_date?: string
+  gpa?: string
+  relevant_courses?: string[]
+  description?: string
+}
+
+export interface ExperienceItem {
+  company_name?: string
+  job_title?: string
+  start_date?: string
+  end_date?: string
+  duration?: string
+  responsibilities_achievements?: string[]
+  location?: string
+}
+
+export interface SkillItem {
+  skill_name?: string
+  proficiency_level?: string
+  category?: string
+}
+
+export interface ProjectItem {
+  project_name?: string
+  description?: string
+  technologies_used?: string[]
+  role?: string
+  project_url?: string
+  start_date?: string
+  end_date?: string
+}
+
+export interface CertificateItem {
+  certificate_name?: string
+  issuing_organization?: string
+  issue_date?: string
+  expiration_date?: string
+  credential_id?: string
+}
+
+export interface KeywordItem {
+  keyword: string
+}
+
+export interface CharacteristicItem {
+  characteristic_type?: string
+  statement?: string
+  evidence?: string[]
+}
+
+export interface CVAnalysisResult {
+  raw_cv_content?: string
+  processed_cv_text?: string
+  identified_sections?: unknown[]
+  personal_information?: PersonalInformation
+  education_history?: {
+    items: EducationItem[]
+  }
+  work_experience_history?: {
+    items: ExperienceItem[]
+  }
+  skills_summary?: {
+    items: SkillItem[]
+  }
+  projects_showcase?: {
+    items: ProjectItem[]
+  }
+  certificates_and_courses?: {
+    items: CertificateItem[]
+  }
+  interests_and_hobbies?: {
+    items: unknown[]
+  }
+  other_sections_data?: Record<string, unknown>
+  cv_summary?: string
+  extracted_keywords?: {
+    items: KeywordItem[]
+  }
+  inferred_characteristics?: {
+    items: CharacteristicItem[]
+  }
+  llm_token_usage?: {
+    input_tokens?: number
+    output_tokens?: number
+    total_tokens?: number
+    price_usd?: number
+  }
+}
+
+export interface UploadCVResponse {
+  file_path: string
+  cv_file_url: string
+  extracted_text: string
+  cv_analysis_result: CVAnalysisResult
+  personal_info: PersonalInformation
+  skills_count: number
+  experience_count: number
+  cv_summary: string
+}
+
+export interface GetCVMetadataRequest extends RequestSchema {
+  conversation_id: string
+}
+
+export interface CVMetadataResponse {
+  file_path: string
+  cv_file_url: string
+  extracted_text: string
+  cv_analysis_result: CVAnalysisResult
+  personal_info: PersonalInformation
+  skills_count: number
+  experience_count: number
+  cv_summary: string
+}
 
 // ============================================
 // WEBSOCKET TYPES

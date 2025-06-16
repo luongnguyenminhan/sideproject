@@ -13,7 +13,7 @@ class Conversation(BaseEntity):
 	message_count = Column(Integer, nullable=False, default=0)
 	last_activity = Column(DateTime, nullable=True)
 	system_prompt = Column(Text, nullable=True, default=None)  # Per-conversation agent customization
-
+	extra_metadata = Column(Text, nullable=True, default=None)  # Store additional metadata like CV context as JSON
 	# Relationships
 	user = relationship('User', back_populates='conversations')
 	messages = relationship('Message', back_populates='conversation', cascade='all, delete-orphan')
