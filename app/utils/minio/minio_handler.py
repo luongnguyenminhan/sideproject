@@ -49,7 +49,7 @@ class MinioHandler:
 			secure=secure_param,  # Use the parsed boolean value
 		)
 		self.bucket_name = settings.MINIO_BUCKET_NAME
-		self._ensure_bucket_exists()
+		# self._ensure_bucket_exists()
 
 	def _ensure_bucket_exists(self):
 		"""Check if the bucket exists and create it if it doesn't."""
