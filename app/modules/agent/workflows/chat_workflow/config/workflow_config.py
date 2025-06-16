@@ -25,7 +25,7 @@ class WorkflowConfig:
 	rag_enabled: bool = True
 	similarity_threshold: float = 0.7
 	max_retrieved_docs: int = 5
-	collection_name: str = 'moneyez_knowledge'
+	collection_name: str = 'global_knowledge'
 
 	# Query processing
 	enable_query_optimization: bool = True
@@ -43,7 +43,7 @@ class WorkflowConfig:
 
 	# Persona settings
 	persona_enabled: bool = True
-	persona_type: PersonaType = PersonaType.MARXIS_LENISMS_ASSISTANT
+	persona_type: PersonaType = PersonaType.CGSEM_ASSISTANT
 
 	def get_persona_prompt(self) -> Optional[str]:
 		"""Get persona-based system prompt"""
@@ -71,7 +71,7 @@ class WorkflowConfig:
 			rag_enabled=os.getenv('RAG_ENABLED', 'true').lower() == 'true',
 			similarity_threshold=float(os.getenv('SIMILARITY_THRESHOLD', '0.7')),
 			max_retrieved_docs=int(os.getenv('MAX_RETRIEVED_DOCS', '5')),
-			collection_name=os.getenv('COLLECTION_NAME', 'moneyez_knowledge'),
+			collection_name=os.getenv('COLLECTION_NAME', 'global_knowledge'),
 		)
 
 	def to_dict(self) -> Dict[str, Any]:
