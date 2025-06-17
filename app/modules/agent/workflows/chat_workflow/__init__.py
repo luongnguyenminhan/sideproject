@@ -97,7 +97,6 @@ class ChatWorkflow:
 
 			raise NodeInterrupt(
 				'Agentic RAG workflow initialization failed',
-				error_type=type(e).__name__,
 			)
 
 		initialization_time = time.time() - self.start_time

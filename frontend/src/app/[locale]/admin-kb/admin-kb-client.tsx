@@ -64,11 +64,14 @@ function AdminKBClient({ translations }: AdminKBClientProps) {
         {
           id: uploaded.id,
           title: uploaded.title,
-          content: uploaded.content,
+          file_name: uploaded.file_name,
+          file_type: uploaded.file_type,
           category: uploaded.category,
-          tags: uploaded.tags,
           source: uploaded.source,
+          indexed: uploaded.indexed,
+          index_status: uploaded.index_status,
           create_date: uploaded.create_date,
+          update_date: uploaded.update_date,
         },
       ]);
       showMessage('success', `File "${file.name}" đã được upload thành công!`);
@@ -119,11 +122,7 @@ function AdminKBClient({ translations }: AdminKBClientProps) {
   // Update document (local only)
   const updateDocument = (index: number, field: keyof AdminDocumentData, value: any) => {
     const updatedDocs = [...documents];
-    if (field === 'tags' && typeof value === 'string') {
-      updatedDocs[index][field] = value.split(',').map(tag => tag.trim()).filter(Boolean);
-    } else {
-      (updatedDocs[index] as any)[field] = value;
-    }
+    (updatedDocs[index] as any)[field] = value;
     setDocuments(updatedDocs);
   };
 
@@ -157,6 +156,14 @@ function AdminKBClient({ translations }: AdminKBClientProps) {
             <div className="p-4 bg-[color:var(--muted)] rounded-lg">
               <p className="text-sm text-[color:var(--muted-foreground)]">Total Documents</p>
               <p className="font-semibold text-[color:var(--foreground)]">{stats.total_documents}</p>
+            </div>
+            <div className="p-4 bg-[color:var(--muted)] rounded-lg">
+              <p className="text-sm text-[color:var(--muted-foreground)]">Indexed Documents</p>
+              <p className="font-semibold text-[color:var(--foreground)]">{stats.indexed_documents || 0}</p>
+            </div>
+            <div className="p-4 bg-[color:var(--muted)] rounded-lg">
+              <p className="text-sm text-[color:var(--muted-foreground)]">Pending Documents</p>
+              <p className="font-semibold text-[color:var(--foreground)]">{stats.pending_documents || 0}</p>
             </div>
           </div>
         )}
@@ -230,23 +237,49 @@ function AdminKBClient({ translations }: AdminKBClientProps) {
               <div className="mb-4">
                 <input
                   type="text"
-                  value={doc.tags.join(', ')}
-                  onChange={(e) => updateDocument(index, 'tags', e.target.value)}
+                  value={doc.file_name}
+                  onChange={(e) => updateDocument(index, 'file_name', e.target.value)}
                   className="w-full px-3 py-2 border border-[color:var(--border)] rounded-lg bg-[color:var(--background)] text-[color:var(--foreground)]"
-                  placeholder="tag1, tag2, tag3..."
+                  placeholder="File name"
                 />
               </div>
+              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-[color:var(--muted-foreground)]">Index Status:</label>
+                  <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                    doc.index_status === 'success' ? 'bg-green-100 text-green-800' :
+                    doc.index_status === 'failed' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {doc.index_status || 'pending'}
+                  </span>
+                </div>
+                <div>
+                  <label className="text-sm text-[color:var(--muted-foreground)]">File Type:</label>
+                  <span className="ml-2 text-sm">{doc.file_type || 'Unknown'}</span>
+                </div>
+              </div>
               <div className="mb-2">
-                <a href={doc.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                  {translations.source}
-                </a>
+                {doc.source && (
+                  <a href={doc.source} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {translations.source}
+                  </a>
+                )}
               </div>
             </div>
           ))}
         </div>
         <div className="flex gap-4 mt-6">
           <button
-            onClick={() => setDocuments([...documents, { title: '', content: '', category: 'general', tags: [], source: '' }])}
+            onClick={() => setDocuments([...documents, { 
+              title: '', 
+              file_name: '', 
+              file_type: '', 
+              category: 'general', 
+              source: '',
+              indexed: false,
+              index_status: 'pending'
+            }])}
             className="px-4 py-2 border border-[color:var(--border)] text-[color:var(--foreground)] rounded-lg hover:bg-[color:var(--muted)]"
           >
             {translations.addDocument}
@@ -285,9 +318,27 @@ function AdminKBClient({ translations }: AdminKBClientProps) {
             <div className="space-y-4">
               {searchResults.map((result, idx) => (
                 <div key={idx} className="border border-[color:var(--border)] rounded-lg p-4">
-                  <div className="font-semibold mb-2">{result.content}</div>
+                  <div className="font-semibold mb-2">{result.title}</div>
+                  <div className="text-sm mb-2">
+                    <span className="font-medium">File:</span> {result.file_name}
+                    {result.file_type && <span className="ml-2 text-[color:var(--muted-foreground)]">({result.file_type})</span>}
+                  </div>
+                  <div className="text-sm mb-2">
+                    <span className="font-medium">Category:</span> {result.category}
+                    <span className={`ml-4 px-2 py-1 rounded text-xs ${
+                      result.index_status === 'success' ? 'bg-green-100 text-green-800' :
+                      result.index_status === 'failed' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {result.index_status}
+                    </span>
+                  </div>
                   <div className="text-sm text-[color:var(--muted-foreground)]">
-                    {translations.source}: <a href={result.source} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{result.source}</a>
+                    {translations.source}: {result.source && (
+                      <a href={result.source} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        View File
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

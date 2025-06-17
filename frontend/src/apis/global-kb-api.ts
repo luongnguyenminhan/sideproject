@@ -54,12 +54,12 @@ export const globalKBAPI = {
   },
 
   // Upload file to Global KB
-  uploadFile: async (file: File, title?: string, category?: string, tags?: string[]): Promise<UploadGlobalKBFileResponse> => {
+  uploadFile: async (file: File, title?: string, category?: string): Promise<UploadGlobalKBFileResponse> => {
     const formData = new FormData();
     formData.append('file', file);
     if (title) formData.append('title', title);
     if (category) formData.append('category', category);
-    if (tags) formData.append('tags', tags.join(','));
+    
     const response = await axiosInstance.post('/global-kb/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });

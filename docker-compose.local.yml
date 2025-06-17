@@ -84,6 +84,22 @@ services:
       - cgsem-network
     restart: always
 
+  adminer:
+    image: adminer:latest
+    container_name: adminer-cgsem
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=host.docker.internal:${DB_PORT}
+      - ADMINER_DESIGN=galkaev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - cgsem-network
+    restart: always
+    depends_on:
+      - api
+
   # frontend:
   #   build:
   #     context: ./frontend

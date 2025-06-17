@@ -5,11 +5,14 @@ import type { ApiResponse } from './common.type';
 export interface AdminDocumentData {
   id?: string;
   title: string;
-  content: string;
+  file_name: string;
+  file_type?: string;
   category: string;
-  tags: string[];
   source?: string;
+  indexed?: boolean;
+  index_status?: string;
   create_date?: string;
+  update_date?: string;
 }
 
 // Request Types
@@ -23,26 +26,34 @@ export interface SearchGlobalKBRequest {
 export interface GlobalKBResponse {
   id: string;
   title: string;
-  content: string;
+  file_name: string;
+  file_type?: string;
   category: string;
-  tags: string[];
   source?: string;
+  indexed: boolean;
+  index_status: string;
   create_date: string;
+  update_date?: string;
 }
 
 export interface GlobalKBStats {
   total_documents: number;
+  indexed_documents: number;
+  pending_documents: number;
   [key: string]: any;
 }
 
 export interface UploadGlobalKBFileResponse {
   id: string;
   title: string;
-  content: string;
+  file_name: string;
+  file_type?: string;
   category: string;
-  tags: string[];
   source: string;
+  indexed: boolean;
+  index_status: string;
   create_date: string;
+  update_date?: string;
 }
 
 // API Response Types
