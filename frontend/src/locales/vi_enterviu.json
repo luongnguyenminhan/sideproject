@@ -128,7 +128,6 @@
     "typing": "Đang nhập...",
     "uploadCVTooltip": "Tải CV lên",
     "uploadDragDrop": "Kéo và thả tệp để tải lên",
-    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
     "uploading": "Đang tải lên",
     "uploadingCV": "Đang tải CV lên",
     "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
@@ -297,6 +296,32 @@
     "values": {
       "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
       "title": "Giá trị cốt lõi"
+    }
+  },
+  "admin": {
+    "globalKB": {
+      "addDocument": "Thêm tài liệu",
+      "category": "Danh mục",
+      "description": "Upload và quản lý tài liệu cho Global Knowledge Base",
+      "documentContent": "Nội dung tài liệu",
+      "documentTitle": "Tiêu đề tài liệu",
+      "dragDrop": "Kéo thả file hoặc click để chọn",
+      "fileSelected": "File đã chọn",
+      "initialize": "Khởi tạo KB",
+      "removeDocument": "Xóa",
+      "results": "Kết quả",
+      "score": "Điểm số",
+      "search": "Tìm kiếm",
+      "searchQuery": "Câu hỏi tìm kiếm",
+      "searchTitle": "Tìm kiếm & Test",
+      "selectFile": "Chọn file",
+      "source": "Nguồn",
+      "statsTitle": "Thống kê",
+      "supportedFormats": "Hỗ trợ: TXT, PDF, DOC, DOCX",
+      "tags": "Tags",
+      "title": "Quản lý Global Knowledge Base",
+      "upload": "Tải lên",
+      "uploadTitle": "Upload Tài liệu"
     }
   }
 }

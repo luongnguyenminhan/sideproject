@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/types/common.type';
 import axiosInstance from './axiosInstance';
 import type {
   AdminDocumentData,
@@ -5,7 +6,6 @@ import type {
   GlobalKBResponse,
   GetGlobalKBStatsResponse,
   UploadGlobalKBFileResponse,
-  ApiResponse,
 } from '@/types/global-kb.type';
 
 export const globalKBAPI = {

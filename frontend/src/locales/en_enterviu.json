@@ -6,6 +6,32 @@
     },
     "title": "About Can Giuoc High School Media Club"
   },
+  "admin": {
+    "globalKB": {
+      "addDocument": "Add Document",
+      "category": "Category",
+      "description": "Upload and manage documents for the Global Knowledge Base",
+      "documentContent": "Document Content",
+      "documentTitle": "Document Title",
+      "dragDrop": "Drag and drop file or click to select",
+      "fileSelected": "File selected",
+      "initialize": "Initialize KB",
+      "removeDocument": "Remove",
+      "results": "Results",
+      "score": "Score",
+      "search": "Search",
+      "searchQuery": "Search query",
+      "searchTitle": "Search & Test",
+      "selectFile": "Select file",
+      "source": "Source",
+      "statsTitle": "Statistics",
+      "supportedFormats": "Supported: TXT, PDF, DOC, DOCX",
+      "tags": "Tags",
+      "title": "Global Knowledge Base Management",
+      "upload": "Upload",
+      "uploadTitle": "Upload Document"
+    }
+  },
   "auth": {
     "allowPopups": "Allow popups to sign in",
     "bySigningIn": "By signing in, you agree to our terms.",
@@ -119,14 +145,21 @@
       "sendMessage": "Send message",
       "hasCustomSystemPrompt": "Custom system prompt",
       "collapseSidebar": "Collapse sidebar",
-      "expandSidebar": "Expand sidebar"
+      "expandSidebar": "Expand sidebar",
+      "viewCV": "View CV"
     },
     "typeMessage": "Type your question...",
     "typing": "Typing...",
     "uploadedFiles": "Uploaded files",
     "uploadFilesDescription": "Attach documents for deeper discussion",
+    "uploadCVTooltip": "Upload CV",
+    "uploadDragDrop": "Drag and drop file to upload",
     "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
-    "welcomeTitle": "Welcome to the Media Club Platform"
+    "welcomeTitle": "Welcome to the Media Club Platform",
+    "uploading": "Uploading",
+    "uploadingCV": "Uploading CV",
+    "invalidCVFileType": "Invalid CV file type",
+    "noCVDataFound": "No CV data found"
   },
   "common": {
     "branding": "Can Giuoc High School Media Club",
@@ -139,6 +172,20 @@
     "save": "Save",
     "upload": "Upload",
     "yes": "Yes"
+  },
+  "cv": {
+    "analysisStats": "Analysis Statistics",
+    "certificates": "Certificates",
+    "cvAnalysis": "CV Analysis",
+    "education": "Education",
+    "experience": "Experience",
+    "insights": "Insights",
+    "keywords": "Keywords",
+    "personalInfo": "Personal Information",
+    "projects": "Projects",
+    "skills": "Skills",
+    "summary": "Summary",
+    "workExperience": "Work Experience"
   },
   "footer": {
     "copyright": "© 2024 Can Giuoc High School Media Club",
