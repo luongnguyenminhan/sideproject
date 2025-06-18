@@ -7,6 +7,7 @@ from app.core.base_model import BaseEntity
 from app.enums.user_enums import UserRoleEnum
 
 
+
 class User(BaseEntity):
 	"""User model"""
 
@@ -37,6 +38,13 @@ class User(BaseEntity):
 
 	# Question Composer relationship
 	question_sessions = relationship('QuestionSession', back_populates='user', cascade='all, delete-orphan')
+ 
+	# Group relationship
+	group_memberships = relationship("GroupMember", back_populates="user", cascade="all, delete-orphan")
+	group_requests = relationship("GroupRequest", back_populates="user", foreign_keys="[GroupRequest.user_id]")
+	requested_group_requests = relationship("GroupRequest", back_populates="requester", foreign_keys="[GroupRequest.requested_by]")
+	processed_group_requests = relationship("GroupRequest", back_populates="processor", foreign_keys="[GroupRequest.processed_by]")
+	invited_group_memberships = relationship("GroupMember", back_populates="inviter", foreign_keys="[GroupMember.invited_by]")
 
 	@validates('email')
 	def validate_email(self, key, address):
