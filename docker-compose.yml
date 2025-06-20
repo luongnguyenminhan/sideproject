@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cgsem-api:latest
+    image: enterviu-api:latest
     ports:
       - "11111:8000"
     volumes:
@@ -27,7 +27,7 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-cgsem-ai}
+      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-enterviu-ai}
       - MINIO_SECURE=${MINIO_SECURE:-False}
       # QdrantDB Configuration
       - QDRANT_HOST=qdrant
@@ -45,7 +45,7 @@ services:
       - "host.docker.internal:host-gateway"
     restart: always
     networks:
-      - cgsem-network
+      - enterviu-network
     depends_on:
       - minio
       # - qdrant
@@ -62,7 +62,7 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-minioadmin}
     command: server /data --console-address ":9001"
     networks:
-      - cgsem-network
+      - enterviu-network
 
   # qdrant:
   #   image: qdrant/qdrant:latest
@@ -74,22 +74,22 @@ services:
   #   environment:
   #     - QDRANT__LOG_LEVEL=INFO
   #   networks:
-  #     - cgsem-network
+  #     - enterviu-network
   #   restart: always
-  # redis-cgsem:
+  # redis-enterviu:
   #   image: redis:latest
   #   container_name: redis
   #   ports:
   #     - "6379:6379"
   #   networks:
-  #     - cgsem-network
+  #     - enterviu-network
   #   restart: always
 
   # frontend:
   #   build:
   #     context: ./frontend
   #     dockerfile: Dockerfile.frontend
-  #   image: cgsem-frontend:latest
+  #   image: enterviu-frontend:latest
   #   ports:
   #     - "3000:3000"
   #   volumes:
@@ -99,12 +99,12 @@ services:
   #     - NODE_ENV=development
   #     - API_URL=http://localhost:8000/api
   #   networks:
-  #     - cgsem-network
+  #     - enterviu-network
   #   depends_on:
   #     - api
 
 networks:
-  cgsem-network:
+  enterviu-network:
     driver: bridge
 
 volumes:
