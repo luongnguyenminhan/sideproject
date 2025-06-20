@@ -1,119 +1,119 @@
 """
 Centralized configuration cho Chat Workflow
-Production-ready settings với Vietnamese financial context
+Production-ready settings với Vietnamese context - Simplified version
 """
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import os
 
-# Import persona types
+# Import persona types using relative import
 from .persona_prompts import PersonaType, PersonaPrompts
 
 
 @dataclass
 class WorkflowConfig:
-	"""Centralized workflow configuration"""
+    """Centralized workflow configuration"""
 
-	# Model settings
-	model_name: str = 'gemini-2.0-flash-lite'
-	temperature: float = 1.0
-	max_tokens: int = 10000
-	api_key: Optional[str] = None
+    # Model settings
+    model_name: str = "gemini-2.0-flash-lite"
+    temperature: float = 1.0
+    max_tokens: int = 10000
+    api_key: Optional[str] = None
 
-	# RAG settings
-	rag_enabled: bool = True
-	similarity_threshold: float = 0.7
-	max_retrieved_docs: int = 5
-	collection_name: str = 'global_knowledge'
+    # RAG settings (simplified from dual_rag)
+    rag_enabled: bool = True
+    similarity_threshold: float = 0.7
+    max_retrieved_docs: int = 5
+    collection_name: str = "global_knowledge"
 
-	# CV Integration settings
-	db_session: Optional[Any] = None  # For CV Context Tool integration
+    # CV Integration settings
+    db_session: Optional[Any] = None  # For CV Context Tool integration
 
-	# Query processing
-	enable_query_optimization: bool = True
-	max_queries_per_request: int = 3
+    # Query processing
+    enable_query_optimization: bool = True
+    max_queries_per_request: int = 3
 
-	# Error handling
-	enable_graceful_degradation: bool = True
-	max_retry_attempts: int = 3
-	fallback_response_enabled: bool = True
+    # Error handling
+    enable_graceful_degradation: bool = True
+    max_retry_attempts: int = 3
+    fallback_response_enabled: bool = True
 
-	# Performance settings
-	enable_caching: bool = True
-	cache_ttl_seconds: int = 3600  # 1 hour
-	enable_batch_processing: bool = True
+    # Performance settings
+    enable_caching: bool = True
+    cache_ttl_seconds: int = 3600  # 1 hour
+    enable_batch_processing: bool = True
 
-	# Persona settings
-	persona_enabled: bool = True
-	persona_type: PersonaType = PersonaType.CGSEM_ASSISTANT
+    # Persona settings
+    persona_enabled: bool = True
+    persona_type: PersonaType = PersonaType.CGSEM_ASSISTANT
 
-	def get_persona_prompt(self) -> Optional[str]:
-		"""Get persona-based system prompt"""
-		if not self.persona_enabled:
-			return None
-		return PersonaPrompts.get_persona_prompt(self.persona_type)
+    def get_persona_prompt(self) -> Optional[str]:
+        """Get persona-based system prompt"""
+        if not self.persona_enabled:
+            return None
+        return PersonaPrompts.get_persona_prompt(self.persona_type)
 
-	def get_persona_name(self) -> str:
-		"""Get persona name"""
-		return PersonaPrompts.get_persona_name(self.persona_type)
+    def get_persona_name(self) -> str:
+        """Get persona name"""
+        return PersonaPrompts.get_persona_name(self.persona_type)
 
-	def __post_init__(self):
-		"""Initialize từ environment variables nếu không được set"""
-		if not self.api_key:
-			self.api_key = os.getenv('GOOGLE_API_KEY')
+    def __post_init__(self):
+        """Initialize từ environment variables nếu không được set"""
+        if not self.api_key:
+            self.api_key = os.getenv("GOOGLE_API_KEY")
 
-	@classmethod
-	def from_env(cls) -> 'WorkflowConfig':
-		"""Create config từ environment variables"""
-		return cls(
-			model_name=os.getenv('MODEL_NAME', 'gemini-2.0-flash'),
-			temperature=float(os.getenv('MODEL_TEMPERATURE', '0')),
-			max_tokens=int(os.getenv('MAX_TOKENS', '2048')),
-			api_key=os.getenv('GOOGLE_API_KEY'),
-			rag_enabled=os.getenv('RAG_ENABLED', 'true').lower() == 'true',
-			similarity_threshold=float(os.getenv('SIMILARITY_THRESHOLD', '0.7')),
-			max_retrieved_docs=int(os.getenv('MAX_RETRIEVED_DOCS', '5')),
-			collection_name=os.getenv('COLLECTION_NAME', 'global_knowledge'),
-		)
+    @classmethod
+    def from_env(cls) -> "WorkflowConfig":
+        """Create config từ environment variables"""
+        return cls(
+            model_name=os.getenv("MODEL_NAME", "gemini-2.0-flash"),
+            temperature=float(os.getenv("MODEL_TEMPERATURE", "0")),
+            max_tokens=int(os.getenv("MAX_TOKENS", "2048")),
+            api_key=os.getenv("GOOGLE_API_KEY"),
+            rag_enabled=os.getenv("RAG_ENABLED", "true").lower() == "true",
+            similarity_threshold=float(os.getenv("SIMILARITY_THRESHOLD", "0.7")),
+            max_retrieved_docs=int(os.getenv("MAX_RETRIEVED_DOCS", "5")),
+            collection_name=os.getenv("COLLECTION_NAME", "global_knowledge"),
+        )
 
-	def to_dict(self) -> Dict[str, Any]:
-		"""Convert to dictionary cho serialization"""
-		return {
-			'model_name': self.model_name,
-			'temperature': self.temperature,
-			'max_tokens': self.max_tokens,
-			'rag_enabled': self.rag_enabled,
-			'similarity_threshold': self.similarity_threshold,
-			'max_retrieved_docs': self.max_retrieved_docs,
-			'collection_name': self.collection_name,
-			'enable_query_optimization': self.enable_query_optimization,
-			'max_queries_per_request': self.max_queries_per_request,
-			'enable_graceful_degradation': self.enable_graceful_degradation,
-			'max_retry_attempts': self.max_retry_attempts,
-			'fallback_response_enabled': self.fallback_response_enabled,
-			'enable_caching': self.enable_caching,
-			'cache_ttl_seconds': self.cache_ttl_seconds,
-			'enable_batch_processing': self.enable_batch_processing,
-			'persona_enabled': self.persona_enabled,
-			'persona_type': self.persona_type.value,
-		}
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary cho serialization"""
+        return {
+            "model_name": self.model_name,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "rag_enabled": self.rag_enabled,
+            "similarity_threshold": self.similarity_threshold,
+            "max_retrieved_docs": self.max_retrieved_docs,
+            "collection_name": self.collection_name,
+            "enable_query_optimization": self.enable_query_optimization,
+            "max_queries_per_request": self.max_queries_per_request,
+            "enable_graceful_degradation": self.enable_graceful_degradation,
+            "max_retry_attempts": self.max_retry_attempts,
+            "fallback_response_enabled": self.fallback_response_enabled,
+            "enable_caching": self.enable_caching,
+            "cache_ttl_seconds": self.cache_ttl_seconds,
+            "enable_batch_processing": self.enable_batch_processing,
+            "persona_enabled": self.persona_enabled,
+            "persona_type": self.persona_type.value,
+        }
 
-	def validate(self) -> bool:
-		"""Validate configuration parameters"""
-		if not self.api_key:
-			raise ValueError('Google API key is required')
+    def validate(self) -> bool:
+        """Validate configuration parameters"""
+        if not self.api_key:
+            raise ValueError("Google API key is required")
 
-		if self.temperature < 0 or self.temperature > 1:
-			raise ValueError('Temperature must be between 0 and 1')
+        if self.temperature < 0 or self.temperature > 1:
+            raise ValueError("Temperature must be between 0 and 1")
 
-		if self.max_tokens <= 0:
-			raise ValueError('Max tokens must be positive')
+        if self.max_tokens <= 0:
+            raise ValueError("Max tokens must be positive")
 
-		if self.similarity_threshold < 0 or self.similarity_threshold > 1:
-			raise ValueError('Similarity threshold must be between 0 and 1')
+        if self.similarity_threshold < 0 or self.similarity_threshold > 1:
+            raise ValueError("Similarity threshold must be between 0 and 1")
 
-		if self.max_retrieved_docs <= 0:
-			raise ValueError('Max retrieved docs must be positive')
+        if self.max_retrieved_docs <= 0:
+            raise ValueError("Max retrieved docs must be positive")
 
-		return True
+        return True

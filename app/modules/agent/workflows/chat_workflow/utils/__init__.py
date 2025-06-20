@@ -1,8 +1,7 @@
 """
-Utilities module cho Chat Workflow
-Enhanced development tools với colorful logging
+Utilities module cho Chat Workflow - Simplified and self-contained
 """
 
-from .color_logger import get_color_logger, Colors, ColorLogger
+from .color_logger import get_color_logger, Colors, SimpleColorLogger
 
-__all__ = ['get_color_logger', 'Colors', 'ColorLogger']
+__all__ = ["get_color_logger", "Colors", "SimpleColorLogger"]
