@@ -86,6 +86,7 @@ ROUTER_SYSTEM_PROMPT = """
 ⚠️ LƯU Ý: Ưu tiên "rag_query" cho hầu hết câu hỏi về thông tin.
 """
 
+
 class Workflow:
 	"""Simplified Chat Workflow: Router → RAG Query (Always Dual) → Agent → Tools → Response Generator"""
 
@@ -120,7 +121,9 @@ class Workflow:
 	def _init_global_kb_service(self):
 		"""Initialize Global Knowledge Base Service"""
 		try:
-			from app.modules.agentic_rag.services.global_kb_service import GlobalKBService
+			from app.modules.agentic_rag.services.global_kb_service import (
+				GlobalKBService,
+			)
 
 			self.global_kb_service = GlobalKBService(self.db_session)
 			logger.info('Global KB Service initialized successfully')
@@ -192,11 +195,11 @@ class Workflow:
 
 		# Simple flow: rag_query → response_generator
 		workflow.add_edge('rag_query', 'response_generator')
-		
+
 		# Agent flow: agent → (tools | END)
 		workflow.add_conditional_edges('agent', should_continue_wrapper, {'tools': 'tools', END: END})
 		workflow.add_edge('tools', 'agent')
-		
+
 		# Response generator → END
 		workflow.add_edge('response_generator', END)
 
@@ -221,7 +224,10 @@ class Workflow:
 		if not messages:
 			return {
 				**state,
-				'router_decision': {'target': 'general', 'explanation': 'No user input'},
+				'router_decision': {
+					'target': 'general',
+					'explanation': 'No user input',
+				},
 			}
 
 		# Extract user query
@@ -269,7 +275,10 @@ class Workflow:
 		try:
 			router_prompt = ChatPromptTemplate.from_messages([
 				('system', ROUTER_SYSTEM_PROMPT),
-				('human', 'User query: {input}\n\nAnalyze and determine the best routing target.'),
+				(
+					'human',
+					'User query: {input}\n\nAnalyze and determine the best routing target.',
+				),
 			])
 
 			router_chain = router_prompt | self.llm.with_structured_output(RouterDecision)
@@ -297,7 +306,10 @@ class Workflow:
 			logger.error(f'Router failed: {str(e)}')
 			return {
 				**state,
-				'router_decision': {'target': 'general', 'explanation': f'Router error: {str(e)[:100]}'},
+				'router_decision': {
+					'target': 'general',
+					'explanation': f'Router error: {str(e)[:100]}',
+				},
 				'routing_complete': True,
 			}
 
@@ -338,18 +350,18 @@ class Workflow:
 				kb_repo = KBRepository(collection_name=collection_id)
 				rag_agent = RAGAgentGraph(kb_repo=kb_repo, collection_id=collection_id)
 				conv_result = await rag_agent.answer_query(query=user_query, collection_id=collection_id)
-				
+
 				conv_answer = conv_result.get('answer', '')
 				conv_sources = conv_result.get('sources', [])
-				
+
 				if conv_answer:
-					conv_context = f"📁 Conversation Knowledge:\n{conv_answer}"
+					conv_context = f'📁 Conversation Knowledge:\n{conv_answer}'
 					if conv_sources:
-						conv_context += "\n📚 Sources:"
+						conv_context += '\n📚 Sources:'
 						for i, source in enumerate(conv_sources, 1):
-							source_info = f"\n{i}. Document ID: {source.get('id', 'Unknown')}"
+							source_info = f'\n{i}. Document ID: {source.get("id", "Unknown")}'
 							if 'metadata' in source and 'source' in source['metadata']:
-								source_info += f" (File: {source['metadata']['source']})"
+								source_info += f' (File: {source["metadata"]["source"]})'
 							conv_context += source_info
 
 			except Exception as e:
@@ -369,17 +381,17 @@ class Workflow:
 							title = item.get('metadata', {}).get('title', '')
 							source = item.get('metadata', {}).get('source', '')
 							if title or source:
-								contexts.append(f"{i}. {title}\n{content}\n(Source: {source})")
+								contexts.append(f'{i}. {title}\n{content}\n(Source: {source})')
 							else:
-								contexts.append(f"{i}. {content}")
-						global_context = "🌍 Global Knowledge:\n" + "\n\n".join(contexts)
+								contexts.append(f'{i}. {content}')
+						global_context = '🌍 Global Knowledge:\n' + '\n\n'.join(contexts)
 				except Exception as e:
 					logger.warning(f'Global KB search failed: {str(e)}')
 
 			# 3. Combine both contexts
 			combined_context = ''
 			if conv_context and global_context:
-				combined_context = f"{conv_context}\n\n{global_context}"
+				combined_context = f'{conv_context}\n\n{global_context}'
 			elif conv_context:
 				combined_context = conv_context
 			elif global_context:
@@ -558,7 +570,7 @@ HƯỚNG DẪN:
 			actual_target = 'rag_query'
 		else:
 			actual_target = 'agent'
-		
+
 		logger.info(f'🔀 Routing: {target} → {actual_target}')
 		return actual_target
 
