@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { getCurrentLocale } from "@/utils/getCurrentLocale"
 import { getDictionary, createTranslator } from "@/utils/translation"
 import React from "react"
@@ -191,7 +192,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
 
       <TeamSection />
 
-      <ImageCarouselSection
+      {/* <ImageCarouselSection
         images={carouselImages}
         title={t('carousel.title')}
         subtitle={t('carousel.subtitle')}
@@ -199,7 +200,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
         nextText={t('carousel.nextImage')}
         prevText={t('carousel.prevImage')}
         currentText={t('carousel.currentImage')}
-      />
+      /> */}
 
       <Footer />
     </HomePageWrapper>

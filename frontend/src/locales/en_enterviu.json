@@ -4,7 +4,7 @@
       "about": "About us",
       "followers": "Followers"
     },
-    "title": "About Can Giuoc High School Media Club"
+    "title": "About EnterViu AI"
   },
   "admin": {
     "globalKB": {
@@ -55,8 +55,8 @@
     "description": "Description",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Explore creative media world",
-    "title": "Can Giuoc High School Media Platform"
+    "subtitle": "AI-powered CV optimization to help you stand out",
+    "title": "EnterViu AI - CV Optimization Platform"
   },
   "chat": {
     "agentManagement": {
@@ -87,7 +87,7 @@
       "provider": "Provider",
       "selectModel": "Select model",
       "selectProvider": "Select provider",
-      "subtitle": "Configure your AI agent for media support.",
+      "subtitle": "Configure your AI agent for CV optimization support.",
       "temperature": "Temperature",
       "title": "AI Assistant Management",
       "updateAgent": "Update agent",
@@ -97,7 +97,7 @@
       "validationSuccess": "Validation successful",
       "validationTab": "Validation"
     },
-    "assistant": "Media Assistant",
+    "assistant": "EnterViu AI Assistant",
     "chats": "Chats",
     "conversations": "Conversations",
     "copied": "Copied",
@@ -154,15 +154,15 @@
     "uploadFilesDescription": "Attach documents for deeper discussion",
     "uploadCVTooltip": "Upload CV",
     "uploadDragDrop": "Drag and drop file to upload",
-    "welcomeDescription": "Support media club activities, create engaging content and manage information effectively. AI assistant helps you write articles, generate ideas and optimize media content.",
-    "welcomeTitle": "Welcome to the Media Club Platform",
+    "welcomeDescription": "EnterViu AI helps you optimize your CV, create professional content and prepare for interviews. AI assistant supports CV analysis, provides improvement suggestions and optimizes content to help you stand out to employers.",
+    "welcomeTitle": "Welcome to EnterViu AI",
     "uploading": "Uploading",
     "uploadingCV": "Uploading CV",
     "invalidCVFileType": "Invalid CV file type",
     "noCVDataFound": "No CV data found"
   },
   "common": {
-    "branding": "Can Giuoc High School Media Club",
+    "branding": "EnterViu AI - CV optimization suggestions to help you stand out to employers. Don't let your CV be your barrier!",
     "cancel": "Cancel",
     "delete": "Delete",
     "download": "Download",
@@ -188,31 +188,31 @@
     "workExperience": "Work Experience"
   },
   "footer": {
-    "copyright": "© 2024 Can Giuoc High School Media Club",
+    "copyright": "© 2024 EnterViu AI",
     "legal": {
       "cookies": "Cookies Policy",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     },
-    "location": "Can Giuoc High School, Long An",
-    "madeWith": "Made with passion for media",
+    "location": "AI-powered CV optimization platform",
+    "madeWith": "Made with passion for career success",
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Can Giuoc High School Media Club",
+    "title": "EnterViu AI",
     "company": {
-      "title": "Club",
+      "title": "Company",
       "about": "About Us",
-      "team": "Members",
-      "careers": "Join Us",
+      "team": "Team",
+      "careers": "Careers",
       "contact": "Contact"
     },
     "products": {
-      "title": "Activities",
-      "webDevelopment": "Web Development",
-      "mobileApps": "Mobile Apps",
-      "aiSolutions": "AI Solutions",
-      "consulting": "Media Consulting"
+      "title": "Services",
+      "webDevelopment": "CV Analysis",
+      "mobileApps": "Interview Prep",
+      "aiSolutions": "AI Optimization",
+      "consulting": "Career Consulting"
     },
     "resources": {
       "title": "Resources",
@@ -223,9 +223,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Welcome back! Continue your media journey.",
+    "authenticatedDescription": "Welcome back! Continue optimizing your CV.",
     "confirmed": "Confirmed",
-    "description": "Can Giuoc High School Media Club - where students passionate about media connect, create content and share knowledge. AI platform supports content creation, article writing and efficient club activity management.",
+    "description": "EnterViu AI - CV optimization suggestions to help you stand out to employers. Don't let your CV be your barrier! AI platform supports CV analysis, optimization and effective interview preparation.",
     "email": "Email",
     "facebookPageName": "Facebook Page",
     "facebookPostCountPrefix": "Posts:",
@@ -273,7 +273,7 @@
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Post",
-    "title": "Can Giuoc High School Media Club - AI Platform",
+    "title": "EnterViu AI - AI-Powered CV Optimization",
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",
@@ -341,39 +341,39 @@
       "title": "Founders",
       "ceo": {
         "name": "Le Duong Tinh Nghi",
-        "role": "Media Club President",
-        "bio": "Nghi is a visionary with a strong passion for media. With natural leadership skills and creativity, Nghi has led the club to outstanding development.",
-        "experience": "Experience in youth activities and media project management."
+        "role": "CEO & Founder",
+        "bio": "Nghi is a visionary with a strong passion for helping people achieve career success. With natural leadership skills and deep understanding of recruitment processes, Nghi has led EnterViu AI to become a trusted CV optimization platform.",
+        "experience": "Experience in career consulting and AI-powered recruitment solutions."
       },
       "cto": {
         "name": "Luong Nguyen Minh An",
-        "role": "Vice President - Technology",
-        "bio": "An is the technology expert in the club, responsible for developing technical solutions and systems that support club activities.",
-        "experience": "Experience in programming, web design and system management."
+        "role": "CTO & Co-Founder",
+        "bio": "An is the technology expert behind EnterViu AI, responsible for developing AI algorithms and systems that power our CV optimization engine.",
+        "experience": "Experience in AI development, machine learning and system architecture."
       },
       "designer": {
         "name": "Dang Phan Gia Duc",
-        "role": "Vice President - Content",
-        "bio": "Duc specializes in content creation and media design, bringing unique and engaging ideas to club activities.",
-        "experience": "Experience in content creation, graphic design and social media management."
+        "role": "Head of Product & Co-Founder",
+        "bio": "Duc specializes in user experience design and product strategy, ensuring EnterViu AI delivers intuitive and effective CV optimization solutions.",
+        "experience": "Experience in UX design, product management and career development consulting."
       }
     },
-    "subtitle": "Meet our founding members",
-    "title": "Club Members",
+    "subtitle": "Meet our founding team",
+    "title": "EnterViu AI Team",
     "values": {
-      "description": "We believe in connecting students and developing media skills creatively.",
+      "description": "We believe in helping people create outstanding CVs and achieve their dream career opportunities.",
       "title": "Core Values",
       "innovation": {
-        "title": "Creativity",
-        "description": "We constantly explore new ideas and apply technology to improve media content quality."
+        "title": "Innovation",
+        "description": "We constantly explore new AI technologies to improve CV optimization and career guidance."
       },
       "quality": {
         "title": "Quality",
-        "description": "We are committed to creating high-quality, professional and meaningful media products."
+        "description": "We are committed to delivering high-quality, professional and impactful CV optimization services."
       },
       "community": {
-        "title": "Community",
-        "description": "We build a cohesive student community that supports each other in learning and skill development."
+        "title": "Empowerment",
+        "description": "We empower job seekers with AI-driven insights to overcome CV barriers and achieve career success."
       }
     }
   }

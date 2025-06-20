@@ -4,7 +4,7 @@
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu CLB Truyền thông THPT Cần Giuộc"
+    "title": "Giới thiệu EnterViu AI"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -29,8 +29,8 @@
     "description": "Mô tả",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Khám phá thế giới truyền thông sáng tạo",
-    "title": "Nền tảng truyền thông THPT Cần Giuộc"
+    "subtitle": "Gợi ý chỉnh sửa CV giúp bạn nổi bật trước nhà tuyển dụng",
+    "title": "EnterViu AI - Nền tảng tối ưu hóa CV"
   },
   "chat": {
     "agentManagement": {
@@ -71,7 +71,7 @@
       "validationSuccess": "Xác thực thành công",
       "validationTab": "Xác thực"
     },
-    "assistant": "Trợ lý Truyền thông",
+    "assistant": "Trợ lý EnterViu AI",
     "chats": "Trò chuyện",
     "conversations": "Cuộc hội thoại",
     "copied": "Đã sao chép",
@@ -130,11 +130,11 @@
     "uploadDragDrop": "Kéo và thả tệp để tải lên",
     "uploading": "Đang tải lên",
     "uploadingCV": "Đang tải CV lên",
-    "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
-    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông"
+    "welcomeDescription": "EnterViu AI giúp bạn tối ưu hóa CV, tạo nội dung chuyên nghiệp và chuẩn bị cho phỏng vấn. Trợ lý AI hỗ trợ phân tích CV, đưa ra gợi ý cải thiện và tối ưu hóa nội dung để bạn nổi bật trước nhà tuyển dụng.",
+    "welcomeTitle": "Chào mừng đến với EnterViu AI"
   },
   "common": {
-    "branding": "CLB Truyền thông THPT Cần Giuộc",
+    "branding": "EnterViu AI (EnterViU - Gợi ý chỉnh sửa CV giúp bạn nổi bật trước nhà tuyển dụng. Đừng để CV là rào cản của bạn!)",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -160,23 +160,23 @@
     "workExperience": "Kinh nghiệm làm việc"
   },
   "footer": {
-    "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
+    "copyright": "© 2024 EnterViu AI",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
-    "location": "THPT Cần Giuộc, Long An",
-    "madeWith": "Được tạo ra với đam mê truyền thông",
+    "location": "Nền tảng AI tối ưu hóa CV",
+    "madeWith": "Được tạo ra với đam mê hỗ trợ tìm việc",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "CLB Truyền thông THPT Cần Giuộc"
+    "title": "EnterViu AI"
   },
   "home": {
-    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục tối ưu hóa CV của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "CLB Truyền thông THPT Cần Giuộc - nơi kết nối các bạn học sinh yêu thích truyền thông, sáng tạo nội dung và chia sẻ kiến thức. Nền tảng AI hỗ trợ tạo nội dung, viết bài và quản lý hoạt động CLB hiệu quả.",
+    "description": "EnterViu AI - Gợi ý chỉnh sửa CV giúp bạn nổi bật trước nhà tuyển dụng. Đừng để CV là rào cản của bạn! Nền tảng AI hỗ trợ phân tích, tối ưu hóa CV và chuẩn bị phỏng vấn hiệu quả.",
     "email": "Email",
     "facebookPageName": "Trang Facebook",
     "facebookPostCountPrefix": "Bài đăng:",
@@ -224,7 +224,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "CLB Truyền thông THPT Cần Giuộc - Nền tảng AI",
+    "title": "EnterViu AI - Tối ưu hóa CV với AI",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",
@@ -291,10 +291,10 @@
       "role": "Vai trò",
       "title": "Người sáng lập"
     },
-    "subtitle": "Gặp gỡ thành viên sáng lập",
-    "title": "Thành viên CLB",
+    "subtitle": "Gặp gỡ đội ngũ sáng lập",
+    "title": "Đội ngũ EnterViu AI",
     "values": {
-      "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
+      "description": "Chúng tôi tin vào việc giúp mọi người tạo ra CV xuất sắc và đạt được cơ hội nghề nghiệp mơ ước.",
       "title": "Giá trị cốt lõi"
     }
   },
