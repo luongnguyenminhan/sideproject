@@ -72,7 +72,7 @@
       "validationTab": "Xác thực"
     },
     "assistant": "Trợ lý EnterViu AI",
-    "chats": "Trò chuyện",
+    "chat": "Trò chuyện",
     "conversations": "Cuộc hội thoại",
     "copied": "Đã sao chép",
     "copy": "Sao chép",
@@ -126,6 +126,8 @@
     },
     "typeMessage": "Nhập câu hỏi của bạn...",
     "typing": "Đang nhập...",
+    "uploadedFiles": "Tệp đã tải lên",
+    "uploadFilesDescription": "Đính kèm tài liệu để thảo luận sâu hơn",
     "uploadCVTooltip": "Tải CV lên",
     "uploadDragDrop": "Kéo và thả tệp để tải lên",
     "uploading": "Đang tải lên",
@@ -134,7 +136,7 @@
     "welcomeTitle": "Chào mừng đến với EnterViu AI"
   },
   "common": {
-    "branding": "EnterViu AI (EnterViU - Gợi ý chỉnh sửa CV giúp bạn nổi bật trước nhà tuyển dụng. Đừng để CV là rào cản của bạn!)",
+    "branding": "EnterViu AI",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -171,7 +173,28 @@
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "EnterViu AI"
+    "title": "EnterViu AI",
+    "company": {
+      "title": "Công ty",
+      "about": "Về chúng tôi",
+      "team": "Đội ngũ",
+      "careers": "Tuyển dụng",
+      "contact": "Liên hệ"
+    },
+    "products": {
+      "title": "Dịch vụ",
+      "webDevelopment": "Phân tích CV",
+      "mobileApps": "Chuẩn bị phỏng vấn",
+      "aiSolutions": "Tối ưu hóa AI",
+      "consulting": "Tư vấn nghề nghiệp"
+    },
+    "resources": {
+      "title": "Tài nguyên",
+      "documentation": "Tài liệu",
+      "blog": "Blog",
+      "support": "Hỗ trợ",
+      "community": "Cộng đồng"
+    }
   },
   "home": {
     "authenticatedDescription": "Chào mừng trở lại! Tiếp tục tối ưu hóa CV của bạn.",
@@ -289,13 +312,44 @@
       "experience": "Kinh nghiệm",
       "name": "Tên",
       "role": "Vai trò",
-      "title": "Người sáng lập"
+      "title": "Người sáng lập",
+      "ceo": {
+        "name": "Lương Nguyễn Minh An",
+        "role": "CEO & Người sáng lập",
+        "bio": "An là chuyên gia công nghệ đằng sau EnterViu AI, kết hợp chiến lược với chuyên môn kỹ thuật sâu sắc. Anh thúc đẩy cả định hướng kinh doanh và đổi mới công nghệ giúp nền tảng tối ưu hóa CV trở thành giải pháp đáng tin cậy.",
+        "experience": "Kinh nghiệm phát triển AI, lãnh đạo và quản lý công nghệ chiến lược."
+      },
+
+      "cto": {
+        "name": "Phạm Văn Tuấn Hiếu",
+        "role": "Lead Developer & Đồng sáng lập",
+        "bio": "Hiếu là trưởng nhóm phát triển chuyển, xây dựng giải pháp mạnh mẽ và có thể mở rộng cho EnterViu AI. Chuyên môn kỹ thuật và sự tỉ mỉ của anh đảm bảo nền tảng mang lại hiệu suất và trải nghiệm người dùng xuất sắc.",
+        "experience": "Kinh nghiệm phát triển full-stack, thiết kế hệ thống và kỹ thuật phần mềm."
+      },
+      "designer": {
+        "name": "Đỗ Thị Nguyên Hậu",
+        "role": "Designer & Đồng sáng lập",
+        "bio": "Hậu mang đến sự sáng tạo và thiết kế lấy người dùng làm trung tâm cho EnterViu AI, tạo ra giao diện trực quan và trải nghiệm người dùng liền mạch. Triết lý thiết kế của cô tập trung vào tối ưu hóa CV trở nên dễ tiếp cận và thú vị.",
+        "experience": "Kinh nghiệm thiết kế UX/UI, thiết kế sản phẩm và trải nghiệm người dùng."
+      }
     },
     "subtitle": "Gặp gỡ đội ngũ sáng lập",
     "title": "Đội ngũ EnterViu AI",
     "values": {
       "description": "Chúng tôi tin vào việc giúp mọi người tạo ra CV xuất sắc và đạt được cơ hội nghề nghiệp mơ ước.",
-      "title": "Giá trị cốt lõi"
+      "title": "Giá trị cốt lõi",
+      "innovation": {
+        "title": "Đổi mới",
+        "description": "Chúng tôi liên tục khám phá công nghệ AI mới để cải thiện tối ưu hóa CV và hướng dẫn nghề nghiệp."
+      },
+      "quality": {
+        "title": "Chất lượng",
+        "description": "Chúng tôi cam kết cung cấp dịch vụ tối ưu hóa CV chất lượng cao, chuyên nghiệp và có tác động."
+      },
+      "community": {
+        "title": "Trao quyền",
+        "description": "Chúng tôi trao quyền cho người tìm việc bằng AI để vượt qua rào cản CV và đạt được thành công trong sự nghiệp."
+      }
     }
   },
   "admin": {
@@ -306,7 +360,10 @@
       "documentContent": "Nội dung tài liệu",
       "documentTitle": "Tiêu đề tài liệu",
       "dragDrop": "Kéo thả file hoặc click để chọn",
+      "fileName": "Tên file",
       "fileSelected": "File đã chọn",
+      "fileType": "Loại file",
+      "indexStatus": "Trạng thái index",
       "initialize": "Khởi tạo KB",
       "removeDocument": "Xóa",
       "results": "Kết quả",
@@ -318,7 +375,6 @@
       "source": "Nguồn",
       "statsTitle": "Thống kê",
       "supportedFormats": "Hỗ trợ: TXT, PDF, DOC, DOCX",
-      "tags": "Tags",
       "title": "Quản lý Global Knowledge Base",
       "upload": "Tải lên",
       "uploadTitle": "Upload Tài liệu"

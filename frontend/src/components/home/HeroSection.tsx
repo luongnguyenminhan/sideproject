@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { FallingText, MagnetButton } from '@/components/animations';
 import type { UserResponse } from '@/types/auth.type';
 
@@ -47,9 +48,12 @@ export default function HeroSection({
             <MagnetButton magnetStrength={0.8}>
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <button className="relative px-12 py-4 text-lg text-[color:var(--primary-foreground)] font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-[var(--button-hover-shadow)] transform hover:-translate-y-2 bg-gradient-to-br from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:from-blue-700 hover:to-blue-900 border border-white/20">
+                <Link 
+                  href="/chat"
+                  className="relative px-12 py-4 text-lg text-[color:var(--primary-foreground)] font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-[var(--button-hover-shadow)] transform hover:-translate-y-2 bg-gradient-to-br from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] hover:from-blue-700 hover:to-blue-900 border border-white/20 inline-block"
+                >
                   {getStartedText}
-                </button>
+                </Link>
               </div>
             </MagnetButton>
             

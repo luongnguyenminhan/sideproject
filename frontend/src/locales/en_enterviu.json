@@ -14,7 +14,10 @@
       "documentContent": "Document Content",
       "documentTitle": "Document Title",
       "dragDrop": "Drag and drop file or click to select",
+      "fileName": "File Name",
       "fileSelected": "File selected",
+      "fileType": "File Type",
+      "indexStatus": "Index Status",
       "initialize": "Initialize KB",
       "removeDocument": "Remove",
       "results": "Results",
@@ -26,7 +29,6 @@
       "source": "Source",
       "statsTitle": "Statistics",
       "supportedFormats": "Supported: TXT, PDF, DOC, DOCX",
-      "tags": "Tags",
       "title": "Global Knowledge Base Management",
       "upload": "Upload",
       "uploadTitle": "Upload Document"
@@ -98,7 +100,7 @@
       "validationTab": "Validation"
     },
     "assistant": "EnterViu AI Assistant",
-    "chats": "Chats",
+    "chat": "Chats",
     "conversations": "Conversations",
     "copied": "Copied",
     "copy": "Copy",
@@ -116,8 +118,10 @@
     "files": "Files",
     "filesAssociated": "Files associated",
     "htmlRenderError": "Error rendering content",
+    "invalidCVFileType": "Invalid CV file type",
     "messages": "Messages",
     "newConversation": "New Conversation",
+    "noCVDataFound": "No CV data found",
     "noConversationsYet": "No conversations yet",
     "noFilesUploaded": "No files uploaded",
     "noMessages": "No messages",
@@ -157,9 +161,7 @@
     "welcomeDescription": "EnterViu AI helps you optimize your CV, create professional content and prepare for interviews. AI assistant supports CV analysis, provides improvement suggestions and optimizes content to help you stand out to employers.",
     "welcomeTitle": "Welcome to EnterViu AI",
     "uploading": "Uploading",
-    "uploadingCV": "Uploading CV",
-    "invalidCVFileType": "Invalid CV file type",
-    "noCVDataFound": "No CV data found"
+    "uploadingCV": "Uploading CV"
   },
   "common": {
     "branding": "EnterViu AI - CV optimization suggestions to help you stand out to employers. Don't let your CV be your barrier!",
@@ -340,22 +342,22 @@
       "role": "Role",
       "title": "Founders",
       "ceo": {
-        "name": "Le Duong Tinh Nghi",
+        "name": "Luong Nguyen Minh An",
         "role": "CEO & Founder",
-        "bio": "Nghi is a visionary with a strong passion for helping people achieve career success. With natural leadership skills and deep understanding of recruitment processes, Nghi has led EnterViu AI to become a trusted CV optimization platform.",
-        "experience": "Experience in career consulting and AI-powered recruitment solutions."
+        "bio": "An is the visionary leader and technology expert behind EnterViu AI, combining strategic leadership with deep technical expertise. He drives both the business direction and technological innovation that makes our CV optimization platform a trusted solution for career advancement.",
+        "experience": "Experience in AI development, business leadership, and strategic technology management."
       },
       "cto": {
-        "name": "Luong Nguyen Minh An",
-        "role": "CTO & Co-Founder",
-        "bio": "An is the technology expert behind EnterViu AI, responsible for developing AI algorithms and systems that power our CV optimization engine.",
-        "experience": "Experience in AI development, machine learning and system architecture."
+        "name": "Pham Van Tuan Hieu",
+        "role": "Lead Developer & Co-Founder",
+        "bio": "Hieu is the development lead who transforms ideas into reality, building robust and scalable solutions for EnterViu AI. His technical expertise and attention to detail ensure our platform delivers exceptional performance and user experience.",
+        "experience": "Experience in full-stack development, system design, and software engineering."
       },
       "designer": {
-        "name": "Dang Phan Gia Duc",
-        "role": "Head of Product & Co-Founder",
-        "bio": "Duc specializes in user experience design and product strategy, ensuring EnterViu AI delivers intuitive and effective CV optimization solutions.",
-        "experience": "Experience in UX design, product management and career development consulting."
+        "name": "Do Thi Nguyen Hau",
+        "role": "Head of Design & Co-Founder",
+        "bio": "Hau brings creativity and user-centered design to EnterViu AI, crafting intuitive interfaces and seamless user experiences. Her design philosophy focuses on making CV optimization accessible and enjoyable for all users.",
+        "experience": "Experience in UX/UI design, product design, and user research methodologies."
       }
     },
     "subtitle": "Meet our founding team",
