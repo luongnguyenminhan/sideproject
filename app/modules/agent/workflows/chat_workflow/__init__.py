@@ -76,10 +76,11 @@ class ChatWorkflow:
 				Colors.YELLOW,
 			)
 
-			# Create workflow with Agentic RAG
-			from .basic_workflow import create_agentic_rag_workflow
+			# Create workflow with Unified features
+			from .workflow import create_workflow
 
-			self.compiled_graph = create_agentic_rag_workflow(db_session, self.config)
+			workflow_instance = create_workflow(db_session, self.config)
+			self.compiled_graph = workflow_instance.compiled_graph
 
 			color_logger.success(
 				'🚀 ChatWorkflow initialized with Agentic RAG functionality',

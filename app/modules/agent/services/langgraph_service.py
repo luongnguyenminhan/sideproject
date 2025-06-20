@@ -122,6 +122,8 @@ class LangGraphService(object):
 		start_time = time.time()
 
 		try:
+			print(f"[LangGraphService] Starting conversation execution for conversation_id={conversation_id}")
+
 			# Note: Files are now indexed automatically on upload via events to Agentic RAG
 
 			# Prepare system prompt
@@ -129,6 +131,8 @@ class LangGraphService(object):
 
 			# Prepare messages
 			messages = self._prepare_messages(system_prompt, user_message, conversation_history or [])
+
+			print(f"[LangGraphService] Prepared messages: {messages}")
 
 			# Execute workflow - use ainvoke instead of astream to avoid __end__ issues
 			config = {
@@ -140,8 +144,12 @@ class LangGraphService(object):
 
 			workflow_input = {'messages': messages}
 
+			print(f"[LangGraphService] Invoking workflow with input: {workflow_input} and config: {config}")
+
 			# Get result from global workflow (using ainvoke for direct result)
 			final_state = await LangGraphService._global_workflow.ainvoke(workflow_input, config)
+
+			print(f"[LangGraphService] Workflow execution completed. Final state: {final_state}")
 
 			# Extract response from final state
 			content = self._extract_response_content(final_state)
@@ -149,6 +157,8 @@ class LangGraphService(object):
 
 			end_time = time.time()
 			response_time = int((end_time - start_time) * 1000)
+
+			print(f"[LangGraphService] Response content: {content}, tokens used: {tokens_used}, response time: {response_time}ms")
 
 			return {
 				'content': content,
@@ -162,8 +172,8 @@ class LangGraphService(object):
 
 		except Exception as e:
 			logger.error(f'\033[91m[execute_conversation] Error executing conversation: {str(e)}\033[0m')
+			print(f"[LangGraphService] Exception occurred: {str(e)}")
 			raise ValidationException(f'Conversation execution failed: {str(e)}')
-
 	def _extract_response_content(self, final_state: Dict[str, Any]) -> str:
 		"""Extract the AI response content from workflow final state"""
 		try:
