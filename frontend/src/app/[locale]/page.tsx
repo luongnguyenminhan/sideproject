@@ -156,9 +156,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
 
   return (
     <HomePageWrapper>
-      <Header />
-
-      <HeroSection
+      <Header />      <HeroSection
         user={user}
         isAuthenticated={isAuthenticated}
         welcomeTitle={isAuthenticated 
@@ -171,6 +169,8 @@ async function Home({ user, isAuthenticated }: HomeProps) {
         }
         getStartedText={t('home.getStarted')}
         learnMoreText={t('home.learnMore')}
+        locale={locale}
+        dictionary={dictionary}
       />
 
       <AboutUsSectionWrapper postInformation={postInformation} />
