@@ -47,7 +47,6 @@ tools = [
 def get_tools(config: Dict[str, Any] = None) -> List:
 	"""Get tools for the workflow - include enhanced tools if db_session available"""
 	basic_tools = tools.copy()
-
 	# Add enhanced tools if db_session is available in config
 	if config and hasattr(config, 'db_session') and config.db_session:
 		try:
@@ -55,13 +54,15 @@ def get_tools(config: Dict[str, Any] = None) -> List:
 			# from .cv_context_tool import CVContextTool
 			# from .cv_rag_enhancement_tool import CVRAGEnhancementTool
 			from .rag_tool import RAGTool
+			from .cv_profile_tool import get_cv_profile_tool
 
 			# cv_context_tool = CVContextTool(db_session=config.db_session)
 			# cv_rag_tool = CVRAGEnhancementTool(db_session=config.db_session)
 			rag_tool = RAGTool(db_session=config.db_session)
+			cv_profile_tool = get_cv_profile_tool(config.db_session)
 
-			basic_tools.extend([rag_tool])
-			logger.info('Enhanced tools added: RAG Tool')
+			basic_tools.extend([rag_tool, cv_profile_tool])
+			logger.info('Enhanced tools added: RAG Tool, CV Profile Tool')
 			# logger.info('Enhanced tools added: CV Context, CV RAG Enhancement, and RAG Tool')
 		except ImportError as e:
 			logger.warning(f'Could not import enhanced tools: {e}')
