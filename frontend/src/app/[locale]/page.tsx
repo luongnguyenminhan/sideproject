@@ -72,13 +72,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/assets/logo/logo_web.png", sizes: "32x32", type: "image/png" },
-      { url: "/assets/logo/logo_web.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "32x32", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "16x16", type: "image/png" },
     ],
     apple: [
-      { url: "/assets/logo/logo_web.png", sizes: "180x180", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/assets/logo/logo_web.png",
+    shortcut: "/assets/logo/logo_web.jpg",
   },
   manifest: "/manifest.json",
   openGraph: {
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     siteName: "CGSEM Platform",
     images: [
       {
-        url: "/assets/logo/logo_web.png",
+        url: "/assets/logo/logo_web.jpg",
         width: 1200,
         height: 630,
         alt: "CGSEM Logo - Club Geoscience Engineering & Management",
@@ -105,7 +105,7 @@ export const metadata: Metadata = {
     creator: "@cgsem_official",
     title: "CGSEM - Club Geoscience Engineering & Management",
     description: "Join CGSEM community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
-    images: ["/assets/logo/logo_web.png"],
+    images: ["/assets/logo/logo_web.jpg"],
   },
   robots: {
     index: true,
@@ -132,7 +132,7 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-title": "CGSEM",
     "application-name": "CGSEM Platform",
     "msapplication-TileColor": "#3b82f6",
-    "msapplication-TileImage": "/assets/logo/logo_web.png",
+    "msapplication-TileImage": "/assets/logo/logo_web.jpg",
     "theme-color": "#3b82f6",
   },
 };

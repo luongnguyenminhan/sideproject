@@ -19,12 +19,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CGSEM",
-    template: "%s | CGSEM"
+    default: "Enterviu",
+    template: "%s | Enterviu"
   },
-  description: "CGSEM - Club Geoscience Engineering & Management. A modern platform for geoscience education, research, and community building with cutting-edge technology.",
+  description: "Enterviu",
   keywords: [
-    "CGSEM", 
+    "Enterviu", 
     "Geoscience", 
     "Engineering", 
     "Management", 
@@ -46,17 +46,17 @@ export const metadata: Metadata = {
     "Science Community"
   ],
   authors: [
-    { name: "CGSEM Team", url: "https://cgsem.org" },
+    { name: "Enterviu Team", url: "https://app.wc504.io.vn" },
     { name: "Club Development Team" }
   ],
-  creator: "CGSEM - Club Geoscience Engineering & Management",
-  publisher: "CGSEM Organization",
-  applicationName: "CGSEM Platform",
+  creator: "Enterviu",
+  publisher: "Enterviu Organization",
+  applicationName: "Enterviu Platform",
   generator: "Next.js",
   referrer: "origin-when-cross-origin",
   category: "Education",
   classification: "Educational Platform",
-  metadataBase: new URL("https://cgsem.org"),
+  metadataBase: new URL("https://app.wc504.io.vn"),
   alternates: {
     canonical: "/",
     languages: {
@@ -66,40 +66,40 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/assets/logo/logo_web.png", sizes: "32x32", type: "image/png" },
-      { url: "/assets/logo/logo_web.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "32x32", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "16x16", type: "image/png" },
     ],
     apple: [
-      { url: "/assets/logo/logo_web.png", sizes: "180x180", type: "image/png" },
+      { url: "/assets/logo/logo_web.jpg", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/assets/logo/logo_web.png",
+    shortcut: "/assets/logo/logo_web.jpg",
   },
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
     locale: "vi_VN",
     alternateLocale: ["en_US"],
-    url: "https://cgsem.org",
-    title: "CGSEM - Club Geoscience Engineering & Management",
-    description: "Join CGSEM community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
-    siteName: "CGSEM Platform",
+    url: "https://app.wc504.io.vn",
+    title: "Enterviu",
+    description: "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    siteName: "Enterviu Platform",
     images: [
       {
-        url: "/assets/logo/logo_web.png",
+        url: "/assets/logo/logo_web.jpg",
         width: 1200,
         height: 630,
-        alt: "CGSEM Logo - Club Geoscience Engineering & Management",
+        alt: "Enterviu Logo",
       },
     ],
     countryName: "Vietnam",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@cgsem_official",
-    creator: "@cgsem_official",
-    title: "CGSEM - Club Geoscience Engineering & Management",
-    description: "Join CGSEM community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
-    images: ["/assets/logo/logo_web.png"],
+    site: "@Enterviu_official",
+    creator: "@Enterviu_official",
+    title: "Enterviu - Club Geoscience Engineering & Management",
+    description: "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    images: ["/assets/logo/logo_web.jpg"],
   },
   robots: {
     index: true,
@@ -123,10 +123,10 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "CGSEM",
-    "application-name": "CGSEM Platform",
+    "apple-mobile-web-app-title": "Enterviu",
+    "application-name": "Enterviu Platform",
     "msapplication-TileColor": "#3b82f6",
-    "msapplication-TileImage": "/assets/logo/logo_web.png",
+    "msapplication-TileImage": "/assets/logo/logo_web.jpg",
     "theme-color": "#3b82f6",
   },
 };

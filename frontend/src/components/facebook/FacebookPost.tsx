@@ -57,7 +57,7 @@ const formatDate = (dateString: string) => {
           <div className="w-10 h-10 bg-[color:var(--primary)] rounded-full flex items-center justify-center">
             <Image 
               className="rounded-full" 
-              src={profilePictureUrl || '/assets/logo/logo_web.png'}
+              src={profilePictureUrl || '/assets/logo/logo_web.jpg'}
               alt={'Facebook Logo'}
               width={40}
               height={40}

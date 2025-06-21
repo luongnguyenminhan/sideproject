@@ -41,7 +41,7 @@ export default async function Header({ withChatBubble = false }: { withChatBubbl
         <div className="flex items-center gap-2">
           <Link href={`/${locale}`} className="flex items-center gap-2">
             <Image
-              src="/assets/logo/logo_web.png"
+              src="/assets/logo/logo_web.jpg"
               alt="App Logo"
               width={80}
               height={30}

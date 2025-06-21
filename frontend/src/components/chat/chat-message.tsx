@@ -100,7 +100,7 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
       <div className="flex items-center gap-3 px-2">
         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 overflow-hidden">
           <Image
-            src="/assets/logo/logo_web.png"
+            src="/assets/logo/logo_web.jpg"
             alt="Assistant Logo"
             width={24}
             height={24}
