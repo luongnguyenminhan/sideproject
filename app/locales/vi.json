@@ -1,8 +1,8 @@
 {
   "login_success": "Đăng nhập thành công",
   "login_failed": "Đăng nhập thất bại",
-  "api_title": "cgsem.ai API",
-  "api_description": "cgsem.ai là một trợ lý AI giúp ghi chú và tóm tắt cuộc họp tự động. Ứng dụng hỗ trợ nhận diện nội dung, phân tích thông tin quan trọng và tạo biên bản họp nhanh chóng, giúp người dùng tiết kiệm thời gian và cải thiện hiệu suất làm việc.",
+  "api_title": "enterviu.ai API",
+  "api_description": "enterviu.ai là một trợ lý AI giúp ghi chú và tóm tắt cuộc họp tự động. Ứng dụng hỗ trợ nhận diện nội dung, phân tích thông tin quan trọng và tạo biên bản họp nhanh chóng, giúp người dùng tiết kiệm thời gian và cải thiện hiệu suất làm việc.",
   "password": "Mật khẩu",
   "password_empty": "Mật khẩu không được để trống",
   "password_too_short": "Mật khẩu phải có ít nhất 8 ký tự",
