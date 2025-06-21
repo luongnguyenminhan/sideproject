@@ -1,50 +1,27 @@
 """Authentication utility functions"""
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from pytz import timezone
-from fastapi import status
 
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import SECRET_KEY, TOKEN_AUDIENCE, TOKEN_ISSUER
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.user_enums import UserRoleEnum
-from app.exceptions.exception import CustomHTTPException, NotFoundException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.generate_jwt import GenerateJWToken
 
 logger = logging.getLogger(__name__)
-
-
-async def create_and_store_otp(email: str, otp_dal):
-	"""Create and store OTP for email verification or password reset
-
-	Args:
-	    email (str): User email
-	    otp_dal: OTP data access layer
-
-	Returns:
-	    str: Generated OTP code
-	"""
-	from app.utils.otp_utils import OTPUtils
-
-	otp_utils = OTPUtils()
-	otp_code = otp_utils.GenerateOTP()
-
-	# Create OTP record with 10 minute expiration
-	new_otp = {
-		'email': email,
-		'otp': otp_code,
-		'expired_at': datetime.now(timezone('Asia/Ho_Chi_Minh')) + timedelta(minutes=10),
-		'is_used': False,
-	}
-
-	# Update any existing unused OTPs for this email
-	otp_dal.update_otp_used_by_email(email)
-
-	# Store new OTP
-	otp_dal.create(new_otp)
-
-	return otp_code
 
 
 def log_user_action(user_logs_dal, user_id: str, action: str, details: str):

@@ -8,6 +8,7 @@ from typing import List
 from fastapi import Body
 from pydantic import BaseModel, EmailStr, Field
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import (
 	APIResponse,
 	FilterableRequestSchema,
@@ -15,7 +16,10 @@ from app.core.base_model import (
 	RequestSchema,
 	ResponseSchema,
 )
-from app.enums.user_enums import UserRoleEnum
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 

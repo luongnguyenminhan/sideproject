@@ -7,6 +7,7 @@ import logging
 from typing import Dict, Any
 import docx
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.pdf import PDFToTextConverter
 
 logger = logging.getLogger(__name__)

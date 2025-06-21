@@ -1,8 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, Dict, Any, List
 from datetime import datetime
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema, APIResponse
-from app.modules.agent.models.agent import ModelProvider
+from .models.agent import ModelProvider
 
 
 class SystemAgentResponse(ResponseSchema):

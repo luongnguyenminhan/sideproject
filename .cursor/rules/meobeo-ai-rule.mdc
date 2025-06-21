@@ -26,12 +26,43 @@ This project modules follows a strict 3-layer architecture:
 
 ## Base Classes and Inheritance
 
-### DAL Layer (`dal/`)
-- **MUST inherit from `BaseDAL[T]`** from base_dal.py
-- Provides standard CRUD operations: `get_by_id()`, `get_all()`, `create()`, `update()`, `delete()`
-- Includes transaction management: `transaction()`, `begin_transaction()`, `commit()`, `rollback()`
-- Initialize with: `def __init__(self, db: Session, model: Type[T] = None)`
-- If model not provided in init, pass it in super().__init__(db, ModelClass)
+### Repository Layer (`repository/`)
+- **MUST inherit from `BaseRepo`** from base_repo.py
+- Provides standard session management: `db`, `begin_transaction()`, `commit()`, `rollback()`, `close()`
+- Initialize with: `def __init__(self, db: Session = Depends(get_db)): super().__init__(db)`
+- **MUST call `super().__init__(db)` in constructor**
+- Includes database session management and transaction handling
+
+### BaseRepo Structure
+```python
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+
+class BaseRepo:
+    def __init__(self, db: Session = Depends(get_db)):
+        self.db = db
+        
+    def begin_transaction(self):
+        """Bắt đầu transaction"""
+        self.db.begin()
+
+    def commit(self):
+        """Commit transaction"""
+        try:
+            self.db.commit()
+        except Exception as e:
+            self.rollback()
+            raise e
+
+    def rollback(self):
+        """Rollback transaction nếu có lỗi"""
+        self.db.rollback()
+        
+    def close(self):
+        """Đóng session"""
+        self.db.close()
+```
 
 ### Models (Database Entities)
 - **MUST inherit from `BaseEntity`** from base_model.py
@@ -116,7 +147,9 @@ return APIResponse(
 - Classes: `{Module}Repo` (e.g., `UserRepo`, `MeetingRepo`) - **NOT** `{Module}Repository`
 
 ### Structure Requirements
+- **MUST inherit from `BaseRepo`** from base_repo.py
 - **MUST have `db: Session = Depends(get_db)` in `__init__`**
+- **MUST call `super().__init__(db)` in constructor**
 - **MUST attach all needed DAL instances in `__init__`**
 - **MUST contain business logic only**
 - **Can reuse other repositories by dependency injection**
@@ -126,14 +159,16 @@ return APIResponse(
 ```python
 from sqlalchemy.orm import Session
 from fastapi import Depends
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
-from app.modules.users.dal.user_dal import UserDAL
+from app.core.base_repo import BaseRepo
 from app.exceptions.exception import NotFoundException
 from app.middleware.translation_manager import _
+from .dal.user_dal import UserDAL
 
-class UserRepo:
+class UserRepo(BaseRepo):
     def __init__(self, db: Session = Depends(get_db)):
-        self.db = db
+        super().__init__(db)
         self.user_dal = UserDAL(db)
         # Attach other DALs as needed
     

@@ -4,8 +4,10 @@ import hashlib
 import mimetypes
 from typing import List, Optional
 from fastapi import UploadFile
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.minio.minio_handler import minio_handler
-from app.modules.chat.models.file import File
+from .models.file import File
 import logging
 
 logger = logging.getLogger(__name__)

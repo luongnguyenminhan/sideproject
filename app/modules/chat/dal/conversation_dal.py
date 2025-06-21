@@ -1,8 +1,12 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import Pagination
-from app.modules.chat.models.conversation import Conversation
+from ..models.conversation import Conversation
 from typing import Optional
 import logging
 

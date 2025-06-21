@@ -4,6 +4,8 @@ Pydantic models for Agentic RAG operations beyond basic knowledge base.
 
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import RequestSchema
 
 

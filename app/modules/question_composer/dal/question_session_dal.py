@@ -4,6 +4,8 @@ Question session data access layer.
 
 from sqlalchemy.orm import Session
 from typing import List, Optional
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
 from ..models.question_session_model import QuestionSession
 

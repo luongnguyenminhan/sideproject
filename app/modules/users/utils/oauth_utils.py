@@ -10,14 +10,18 @@ import requests
 from authlib.integrations.starlette_client import OAuth
 from fastapi import HTTPException, Request
 from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi import status
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import (
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
 	GOOGLE_REDIRECT_URI,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 import json
 

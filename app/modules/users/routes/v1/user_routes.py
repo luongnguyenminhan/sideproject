@@ -2,18 +2,30 @@ import json
 
 from fastapi import APIRouter, Depends, Query
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse, PagingInfo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.auth_middleware import verify_token
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.users.repository.user_repo import UserRepo
-from app.modules.users.schemas.users import (
+from ...repository.user_repo import UserRepo
+from ...schemas.users import (
 	PaginatedResponse,
 	SearchUserRequest,
-	SearchUserResponse,
 	UserResponse,
 )
 

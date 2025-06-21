@@ -4,6 +4,8 @@ Question session database model.
 
 from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, ForeignKey
 from sqlalchemy.orm import relationship
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
 
 

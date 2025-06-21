@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import Field
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema
-from app.modules.chat.models.message import MessageRole
+from .models.message import MessageRole
 
 
 class MessageResponse(ResponseSchema):

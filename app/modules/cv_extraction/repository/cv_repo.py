@@ -1,17 +1,26 @@
 import aiohttp
-import aiofiles
+import aiofiles  # type: ignore
 import uuid
 import os
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.cv_extraction.repository.cv_agent import CVAnalyzer
-from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
-from app.utils.pdf import (
+from .cv_agent import CVAnalyzer
+from ..schemas.cv import ProcessCVRequest
+from ..utils.pdf import (
 	PDFToTextConverter,
 )
 
 
-class CVRepository:
+class CVRepository(BaseRepo):
 	async def process_cv(self, request: ProcessCVRequest) -> APIResponse:
 		# DOWNLOAD CV FROM URL
 		file_path = await self._download_file(request.cv_file_url)

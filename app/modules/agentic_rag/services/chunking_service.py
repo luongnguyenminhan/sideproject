@@ -6,6 +6,8 @@ import logging
 from typing import List
 from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import GOOGLE_API_KEY
 import numpy as np
 

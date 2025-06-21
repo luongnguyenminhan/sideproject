@@ -8,13 +8,17 @@ import asyncio
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 
-from app.modules.agentic_rag.repository.kb_repo import KBRepository
-from app.modules.agentic_rag.schemas.kb_schema import (
+from .repository.kb_repo import KBRepository
+from .schemas.kb_schema import (
 	AddDocumentsRequest,
 	DocumentModel,
 	QueryRequest,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
 
 logger = logging.getLogger(__name__)

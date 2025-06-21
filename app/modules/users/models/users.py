@@ -3,7 +3,10 @@
 from sqlalchemy import Boolean, Column, DateTime, Enum, String
 from sqlalchemy.orm import validates, relationship
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.user_enums import UserRoleEnum
 
 

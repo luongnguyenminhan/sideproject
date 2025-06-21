@@ -7,8 +7,12 @@ import logging
 import json
 from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
-from app.modules.chat.models.conversation import Conversation
+from .models.conversation import Conversation
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.minio.minio_handler import minio_handler
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.cv_extraction.repository.cv_agent.cv_processor import (
 	CVProcessorWorkflow,
 )
@@ -73,7 +77,7 @@ class CVIntegrationService:
 			print(f'[CVIntegrationService] Storing CV context for conversation: {conversation_id} and user: {user_id}')
 
 			# Import here to avoid circular import
-			from app.modules.chat.repository.chat_repo import ChatRepo
+			from .repository.chat_repo import ChatRepo
 
 			chat_repo = ChatRepo(self.db_session)
 			print(f'[CVIntegrationService] Initialized ChatRepo with db_session: {self.db_session}')
@@ -130,7 +134,7 @@ class CVIntegrationService:
 			print(f'[CVIntegrationService] Getting CV context for conversation: {conversation_id} and user: {user_id}')
 
 			# Import here to avoid circular import
-			from app.modules.chat.repository.chat_repo import ChatRepo
+			from .repository.chat_repo import ChatRepo
 
 			chat_repo = ChatRepo(self.db_session)
 			print(f'[CVIntegrationService] Initialized ChatRepo with db_session: {self.db_session}')

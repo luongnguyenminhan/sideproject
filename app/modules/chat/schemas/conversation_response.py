@@ -1,5 +1,7 @@
 from typing import Optional
 from pydantic import ConfigDict
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema, PaginatedResponse
 from datetime import datetime
 

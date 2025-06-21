@@ -9,18 +9,34 @@ from fastapi import (
 	File,
 )
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
-from app.modules.chat.repository.chat_repo import ChatRepo
-from app.modules.chat.schemas.chat_request import SendMessageRequest
-from app.modules.chat.schemas.chat_response import SendMessageResponse
+from ...repository.chat_repo import ChatRepo
+from ...schemas.chat_request import SendMessageRequest
+from ...schemas.chat_response import SendMessageResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user, verify_websocket_token
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.websocket_middleware import WebSocketErrorHandler
-from app.modules.chat.services.cv_integration_service import CVIntegrationService
+from ...services.cv_integration_service import CVIntegrationService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -327,7 +343,7 @@ async def get_file_download_url(
 	current_user: dict = Depends(get_current_user),
 ):
 	"""Get temporary download URL for file in chat context"""
-	from app.modules.chat.repository.file_repo import FileRepo
+	from ...repository.file_repo import FileRepo
 
 	file_repo = FileRepo(db)
 	user_id = current_user.get('user_id')

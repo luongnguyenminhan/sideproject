@@ -1,4 +1,6 @@
 from pydantic import Field
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import RequestSchema
 from typing import Optional
 

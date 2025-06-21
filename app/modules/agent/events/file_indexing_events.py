@@ -7,11 +7,17 @@ import asyncio
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
 
-from app.modules.agent.services.file_indexing_service import (
+from ..services.file_indexing_service import (
 	ConversationFileIndexingService,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.agentic_rag.repository.kb_repo import KBRepository
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.chat.repository.file_repo import FileRepo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.chat.models.file import File
 
 logger = logging.getLogger(__name__)

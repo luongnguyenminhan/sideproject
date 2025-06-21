@@ -2,9 +2,11 @@
 
 import logging
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
-from app.modules.agent.dal.agent_dal import AgentDAL
-from app.modules.agent.models.agent import ModelProvider
+from ..dal.agent_dal import AgentDAL
+from ..models.agent import ModelProvider
 
 logger = logging.getLogger(__name__)
 

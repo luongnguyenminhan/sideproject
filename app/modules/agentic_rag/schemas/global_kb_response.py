@@ -1,3 +1,4 @@
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema, APIResponse
 from pydantic import ConfigDict, field_serializer
 from typing import List, Optional, Union

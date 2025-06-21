@@ -1,10 +1,16 @@
 from fastapi import APIRouter, Depends, Header
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import FERNET_KEY
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
-from app.modules.cv_extraction.repository.cv_repo import CVRepository
+from ...schemas.cv import ProcessCVRequest
+from ...repository.cv_repo import CVRepository
 
 
 route = APIRouter(prefix='/cv', tags=['CV'])

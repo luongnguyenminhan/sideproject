@@ -1,10 +1,17 @@
 from fastapi import APIRouter, Depends, Query
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.facebook_post.repository.facebook_repo import FacebookRepo
+from ...repository.facebook_repo import FacebookRepo
 
 
 route = APIRouter(prefix='/facebook-graph', tags=['Facebook Graph API'])

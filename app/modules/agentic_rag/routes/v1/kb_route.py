@@ -4,17 +4,24 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, UploadFile
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException, NotFoundException
-from app.modules.agentic_rag.schemas.kb_schema import (
+from ...schemas.kb_schema import (
 	AddDocumentsRequest,
 	QueryRequest,
 	UploadDocumentResponse,
 	ViewDocumentResponse,
 )
-from app.modules.agentic_rag.repository.kb_repo import KBRepository
+from ...repository.kb_repo import KBRepository
 
 # Router for Agentic RAG knowledge base operations
 route: APIRouter = APIRouter(prefix='/kb', tags=['Agentic RAG'])

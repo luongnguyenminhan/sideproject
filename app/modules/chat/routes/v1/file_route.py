@@ -1,15 +1,29 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user
-from app.modules.chat.repository.file_repo import FileRepo
-from app.modules.chat.schemas.file_request import FileListRequest
-from app.modules.chat.schemas.file_response import FileResponse, UploadFileResponse
+from ...repository.file_repo import FileRepo
+from ...schemas.file_request import FileListRequest
+from ...schemas.file_response import FileResponse, UploadFileResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.auth_middleware import verify_token
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 from typing import List, Optional
 import io

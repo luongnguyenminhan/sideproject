@@ -9,15 +9,28 @@ from authlib.integrations.starlette_client import OAuthError
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import FRONTEND_ERROR_URL, FRONTEND_SUCCESS_URL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.users.repository.authen_repo import AuthenRepo
-from app.modules.users.schemas.users import (
+from ...repository.authen_repo import AuthenRepo
+from ...schemas.users import (
 	GoogleDirectLoginRequest,
 	GoogleLoginResponse,
 	GoogleRevokeTokenRequest,
@@ -25,7 +38,9 @@ from app.modules.users.schemas.users import (
 	RefreshTokenRequest,
 	UserResponse,
 )
-from app.utils.oauth_utils import (
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from ...utils.oauth_utils import (
 	check_granted_scopes,
 	generate_auth_success_page,
 	generate_google_login_page,
@@ -334,7 +349,7 @@ async def google_callback(request: Request, repo: AuthenRepo = Depends()):
 			family_name=user_info.get('family_name'),
 			locale=user_info.get('locale'),
 			sub=user_info.get('sub'),
-			granted_scopes=token.get('scope', '').split(' ') if isinstance(token.get('scope', ''), str) else token.get('scope', []),
+			granted_scopes=(token.get('scope', '').split(' ') if isinstance(token.get('scope', ''), str) else token.get('scope', [])),
 		)
 
 		# Login or register with Google credentials

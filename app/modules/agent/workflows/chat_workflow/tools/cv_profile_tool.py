@@ -8,8 +8,14 @@ import asyncio
 from datetime import datetime
 from langchain_core.tools import tool
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.chat.dal.conversation_dal import ConversationDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.cv_extraction.repository.cv_repo import CVRepository
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 
 logger = logging.getLogger(__name__)

@@ -9,14 +9,23 @@ from sqlalchemy.orm import Session
 from langchain_core.documents import Document
 from datetime import datetime
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.chat.services.file_extraction_service import file_extraction_service
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.agentic_rag.repository.kb_repo import KBRepository
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.agentic_rag.schemas.kb_schema import (
 	AddDocumentsRequest,
 	DocumentModel,
 	QueryRequest,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 logger = logging.getLogger(__name__)

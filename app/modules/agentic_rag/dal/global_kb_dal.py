@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
-from app.modules.agentic_rag.models.global_kb_model import GlobalKB
+from ..models.global_kb_model import GlobalKB
 
 
 class GlobalKBDAL(BaseDAL[GlobalKB]):

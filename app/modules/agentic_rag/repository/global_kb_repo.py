@@ -1,21 +1,36 @@
 import logging
 from sqlalchemy.orm import Session
 from fastapi import Depends
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
-from app.modules.agentic_rag.dal.global_kb_dal import GlobalKBDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+from ..dal.global_kb_dal import GlobalKBDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import (
 	NotFoundException,
 	ValidationException,
 	CustomHTTPException,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.minio.minio_handler import minio_handler
 from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
 
-class GlobalKBRepo:
+class GlobalKBRepo(BaseRepo):
 	def __init__(self, db: Session = Depends(get_db)):
 		logger.info('[GlobalKBRepo] Initializing GlobalKBRepo')
 		self.db = db

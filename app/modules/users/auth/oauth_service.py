@@ -5,12 +5,19 @@ from datetime import datetime
 
 from pytz import timezone
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.user_enums import UserRoleEnum
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.users.models.users import User
-from app.modules.users.schemas.users import OAuthUserInfo, RefreshTokenRequest
-from app.modules.users.auth.auth_utils import generate_auth_tokens, log_user_action, verify_refresh_token
+from ..models.users import User
+from ..schemas.users import OAuthUserInfo, RefreshTokenRequest
+from ..auth.auth_utils import generate_auth_tokens, log_user_action, verify_refresh_token
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.events import EventHooks
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,6 @@
 from pydantic import ConfigDict, Field
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema
 from datetime import datetime
 from typing import List, Optional

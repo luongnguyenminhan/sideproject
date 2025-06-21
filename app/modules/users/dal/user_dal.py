@@ -5,10 +5,17 @@ from contextlib import contextmanager
 
 from sqlalchemy import and_
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import Pagination
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import Constants
-from app.modules.users.models.users import User
+from ..models.users import User
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.filter_utils import apply_dynamic_filters
 
 

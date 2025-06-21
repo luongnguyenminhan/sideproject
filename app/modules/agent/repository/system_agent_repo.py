@@ -1,21 +1,31 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
-from app.modules.agent.dal.agent_dal import AgentDAL
-from app.modules.agent.models.agent import Agent, ModelProvider
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import NotFoundException, ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+from ..dal.agent_dal import AgentDAL
+from ..models.agent import Agent, ModelProvider
 from typing import Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class SystemAgentRepo:
+class SystemAgentRepo(BaseRepo):
 	"""Repository for ultra-simplified System Agent operations"""
 
 	def __init__(self, db: Session = Depends(get_db)):
-		self.db = db
+		super().__init__(db)
 		self.agent_dal = AgentDAL(db)
 
 	def get_system_agent(self) -> Agent:

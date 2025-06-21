@@ -13,11 +13,16 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import GOOGLE_API_KEY
-from app.modules.agentic_rag.repository.kb_repo import KBRepository
-from app.modules.agentic_rag.core.config import DEFAULT_COLLECTION
+from .repository.kb_repo import KBRepository
+from .core.config import DEFAULT_COLLECTION
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +150,7 @@ class RAGAgentGraph:
 		try:
 			# Retrieve documents using the KB repository
 			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph-RetrievalNode] Executing document retrieval via KB repository{LogColors.ENDC}')
-			from app.modules.agentic_rag.schemas.kb_schema import QueryRequest
+			from .schemas.kb_schema import QueryRequest
 
 			# Use collection-specific query
 			query_response = await self.kb_repo.query(QueryRequest(query=query, top_k=5), collection_id=collection_id)

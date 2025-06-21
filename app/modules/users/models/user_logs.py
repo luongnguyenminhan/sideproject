@@ -3,6 +3,7 @@
 from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
 
 

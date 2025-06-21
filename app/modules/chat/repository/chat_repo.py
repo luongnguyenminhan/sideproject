@@ -2,15 +2,30 @@ import os
 from pytz import timezone
 from sqlalchemy.orm import Session
 from fastapi import Depends
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.exceptions.exception import NotFoundException, ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Agent DAL từ module khác
 from app.modules.agent.dal.agent_dal import AgentDAL
-from app.modules.chat.dal.conversation_dal import ConversationDAL
-from app.modules.chat.dal.message_dal import MessageDAL
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.agent.repository.conversation_workflow_repo import (
 	ConversationWorkflowRepo,
 )
-from app.exceptions.exception import NotFoundException, ValidationException
-from app.middleware.translation_manager import _
+from ..dal.conversation_dal import ConversationDAL
+from ..dal.message_dal import MessageDAL
+from ..services.cv_integration_service import CVIntegrationService
 from datetime import datetime
 import time
 import asyncio
@@ -18,16 +33,14 @@ import json
 import logging
 from typing import List, Dict, Any
 
-from app.modules.chat.services.cv_integration_service import CVIntegrationService
-
 # Remove CV integration import to avoid circular import
 
 logger = logging.getLogger(__name__)
 
 
-class ChatRepo:
+class ChatRepo(BaseRepo):
 	def __init__(self, db: Session = Depends(get_db)):
-		self.db = db
+		super().__init__(db)
 		self.conversation_dal = ConversationDAL(db)
 		self.message_dal = MessageDAL(db)
 		self.agent_dal = AgentDAL(db)

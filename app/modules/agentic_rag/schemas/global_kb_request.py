@@ -1,3 +1,4 @@
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import RequestSchema, FilterableRequestSchema
 from typing import List, Optional
 

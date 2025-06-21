@@ -10,16 +10,21 @@ import os
 import time
 from typing import List, Dict, Any, AsyncGenerator, Optional
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.agent.models.agent import Agent
-from app.modules.agent.services.file_indexing_service import (
+from .models.agent import Agent
+from .services.file_indexing_service import (
 	ConversationFileIndexingService,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ - Cross module import
 from app.modules.chat.repository.file_repo import FileRepo
 from sqlalchemy.orm import Session
 
-from app.modules.agent.workflows.chat_workflow.config.workflow_config import (
+from .workflows.chat_workflow.config.workflow_config import (
 	WorkflowConfig,
 )
 
@@ -51,7 +56,7 @@ class LangGraphService(object):
 	def _init_global_workflow(cls, db_session: Session):
 		"""Initialize global workflow instance once"""
 		try:
-			from app.modules.agent.workflows.chat_workflow import get_compiled_workflow
+			from .workflows.chat_workflow import get_compiled_workflow
 
 			cls._global_workflow = get_compiled_workflow(db_session=db_session, config=WorkflowConfig())
 		except Exception as e:

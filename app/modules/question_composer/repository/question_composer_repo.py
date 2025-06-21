@@ -8,12 +8,21 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from fastapi import Depends
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import (
 	NotFoundException,
 	ValidationException,
 	CustomHTTPException,
 )
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 from ..dal.question_session_dal import QuestionSessionDAL
@@ -36,7 +45,7 @@ from ..schemas.question_schemas import UserProfile, Question
 logger = logging.getLogger(__name__)
 
 
-class QuestionComposerRepo:
+class QuestionComposerRepo(BaseRepo):
 	"""
 	Repository layer for question composer module.
 
@@ -44,8 +53,8 @@ class QuestionComposerRepo:
 	"""
 
 	def __init__(self, db: Session = Depends(get_db)):
+		super().__init__(db)
 		logger.info('🚀 Initializing QuestionComposerRepo')
-		self.db = db
 		logger.info('📊 Database session established')
 
 		self.question_session_dal = QuestionSessionDAL(db)

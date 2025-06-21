@@ -1,5 +1,7 @@
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
 
 

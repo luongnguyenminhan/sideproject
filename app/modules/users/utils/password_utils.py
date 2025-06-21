@@ -19,7 +19,10 @@ import string
 from fastapi import status
 from passlib.hash import bcrypt
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import CustomHTTPException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 

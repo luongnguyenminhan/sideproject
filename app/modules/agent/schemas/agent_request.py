@@ -1,5 +1,7 @@
 from pydantic import BaseModel, validator
 from typing import Optional
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import RequestSchema
 
 

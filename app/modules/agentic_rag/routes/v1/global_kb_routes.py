@@ -1,17 +1,27 @@
 import logging
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
-from app.modules.agentic_rag.repository.global_kb_repo import GlobalKBRepo
-from app.modules.agentic_rag.schemas.global_kb_request import (
+from ...repository.global_kb_repo import GlobalKBRepo
+from ...schemas.global_kb_request import (
 	CreateGlobalKBRequest,
 	UpdateGlobalKBRequest,
 	SearchGlobalKBRequest,
 )
-from app.modules.agentic_rag.schemas.global_kb_response import GlobalKBResponse
+from ...schemas.global_kb_response import GlobalKBResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.utils.minio.minio_handler import minio_handler
 
 logger = logging.getLogger(__name__)
@@ -238,7 +248,7 @@ async def upload_global_kb_file(
 
 				# Index vào Global KB vector database
 				logger.debug('[GlobalKBRoutes] Starting indexing to Global KB vector database')
-				from app.modules.agentic_rag.services.global_kb_service import (
+				from ...services.global_kb_service import (
 					GlobalKBService,
 				)
 

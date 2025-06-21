@@ -1,5 +1,7 @@
-from app.modules.agent.models.agent import Agent, ModelProvider
+from ..models.agent import Agent, ModelProvider
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
 from typing import Optional, Dict, Any
 

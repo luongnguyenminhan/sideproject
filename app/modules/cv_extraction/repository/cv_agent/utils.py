@@ -5,6 +5,7 @@ from typing import Dict
 import tiktoken
 
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.config import (
 	CONTEXT_PRICE_PER_MILLION,
 	INPUT_PRICE_PER_MILLION,

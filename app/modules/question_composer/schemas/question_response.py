@@ -4,6 +4,8 @@ Question generation response schemas.
 
 from typing import List, Optional, Dict, Any
 from pydantic import Field, ConfigDict
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema, APIResponse
 
 

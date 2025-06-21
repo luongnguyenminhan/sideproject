@@ -4,7 +4,7 @@ Workflow state for question generation workflow.
 
 from typing import List, Dict, Any, Optional, TypedDict
 
-from app.modules.question_composer.schemas.question_schemas import AnalysisDecision, Question, UserProfile
+from ....schemas.question_schemas import AnalysisDecision, Question, UserProfile
 
 
 class QuestionGenerationState(TypedDict):

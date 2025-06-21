@@ -3,8 +3,9 @@
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_dal import BaseDAL
-from app.modules.users.models.user_logs import UserLog
+from ..models.user_logs import UserLog
 
 
 class UserLogDAL(BaseDAL[UserLog]):

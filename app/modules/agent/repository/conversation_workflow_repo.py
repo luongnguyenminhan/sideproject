@@ -1,9 +1,21 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
-from app.modules.agent.repository.system_agent_repo import SystemAgentRepo
-from app.modules.agent.services.langgraph_service import LangGraphService
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+from app.core.base_repo import BaseRepo
+from .repository.system_agent_repo import SystemAgentRepo
+from .services.langgraph_service import LangGraphService
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 from typing import Dict, Any, List
 import logging
@@ -11,7 +23,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ConversationWorkflowRepo:
+class ConversationWorkflowRepo(BaseRepo):
 	"""Optimized repository for conversation workflow execution"""
 
 	# Class-level service caching
@@ -19,7 +31,7 @@ class ConversationWorkflowRepo:
 	_system_agent_repo = None
 
 	def __init__(self, db: Session = Depends(get_db)):
-		self.db = db
+		super().__init__(db)
 		# Use cached services
 		if ConversationWorkflowRepo._system_agent_repo is None:
 			ConversationWorkflowRepo._system_agent_repo = SystemAgentRepo(db)

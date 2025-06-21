@@ -10,6 +10,8 @@ from sqlalchemy import (
 	ForeignKey,
 )
 from sqlalchemy.orm import relationship
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
 import enum
 

@@ -1,17 +1,29 @@
 from fastapi import APIRouter, Depends
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user
-from app.modules.chat.repository.conversation_repo import ConversationRepo
-from app.modules.chat.schemas.conversation_request import (
+from ...repository.conversation_repo import ConversationRepo
+from ...schemas.conversation_request import (
 	CreateConversationRequest,
 	UpdateConversationRequest,
 	ConversationListRequest,
 )
-from app.modules.chat.schemas.conversation_response import ConversationResponse
-from app.modules.chat.schemas.message_response import MessageResponse
+from ...schemas.conversation_response import ConversationResponse
+from ...schemas.message_response import MessageResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse, PaginatedResponse, PagingInfo
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.auth_middleware import verify_token
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 route = APIRouter(

@@ -1,9 +1,13 @@
 from typing import Dict, List
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.exception import ValidationException
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 import logging
 
-from app.modules.agent.models.agent import ModelProvider
+from ..models.agent import ModelProvider
 
 logger = logging.getLogger(__name__)
 

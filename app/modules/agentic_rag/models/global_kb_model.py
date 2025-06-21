@@ -1,3 +1,4 @@
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import BaseEntity
 from sqlalchemy import Column, String, Text, Boolean
 

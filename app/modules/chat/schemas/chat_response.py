@@ -1,4 +1,6 @@
 from pydantic import ConfigDict
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema
 from typing import Dict, Any
 

@@ -1,16 +1,28 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.database import get_db
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.enums.base_enums import BaseErrorCode
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.http.oauth2 import get_current_user
-from app.modules.agent.repository.system_agent_repo import SystemAgentRepo
-from app.modules.agent.repository.conversation_workflow_repo import (
+from ...repository.system_agent_repo import SystemAgentRepo
+from ...repository.conversation_workflow_repo import (
 	ConversationWorkflowRepo,
 )
-from app.modules.agent.schemas.agent_request import *
-from app.modules.agent.schemas.agent_response import *
+from ...schemas.agent_request import *
+from ...schemas.agent_response import *
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
 
 route = APIRouter(prefix='/chat', tags=['chat'])

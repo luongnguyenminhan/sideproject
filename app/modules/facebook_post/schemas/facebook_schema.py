@@ -2,6 +2,7 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import Field, ConfigDict
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import ResponseSchema, APIResponse
 
 

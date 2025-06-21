@@ -2,11 +2,16 @@
 
 from fastapi import APIRouter, Depends
 
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.core.base_model import APIResponse
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.middleware.translation_manager import _
+
+## IMPORT NGOÀI MODULE CẦN XỬ LÍ
 from app.exceptions.handlers import handle_exceptions
-from app.modules.agentic_rag.schemas.rag_schema import RAGRequest
-from app.modules.agentic_rag.repository.rag_repo import RAGRepo
+from ...schemas.rag_schema import RAGRequest
+from ...repository.rag_repo import RAGRepo
 
 # Router for Agentic RAG operations
 route: APIRouter = APIRouter(prefix='/rag', tags=['Agentic RAG'])
