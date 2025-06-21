@@ -15,9 +15,9 @@ export default function LoadingScreen({ isLoading = true }: LoadingScreenProps) 
                 <div className="relative w-24 h-24 md:w-32 md:h-32">
                     <Image
                         src="/assets/logo/logo_web.jpg"
-                        alt="CGSEM Logo"
+                        alt="Enterview Logo"
                         fill
-                        className="object-contain"
+                        className="object-contain rounded-full"
                         priority
                     />
                 </div>

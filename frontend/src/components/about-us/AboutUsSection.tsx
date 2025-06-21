@@ -148,7 +148,7 @@ const AboutUsSection: React.FC<AboutUsSectionProps> = async ({ pageInfo }) => {
                     {/* Stats & Links Grid */}
                     <ScrollReveal direction="up" delay={0.8}>
                       <div className="pt-6 border-t border-[color:var(--border)]">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {pageInfo.single_line_address && (
                             <MagneticCard strength={15}>
                               <div className="h-32 text-center p-6 bg-gradient-to-br from-[color:var(--feature-yellow)] to-[color:var(--feature-yellow)]/80 rounded-2xl group relative overflow-hidden transition-all duration-500 hover:shadow-lg hover:scale-105 flex flex-col justify-center">

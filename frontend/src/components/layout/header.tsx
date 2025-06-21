@@ -43,9 +43,9 @@ export default async function Header({ withChatBubble = false }: { withChatBubbl
             <Image
               src="/assets/logo/logo_web.jpg"
               alt="App Logo"
-              width={80}
-              height={30}
-              className="!m-4"
+              width={50}
+              height={50}
+              className="!m-4 rounded-full"
             />
             <span className="hidden md:inline text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]">
               {t('common.branding')}

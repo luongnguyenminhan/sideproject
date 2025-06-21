@@ -206,39 +206,48 @@
     "facebookPostCountSuffix": "trên Facebook",
     "features": {
       "darkMode": {
-        "description": "Dễ đọc trong mọi điều kiện ánh sáng",
-        "features": {
-          "automaticSwitching": "Tự động chuyển đổi giao diện theo hệ thống",
-          "darkLightThemes": "Chuyển đổi giữa giao diện tối và sáng",
-          "eyeFriendlyDesign": "Thiết kế thân thiện với mắt khi đọc lâu"
-        },
-        "title": "Chế độ tối"
+      "description": "Tối ưu hóa CV với gợi ý cải thiện chuyên nghiệp",
+      "features": {
+        "automaticSwitching": "Tự động phân tích điểm nhấn trong CV.",
+        "darkLightThemes": "Gợi ý nội dung phù hợp với từng vị trí công việc cụ thể.",
+        "eyeFriendlyDesign": "Thiết kế CV theo chuẩn Harvard, chuyên nghiệp và ấn tượng."
+      },
+      "title": "Tối ưu hóa CV chuyên nghiệp"
       },
       "fastPerformance": {
-        "description": "Phản hồi tức thì, trải nghiệm mượt mà",
-        "features": {
-          "lightningFastLoading": "Tải trang cực nhanh",
-          "optimizedPerformance": "Tối ưu hóa cho tốc độ phản hồi nhanh",
-          "seamlessUserExperience": "Trải nghiệm liền mạch, không gián đoạn"
-        },
-        "title": "Hiệu năng cao"
+      "description": "Phản hồi tức thì khi tạo, chỉnh sửa và nhận góp ý CV.",
+      "features": {
+        "lightningFastLoading": "Tải trang và CV cực nhanh, không gián đoạn.",
+        "optimizedPerformance": "Tối ưu hóa thao tác chỉnh sửa và nhận phản hồi CV.",
+        "seamlessUserExperience": "Trải nghiệm mượt mà xuyên suốt quá trình xây dựng CV."
+      },
+      "title": "Hiệu suất vượt trội"
       },
       "globalReady": {
-        "description": "Hỗ trợ đa ngôn ngữ cho người học toàn cầu",
-        "features": {
-          "culturalAdaptation": "Nội dung phù hợp với từng nền văn hóa",
-          "globalAccessibility": "Truy cập từ mọi nơi trên thế giới",
-          "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ"
-        },
-        "title": "Sẵn sàng toàn cầu"
+      "description": "Hỗ trợ ứng viên toàn diện với nhiều ngôn ngữ",
+      "features": {
+        "culturalAdaptation": "Gợi ý CV chuẩn hóa theo từng ngành nghề và khu vực.",
+        "globalAccessibility": "Truy cập, chỉnh sửa và nhận góp ý CV mọi lúc, mọi nơi.",
+        "multiLanguageSupport": "Hỗ trợ đa ngôn ngữ cho quá trình xây dựng CV."
+      },
+      "title": "Phù hợp toàn cầu"
       },
       "modernStack": {
-        "description": "Xây dựng bằng công nghệ web hiện đại",
-        "features": {
-          "modernDevelopmentTools": "Công cụ phát triển hiện đại, chuẩn quốc tế",
-          "nextjsReact": "Phát triển với Next.js & React",
-          "typescriptSupport": "Hỗ trợ TypeScript đảm bảo ổn định"
-        },
+      "description": "Nền tảng AI xây dựng CV chuẩn Harvard qua chat.",
+      "features": {
+        "modernDevelopmentTools": "Tích hợp AI phân tích, góp ý và tối ưu hóa CV.",
+        "nextjsReact": "Tìm việc, nhận tư vấn và chỉnh sửa CV trực tiếp qua chat.",
+        "typescriptSupport": "Bảo mật và ổn định, đảm bảo dữ liệu CV an toàn."
+      },
+      "title": "Nền tảng AI thông minh"
+      },
+      "smartChat": {
+      "description": "Tìm việc và nhận góp ý CV trực tiếp qua chat AI",
+      "features": {
+        "jobSearch": "Tìm kiếm việc làm phù hợp qua chat",
+        "cvFeedback": "Nhận góp ý chỉnh sửa CV theo chuẩn Harvard",
+        "interactiveSupport": "Hỗ trợ tương tác, giải đáp thắc mắc về CV và phỏng vấn"
+      },
         "title": "Công nghệ hiện đại"
       },
       "subtitle": "Tính năng nổi bật",

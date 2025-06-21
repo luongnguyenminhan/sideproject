@@ -234,40 +234,49 @@
     "facebookPostCountSuffix": "on Facebook",
     "features": {
       "darkMode": {
-        "description": "Comfortable reading in any lighting",
-        "title": "Dark Mode",
-        "features": {
-          "automaticSwitching": "Automatic theme switching based on system settings",
-          "darkLightThemes": "Switch between dark and light themes",
-          "eyeFriendlyDesign": "Eye-friendly design for long reading sessions"
-        }
+      "description": "Professional CV optimization with expert improvement suggestions",
+      "features": {
+      "automaticSwitching": "Automatically analyzes key highlights in your CV.",
+      "darkLightThemes": "Content suggestions tailored to specific job positions.",
+      "eyeFriendlyDesign": "Harvard-standard CV design, professional and impressive."
+      },
+      "title": "Professional CV Optimization"
       },
       "fastPerformance": {
-        "description": "Instant responses and smooth experience",
-        "title": "Fast Performance",
-        "features": {
-          "optimizedPerformance": "Optimized for fast response times",
-          "lightningFastLoading": "Lightning-fast loading speeds",
-          "seamlessUserExperience": "Seamless and uninterrupted user experience"
-        }
+      "description": "Instant feedback when creating, editing, and receiving CV suggestions.",
+      "features": {
+      "lightningFastLoading": "Ultra-fast page and CV loading with no interruptions.",
+      "optimizedPerformance": "Optimized CV editing operations and feedback.",
+      "seamlessUserExperience": "Smooth experience throughout your CV building process."
+      },
+      "title": "Outstanding Performance"
       },
       "globalReady": {
-        "description": "Supports multiple languages for global learners",
-        "title": "Global Ready",
-        "features": {
-          "multiLanguageSupport": "Multi-language support",
-          "globalAccessibility": "Accessible from anywhere in the world",
-          "culturalAdaptation": "Culturally adapted content"
-        }
+      "description": "Comprehensive candidate support with multiple languages",
+      "features": {
+      "culturalAdaptation": "CV suggestions standardized by industry and region.",
+      "globalAccessibility": "Access, edit, and get CV feedback anytime, anywhere.",
+      "multiLanguageSupport": "Multi-language support for your CV building process."
+      },
+      "title": "Globally Suitable"
       },
       "modernStack": {
-        "description": "Built with the latest web technologies",
-        "title": "Modern Stack",
-        "features": {
-          "nextjsReact": "Powered by Next.js & React",
-          "typescriptSupport": "TypeScript support for reliability",
-          "modernDevelopmentTools": "Modern development tools and best practices"
-        }
+      "description": "AI platform for building Harvard-standard CVs via chat.",
+      "features": {
+      "modernDevelopmentTools": "Integrated AI for CV analysis, suggestions, and optimization.",
+      "nextjsReact": "Job search, consulting, and CV editing directly via chat.",
+      "typescriptSupport": "Secure and stable, ensuring your CV data is safe."
+      },
+      "title": "Smart AI Platform"
+      },
+      "smartChat": {
+      "description": "Job search and CV feedback directly via AI chat",
+      "features": {
+      "jobSearch": "Find suitable jobs via chat",
+      "cvFeedback": "Get Harvard-standard CV editing suggestions",
+      "interactiveSupport": "Interactive support for CV and interview questions"
+      },
+      "title": "Modern Technology"
       },
       "subtitle": "Key Features",
       "title": "Features"
