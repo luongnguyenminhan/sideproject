@@ -3,7 +3,6 @@ File indexing events - Handle real-time file indexing when files are uploaded
 """
 
 import logging
-import asyncio
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
 
