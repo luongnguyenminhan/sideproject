@@ -1,4 +1,4 @@
-# Next.js Internationalization & Theme System
+# EnterViu - Professional Career Platform Frontend
 
 Hệ thống đa ngôn ngữ và theme hiện đại cho Next.js với TypeScript.
 

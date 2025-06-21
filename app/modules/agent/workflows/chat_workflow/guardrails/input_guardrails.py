@@ -243,13 +243,13 @@ class InjectionGuardrail(BaseGuardrail):
 		return GuardrailResult(passed=True, violations=[])
 
 
-class CGSEMContextGuardrail(BaseGuardrail):
-	"""Guardrail đặc biệt cho context CGSEM"""
+class EnterViuContextGuardrail(BaseGuardrail):
+	"""Guardrail đặc biệt cho context EnterViu"""
 
 	def __init__(self):
-		super().__init__('cgsem_context_filter', True, GuardrailSeverity.LOW)
+		super().__init__('enterviu_context_filter', True, GuardrailSeverity.LOW)
 
-		# Keywords liên quan đến competitors hoặc nội dung không phù hợp với CGSEM
+		# Keywords liên quan đến competitors hoặc nội dung không phù hợp với EnterViu
 		self.off_topic_keywords = [
 			'competitor_brand_1',
 			'competitor_brand_2',  # Thay bằng tên thực
@@ -268,7 +268,7 @@ class CGSEMContextGuardrail(BaseGuardrail):
 				rule_name=self.name,
 				severity=self.severity,
 				action=GuardrailAction.ALLOW,  # Chỉ log, không block
-				message=f'Nội dung có thể không phù hợp với CGSEM context',
+				message=f'Nội dung có thể không phù hợp với EnterViu context',
 				details={'keywords_found': found_keywords},
 				timestamp=datetime.now(),
 			)

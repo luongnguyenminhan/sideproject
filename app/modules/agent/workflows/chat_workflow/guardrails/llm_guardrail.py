@@ -48,10 +48,9 @@ class LLMInputGuardrail(BaseGuardrail):
 		super().__init__('llm_input_guardrail', True, GuardrailSeverity.HIGH)
 
 		self.model = ChatGoogleGenerativeAI(model=model_name, temperature=temperature)
-
 		# LLM Input Guardrail System Prompt
 		self.system_prompt = """
-🛡️ Bạn là LLM Guardrail Agent chuyên nghiệp cho hệ thống CGSEM AI Assistant.
+🛡️ Bạn là LLM Guardrail Agent chuyên nghiệp cho hệ thống EnterViu AI Assistant.
 
 🎯 NHIỆM VỤ: Phân tích INPUT từ user để phát hiện vi phạm content safety và compliance.
 
@@ -82,9 +81,9 @@ class LLMInputGuardrail(BaseGuardrail):
    - Advertisement spam
 
 5. **BRAND SAFETY:**
-   - Content against CGSEM values
-   - Inappropriate context for educational setting
-   - Misinformation about CGSEM
+   - Content against EnterViu values
+   - Inappropriate context for career platform
+   - Misinformation about EnterViu
 
 🔍 QUY TẮC PHÂN TÍCH:
 - CRITICAL: Nội dung nguy hiểm, bất hợp pháp → BLOCK
@@ -98,7 +97,7 @@ class LLMInputGuardrail(BaseGuardrail):
 - BLOCK: Chặn hoàn toàn
 - ESCALATE: Báo cáo và chặn
 
-🎓 CONTEXT: Đây là môi trường giáo dục (trường THPT), cần đảm bảo an toàn cho học sinh.
+🎓 CONTEXT: Đây là môi trường career platform (tìm việc và phát triển sự nghiệp), cần đảm bảo an toàn và tính chuyên nghiệp.
 
 📊 OUTPUT: Structured JSON với quyết định chi tiết và confidence score.
 """
@@ -272,10 +271,9 @@ class LLMOutputGuardrail(BaseGuardrail):
 		super().__init__('llm_output_guardrail', True, GuardrailSeverity.HIGH)
 
 		self.model = ChatGoogleGenerativeAI(model=model_name, temperature=temperature)
-
 		# LLM Output Guardrail System Prompt
 		self.system_prompt = """
-🛡️ Bạn là LLM Output Guardrail Agent cho hệ thống CGSEM AI Assistant.
+🛡️ Bạn là LLM Output Guardrail Agent cho hệ thống EnterViu AI Assistant.
 
 🎯 NHIỆM VỤ: Phân tích RESPONSE từ AI để đảm bảo chất lượng và an toàn.
 
@@ -283,32 +281,32 @@ class LLMOutputGuardrail(BaseGuardrail):
 
 1. **CONTENT SAFETY:**
    - Harmful/Toxic content
-   - Inappropriate information for students
+   - Inappropriate information for career platform
    - Misinformation or false claims
    - Biased or discriminatory content
 
-2. **BRAND SAFETY (CGSEM):**
-   - Consistency with CGSEM values and mission
-   - Appropriate tone for educational environment
-   - Correct information about CGSEM activities
+2. **BRAND SAFETY (EnterViu):**
+   - Consistency with EnterViu values and mission
+   - Appropriate tone for professional environment
+   - Correct information about EnterViu activities
    - Professional representation
 
 3. **RESPONSE QUALITY:**
    - Relevance to user query
    - Completeness and helpfulness
    - Clarity and coherence
-   - Educational value
+   - Career/job search value
 
 4. **FACTUAL ACCURACY:**
-   - Verifiable claims about CGSEM
-   - Educational content accuracy
+   - Verifiable claims about EnterViu
+   - Career advice accuracy
    - No hallucinations or made-up information
 
 5. **TONE & STYLE:**
-   - Appropriate for high school students
-   - Enthusiastic but professional
+   - Appropriate for professionals and job seekers
+   - Professional yet approachable
    - Culturally sensitive
-   - Encouraging and positive
+   - Encouraging and motivational
 
 🔍 QUY TẮC PHÂN TÍCH:
 - CRITICAL: Nội dung có hại, thông tin sai lệch nghiêm trọng → BLOCK
@@ -322,7 +320,7 @@ class LLMOutputGuardrail(BaseGuardrail):
 - BLOCK: Chặn và yêu cầu tạo lại response
 - ESCALATE: Báo cáo vấn đề nghiêm trọng
 
-🎓 CONTEXT: AI Assistant của CLB CGSEM trường THPT, cần maintain tinh thần tích cực và educational.
+🎓 CONTEXT: AI Assistant của nền tảng EnterViu career, cần maintain tinh thần chuyên nghiệp và hỗ trợ tìm việc.
 
 📊 OUTPUT: Structured JSON với assessment chi tiết.
 """

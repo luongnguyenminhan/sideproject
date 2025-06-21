@@ -13,7 +13,7 @@ from .input_guardrails import (
 	LengthGuardrail,
 	PersonalInfoGuardrail,
 	InjectionGuardrail,
-	CGSEMContextGuardrail,
+	EnterViuContextGuardrail,
 )
 from .output_guardrails import (
 	HallucinationGuardrail,
@@ -21,7 +21,7 @@ from .output_guardrails import (
 	ToxicityGuardrail,
 	BrandSafetyGuardrail,
 	ResponseQualityGuardrail,
-	CGSEMConsistencyGuardrail,
+	EnterViuConsistencyGuardrail,
 )
 from ..utils.color_logger import get_color_logger, Colors
 
@@ -90,7 +90,6 @@ class ChatWorkflowGuardrailManager:
 			Colors.BRIGHT_CYAN,
 			complement_llm=self.enable_llm_guardrails,
 		)
-
 		if self.enable_input_guardrails:
 			# Input guardrails (as backup or complement to LLM)
 			self.engine.add_input_guardrail(ProfanityGuardrail())
@@ -98,7 +97,7 @@ class ChatWorkflowGuardrailManager:
 			self.engine.add_input_guardrail(LengthGuardrail(max_length=self.max_input_length))
 			self.engine.add_input_guardrail(PersonalInfoGuardrail())
 			self.engine.add_input_guardrail(InjectionGuardrail())
-			self.engine.add_input_guardrail(CGSEMContextGuardrail())
+			self.engine.add_input_guardrail(EnterViuContextGuardrail())
 
 		if self.enable_output_guardrails:
 			# Output guardrails (as backup or complement to LLM)
@@ -107,7 +106,7 @@ class ChatWorkflowGuardrailManager:
 			self.engine.add_output_guardrail(ToxicityGuardrail())
 			self.engine.add_output_guardrail(BrandSafetyGuardrail())
 			self.engine.add_output_guardrail(ResponseQualityGuardrail())
-			self.engine.add_output_guardrail(CGSEMConsistencyGuardrail())
+			self.engine.add_output_guardrail(EnterViuConsistencyGuardrail())
 
 	def check_user_input(self, user_input: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		"""

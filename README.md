@@ -1,4 +1,4 @@
-# meobeo.ai
+# EnterViu - Professional Career Platform
 
 ## Getting started
 
@@ -13,7 +13,7 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```bash
 cd existing_repo
-git remote add origin http://gitlab.piotech.biz:9898/ai-fpt/meobeo.ai.git
+git remote add origin http://gitlab.piotech.biz:9898/ai-fpt/enterviu-platform.git
 git branch -M main
 git push -uf origin main
 ```

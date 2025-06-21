@@ -4,7 +4,7 @@
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu CLB Truyền thông THPT Cần Giuộc"
+    "title": "Giới thiệu EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -30,7 +30,7 @@
     "nextImage": " ",
     "prevImage": " ",
     "subtitle": "Khám phá thế giới truyền thông sáng tạo",
-    "title": "Nền tảng truyền thông THPT Cần Giuộc"
+    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp"
   },
   "chat": {
     "agentManagement": {
@@ -129,7 +129,7 @@
     "uploadDragDrop": "Kéo và thả tệp để tải lên"
   },
   "common": {
-    "branding": "CLB Truyền thông THPT Cần Giuộc",
+    "branding": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -141,18 +141,18 @@
     "yes": "Có"
   },
   "footer": {
-    "copyright": "© 2024 CLB Truyền thông THPT Cần Giuộc",
+    "copyright": "© 2024 EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
-    "location": "THPT Cần Giuộc, Long An",
+    "location": "Việt Nam",
     "madeWith": "Được tạo ra với đam mê truyền thông",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "CLB Truyền thông THPT Cần Giuộc",
+    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
     "company": {
       "title": "CLB",
       "about": "Về chúng tôi",
@@ -178,7 +178,7 @@
   "home": {
     "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "CLB Truyền thông THPT Cần Giuộc - nơi kết nối các bạn học sinh yêu thích truyền thông, sáng tạo nội dung và chia sẻ kiến thức. Nền tảng AI hỗ trợ tạo nội dung, viết bài và quản lý hoạt động CLB hiệu quả.",
+    "description": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp - nơi kết nối ứng viên với cơ hội việc làm, xây dựng hồ sơ chuyên nghiệp và nhận hướng dẫn nghề nghiệp. Nền tảng AI hỗ trợ xây dựng hồ sơ, ghép đôi việc làm và phát triển sự nghiệp hiệu quả.",
     "email": "Email",
     "facebookPageName": "Trang Facebook",
     "facebookPostCountPrefix": "Bài đăng:",
@@ -226,7 +226,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "CLB Truyền thông THPT Cần Giuộc - Nền tảng AI",
+    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",

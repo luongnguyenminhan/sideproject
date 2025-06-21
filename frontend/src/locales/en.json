@@ -4,7 +4,7 @@
       "about": "About us",
       "followers": "Followers"
     },
-    "title": "About Can Giuoc High School Media Club"
+    "title": "About EnterViu - Professional Career Platform"
   },
   "auth": {
     "allowPopups": "Allow popups to sign in",
@@ -30,7 +30,7 @@
     "nextImage": " ",
     "prevImage": " ",
     "subtitle": "Explore creative media world",
-    "title": "Can Giuoc High School Media Platform"
+    "title": "EnterViu - Professional Career Platform"
   },
   "chat": {
     "agentManagement": {
@@ -128,7 +128,7 @@
     "errorUploadFile": "Failed to upload file"
   },
   "common": {
-    "branding": "Can Giuoc High School Media Club",
+    "branding": "EnterViu - Professional Career Platform",
     "cancel": "Cancel",
     "delete": "Delete",
     "download": "Download",
@@ -140,18 +140,18 @@
     "yes": "Yes"
   },
   "footer": {
-    "copyright": "© 2024 Can Giuoc High School Media Club",
+    "copyright": "© 2024 EnterViu - Professional Career Platform",
     "legal": {
       "cookies": "Cookies Policy",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service"
     },
-    "location": "Can Giuoc High School, Long An",
+    "location": "Vietnam",
     "madeWith": "Made with passion for media",
     "social": {
       "followUs": "Follow us"
     },
-    "title": "Can Giuoc High School Media Club",
+    "title": "EnterViu - Professional Career Platform",
     "company": {
       "title": "Club",
       "about": "About Us",
@@ -177,7 +177,7 @@
   "home": {
     "authenticatedDescription": "Welcome back! Continue your media journey.",
     "confirmed": "Confirmed",
-    "description": "Can Giuoc High School Media Club - where students passionate about media connect, create content and share knowledge. AI platform supports content creation, article writing and efficient club activity management.",
+    "description": "EnterViu - Professional Career Platform - where job seekers connect with opportunities, build their professional profiles and receive career guidance. AI-powered platform supports profile building, job matching and efficient career development.",
     "email": "Email",
     "facebookPageName": "Facebook Page",
     "facebookPostCountPrefix": "Posts:",
@@ -225,7 +225,7 @@
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "post": "Post",
-    "title": "Can Giuoc High School Media Club - AI Platform",
+    "title": "EnterViu - Professional Career Platform",
     "unknownTime": "Unknown time",
     "userInformation": "User Information",
     "username": "Username",

@@ -456,7 +456,7 @@ Persona Type: {self.config.persona_type.value if self.config.persona_type else '
 2. 🧮 Sử dụng math tools khi cần tính toán
 3. 💡 Kết hợp kiến thức để trả lời toàn diện
 4. 🎯 Trả lời tự nhiên, không ghi nguồn context
-5. 🗣️ Giữ tinh thần CGSEM nhiệt huyết và sáng tạo
+5. 🗣️ Giữ tinh thần EnterViu nhiệt huyết và sáng tạo
 """
 
 		# Add dual RAG context if available

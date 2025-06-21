@@ -78,38 +78,37 @@ class FactualityGuardrail(BaseGuardrail):
 	def __init__(self):
 		super().__init__('factuality_filter', True, GuardrailSeverity.MEDIUM)
 
-		# CGSEM facts để cross-check
-		self.cgsem_facts = {
-			'founding_date': '14/12/2020',
-			'motto': 'Cụ thể - Đa dạng - Văn minh - Công bằng',
-			'spirit': 'tiên quyết, tiên phong, sáng tạo',
-			'school': 'THPT Cần Giuộc',
+		# EnterViu facts để cross-check
+		self.enterviu_facts = {
+			'founding_date': '2024',
+			'purpose': 'Career development and job matching platform',
+			'services': ['Profile building', 'Job search', 'Employer matching', 'Career guidance'],
+			'platform_type': 'Professional career platform',
 		}
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
 		violations = []
 
-		# Kiểm tra facts về CGSEM
+		# Kiểm tra facts về EnterViu
 		factual_issues = []
 
-		# Check founding date
-		if 'thành lập' in content.lower():
-			if '14/12/2020' not in content and '14 tháng 12' not in content:
-				if re.search(r'\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}', content):
-					factual_issues.append('Ngày thành lập CGSEM không chính xác')
+		# Check platform purpose
+		if 'enterviu' in content.lower():
+			if 'career' not in content.lower() and 'job' not in content.lower():
+				factual_issues.append('Mục đích của EnterViu không được mô tả chính xác')
 
-		# Check motto
-		if 'kim chỉ nam' in content.lower() or 'phương châm' in content.lower():
-			motto_words = ['cụ thể', 'đa dạng', 'văn minh', 'công bằng']
-			if not any(word in content.lower() for word in motto_words):
-				factual_issues.append('Kim chỉ nam CGSEM không chính xác')
+		# Check services
+		if 'dịch vụ' in content.lower() or 'tính năng' in content.lower():
+			service_keywords = ['profile', 'job', 'career', 'việc làm', 'cv']
+			if not any(keyword in content.lower() for keyword in service_keywords):
+				factual_issues.append('Các dịch vụ EnterViu không chính xác')
 
 		if factual_issues:
 			violation = GuardrailViolation(
 				rule_name=self.name,
 				severity=self.severity,
 				action=GuardrailAction.ALLOW,
-				message=f'Phát hiện khả năng thông tin không chính xác về CGSEM',
+				message=f'Phát hiện khả năng thông tin không chính xác về EnterViu',
 				details={'factual_issues': factual_issues},
 				timestamp=datetime.now(),
 			)
@@ -164,12 +163,12 @@ class ToxicityGuardrail(BaseGuardrail):
 
 
 class BrandSafetyGuardrail(BaseGuardrail):
-	"""Kiểm tra brand safety cho CGSEM"""
+	"""Kiểm tra brand safety cho EnterViu"""
 
 	def __init__(self):
 		super().__init__('brand_safety_filter', True, GuardrailSeverity.HIGH)
 
-		# Nội dung không phù hợp với thương hiệu CGSEM
+		# Nội dung không phù hợp với thương hiệu EnterViu
 		self.brand_unsafe_keywords = [
 			# Violence
 			'bạo lực',
@@ -179,12 +178,12 @@ class BrandSafetyGuardrail(BaseGuardrail):
 			'sex',
 			'porn',
 			'18+',
-			# Negative school content
-			'bỏ học',
-			'nghỉ học',
-			'học dở',
+			# Negative career content
+			'thất nghiệp vĩnh viễn',
+			'không có hy vọng',
+			'bỏ việc',
 			# Competitor mentions (có thể thêm)
-			# "competitor_club_name"
+			# "competitor_platform_name"
 		]
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
@@ -198,7 +197,7 @@ class BrandSafetyGuardrail(BaseGuardrail):
 				rule_name=self.name,
 				severity=self.severity,
 				action=GuardrailAction.MODIFY,
-				message=f'Nội dung có thể không phù hợp với thương hiệu CGSEM',
+				message=f'Nội dung có thể không phù hợp với thương hiệu EnterViu',
 				details={'unsafe_keywords': found_unsafe},
 				timestamp=datetime.now(),
 			)
@@ -267,33 +266,33 @@ class ResponseQualityGuardrail(BaseGuardrail):
 		return GuardrailResult(passed=True, violations=violations)
 
 
-class CGSEMConsistencyGuardrail(BaseGuardrail):
-	"""Kiểm tra tính nhất quán với CGSEM values"""
+class EnterViuConsistencyGuardrail(BaseGuardrail):
+	"""Kiểm tra tính nhất quán với EnterViu values"""
 
 	def __init__(self):
-		super().__init__('cgsem_consistency_filter', True, GuardrailSeverity.LOW)
+		super().__init__('enterviu_consistency_filter', True, GuardrailSeverity.LOW)
 
-		# CGSEM values
-		self.cgsem_values = [
-			'tiên quyết',
-			'tiên phong',
-			'sáng tạo',
-			'cụ thể',
-			'đa dạng',
-			'văn minh',
-			'công bằng',
+		# EnterViu values
+		self.enterviu_values = [
+			'professional',
+			'career-focused',
+			'innovative',
+			'supportive',
+			'growth-oriented',
+			'collaborative',
+			'opportunity-driven',
+			'success-focused',
 		]
 
-		# Negative values (trái với CGSEM)
+		# Negative values (trái với EnterViu)
 		self.negative_values = [
-			'lười biếng',
-			'thụ động',
-			'cũ kỹ',
-			'bảo thủ',
-			'mơ hồ',
-			'đơn điệu',
-			'thô lỗ',
-			'bất công',
+			'unprofessional',
+			'lazy',
+			'outdated',
+			'unsupportive',
+			'stagnant',
+			'competitive in negative way',
+			'opportunity-blocking',
 		]
 
 	def check(self, content: str, context: Dict[str, Any] = None) -> GuardrailResult:
@@ -308,20 +307,20 @@ class CGSEMConsistencyGuardrail(BaseGuardrail):
 				rule_name=self.name,
 				severity=self.severity,
 				action=GuardrailAction.ALLOW,  # Chỉ cảnh báo
-				message=f'Response có thể không phù hợp với giá trị CGSEM',
+				message=f'Response có thể không phù hợp với giá trị EnterViu',
 				details={'negative_values': found_negative},
 				timestamp=datetime.now(),
 			)
 			violations.append(violation)
 
-		# Kiểm tra có promote CGSEM values không
-		found_positive = [val for val in self.cgsem_values if val in content_lower]
+		# Kiểm tra có promote EnterViu values không
+		found_positive = [val for val in self.enterviu_values if val in content_lower]
 
 		return GuardrailResult(
 			passed=True,
 			violations=violations,
 			metadata={
-				'cgsem_values_mentioned': found_positive,
+				'enterviu_values_mentioned': found_positive,
 				'negative_values_mentioned': found_negative,
 				'alignment_score': len(found_positive) / max(1, len(found_negative) + len(found_positive)),
 			},

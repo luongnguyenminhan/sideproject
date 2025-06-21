@@ -227,10 +227,10 @@ async def generate_google_login_page(request: Request, scopes: list | None = Non
 				</style>
 			</head>
 			<body>
-				<div class="container">
-					<img src="/path/to/your/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-					<h1>CGSEM</h1>
-					<p>{_('please_sign_in_with_google')}</p>
+		<div class="container">
+			<img src="/path/to/your/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+			<h1>EnterViu</h1>
+			<p>{_('please_sign_in_with_google')}</p>
 					
 					<!-- Store state in local storage to help maintain it -->
 					<script>
