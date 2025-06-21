@@ -308,7 +308,7 @@ class Workflow:
             logger.info(f"🎯 Router Decision: {target} - {explanation}")
 
             processing_time = time.time() - start_time
-            logger.workflow_complete(
+            logger.info(
                 "Router Node - Intelligent Query Routing with Guardrails",
                 processing_time,
                 target_selected=target,
@@ -434,7 +434,7 @@ class Workflow:
                 combined_context = global_context
 
             processing_time = time.time() - start_time
-            logger.workflow_complete(
+            logger.info(
                 "RAG Query Node - Dual RAG Retrieval",
                 processing_time,
                 context_retrieved=bool(combined_context),
@@ -546,7 +546,7 @@ Persona Type: {self.config.persona_type.value if self.config.persona_type else '
         )
 
         processing_time = time.time() - start_time
-        logger.workflow_complete(
+        logger.info(
             "Agent Node - Model Invocation",
             processing_time,
             response_length=len(str(response.content)),
