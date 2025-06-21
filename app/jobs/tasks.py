@@ -11,7 +11,6 @@ from app.core.database import SessionLocal
 from app.enums.meeting_enums import TokenOperationTypeEnum
 from app.jobs.celery_worker import celery_app  # Import celery app directly
 from app.modules.users.dal.user_logs_dal import UserLogDAL
-from app.utils.agent_open_ai_api import AgentMicroService
 
 logger = logging.getLogger(__name__)
 
