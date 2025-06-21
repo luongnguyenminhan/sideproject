@@ -1,5 +1,5 @@
 """
-Persona Prompts """
+Persona Prompts"""
 
 import logging
 from typing import Dict
@@ -12,18 +12,19 @@ logger = logging.getLogger(__name__)
 
 
 class PersonaType(str, Enum):
-    CGSEM_ASSISTANT = "cgsem_assistant"
-    MEOBEOAI_ASSISTANT = "meobeoai_assistant"
-    MARXIS_LENISMS_ASSISTANT = "marxis_leninisms_assistant"
-    ENTERVIEW_ASSISTANT = 'enterview_assistant'
+	CGSEM_ASSISTANT = 'cgsem_assistant'
+	MEOBEOAI_ASSISTANT = 'meobeoai_assistant'
+	MARXIS_LENISMS_ASSISTANT = 'marxis_leninisms_assistant'
+	ENTERVIEW_ASSISTANT = 'enterview_assistant'
+
 
 class PersonaPrompts:
-    """Hard-coded persona prompts cho CGSEM"""
+	"""Hard-coded persona prompts cho CGSEM"""
 
-    PERSONAS = {
-        PersonaType.CGSEM_ASSISTANT: {
-            "name": "CGSEM AI Assistant",
-            "prompt": """
+	PERSONAS = {
+		PersonaType.CGSEM_ASSISTANT: {
+			'name': 'CGSEM AI Assistant',
+			'prompt': """
 Bạn là CGSEM AI Assistant - Trợ lý AI của CLB Truyền thông và Sự Kiện trường THPT Cần Giuộc.
 
 Hướng dẫn trả lời:
@@ -36,10 +37,10 @@ Hướng dẫn trả lời:
 
 Lưu ý: Mọi thông tin chi tiết về CGSEM, hoạt động, dự án, thành viên... đã có trong knowledge base, chỉ cần tập trung vào vai trò, phong cách và guideline trả lời.
             """,
-        },
-        PersonaType.MEOBEOAI_ASSISTANT: {
-            "name": "MeoBeoAI Assistant",
-            "prompt": """
+		},
+		PersonaType.MEOBEOAI_ASSISTANT: {
+			'name': 'MeoBeoAI Assistant',
+			'prompt': """
 Bạn là MeoBeoAI Assistant - Trợ lý AI của MeoBeoAI, công cụ AI ghi chú thông minh trong cuộc họp.
 
 Hướng dẫn trả lời:
@@ -52,10 +53,10 @@ Hướng dẫn trả lời:
 
 Lưu ý: Mọi thông tin chi tiết về tính năng, hướng dẫn sử dụng, developer... đã có trong knowledge base, chỉ cần tập trung vào vai trò, phong cách và guideline trả lời.
             """,
-        },
-        PersonaType.MARXIS_LENISMS_ASSISTANT: {
-            "name": "Marxis Leninisms Assistant",
-            "prompt": """
+		},
+		PersonaType.MARXIS_LENISMS_ASSISTANT: {
+			'name': 'Marxis Leninisms Assistant',
+			'prompt': """
 Bạn là Marxis-Leninisms Assistant - Trợ lý AI chuyên sâu về chủ nghĩa Mác-Lênin.
 
 Hướng dẫn trả lời:
@@ -67,10 +68,10 @@ Hướng dẫn trả lời:
 
 Lưu ý: Mọi kiến thức chi tiết về triết học, chủ nghĩa Mác-Lênin... đã có trong knowledge base, chỉ cần tập trung vào vai trò, phong cách và guideline trả lời.
             """,
-        },
-        PersonaType.ENTERVIEW_ASSISTANT: {
-            "name": "Enterview AI Assistant",
-            "prompt": """
+		},
+		PersonaType.ENTERVIEW_ASSISTANT: {
+			'name': 'Enterview AI Assistant',
+			'prompt': """
    Bạn là Enterview AI Assistant - Trợ lý thông minh của Enterview, công cụ AI hỗ trợ người dùng khám phá bản thân và trong việc tìm kiếm việc làm.
    Bạn có thể trả lời các câu hỏi về bản thân, tìm kiếm việc làm, và các vấn đề liên quan đến việc làm với giọng điệu thân thiện và chuyên nghiệp.
    
@@ -90,34 +91,25 @@ Lưu ý: Mọi kiến thức chi tiết về triết học, chủ nghĩa Mác-L�
    Hãy trả lời với tinh thần nhiệt tình và chuyên nghiệp của Enterview AI Assistant, luôn sẵn sàng hỗ trợ và khuyến khích mọi người tham gia vào các hoạt động ý nghĩa của Enterview!
 			""",
 		},
-    }
+	}
 
-    @classmethod
-    def get_persona_prompt(cls, persona_type: PersonaType) -> str:
-        """Get persona prompt by type"""
-        persona_data = cls.PERSONAS.get(
-            persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT]
-        )
-        return persona_data["prompt"]
+	@classmethod
+	def get_persona_prompt(cls, persona_type: PersonaType) -> str:
+		"""Get persona prompt by type"""
+		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT])
+		return persona_data['prompt']
 
-    @classmethod
-    def get_persona_name(cls, persona_type: PersonaType) -> str:
-        """Get persona name by type"""
-        persona_data = cls.PERSONAS.get(
-            persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT]
-        )
-        return persona_data["name"]
+	@classmethod
+	def get_persona_name(cls, persona_type: PersonaType) -> str:
+		"""Get persona name by type"""
+		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT])
+		return persona_data['name']
 
-    @classmethod
-    def list_available_personas(cls) -> Dict[str, str]:
-        """List all available personas"""
-        return {
-            persona_type.value: data["name"]
-            for persona_type, data in cls.PERSONAS.items()
-        }
+	@classmethod
+	def list_available_personas(cls) -> Dict[str, str]:
+		"""List all available personas"""
+		return {persona_type.value: data['name'] for persona_type, data in cls.PERSONAS.items()}
 
 
 # Module initialization
-logger.info(
-    f"CGSEM Persona prompts initialized with {len(PersonaPrompts.PERSONAS)} personas"
-)
+logger.info(f'CGSEM Persona prompts initialized with {len(PersonaPrompts.PERSONAS)} personas')
