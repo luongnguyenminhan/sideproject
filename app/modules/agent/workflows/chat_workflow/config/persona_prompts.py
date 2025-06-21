@@ -1,7 +1,5 @@
 """
-Persona Prompts cho CGSEM AI Assistant
-CLB Truyền thông và Sự Kiện trường THPT Cần Giuộc - Simplified version
-"""
+Persona Prompts """
 
 import logging
 from typing import Dict
