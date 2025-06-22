@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, Query, Path
+from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.core.base_model import APIResponse, PagingInfo
+from app.core.database import get_db  # Add this import
 from app.enums.base_enums import BaseErrorCode
 from app.exceptions.exception import CustomHTTPException
 from app.exceptions.handlers import handle_exceptions
@@ -27,13 +29,17 @@ from app.modules.groups.schemas.groups import (
 
 route = APIRouter(prefix='/groups', tags=['Groups'], dependencies=[Depends(verify_token)])
 
+# Create a dependency function for GroupRepo
+def get_group_repo(db: Session = Depends(get_db)) -> GroupRepo:
+    return GroupRepo(db)
+
 # Group CRUD Operations
 @route.post('/', response_model=APIResponse)
 @handle_exceptions
 async def create_group(
     group_data: GroupCreate,
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Create a new group
@@ -58,7 +64,7 @@ async def get_user_groups(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get groups for the current user
@@ -94,7 +100,7 @@ async def get_user_groups(
 async def get_group_detail(
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get group details by ID
@@ -120,7 +126,7 @@ async def update_group(
     group_data: GroupUpdate,
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Update group information
@@ -141,7 +147,7 @@ async def update_group(
 async def delete_group(
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Delete a group
@@ -164,7 +170,7 @@ async def get_group_members(
     role: Optional[str] = Query(None, description="Filter by role"),
     search: Optional[str] = Query(None, description="Search by name or nickname"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get members of a group
@@ -192,7 +198,7 @@ async def invite_member(
     invite_data: InviteMemberRequest,
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Invite a user to join the group
@@ -214,7 +220,7 @@ async def request_to_join(
     join_data: JoinGroupRequest,
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Request to join a group
@@ -236,7 +242,7 @@ async def approve_group_request(
     approve_data: ApproveRequestRequest,
     request_id: str = Path(..., title="Request ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Approve a group join/invite request
@@ -258,7 +264,7 @@ async def approve_group_request(
 async def reject_group_request(
     request_id: str = Path(..., title="Request ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Reject a group join/invite request
@@ -279,7 +285,7 @@ async def reject_group_request(
 async def cancel_group_request(
     request_id: str = Path(..., title="Request ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Cancel a group request
@@ -299,7 +305,7 @@ async def cancel_group_request(
 async def leave_group(
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Leave a group
@@ -320,7 +326,7 @@ async def kick_member(
     group_id: str = Path(..., title="Group ID"),
     member_id: str = Path(..., title="Member User ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Kick a member from the group
@@ -342,7 +348,7 @@ async def promote_to_leader(
     group_id: str = Path(..., title="Group ID"),
     member_id: str = Path(..., title="Member User ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Promote a member to leader
@@ -364,7 +370,7 @@ async def update_member_nickname(
     group_id: str = Path(..., title="Group ID"),
     member_id: str = Path(..., title="Member User ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Update a member's nickname in the group
@@ -391,7 +397,7 @@ async def get_group_requests(
     group_id: str = Path(..., title="Group ID"),
     request_type: Optional[str] = Query(None, description="Filter by request type"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get all pending requests for a group
@@ -418,7 +424,7 @@ async def get_group_requests(
 async def get_my_pending_requests(
     request_type: Optional[str] = Query(None, description="Filter by request type"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get all pending requests for the current user
@@ -441,7 +447,7 @@ async def bulk_invite_members(
     bulk_data: BulkInviteRequest,
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Bulk invite multiple users to a group
@@ -467,7 +473,7 @@ async def bulk_invite_members(
 async def get_group_stats(
     group_id: str = Path(..., title="Group ID"),
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Get group statistics
@@ -493,7 +499,7 @@ async def get_group_stats(
 async def search_groups(
     search_request: SearchGroupRequest,
     current_user_payload: dict = Depends(get_current_user),
-    repo: GroupRepo = Depends()
+    repo: GroupRepo = Depends(get_group_repo)  # Changed this line
 ):
     """
     Search for groups

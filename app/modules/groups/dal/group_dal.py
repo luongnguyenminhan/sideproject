@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from app.core.base_dal import BaseDAL
 from app.modules.groups.models.groups import Group, GroupMember, GroupRequest
-from app.enums.group_enums import GroupMemberStatus, GroupMemberRoleEnum, GroupRequestType, GroupRequestStatus
+from app.enums.group_enums import GroupMemberRoleEnum, GroupRequestType, GroupRequestStatus
 import logging
 from app.core.base_model import Pagination
 from app.enums.base_enums import Constants

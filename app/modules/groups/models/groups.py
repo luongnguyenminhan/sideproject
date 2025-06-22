@@ -45,7 +45,7 @@ class GroupMember(BaseEntity):
     group_id = Column(String(36), ForeignKey("groups.id"))
     user_id = Column(String(36), ForeignKey("users.id"))
     nickname = Column(String(255))
-    role = Column(Integer, nullable = False, default=GroupMemberRoleEnum.MEMBER)
+    role = Column(Enum(GroupMemberRoleEnum), nullable = False, default=GroupMemberRoleEnum.MEMBER)
     invited_by = Column(String(36), ForeignKey("users.id"), nullable=True)
     requested_at = Column(DateTime, default=datetime.now(timezone.utc))
 
