@@ -65,10 +65,18 @@ ROUTER_SYSTEM_PROMPT = """
 Bạn là Router Agent cho hệ thống Enterview AI Assistant. 
 
 Phân tích câu hỏi và quyết định route:
-- "agent" - Cho hầu hết các câu hỏi (ưu tiên để có thể sử dụng tools khi cần)
-- "rag_query" - Chỉ cho câu hỏi đơn giản cần truy xuất thông tin
 
-Ưu tiên chọn "agent" để model có thể sử dụng tools khi cần thiết.
+LUÔN CHỌN "agent" KHI:
+- User yêu cầu sử dụng tools, công cụ, hoặc chức năng cụ thể
+- User cần thực hiện hành động (tìm kiếm, tính toán, xử lý dữ liệu, etc.)
+- Câu hỏi phức tạp cần nhiều bước xử lý
+- User đề cập đến việc "gọi tool", "sử dụng công cụ", "tìm kiếm", "xử lý"
+
+CHỈ CHỌN "rag_query" KHI:
+- Câu hỏi rất đơn giản chỉ cần truy xuất thông tin từ knowledge base
+- Không cần thực hiện bất kỳ hành động nào khác
+
+MẶC ĐỊNH: Luôn ưu tiên "agent" để đảm bảo có thể sử dụng tools khi cần.
 """
 
 
@@ -143,80 +151,48 @@ class Workflow:
 		async def router_wrapper(state, config=None):
 			return await self._router_node(state, config or {})
 
-		async def rag_query_wrapper(state, config=None):
-			return await self._rag_query_node(state, config or {})
-
 		async def agent_wrapper(state, config=None):
 			return await self._agent_node(state, config or {})
 
-		async def response_wrapper(state, config=None):
-			return await self._response_generator_node(state, config or {})
-
 		async def tools_wrapper(state, config=None):
 			return await self._tools_node(state, config or {}, tool_node)
-
-		def route_wrapper(state):
-			return self._route_decision(state)
 
 		def should_continue_wrapper(state):
 			return self._should_continue(state)
 
 		# Add simplified nodes
 		workflow.add_node('router', router_wrapper)
-		workflow.add_node('rag_query', rag_query_wrapper)
 		workflow.add_node('agent', agent_wrapper)
 		workflow.add_node('tools', tools_wrapper)
-		workflow.add_node('response_generator', response_wrapper)
 
 		# Set entry point
 		workflow.set_entry_point('router')
-
-		# Simplified routing: router → (rag_query | agent)
-		workflow.add_conditional_edges(
-			'router',
-			route_wrapper,
-			{
-				'rag_query': 'rag_query',
-				'agent': 'agent',
-			},
-		)
-
-		# Simple flow: rag_query → response_generator
-		workflow.add_edge('rag_query', 'response_generator')
-
+		# Simplified routing: router always goes to agent (RAG is handled within agent)
+		workflow.add_edge('router', 'agent')
 		# Agent flow: agent → (tools | END)
 		workflow.add_conditional_edges('agent', should_continue_wrapper, {'tools': 'tools', END: END})
 		workflow.add_edge('tools', 'agent')
-
-		# Response generator → END
-		workflow.add_edge('response_generator', END)
 
 		# Compile with memory
 		checkpointer = MemorySaver()
 		return workflow.compile(checkpointer=checkpointer)
 
 	async def _router_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""Router Node với Intelligent routing + Guardrails"""
+		"""Router Node - Apply Guardrails and pass to agent"""
 		start_time = time.time()
 		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
 		logger.workflow_start(
-			'Router Node - Intelligent Query Routing with Guardrails',
+			'Router Node - Input Processing with Guardrails',
 			thread_id=thread_id,
-			router_enabled=True,
 			guardrails_enabled=True,
 		)
 
 		# Get user message
 		messages = state.get('messages', [])
 		if not messages:
-			return {
-				**state,
-				'router_decision': {
-					'target': 'general',
-					'explanation': 'No user input',
-				},
-			}
+			logger.warning('No user input found')
+			return state
 
 		# Extract user query
 		user_query = None
@@ -226,10 +202,8 @@ class Workflow:
 				break
 
 		if not user_query:
-			return {
-				**state,
-				'router_decision': {'target': 'general', 'explanation': 'Empty query'},
-			}
+			logger.warning('Empty user query')
+			return state
 
 		# Apply guardrails
 		if self.guardrail_manager:
@@ -246,60 +220,31 @@ class Workflow:
 					logger.error('Input BLOCKED by guardrails')
 					return {
 						**state,
-						'router_decision': {
-							'target': 'general',
-							'explanation': 'Input blocked by content safety guardrails',
-						},
 						'guardrail_blocked': True,
 					}
 
 				if guardrail_result.modified_content:
-					user_query = guardrail_result.modified_content
+					# Update the user message with modified content
+					for i, msg in enumerate(messages):
+						if hasattr(msg, 'content') and msg.content == user_query:
+							messages[i].content = guardrail_result.modified_content
+							break
 
 			except Exception as e:
 				logger.error(f'Guardrail check failed: {str(e)}')
 
-		# Route decision using LLM
-		try:
-			router_prompt = ChatPromptTemplate.from_messages([
-				('system', ROUTER_SYSTEM_PROMPT),
-				(
-					'human',
-					'User query: {input}\n\nAnalyze and determine the best routing target.',
-				),
-			])
+		processing_time = time.time() - start_time
+		logger.info(
+			'Router Node - Input Processing with Guardrails',
+			processing_time,
+			input_processed=True,
+		)
 
-			router_chain = router_prompt | self.llm.with_structured_output(RouterDecision)
-			router_result = await router_chain.ainvoke({'input': user_query})
-
-			target = router_result.target if hasattr(router_result, 'target') else 'general'
-			explanation = router_result.explanation if hasattr(router_result, 'explanation') else 'Default routing'
-
-			logger.info(f'🎯 Router Decision: {target} - {explanation}')
-
-			processing_time = time.time() - start_time
-			logger.info(
-				'Router Node - Intelligent Query Routing with Guardrails',
-				processing_time,
-				target_selected=target,
-			)
-
-			return {
-				**state,
-				'router_decision': {'target': target, 'explanation': explanation},
-				'routing_complete': True,
-			}
-
-		except Exception as e:
-			logger.error(f'Router failed: {str(e)}')
-			return {
-				**state,
-				'router_decision': {
-					'target': 'general',
-					'explanation': f'Router error: {str(e)[:100]}',
-				},
-				'routing_complete': True,
-			}
+		return {
+			**state,
+			'messages': messages,
+			'routing_complete': True,
+		}
 
 	async def _rag_query_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""RAG Query Node - Always use Dual RAG (Global KB + Conversation KB)"""
@@ -421,14 +366,25 @@ class Workflow:
 			has_context=bool(state.get('combined_rag_context')),
 		)
 
-		# Get system prompt with persona support		system_prompt = DEFAULT_SYSTEM_PROMPT
+		# Perform RAG if not already done
+		if not state.get('combined_rag_context'):
+			state = await self._perform_rag_retrieval(state, config)
+
+		# Get system prompt with persona support
+		system_prompt = DEFAULT_SYSTEM_PROMPT
 		if self.config and self.config.persona_enabled:
 			persona_prompt = self.config.get_persona_prompt()
 			if persona_prompt:
 				system_prompt = persona_prompt  # Simple system prompt without forced tool instructions
+
 		enhanced_system = f"""{system_prompt}
 
 ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
+
+Bạn có quyền truy cập vào các công cụ (tools) để hỗ trợ người dùng. Hãy sử dụng chúng khi:
+- Người dùng yêu cầu cụ thể
+- Cần thực hiện tìm kiếm, tính toán, hoặc xử lý dữ liệu
+- Cần thông tin real-time hoặc cập nhật
 """
 
 		# Add RAG context if available
@@ -461,7 +417,6 @@ ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
 				'conversation_id': thread_id,
 			},
 		)
-
 		# Log tool calls
 		if hasattr(response, 'tool_calls') and response.tool_calls:
 			logger.info(f'🔧 Agent will execute {len(response.tool_calls)} tool calls')
@@ -470,6 +425,7 @@ ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
 				logger.info(f'🔧 Tool Call #{i}: {tool_name}')
 		else:
 			logger.info('💬 Agent generated text response without tool calls')
+			logger.info(f'💬 Response content: {str(response.content)[:200]}...')
 
 		processing_time = time.time() - start_time
 		logger.info(
@@ -753,6 +709,102 @@ HƯỚNG DẪN:
 		except Exception as e:
 			logger.error(f'Error initializing global knowledge: {str(e)}')
 			return {'error': str(e)}
+
+	async def _perform_rag_retrieval(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+		"""Perform RAG retrieval for agent node"""
+		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
+
+		messages = state.get('messages', [])
+		if not messages:
+			return state
+
+		# Get user query
+		user_query = None
+		for msg in reversed(messages):
+			if hasattr(msg, 'content') and msg.content:
+				user_query = msg.content
+				break
+
+		if not user_query:
+			return state
+
+		try:
+			# Always use dual RAG approach
+			conv_context = ''
+			global_context = ''
+
+			# 1. Search Conversation KB
+			try:
+				collection_id = f'conversation_{thread_id}'
+				logger.info(f'🔍 Searching conversation KB: {collection_id}')
+
+				from app.modules.agentic_rag.agent.rag_graph import RAGAgentGraph
+				from app.modules.agentic_rag.repository.kb_repo import KBRepository
+
+				kb_repo = KBRepository(collection_name=collection_id)
+				rag_agent = RAGAgentGraph(kb_repo=kb_repo, collection_id=collection_id)
+				conv_result = await rag_agent.answer_query(query=user_query, collection_id=collection_id)
+
+				conv_answer = conv_result.get('answer', '')
+				conv_sources = conv_result.get('sources', [])
+
+				if conv_answer:
+					conv_context = f'📁 Conversation Knowledge:\n{conv_answer}'
+					if conv_sources:
+						conv_context += '\n📚 Sources:'
+						for i, source in enumerate(conv_sources, 1):
+							source_info = f'\n{i}. Document ID: {source.get("id", "Unknown")}'
+							if 'metadata' in source and 'source' in source['metadata']:
+								source_info += f' (File: {source["metadata"]["source"]})'
+							conv_context += source_info
+
+			except Exception as e:
+				logger.warning(f'Conversation KB search failed: {str(e)}')
+
+			# 2. Search Global KB
+			if self.global_kb_service:
+				try:
+					logger.info('🌍 Searching global KB')
+					global_results = await self.global_kb_service.search_global_knowledge(user_query, top_k=3)
+					if global_results:
+						# Combine top results into a single context string
+						contexts = []
+						for i, item in enumerate(global_results, 1):
+							content = item.get('content', '')
+							title = item.get('metadata', {}).get('title', '')
+							source = item.get('metadata', {}).get('source', '')
+							if title or source:
+								contexts.append(f'{i}. {title}\n{content}\n(Source: {source})')
+							else:
+								contexts.append(f'{i}. {content}')
+						global_context = '🌍 Global Knowledge:\n' + '\n\n'.join(contexts)
+				except Exception as e:
+					logger.warning(f'Global KB search failed: {str(e)}')
+
+			# 3. Combine both contexts
+			combined_context = ''
+			if conv_context and global_context:
+				combined_context = f'{conv_context}\n\n{global_context}'
+			elif conv_context:
+				combined_context = conv_context
+			elif global_context:
+				combined_context = global_context
+
+			return {
+				**state,
+				'combined_rag_context': combined_context,
+				'rag_used': True,
+				'retrieval_quality': 'good' if combined_context else 'no_results',
+			}
+
+		except Exception as e:
+			logger.error(f'RAG retrieval failed: {str(e)}')
+			return {
+				**state,
+				'combined_rag_context': '',
+				'rag_used': False,
+				'retrieval_quality': 'error',
+			}
 
 
 # Factory functions
