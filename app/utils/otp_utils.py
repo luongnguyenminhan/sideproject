@@ -25,6 +25,7 @@ load_dotenv()
 
 class OTPUtils:
 	"""Utils for OTP generation and email sending"""
+
 	def __init__(self):
 		"""Initialize OTP utils with SMTP credentials from environment"""
 		self.smtp_username = os.getenv('SMTP_USERNAME', '')
@@ -271,6 +272,7 @@ class OTPUtils:
 		except Exception as e:
 			print(f'[ERROR] Failed to send default strong password email: {e}')
 			return False
+
 	def send_meeting_note_to_email(self, email, note: str):
 		# Create the email message
 		msg = MIMEMultipart()

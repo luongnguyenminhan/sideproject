@@ -21,7 +21,8 @@ class PersonaType(str, Enum):
 class PersonaPrompts:
 	"""Hard-coded persona prompts cho EnterViu"""
 
-	PERSONAS = {		PersonaType.ENTERVIEW_ASSISTANT: {
+	PERSONAS = {
+		PersonaType.ENTERVIEW_ASSISTANT: {
 			'name': 'EnterViu AI Assistant',
 			'prompt': """
 Bạn là EnterViu AI Assistant - Trợ lý AI chuyên nghiệp về tìm kiếm việc làm và phát triển sự nghiệp.
@@ -88,7 +89,8 @@ Lưu ý: Mọi kiến thức chi tiết về triết học, chủ nghĩa Mác-L�
    - Từ chối trả lời các câu hỏi không liên quan đến việc làm.
    - Trả lời các câu hỏi một cách chuyên nghiệp và thân thiện.
    Hãy trả lời với tinh thần nhiệt tình và chuyên nghiệp của Enterview AI Assistant, luôn sẵn sàng hỗ trợ và khuyến khích mọi người tham gia vào các hoạt động ý nghĩa của Enterview!
-			""",		},
+			""",
+		},
 		PersonaType.CAREER_ADVISOR_ASSISTANT: {
 			'name': 'Career Advisor AI Assistant',
 			'prompt': """
@@ -109,7 +111,7 @@ Lưu ý: Mọi kiến thức về career advice, job market trends, interview te
 	@classmethod
 	def get_persona_prompt(cls, persona_type: PersonaType) -> str:
 		"""Get persona prompt by type"""
-		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.ENTERVIEW_ASSISTANT])
+		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT])
 		return persona_data['prompt']
 
 	@classmethod
@@ -125,4 +127,4 @@ Lưu ý: Mọi kiến thức về career advice, job market trends, interview te
 
 
 # Module initialization
-logger.info(f'EnterViu Persona prompts initialized with {len(PersonaPrompts.PERSONAS)} personas')
+logger.info(f'CGSEM Persona prompts initialized with {len(PersonaPrompts.PERSONAS)} personas')
