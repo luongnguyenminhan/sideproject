@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 logger.info('🔧 [Config] Initializing Chat Workflow configuration module...')
 
 from .workflow_config import WorkflowConfig
-from .prompts import SystemPrompts, PromptTemplates, ValidationPrompts
 from .persona_prompts import PersonaPrompts, PersonaType
 
 logger.info('✅ [Config] Successfully imported WorkflowConfig from workflow_config')
@@ -18,9 +17,6 @@ logger.info('✅ [Config] Successfully imported PersonaPrompts, PersonaType from
 
 __all__ = [
 	'WorkflowConfig',
-	'SystemPrompts',
-	'PromptTemplates',
-	'ValidationPrompts',
 	'PersonaPrompts',
 	'PersonaType',
 ]
