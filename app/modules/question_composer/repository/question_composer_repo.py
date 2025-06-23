@@ -44,22 +44,14 @@ class QuestionComposerRepo:
 	"""
 
 	def __init__(self, db: Session = Depends(get_db)):
-		logger.info('🚀 Initializing QuestionComposerRepo')
 		self.db = db
-		logger.info('📊 Database session established')
 
 		self.question_session_dal = QuestionSessionDAL(db)
-		logger.info('🗄️ QuestionSessionDAL initialized')
 
 		# Initialize workflow
-		logger.info('⚙️ Loading QuestionGenerationWorkflowConfig from environment')
 		self.config = QuestionGenerationWorkflowConfig.from_env()
-		logger.info(f'🔧 Config loaded - LLM: {getattr(self.config, "llm_model", "N/A")}, Max iterations: {getattr(self.config, "max_iterations", "N/A")}')
 
 		self.workflow = QuestionGenerationWorkflow(self.config)
-		logger.info('🔄 QuestionGenerationWorkflow initialized successfully')
-
-		logger.info('✅ QuestionComposerRepo initialization complete')
 
 	async def generate_questions(self, request: QuestionGenerationRequest) -> QuestionGenerationResponse:
 		"""

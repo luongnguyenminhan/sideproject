@@ -62,17 +62,13 @@ Bạn là Enterview AI Assistant - Trợ lý thông minh của Enterview, công 
    Hãy trả lời với tinh thần nhiệt tình và chuyên nghiệp của Enterview AI Assistant, luôn sẵn sàng hỗ trợ và khuyến khích mọi người tham gia vào các hoạt động ý nghĩa của Enterview!
 """
 ROUTER_SYSTEM_PROMPT = """
-🧭 Bạn là Router Agent thông minh cho hệ thống Enterview AI Assistant. Phân tích user query và quyết định route phù hợp nhất.
+Bạn là Router Agent cho hệ thống Enterview AI Assistant. 
 
-🎯 TARGET NODES AVAILABLE:
-1. "rag_query" - Cho câu hỏi liên quan đến kiến thức, thông tin cần truy xuất từ knowledge base
-2. "agent" - Cho các câu hỏi trò chuyện thông thường, toán học đơn giản
+Phân tích câu hỏi và quyết định route:
+- "agent" - Cho hầu hết các câu hỏi (ưu tiên để có thể sử dụng tools khi cần)
+- "rag_query" - Chỉ cho câu hỏi đơn giản cần truy xuất thông tin
 
-📋 QUY TẮC ROUTING:
-- Nếu câu hỏi liên quan đến kiến thức, thông tin, hoạt động, dự án, lịch sử: chọn "rag_query"
-- Nếu là câu hỏi trò chuyện thông thường, tính toán đơn giản: chọn "agent"
-
-⚠️ LƯU Ý: Ưu tiên "rag_query" cho hầu hết câu hỏi về thông tin.
+Ưu tiên chọn "agent" để model có thể sử dụng tools khi cần thiết.
 """
 
 
@@ -156,6 +152,9 @@ class Workflow:
 		async def response_wrapper(state, config=None):
 			return await self._response_generator_node(state, config or {})
 
+		async def tools_wrapper(state, config=None):
+			return await self._tools_node(state, config or {}, tool_node)
+
 		def route_wrapper(state):
 			return self._route_decision(state)
 
@@ -166,7 +165,7 @@ class Workflow:
 		workflow.add_node('router', router_wrapper)
 		workflow.add_node('rag_query', rag_query_wrapper)
 		workflow.add_node('agent', agent_wrapper)
-		workflow.add_node('tools', tool_node)
+		workflow.add_node('tools', tools_wrapper)
 		workflow.add_node('response_generator', response_wrapper)
 
 		# Set entry point
@@ -417,57 +416,28 @@ class Workflow:
 		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
 		logger.workflow_start(
-			'Agent Node - Model Invocation with Context and Tools',
+			'Agent Node - Natural Model Invocation',
 			thread_id=thread_id,
 			has_context=bool(state.get('combined_rag_context')),
 		)
 
-		# Get system prompt with persona support
-		system_prompt = DEFAULT_SYSTEM_PROMPT
+		# Get system prompt with persona support		system_prompt = DEFAULT_SYSTEM_PROMPT
 		if self.config and self.config.persona_enabled:
 			persona_prompt = self.config.get_persona_prompt()
 			if persona_prompt:
-				system_prompt = persona_prompt
-
-		# Build enhanced system prompt
-		persona_info = ''
-		if self.config and self.config.persona_enabled:
-			persona_info = f"""
-🎭 PERSONA ACTIVE: {self.config.get_persona_name()}
-Persona Type: {self.config.persona_type.value if self.config.persona_type else 'none'}
-"""
-
+				system_prompt = persona_prompt  # Simple system prompt without forced tool instructions
 		enhanced_system = f"""{system_prompt}
 
-🤖 SIMPLIFIED WORKFLOW AI:{persona_info}
-
-🛠️ AVAILABLE TOOLS:
-- add(a, b): Cộng hai số
-- subtract(a, b): Trừ hai số  
-- multiply(a, b): Nhân hai số
-- divide(a, b): Chia hai số
-
-📊 CONTEXT: {thread_id}
-📈 RAG Status: {state.get('retrieval_quality', 'unknown')}
-🔥 Features: Router + Dual RAG + Guardrails + Tools
-
-🌟 HƯỚNG DẪN:
-1. 📚 Sử dụng dual RAG context được cung cấp làm nguồn chính
-2. 🧮 Sử dụng math tools khi cần tính toán
-3. 💡 Kết hợp kiến thức để trả lời toàn diện
-4. 🎯 Trả lời tự nhiên, không ghi nguồn context
-5. 🗣️ Giữ tinh thần EnterViu nhiệt huyết và sáng tạo
+ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
 """
 
-		# Add dual RAG context if available
+		# Add RAG context if available
 		combined_context = state.get('combined_rag_context')
 		if combined_context:
-			enhanced_system += f'\n\n🔗 DUAL RAG KNOWLEDGE BASE:\n{combined_context}'
-
-		# Prepare messages
+			enhanced_system += f'\n� AVAILABLE CONTEXT:\n{combined_context[:800]}...\n'  # Prepare messages
 		messages = state.get('messages', [])
 		if not messages:
-			return {'messages': [SystemMessage(content=enhanced_system)]}
+			return {'messages': [SystemMessage(content=enhanced_system)]}  # No forced tool calling - let the model decide naturally
 
 		# Create prompt
 		prompt = ChatPromptTemplate.from_messages([
@@ -475,16 +445,14 @@ Persona Type: {self.config.persona_type.value if self.config.persona_type else '
 			MessagesPlaceholder(variable_name='chat_history'),
 			MessagesPlaceholder(variable_name='agent_scratchpad'),
 		])
-
 		formatted_prompt = prompt.format_messages(
 			chat_history=messages,
 			agent_scratchpad=[],
-		)
-
-		# Invoke model with tools
+		)  # Model will naturally decide whether to use tools or not
 		tool_definitions = get_tool_definitions(self.config)
 		model_with_tools = self.llm.bind_tools(tool_definitions)
 
+		# Natural model invocation - completely autonomous tool decision
 		response = await model_with_tools.ainvoke(
 			formatted_prompt,
 			{
@@ -493,6 +461,15 @@ Persona Type: {self.config.persona_type.value if self.config.persona_type else '
 				'conversation_id': thread_id,
 			},
 		)
+
+		# Log tool calls
+		if hasattr(response, 'tool_calls') and response.tool_calls:
+			logger.info(f'🔧 Agent will execute {len(response.tool_calls)} tool calls')
+			for i, tool_call in enumerate(response.tool_calls, 1):
+				tool_name = tool_call.get('name', 'unknown_tool')
+				logger.info(f'🔧 Tool Call #{i}: {tool_name}')
+		else:
+			logger.info('💬 Agent generated text response without tool calls')
 
 		processing_time = time.time() - start_time
 		logger.info(
@@ -549,6 +526,44 @@ HƯỚNG DẪN:
 			error_response = AIMessage(content=f'Xin lỗi, có lỗi trong quá trình tạo phản hồi: {str(e)}')
 			return {**state, 'messages': state.get('messages', []) + [error_response]}
 
+	async def _tools_node(self, state: AgentState, config: Dict[str, Any], tool_node) -> AgentState:
+		"""Simplified Tools Node"""
+		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
+
+		logger.info(f'🔧 [Tools] Starting tool execution for thread: {thread_id}')
+
+		# Get messages and check for tool calls
+		messages = state.get('messages', [])
+		if not messages:
+			logger.warning('🔧 [Tools] No messages found')
+			return state
+
+		last_message = messages[-1]
+		if not hasattr(last_message, 'tool_calls') or not last_message.tool_calls:
+			logger.warning('🔧 [Tools] No tool calls found')
+			return state
+
+		# Log tool calls
+		for i, tool_call in enumerate(last_message.tool_calls, 1):
+			tool_name = tool_call.get('name', 'unknown_tool')
+			logger.info(f'🔧 [Tools] Executing Tool #{i}: {tool_name}')
+
+		try:
+			# Execute tools using the tool node
+			result_state = await tool_node.ainvoke(state, config)
+
+			logger.info(f'🔧 [Tools] All tools executed successfully')
+			return result_state
+
+		except Exception as e:
+			logger.error(f'🔧 [Tools] Tool execution failed: {str(e)}')
+			# Return state with error info
+			return {
+				**state,
+				'tool_execution_error': str(e),
+				'tool_execution_failed': True,
+			}
+
 	def _route_decision(self, state: AgentState) -> str:
 		"""Simplified route decision logic"""
 		router_decision = state.get('router_decision', {})
@@ -559,20 +574,30 @@ HƯỚNG DẪN:
 			actual_target = 'rag_query'
 		else:
 			actual_target = 'agent'
+		logger.info(f'🔀 Routing Decision: {target} → {actual_target}')
+		logger.info(f'📝 Routing Explanation: {router_decision.get("explanation", "No explanation provided")}')
 
-		logger.info(f'🔀 Routing: {target} → {actual_target}')
 		return actual_target
 
 	def _should_continue(self, state: AgentState) -> str:
 		"""Determine if agent should continue with tools or end"""
 		messages = state.get('messages', [])
 		if not messages:
+			logger.info('🔚 No messages found - ending workflow')
 			return END
 
 		last_message = messages[-1]
 		if not hasattr(last_message, 'tool_calls') or not last_message.tool_calls:
+			logger.info('🔚 No tool calls detected - ending workflow')
 			return END
 		else:
+			tool_count = len(last_message.tool_calls)
+			tool_names = [tc.get('name', 'unknown') for tc in last_message.tool_calls]
+			logger.info(
+				f'🔧 Tool calls detected - continuing to tools',
+				tool_count=tool_count,
+				tools=tool_names,
+			)
 			return 'tools'
 
 	async def process_message(
@@ -627,8 +652,32 @@ HƯỚNG DẪN:
 					'router': final_state.get('routing_complete', False),
 					'rag': bool(final_state.get('combined_rag_context')),
 					'guardrails': not final_state.get('guardrail_blocked', False),
+					'tools': final_state.get('tool_execution_failed', False) == False and 'tool_execution_error' not in final_state,
 				},
 			)
+
+			# Log tool usage summary if tools were used
+			if 'tool_execution_error' not in final_state and not final_state.get('tool_execution_failed', False):
+				messages = final_state.get('messages', [])
+				tool_calls_count = 0
+				tools_used = []
+
+				for msg in messages:
+					if hasattr(msg, 'tool_calls') and msg.tool_calls:
+						tool_calls_count += len(msg.tool_calls)
+						for tc in msg.tool_calls:
+							tool_name = tc.get('name', 'unknown')
+							if tool_name not in tools_used:
+								tools_used.append(tool_name)
+
+				if tool_calls_count > 0:
+					logger.success(
+						f'🔧 Workflow completed with {tool_calls_count} tool calls',
+						tools_used=tools_used,
+					)
+
+			# Log comprehensive workflow summary
+			self._log_workflow_summary(final_state, processing_time)
 
 			return {
 				'response': response,
@@ -641,15 +690,18 @@ HƯỚNG DẪN:
 					'guardrails_passed': not final_state.get('guardrail_blocked', False),
 				},
 			}
-
 		except Exception as e:
 			logger.error(f'Simplified workflow error: {str(e)}')
+			logger.error(f'Error type: {type(e).__name__}')
+			logger.error(f'Error occurred at processing time: {time.time() - start_time:.2f}s')
+
 			return {
 				'response': f'Xin lỗi, có lỗi xảy ra trong quá trình xử lý: {str(e)}',
 				'state': {},
 				'metadata': {
 					'processing_time': time.time() - start_time,
 					'error': str(e),
+					'error_type': type(e).__name__,
 					'workflow_type': 'simplified',
 				},
 			}
@@ -661,6 +713,33 @@ HƯỚNG DẪN:
 			last_message = messages[-1]
 			return last_message.content if hasattr(last_message, 'content') else str(last_message)
 		return 'Không có phản hồi được tạo.'
+
+	def _log_workflow_summary(self, final_state: Dict[str, Any], processing_time: float):
+		"""Simple workflow summary"""
+		logger.info('=' * 40)
+		logger.info('🎯 WORKFLOW SUMMARY')
+		logger.info('=' * 40)
+
+		logger.info(f'⏱️  Processing Time: {processing_time:.2f}s')
+		logger.info(f'🔀 Router Target: {final_state.get("router_decision", {}).get("target", "unknown")}')
+		logger.info(f'📚 RAG Used: {bool(final_state.get("combined_rag_context"))}')
+
+		# Count tools used
+		messages = final_state.get('messages', [])
+		tool_count = 0
+		for msg in messages:
+			if hasattr(msg, 'tool_calls') and msg.tool_calls:
+				tool_count += len(msg.tool_calls)
+
+		logger.info(f'🔧 Total Tool Calls: {tool_count}')
+
+		# Check for errors
+		if final_state.get('tool_execution_failed'):
+			logger.warning('⚠️  Tool execution failed')
+		if final_state.get('guardrail_blocked'):
+			logger.warning('⚠️  Input was blocked by guardrails')
+
+		logger.info('=' * 40)
 
 	async def initialize_global_knowledge(self) -> Dict[str, Any]:
 		"""Initialize Global Knowledge Base"""

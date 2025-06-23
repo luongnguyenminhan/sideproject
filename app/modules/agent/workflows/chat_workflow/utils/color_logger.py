@@ -97,6 +97,43 @@ class SimpleColorLogger:
 			formatted_msg += f' - {kwargs}'
 		self.logger.info(formatted_msg)
 
+	def tool_start(self, tool_name: str, **kwargs):
+		"""Log tool execution start"""
+		formatted_msg = self._format_message(f'🔧 TOOL START: {tool_name}', Colors.BRIGHT_YELLOW)
+		if kwargs:
+			formatted_msg += f' - {kwargs}'
+		self.logger.info(formatted_msg)
+
+	def tool_success(self, tool_name: str, result: str = None, **kwargs):
+		"""Log successful tool execution"""
+		formatted_msg = self._format_message(f'✅ TOOL SUCCESS: {tool_name}', Colors.BRIGHT_GREEN)
+		if result:
+			formatted_msg += f' → {result[:100]}{"..." if len(result) > 100 else ""}'
+		if kwargs:
+			formatted_msg += f' - {kwargs}'
+		self.logger.info(formatted_msg)
+
+	def tool_error(self, tool_name: str, error: str, **kwargs):
+		"""Log tool execution error"""
+		formatted_msg = self._format_message(f'❌ TOOL ERROR: {tool_name}', Colors.BRIGHT_RED)
+		formatted_msg += f' → {error}'
+		if kwargs:
+			formatted_msg += f' - {kwargs}'
+		self.logger.error(formatted_msg)
+
+	def tool_input(self, tool_name: str, inputs: Dict[str, Any]):
+		"""Log tool input parameters"""
+		formatted_msg = self._format_message(f'📥 TOOL INPUT: {tool_name}', Colors.BRIGHT_CYAN)
+		formatted_msg += f' → {inputs}'
+		self.logger.debug(formatted_msg)
+
+	def tool_output(self, tool_name: str, output: Any):
+		"""Log tool output"""
+		formatted_msg = self._format_message(f'📤 TOOL OUTPUT: {tool_name}', Colors.BRIGHT_MAGENTA)
+		output_str = str(output)[:200] + ('...' if len(str(output)) > 200 else '')
+		formatted_msg += f' → {output_str}'
+		self.logger.debug(formatted_msg)
+
 
 def get_color_logger(name: str) -> SimpleColorLogger:
 	"""Get a color logger instance"""

@@ -17,7 +17,7 @@ class BaseDAL(Generic[T]):
 		self.db = db
 		self.model = model
 
-	def get_by_id(self, item_id: int):
+	def get_by_id(self, item_id: str):
 		"""Lấy một bản ghi theo ID"""
 		return self.db.query(self.model).filter(self.model.id == item_id).first()
 
@@ -34,7 +34,7 @@ class BaseDAL(Generic[T]):
 			self.db.refresh(new_obj)
 		return new_obj
 
-	def update(self, item_id: int, update_data: dict):
+	def update(self, item_id: str, update_data: dict):
 		"""Cập nhật một bản ghi"""
 		obj = self.get_by_id(item_id)
 		if not obj:
@@ -46,7 +46,7 @@ class BaseDAL(Generic[T]):
 			self.db.refresh(obj)
 		return obj
 
-	def delete(self, item_id: int):
+	def delete(self, item_id: str):
 		"""Xóa một bản ghi"""
 		obj = self.get_by_id(item_id)
 		if obj:

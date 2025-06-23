@@ -37,7 +37,7 @@ class UserDAL(BaseDAL[User]):
 			print(f'[ERROR] Failed to get user by Google ID: {e}')
 			return None
 
-	def get_user_by_id(self, user_id: int) -> User:
+	def get_user_by_id(self, user_id: str) -> User:
 		"""Get user by ID
 
 		Args:

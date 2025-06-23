@@ -13,11 +13,9 @@ if current_dir not in sys.path:
 	sys.path.append(current_dir)
 
 from app import create_app
-from app.core.config import print_all_config
 
 app = create_app()
 
-print_all_config()  # Print config at startup
 
 if __name__ == '__main__':
 	uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True)

@@ -8,40 +8,8 @@ from langchain_core.tools import tool
 
 logger = logging.getLogger(__name__)
 
-
-@tool(return_direct=False)
-def add(a: float, b: float) -> float:
-	"""Add two numbers together."""
-	return a + b
-
-
-@tool(return_direct=False)
-def subtract(a: float, b: float) -> float:
-	"""Subtract second number from first number."""
-	return a - b
-
-
-@tool(return_direct=False)
-def multiply(a: float, b: float) -> float:
-	"""Multiply two numbers together."""
-	return a * b
-
-
-@tool(return_direct=False)
-def divide(a: float, b: float) -> float:
-	"""Divide first number by second number."""
-	if b == 0:
-		return float('inf')
-	return a / b
-
-
-# List of available tools
-tools = [
-	add,
-	subtract,
-	multiply,
-	divide,
-]
+# List of available tools - keeping it empty to focus on enhanced tools
+tools = []
 
 
 def get_tools(config: Dict[str, Any] = None) -> List:
@@ -83,5 +51,7 @@ def get_tools(config: Dict[str, Any] = None) -> List:
 
 def get_tool_definitions(config: Dict[str, Any] = None) -> List[Dict]:
 	"""Get tool definitions for model binding"""
-	# Return tool schema for model binding
-	return [tool for tool in tools]
+	# Get actual tools instead of empty list
+	actual_tools = get_tools(config)
+	print(f'🔧 [BasicTools] Tool definitions count: {len(actual_tools)}')
+	return actual_tools

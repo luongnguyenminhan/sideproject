@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.core.config import SECRET_KEY, print_all_config
+from app.core.config import SECRET_KEY
 from app.exceptions.handlers import setup_exception_handlers
 from app.middleware.localization_middleware import LocalizationMiddleware
 from app.middleware.translation_manager import _
@@ -36,7 +36,6 @@ def custom_openapi(app: FastAPI):
 
 def create_app():
 	"""Create main app"""
-	print_all_config()  # Print config at startup
 	app = FastAPI()
 
 	# Register middlewares in correct order (from outermost to innermost)

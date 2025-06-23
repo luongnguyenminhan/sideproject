@@ -111,7 +111,7 @@ Lưu ý: Mọi kiến thức về career advice, job market trends, interview te
 	@classmethod
 	def get_persona_prompt(cls, persona_type: PersonaType) -> str:
 		"""Get persona prompt by type"""
-		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.CGSEM_ASSISTANT])
+		persona_data = cls.PERSONAS.get(persona_type, cls.PERSONAS[PersonaType.ENTERVIEW_ASSISTANT])
 		return persona_data['prompt']
 
 	@classmethod

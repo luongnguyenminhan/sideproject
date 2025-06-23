@@ -36,7 +36,7 @@ class UserRepo(BaseRepo):
 		except Exception as ex:
 			raise ex
 
-	def get_user_by_id(self, user_id: int) -> User:
+	def get_user_by_id(self, user_id: str) -> User:
 		"""
 		Retrieve a user by their ID
 
@@ -51,7 +51,7 @@ class UserRepo(BaseRepo):
 		except Exception as ex:
 			raise ex
 
-	def update_user(self, user_id: int, data: dict) -> User:
+	def update_user(self, user_id: str, data: dict) -> User:
 		"""
 		Update a user's information
 
