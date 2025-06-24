@@ -5,6 +5,7 @@
 import chatApi from '@/apis/chatApi'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/contexts/TranslationContext'
+import { useAppSelector } from '@/redux/hooks'
 import {
   type ChatState,
   type Message,
@@ -28,6 +29,7 @@ import { CVModal } from '@/components/chat/CVModal'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
+  const { user } = useAppSelector((state) => state.auth)
   const [state, setState] = useState<ChatState>({
     conversations: [],
     activeConversationId: null,
@@ -435,7 +437,7 @@ export function ChatClientWrapper() {
 
       // Send via WebSocket for real-time streaming
       console.log('[ChatClientWrapper] Sending WebSocket message:', content)
-      websocket.sendMessage(content)
+      websocket.sendMessage(content, undefined, user?.id, state.activeConversationId || undefined)
       
     } catch (error) {
       console.error('Failed to send message:', error)

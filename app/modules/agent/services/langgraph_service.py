@@ -132,8 +132,6 @@ class LangGraphService(object):
 			# Prepare messages
 			messages = self._prepare_messages(system_prompt, user_message, conversation_history or [])
 
-			print(f'[LangGraphService] Prepared messages: {messages}')
-
 			# Execute workflow - use ainvoke instead of astream to avoid __end__ issues
 			config = {
 				'configurable': {
@@ -143,8 +141,6 @@ class LangGraphService(object):
 			}
 
 			workflow_input = {'messages': messages}
-
-			print(f'[LangGraphService] Invoking workflow with input: {workflow_input} and config: {config}')
 
 			# Get result from global workflow (using ainvoke for direct result)
 			final_state = await LangGraphService._global_workflow.ainvoke(workflow_input, config)

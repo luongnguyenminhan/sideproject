@@ -152,7 +152,7 @@ class QuestionComposerRepo:
 
 			logger.info(f'🎉 Question generation completed successfully!')
 			logger.info(f'📊 Final response summary - Session: {session_id}, Questions generated: {len(response.questions)}, Completeness: {response.completeness_score:.3f}, Continue: {response.should_continue}, Iteration: {response.current_iteration}')
-
+			logger.info(f'🔄 Response contains {response.questions} questions')
 			return response
 
 		except ValidationException as e:

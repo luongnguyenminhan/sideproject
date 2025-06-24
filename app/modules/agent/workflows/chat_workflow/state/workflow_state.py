@@ -69,6 +69,11 @@ class AgentState(TypedDict):
 	# Tool execution state
 	pending_tool_calls: Optional[List[Dict[str, Any]]]
 	tool_results: Optional[List[Dict[str, Any]]]
+	tool_iterations: Optional[int]  # Track tool execution iterations to prevent infinite loops
+
+	# User context for tools
+	user_id: Optional[str]  # Current user ID for tool context
+	conversation_id: Optional[str]  # Current conversation ID for tool context
 
 	# Workflow control
 	current_node: Optional[str]
@@ -84,8 +89,9 @@ class StateManager:
 		user_message: str,
 		user_id: Optional[str] = None,
 		session_id: Optional[str] = None,
+		conversation_id: Optional[str] = None,
 	) -> AgentState:
-		"""Create initial state từ user message"""
+		"""Create initial state từ user message với user context"""
 
 		initial_message = HumanMessage(content=user_message)
 
@@ -103,6 +109,7 @@ class StateManager:
 			conversation_metadata={
 				'user_id': user_id,
 				'session_id': session_id,
+				'conversation_id': conversation_id,
 				'started_at': datetime.now().isoformat(),
 				'message_count': 1,
 				'topic_classification': None,
@@ -116,11 +123,16 @@ class StateManager:
 			model_usage={},
 			pending_tool_calls=None,
 			tool_results=None,
+			tool_iterations=0,  # Initialize với 0 thay vì None
+			user_id=user_id,  # Store user_id directly in state
+			conversation_id=conversation_id,  # Store conversation_id directly in state
 			current_node=None,
 			next_action=None,
 			workflow_metadata={
 				'workflow_version': '1.0.0',
 				'created_at': datetime.now().isoformat(),
+				'user_id': user_id,
+				'conversation_id': conversation_id,
 			},
 		)
 
@@ -236,10 +248,14 @@ class StateManager:
 
 	@staticmethod
 	def get_state_summary(state: AgentState) -> Dict[str, Any]:
-		"""Get summary of current state"""
+		"""Get summary of current state with user context"""
 		messages = state.get('messages', [])
 		error_context = state.get('error_context', {})
 		processing_time = state.get('processing_time', {})
+
+		# Get user context
+		user_id = StateManager.get_user_id_from_state(state)
+		conversation_id = StateManager.get_conversation_id_from_state(state)
 
 		return {
 			'message_count': len(messages),
@@ -254,6 +270,11 @@ class StateManager:
 			'fallback_used': state.get('fallback_used', False),
 			'current_node': state.get('current_node'),
 			'next_action': state.get('next_action'),
+			'tool_iterations': state.get('tool_iterations', 0),
+			# User context
+			'user_id': user_id,
+			'conversation_id': conversation_id,
+			'has_user_context': bool(user_id),
 		}
 
 	@staticmethod
@@ -284,6 +305,63 @@ class StateManager:
 
 		except Exception:
 			return False
+
+	@staticmethod
+	def get_user_id_from_state(state: AgentState) -> Optional[str]:
+		"""Extract user_id from state - utility method"""
+		# Try multiple locations where user_id might be stored
+		user_id = state.get('user_id') or state.get('conversation_metadata', {}).get('user_id') or state.get('workflow_metadata', {}).get('user_id') or state.get('session_context', {}).get('user_id')
+		return user_id
+
+	@staticmethod
+	def get_conversation_id_from_state(state: AgentState) -> Optional[str]:
+		"""Extract conversation_id from state - utility method"""
+		conversation_id = state.get('conversation_id') or state.get('conversation_metadata', {}).get('conversation_id') or state.get('conversation_metadata', {}).get('session_id') or state.get('workflow_metadata', {}).get('conversation_id')
+		return conversation_id
+
+	@staticmethod
+	def get_user_context_for_tools(state: AgentState) -> Dict[str, Optional[str]]:
+		"""Get user context dictionary for tools"""
+		user_id = StateManager.get_user_id_from_state(state)
+		conversation_id = StateManager.get_conversation_id_from_state(state)
+
+		return {
+			'user_id': user_id,
+			'conversation_id': conversation_id,
+		}
+
+	@staticmethod
+	def update_user_context(
+		state: AgentState,
+		user_id: Optional[str] = None,
+		conversation_id: Optional[str] = None,
+	) -> AgentState:
+		"""Update user context in state"""
+		updated_state = state.copy()
+
+		if user_id:
+			updated_state['user_id'] = user_id
+			# Also update in metadata
+			if 'conversation_metadata' not in updated_state:
+				updated_state['conversation_metadata'] = {}
+			updated_state['conversation_metadata']['user_id'] = user_id
+
+			if 'workflow_metadata' not in updated_state:
+				updated_state['workflow_metadata'] = {}
+			updated_state['workflow_metadata']['user_id'] = user_id
+
+		if conversation_id:
+			updated_state['conversation_id'] = conversation_id
+			# Also update in metadata
+			if 'conversation_metadata' not in updated_state:
+				updated_state['conversation_metadata'] = {}
+			updated_state['conversation_metadata']['conversation_id'] = conversation_id
+
+			if 'workflow_metadata' not in updated_state:
+				updated_state['workflow_metadata'] = {}
+			updated_state['workflow_metadata']['conversation_id'] = conversation_id
+
+		return updated_state
 
 
 class StateTransitions:

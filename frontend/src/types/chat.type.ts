@@ -268,6 +268,8 @@ export interface ChatWebSocketMessage extends RequestSchema {
   type: 'chat_message'
   content: string
   api_key?: string
+  user_id?: string
+  conversation_id?: string
 }
 
 export interface PingWebSocketMessage extends RequestSchema {

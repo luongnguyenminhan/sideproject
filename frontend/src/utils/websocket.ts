@@ -129,7 +129,7 @@ export class ChatWebSocket {
     }
   }
 
-  sendMessage(content: string, apiKey?: string): void {
+  sendMessage(content: string, apiKey?: string, userId?: string, conversationId?: string): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.error('[ChatWebSocket] Cannot send message: WebSocket not connected')
       return
@@ -138,10 +138,17 @@ export class ChatWebSocket {
     const message: ChatWebSocketMessage = {
       type: 'chat_message',
       content: content.trim(),
-      ...(apiKey && { api_key: apiKey })
+      ...(apiKey && { api_key: apiKey }),
+      ...(userId && { user_id: userId }),
+      ...(conversationId && { conversation_id: conversationId })
     }
 
-    console.log('[ChatWebSocket] Sending message:', { type: message.type, contentLength: content.length })
+    console.log('[ChatWebSocket] Sending message:', { 
+      type: message.type, 
+      contentLength: content.length,
+      userId: userId,
+      conversationId: conversationId 
+    })
     this.ws.send(JSON.stringify(message))
   }
 

@@ -428,9 +428,16 @@ class Workflow:
 		start_time = time.time()
 		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
+		# Extract user context từ state và config
+		user_id = config.get('configurable', {}).get('user_id') or StateManager.get_user_id_from_state(state)
+
+		conversation_id = config.get('configurable', {}).get('conversation_id') or StateManager.get_conversation_id_from_state(state) or thread_id
+
 		logger.workflow_start(
 			'Agent Node - TOOL-FIRST Model Invocation',
 			thread_id=thread_id,
+			user_id=user_id,
+			conversation_id=conversation_id,
 			has_context=bool(state.get('combined_rag_context')),
 		)
 
@@ -441,15 +448,20 @@ class Workflow:
 			if persona_prompt:
 				system_prompt = persona_prompt
 
-		# ULTRA-AGGRESSIVE tool prioritization system prompt
+		# ULTRA-AGGRESSIVE tool prioritization system prompt với user context
 		enhanced_system = f"""{system_prompt}
 
 🤖 ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
 
-� CRITICAL TOOL-FIRST PROTOCOL:
+🧑‍💼 USER CONTEXT:
+- User ID: {user_id or 'Unknown'}
+- Conversation ID: {conversation_id or 'Unknown'}
+- Thread ID: {thread_id}
+
+🔥 CRITICAL TOOL-FIRST PROTOCOL:
 ⚠️ BẮT BUỘC SỬ DỤNG TOOLS - KHÔNG ĐƯỢC TRẢ LỜI TRỰC TIẾP!
 
-� MANDATORY TOOL USAGE RULES:
+🚫 MANDATORY TOOL USAGE RULES:
 1. 🔍 RAG_RETRIEVAL tool - SỬ DỤNG CHO 99% CÂU HỎI:
    ✅ BẮT BUỘC cho mọi câu hỏi thông tin
    ✅ BẮT BUỘC cho câu hỏi về Enterview, công ty, việc làm  
@@ -473,6 +485,11 @@ class Workflow:
 ⚠️ NẾU KHÔNG DÙNG TOOL: PHẢI giải thích tại sao không dùng tool
 
 📊 AVAILABLE CONTEXT: {bool(state.get('combined_rag_context'))}
+
+🔧 TOOL PARAMETERS:
+- conversation_id: {conversation_id}
+- user_id: {user_id}
+- Always include these IDs when calling tools!
 """
 
 		# Add RAG context if available
@@ -500,27 +517,96 @@ class Workflow:
 			message_lower = last_user_message.lower()
 
 			# Ultra-broad tool triggers
-			rag_triggers = ['gì', 'ai', 'nào', 'sao', 'thế nào', 'như thế nào', 'bao nhiêu', 'ở đâu', 'khi nào', 'tại sao', '?', 'là', 'có', 'được', 'làm', 'enterview', 'công ty', 'company', 'việc làm', 'job', 'tuyển dụng', 'thông tin', 'info', 'biết', 'hiểu', 'tìm', 'search', 'hỏi']
+			rag_triggers = [
+				'gì',
+				'ai',
+				'nào',
+				'sao',
+				'thế nào',
+				'như thế nào',
+				'bao nhiêu',
+				'ở đâu',
+				'khi nào',
+				'tại sao',
+				'?',
+				'là',
+				'có',
+				'được',
+				'làm',
+				'enterview',
+				'công ty',
+				'company',
+				'việc làm',
+				'job',
+				'tuyển dụng',
+				'thông tin',
+				'info',
+				'biết',
+				'hiểu',
+				'tìm',
+				'search',
+				'hỏi',
+			]
 
-			cv_triggers = ['cv', 'resume', 'câu hỏi', 'question', 'profile', 'phỏng vấn', 'interview', 'analyze', 'phân tích', 'hồ sơ', 'kinh nghiệm', 'experience', 'skill', 'kỹ năng', 'career', 'nghề nghiệp']
+			cv_triggers = [
+				'cv',
+				'resume',
+				'câu hỏi',
+				'question',
+				'profile',
+				'phỏng vấn',
+				'interview',
+				'analyze',
+				'phân tích',
+				'hồ sơ',
+				'kinh nghiệm',
+				'experience',
+				'skill',
+				'kỹ năng',
+				'career',
+				'nghề nghiệp',
+			]
 
 			has_rag_trigger = any(trigger in message_lower for trigger in rag_triggers)
 			has_cv_trigger = any(trigger in message_lower for trigger in cv_triggers)
 
 			if has_cv_trigger:
-				tool_recommendation = '\n🔥 MANDATORY: Bạn PHẢI sử dụng question_composer tool!'
-				logger.warning('🔥 [Agent] CV/Profile detected - QUESTION_COMPOSER tool MANDATORY!')
+				tool_recommendation = f"""
+🔥 MANDATORY: Bạn PHẢI sử dụng question_composer tool!
+📋 Parameters: conversation_id="{conversation_id}", user_id="{user_id}"
+"""
+				logger.warning(
+					'🔥 [Agent] CV/Profile detected - QUESTION_COMPOSER tool MANDATORY!',
+					user_id=user_id,
+					conversation_id=conversation_id,
+				)
 			elif has_rag_trigger:
-				tool_recommendation = '\n🔥 MANDATORY: Bạn PHẢI sử dụng rag_retrieval tool!'
-				logger.warning('🔥 [Agent] Information query detected - RAG_RETRIEVAL tool MANDATORY!')
+				tool_recommendation = f"""
+🔥 MANDATORY: Bạn PHẢI sử dụng rag_retrieval tool!
+📋 Parameters: conversation_id="{conversation_id}", user_id="{user_id}", query="{last_user_message[:100]}"
+"""
+				logger.warning(
+					'🔥 [Agent] Information query detected - RAG_RETRIEVAL tool MANDATORY!',
+					user_id=user_id,
+					conversation_id=conversation_id,
+				)
 			else:
 				# Even for edge cases, try to use RAG
-				tool_recommendation = '\n💡 STRONG RECOMMENDATION: Hãy cân nhắc sử dụng rag_retrieval tool để cung cấp thông tin đầy đủ hơn!'
-				logger.info('💡 [Agent] No clear triggers - but still recommend RAG tool')
+				tool_recommendation = f"""
+💡 STRONG RECOMMENDATION: Hãy cân nhắc sử dụng rag_retrieval tool để cung cấp thông tin đầy đủ hơn!
+📋 Parameters: conversation_id="{conversation_id}", user_id="{user_id}"
+"""
+				logger.info(
+					'💡 [Agent] No clear triggers - but still recommend RAG tool',
+					user_id=user_id,
+					conversation_id=conversation_id,
+				)
 
 			logger.info(f'📊 [Agent] Tool analysis:')
 			logger.info(f'   - RAG triggers found: {has_rag_trigger}')
 			logger.info(f'   - CV triggers found: {has_cv_trigger}')
+			logger.info(f'   - User ID: {user_id}')
+			logger.info(f'   - Conversation ID: {conversation_id}')
 			logger.info(f'   - Tool recommendation: {tool_recommendation.strip()}')
 
 		# Create ULTRA-AGGRESSIVE tool prompt
@@ -565,41 +651,33 @@ Think: "What tool can help me answer this better?" before responding directly.
 			{
 				'system_time': datetime.now(tz=timezone.utc).isoformat(),
 				'unified_mode': True,
-				'conversation_id': thread_id,
+				'conversation_id': conversation_id,
 				'tool_priority': 'MAXIMUM',  # Maximum tool priority signal
 				'force_tools': True,  # Force tool consideration
+				'user_id': user_id,
 			},
 		)
-
-		# AGGRESSIVE tool usage logging and warnings
+		print(f'🔍 [Agent] Model response: {response}...')
+		# Add user context to tool calls if any
 		if hasattr(response, 'tool_calls') and response.tool_calls:
-			logger.success(f'🎉 [Agent] PERFECT! Agent correctly used {len(response.tool_calls)} tool(s)!')
-			for i, tool_call in enumerate(response.tool_calls, 1):
-				tool_name = tool_call.get('name', 'unknown_tool')
-				tool_args = tool_call.get('args', {})
-				logger.success(f'🔧 [Agent] Tool {i}: {tool_name}')
-				logger.info(f'📝 [Agent] Tool {i} Args: {list(tool_args.keys())}')
-		else:
-			# This is now considered a "failure" - log as warning/error
-			logger.error('❌ [Agent] TOOL USAGE FAILURE! Agent gave direct response instead of using tools!')
-			logger.error('🚨 [Agent] This goes against the TOOL-FIRST protocol!')
+			logger.info(f'🔧 [Agent] Processing {len(response.tool_calls)} tool calls')
+			for i, tool_call in enumerate(response.tool_calls):
+				# Ensure user_id and conversation_id are in tool arguments
+				if 'args' in tool_call:
+					if 'user_id' not in tool_call['args'] and user_id:
+						tool_call['args']['user_id'] = user_id
+						logger.info(f'   - Tool {i + 1}: Added user_id={user_id}')
+					if 'conversation_id' not in tool_call['args'] and conversation_id:
+						tool_call['args']['conversation_id'] = conversation_id
+						logger.info(f'   - Tool {i + 1}: Added conversation_id={conversation_id}')
 
-			if hasattr(response, 'content') and response.content:
-				logger.warning(f'📄 [Agent] Direct response (length: {len(response.content)}): {response.content[:200]}...')
-
-				# Log what the agent should have done
-				if last_user_message:
-					message_lower = last_user_message.lower()
-					if any(word in message_lower for word in ['cv', 'profile', 'câu hỏi', 'question']):
-						logger.error('💥 [Agent] SHOULD HAVE USED: question_composer tool!')
-					else:
-						logger.error('💥 [Agent] SHOULD HAVE USED: rag_retrieval tool!')
+					logger.info(f'   - Tool {i + 1}: {tool_call.get("name", "unknown")} with context')
 
 		processing_time = time.time() - start_time
 		logger.info(
 			'Agent Node - TOOL-FIRST Model Invocation',
 			processing_time,
-			response_length=len(str(response.content)) if hasattr(response, 'content') else 0,
+			response_length=(len(str(response.content)) if hasattr(response, 'content') else 0),
 			tools_called=(len(response.tool_calls) if hasattr(response, 'tool_calls') and response.tool_calls else 0),
 			tool_usage_success=bool(hasattr(response, 'tool_calls') and response.tool_calls),
 		)
@@ -658,16 +736,20 @@ HƯỚNG DẪN:
 
 		logger.info(f'🔧 [Tools] Starting tool execution for thread: {thread_id}')
 
+		# Track tool iterations to prevent infinite loops
+		tool_iterations = state.get('tool_iterations', 0) + 1
+		logger.info(f'🔄 [Tools] Tool iteration: {tool_iterations}')
+
 		# Get messages and check for tool calls
 		messages = state.get('messages', [])
 		if not messages:
 			logger.warning('🔧 [Tools] No messages found')
-			return state
+			return {**state, 'tool_iterations': tool_iterations}
 
 		last_message = messages[-1]
 		if not hasattr(last_message, 'tool_calls') or not last_message.tool_calls:
 			logger.warning('🔧 [Tools] No tool calls found')
-			return state
+			return {**state, 'tool_iterations': tool_iterations}
 
 		# Log tool calls
 		for i, tool_call in enumerate(last_message.tool_calls, 1):
@@ -679,7 +761,7 @@ HƯỚNG DẪN:
 			result_state = await tool_node.ainvoke(state, config)
 
 			logger.info(f'🔧 [Tools] All tools executed successfully')
-			return result_state
+			return {**result_state, 'tool_iterations': tool_iterations}
 
 		except Exception as e:
 			logger.error(f'🔧 [Tools] Tool execution failed: {str(e)}')
@@ -688,6 +770,7 @@ HƯỚNG DẪN:
 				**state,
 				'tool_execution_error': str(e),
 				'tool_execution_failed': True,
+				'tool_iterations': tool_iterations,
 			}
 
 	def _route_decision(self, state: AgentState) -> str:
@@ -712,6 +795,14 @@ HƯỚNG DẪN:
 			logger.info('🔚 No messages found - ending workflow')
 			return END
 
+		# Check for maximum iterations to prevent infinite loops
+		tool_iterations = state.get('tool_iterations', 0)
+		max_iterations = 3  # Maximum 3 tool iterations
+
+		if tool_iterations >= max_iterations:
+			logger.warning(f'🔄 Maximum tool iterations ({max_iterations}) reached - ending workflow')
+			return END
+
 		last_message = messages[-1]
 		if not hasattr(last_message, 'tool_calls') or not last_message.tool_calls:
 			logger.info('🔚 No tool calls detected - ending workflow')
@@ -720,7 +811,7 @@ HƯỚNG DẪN:
 			tool_count = len(last_message.tool_calls)
 			tool_names = [tc.get('name', 'unknown') for tc in last_message.tool_calls]
 			logger.info(
-				f'🔧 Tool calls detected - continuing to tools',
+				f'🔧 Tool calls detected - continuing to tools (iteration {tool_iterations + 1})',
 				tool_count=tool_count,
 				tools=tool_names,
 			)
@@ -732,8 +823,9 @@ HƯỚNG DẪN:
 		user_id: Optional[str] = None,
 		conversation_id: Optional[str] = None,
 		config_override: Optional[Dict[str, Any]] = None,
+		timeout: float = 30.0,  # Add timeout parameter
 	) -> Dict[str, Any]:
-		"""Process message với unified workflow"""
+		"""Process message với unified workflow và timeout protection"""
 		start_time = time.time()
 		session_id = conversation_id or f'session_{int(time.time())}'
 
@@ -742,20 +834,25 @@ HƯỚNG DẪN:
 			user_id=user_id,
 			conversation_id=conversation_id,
 			message_length=len(user_message),
+			timeout_seconds=timeout,
 		)
 
 		try:
-			# Create initial state
-			initial_state = StateManager.create_initial_state(user_message=user_message, user_id=user_id, session_id=session_id)
+			# Create initial state với user_id và conversation_id
+			initial_state = StateManager.create_initial_state(
+				user_message=user_message,
+				user_id=user_id,
+				session_id=session_id,
+				conversation_id=conversation_id,
+			)
+			initial_state['tool_iterations'] = 0  # Initialize tool iterations counter
 
-			# Add conversation_id to metadata
-			if conversation_id:
-				initial_state['conversation_metadata']['conversation_id'] = conversation_id
-
-			# Prepare config
+			# Prepare config với user context
 			runtime_config = {
 				'configurable': {
 					'thread_id': session_id,
+					'user_id': user_id,  # Add user_id to config
+					'conversation_id': conversation_id,  # Add conversation_id to config
 					**self.config.to_dict(),
 				}
 			}
@@ -763,8 +860,30 @@ HƯỚNG DẪN:
 			if config_override:
 				runtime_config['configurable'].update(config_override)
 
-			# Execute workflow
-			final_state = await self.compiled_graph.ainvoke(initial_state, config=runtime_config)
+			# Log runtime config
+			logger.info(f'🔧 Runtime config prepared with user context:')
+			logger.info(f'   - User ID: {user_id}')
+			logger.info(f'   - Conversation ID: {conversation_id}')
+			logger.info(f'   - Thread ID: {session_id}')
+
+			# Execute workflow with timeout protection
+			try:
+				final_state = await asyncio.wait_for(
+					self.compiled_graph.ainvoke(initial_state, config=runtime_config),
+					timeout=timeout,
+				)
+			except asyncio.TimeoutError:
+				logger.error(f'⏰ Workflow timeout after {timeout} seconds')
+				return {
+					'response': 'Xin lỗi, yêu cầu của bạn mất quá nhiều thời gian để xử lý. Vui lòng thử lại.',
+					'state': initial_state,
+					'metadata': {
+						'processing_time': time.time() - start_time,
+						'error': 'timeout',
+						'timeout_seconds': timeout,
+						'workflow_type': 'simplified',
+					},
+				}
 
 			# Extract response
 			response = self._extract_response(final_state)
@@ -774,6 +893,7 @@ HƯỚNG DẪN:
 				'Simplified Workflow processing completed',
 				processing_time=processing_time,
 				response_length=len(response),
+				tool_iterations=final_state.get('tool_iterations', 0),
 				features_used={
 					'router': final_state.get('routing_complete', False),
 					'rag': bool(final_state.get('combined_rag_context')),
@@ -800,6 +920,7 @@ HƯỚNG DẪN:
 					logger.success(
 						f'🔧 Workflow completed with {tool_calls_count} tool calls',
 						tools_used=tools_used,
+						iterations=final_state.get('tool_iterations', 0),
 					)
 
 			# Log comprehensive workflow summary
@@ -814,6 +935,7 @@ HƯỚNG DẪN:
 					'router_decision': final_state.get('router_decision'),
 					'rag_used': bool(final_state.get('combined_rag_context')),
 					'guardrails_passed': not final_state.get('guardrail_blocked', False),
+					'tool_iterations': final_state.get('tool_iterations', 0),
 				},
 			}
 		except Exception as e:
