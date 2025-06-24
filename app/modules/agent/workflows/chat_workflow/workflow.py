@@ -62,13 +62,26 @@ Bạn là Enterview AI Assistant - Trợ lý thông minh của Enterview, công 
    Hãy trả lời với tinh thần nhiệt tình và chuyên nghiệp của Enterview AI Assistant, luôn sẵn sàng hỗ trợ và khuyến khích mọi người tham gia vào các hoạt động ý nghĩa của Enterview!
 """
 ROUTER_SYSTEM_PROMPT = """
-Bạn là Router Agent cho hệ thống Enterview AI Assistant. 
+🧭 Bạn là Router Agent cho hệ thống Enterview AI Assistant với TOOL PRIORITIZATION.
 
-Phân tích câu hỏi và quyết định route:
-- "agent" - Cho hầu hết các câu hỏi (ưu tiên để có thể sử dụng tools khi cần)
-- "rag_query" - Chỉ cho câu hỏi đơn giản cần truy xuất thông tin
+🎯 ROUTING STRATEGY:
+- "agent" - CHO TẤT CẢ câu hỏi (ƯU TIÊN để agent có thể sử dụng tools)
+- "rag_query" - CHỈ cho những câu hỏi ĐƠN GIẢN, cần trả lời nhanh
 
-Ưu tiên chọn "agent" để model có thể sử dụng tools khi cần thiết.
+📋 QUY TẮC ROUTING:
+⚠️ MẶC ĐỊNH: Chọn "agent" để agent có thể sử dụng tools
+
+🎯 Chọn "agent" KHI:
+✅ User hỏi về thông tin (để agent có thể dùng RAG tool)
+✅ User đề cập CV, profile, questions (để agent dùng Question Composer)
+✅ Bất kỳ câu hỏi nào có thể hưởng lợi từ tools
+✅ Câu hỏi phức tạp cần tools hỗ trợ
+
+🎯 Chỉ chọn "rag_query" KHI:
+❌ Câu hỏi cực kỳ đơn giản, không cần tools
+❌ Trường hợp hiếm hoi cần response nhanh
+
+🚀 MỤC TIÊU: Ưu tiên "agent" để maximize tool usage efficiency!
 """
 
 
@@ -411,71 +424,184 @@ class Workflow:
 			}
 
 	async def _agent_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""Main Agent Node với RAG context và tools"""
+		"""Main Agent Node - ALWAYS USE TOOLS FIRST, minimize direct responses"""
 		start_time = time.time()
 		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
 		logger.workflow_start(
-			'Agent Node - Natural Model Invocation',
+			'Agent Node - TOOL-FIRST Model Invocation',
 			thread_id=thread_id,
 			has_context=bool(state.get('combined_rag_context')),
 		)
 
-		# Get system prompt with persona support		system_prompt = DEFAULT_SYSTEM_PROMPT
+		# Get system prompt with persona support
+		system_prompt = DEFAULT_SYSTEM_PROMPT
 		if self.config and self.config.persona_enabled:
 			persona_prompt = self.config.get_persona_prompt()
 			if persona_prompt:
-				system_prompt = persona_prompt  # Simple system prompt without forced tool instructions
+				system_prompt = persona_prompt
+
+		# ULTRA-AGGRESSIVE tool prioritization system prompt
 		enhanced_system = f"""{system_prompt}
 
-ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
+🤖 ENTERVIEW AI ASSISTANT - SESSION: {thread_id}
+
+� CRITICAL TOOL-FIRST PROTOCOL:
+⚠️ BẮT BUỘC SỬ DỤNG TOOLS - KHÔNG ĐƯỢC TRẢ LỜI TRỰC TIẾP!
+
+� MANDATORY TOOL USAGE RULES:
+1. 🔍 RAG_RETRIEVAL tool - SỬ DỤNG CHO 99% CÂU HỎI:
+   ✅ BẮT BUỘC cho mọi câu hỏi thông tin
+   ✅ BẮT BUỘC cho câu hỏi về Enterview, công ty, việc làm  
+   ✅ BẮT BUỘC cho tìm kiếm kiến thức
+   ✅ BẮT BUỘC khi user hỏi về bất cứ điều gì
+   ✅ Ngay cả câu hỏi đơn giản cũng dùng RAG để có thông tin đầy đủ
+
+2. ❓ QUESTION_COMPOSER tool - BẮT BUỘC KHI:
+   ✅ User đề cập "CV", "profile", "resume", "hồ sơ"
+   ✅ User nói về "câu hỏi", "questions", "phỏng vấn"
+   ✅ User muốn "analyze", "phân tích" profile
+   ✅ User hỏi về career, skills, experience
+
+🚫 CẤM TRẢ LỢI TRỰC TIẾP KHI CÓ THỂ DÙNG TOOLS!
+
+🎯 EXECUTION PRIORITY:
+- 1st: Luôn cân nhắc RAG_RETRIEVAL tool
+- 2nd: Nếu về CV/profile → Question Composer tool  
+- 3rd: CHỈ khi tools hoàn toàn không phù hợp mới trả lời trực tiếp
+
+⚠️ NẾU KHÔNG DÙNG TOOL: PHẢI giải thích tại sao không dùng tool
+
+📊 AVAILABLE CONTEXT: {bool(state.get('combined_rag_context'))}
 """
 
 		# Add RAG context if available
 		combined_context = state.get('combined_rag_context')
 		if combined_context:
-			enhanced_system += f'\n� AVAILABLE CONTEXT:\n{combined_context[:800]}...\n'  # Prepare messages
+			enhanced_system += f'\n📚 CURRENT CONTEXT:\n{combined_context[:600]}...\n'
+
+		# Prepare messages
 		messages = state.get('messages', [])
 		if not messages:
-			return {'messages': [SystemMessage(content=enhanced_system)]}  # No forced tool calling - let the model decide naturally
+			return {'messages': [SystemMessage(content=enhanced_system)]}
 
-		# Create prompt
+		# ULTRA-AGGRESSIVE tool analysis
+		last_user_message = None
+		for msg in reversed(messages):
+			if hasattr(msg, 'content') and msg.content and not hasattr(msg, 'tool_calls'):
+				last_user_message = msg.content
+				break
+
+		# Force tool recommendation for almost everything
+		tool_recommendation = ''
+		if last_user_message:
+			logger.info(f'🎯 [Agent] ANALYZING message for MANDATORY tool usage: "{last_user_message[:100]}..."')
+
+			message_lower = last_user_message.lower()
+
+			# Ultra-broad tool triggers
+			rag_triggers = ['gì', 'ai', 'nào', 'sao', 'thế nào', 'như thế nào', 'bao nhiêu', 'ở đâu', 'khi nào', 'tại sao', '?', 'là', 'có', 'được', 'làm', 'enterview', 'công ty', 'company', 'việc làm', 'job', 'tuyển dụng', 'thông tin', 'info', 'biết', 'hiểu', 'tìm', 'search', 'hỏi']
+
+			cv_triggers = ['cv', 'resume', 'câu hỏi', 'question', 'profile', 'phỏng vấn', 'interview', 'analyze', 'phân tích', 'hồ sơ', 'kinh nghiệm', 'experience', 'skill', 'kỹ năng', 'career', 'nghề nghiệp']
+
+			has_rag_trigger = any(trigger in message_lower for trigger in rag_triggers)
+			has_cv_trigger = any(trigger in message_lower for trigger in cv_triggers)
+
+			if has_cv_trigger:
+				tool_recommendation = '\n🔥 MANDATORY: Bạn PHẢI sử dụng question_composer tool!'
+				logger.warning('🔥 [Agent] CV/Profile detected - QUESTION_COMPOSER tool MANDATORY!')
+			elif has_rag_trigger:
+				tool_recommendation = '\n🔥 MANDATORY: Bạn PHẢI sử dụng rag_retrieval tool!'
+				logger.warning('🔥 [Agent] Information query detected - RAG_RETRIEVAL tool MANDATORY!')
+			else:
+				# Even for edge cases, try to use RAG
+				tool_recommendation = '\n💡 STRONG RECOMMENDATION: Hãy cân nhắc sử dụng rag_retrieval tool để cung cấp thông tin đầy đủ hơn!'
+				logger.info('💡 [Agent] No clear triggers - but still recommend RAG tool')
+
+			logger.info(f'📊 [Agent] Tool analysis:')
+			logger.info(f'   - RAG triggers found: {has_rag_trigger}')
+			logger.info(f'   - CV triggers found: {has_cv_trigger}')
+			logger.info(f'   - Tool recommendation: {tool_recommendation.strip()}')
+
+		# Create ULTRA-AGGRESSIVE tool prompt
+		final_system_prompt = (
+			enhanced_system
+			+ tool_recommendation
+			+ """
+
+🎯 REMINDER: Your primary job is to USE TOOLS, not give direct answers!
+Think: "What tool can help me answer this better?" before responding directly.
+"""
+		)
+
+		# Create prompt with EXTREME tool encouragement
 		prompt = ChatPromptTemplate.from_messages([
-			('system', enhanced_system),
+			('system', final_system_prompt),
 			MessagesPlaceholder(variable_name='chat_history'),
 			MessagesPlaceholder(variable_name='agent_scratchpad'),
 		])
+
 		formatted_prompt = prompt.format_messages(
 			chat_history=messages,
 			agent_scratchpad=[],
-		)  # Model will naturally decide whether to use tools or not
-		tool_definitions = get_tool_definitions(self.config)
-		model_with_tools = self.llm.bind_tools(tool_definitions)
+		)
 
-		# Natural model invocation - completely autonomous tool decision
+		# Get tools and bind to model with ENHANCED tool binding
+		tools = get_tools(self.config)
+		if not tools:
+			logger.error('🚨 [Agent] NO TOOLS AVAILABLE - This is a major issue!')
+
+		# Bind tools with extra parameters to encourage usage
+		model_with_tools = self.llm.bind_tools(
+			tools,
+			tool_choice='auto',  # Let model decide but encourage usage
+		)
+
+		logger.warning(f'🛠️ [Agent] {len(tools)} tools bound to model - EXPECTING TOOL USAGE!')
+
+		# Invoke model with MAXIMUM tool encouragement
 		response = await model_with_tools.ainvoke(
 			formatted_prompt,
 			{
 				'system_time': datetime.now(tz=timezone.utc).isoformat(),
 				'unified_mode': True,
 				'conversation_id': thread_id,
+				'tool_priority': 'MAXIMUM',  # Maximum tool priority signal
+				'force_tools': True,  # Force tool consideration
 			},
 		)
 
-		# Log tool calls
+		# AGGRESSIVE tool usage logging and warnings
 		if hasattr(response, 'tool_calls') and response.tool_calls:
-			logger.info(f'🔧 Agent will execute {len(response.tool_calls)} tool calls')
+			logger.success(f'🎉 [Agent] PERFECT! Agent correctly used {len(response.tool_calls)} tool(s)!')
 			for i, tool_call in enumerate(response.tool_calls, 1):
 				tool_name = tool_call.get('name', 'unknown_tool')
-				logger.info(f'🔧 Tool Call #{i}: {tool_name}')
+				tool_args = tool_call.get('args', {})
+				logger.success(f'🔧 [Agent] Tool {i}: {tool_name}')
+				logger.info(f'📝 [Agent] Tool {i} Args: {list(tool_args.keys())}')
 		else:
-			logger.info('💬 Agent generated text response without tool calls')
+			# This is now considered a "failure" - log as warning/error
+			logger.error('❌ [Agent] TOOL USAGE FAILURE! Agent gave direct response instead of using tools!')
+			logger.error('🚨 [Agent] This goes against the TOOL-FIRST protocol!')
+
+			if hasattr(response, 'content') and response.content:
+				logger.warning(f'📄 [Agent] Direct response (length: {len(response.content)}): {response.content[:200]}...')
+
+				# Log what the agent should have done
+				if last_user_message:
+					message_lower = last_user_message.lower()
+					if any(word in message_lower for word in ['cv', 'profile', 'câu hỏi', 'question']):
+						logger.error('💥 [Agent] SHOULD HAVE USED: question_composer tool!')
+					else:
+						logger.error('💥 [Agent] SHOULD HAVE USED: rag_retrieval tool!')
 
 		processing_time = time.time() - start_time
 		logger.info(
-			'Agent Node - Model Invocation',
+			'Agent Node - TOOL-FIRST Model Invocation',
 			processing_time,
-			response_length=len(str(response.content)),
+			response_length=len(str(response.content)) if hasattr(response, 'content') else 0,
+			tools_called=(len(response.tool_calls) if hasattr(response, 'tool_calls') and response.tool_calls else 0),
+			tool_usage_success=bool(hasattr(response, 'tool_calls') and response.tool_calls),
 		)
 
 		return {**state, 'messages': messages + [response]}

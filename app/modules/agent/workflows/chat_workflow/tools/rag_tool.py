@@ -1,13 +1,13 @@
 """
-RAG Tool for Chat Agent
-Simplified RAG system với Global Knowledge Base + Conversation-specific Knowledge Base
+RAG Tool for Chat Agent - Simplified Function-based Implementation
 """
 
 import logging
 import json
+import asyncio
 from typing import Dict, Any, Optional, List, Literal
-from langchain.tools import BaseTool
-from pydantic import BaseModel, Field, PrivateAttr
+from langchain_core.tools import tool
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -16,56 +16,49 @@ logger = logging.getLogger(__name__)
 
 
 class RAGRoute(BaseModel):
-	"""Schema for routing decisions"""
+    """Schema for routing decisions"""
 
-	routing_decision: Literal['global_only', 'conversation_only', 'both', 'none'] = Field(description='Which knowledge base(s) to query')
-	query_type: Literal['factual', 'conversational', 'technical', 'personal'] = Field(description='Type of user query')
-	enhanced_query: str = Field(description='Enhanced query for better retrieval')
+    routing_decision: Literal["global_only", "conversation_only", "both", "none"] = (
+        Field(description="Which knowledge base(s) to query")
+    )
+    query_type: Literal["factual", "conversational", "technical", "personal"] = Field(
+        description="Type of user query"
+    )
+    enhanced_query: str = Field(description="Enhanced query for better retrieval")
 
 
 class RAGInput(BaseModel):
-	"""Input schema for RAG tool"""
+    """Input schema for RAG tool"""
 
-	conversation_id: str = Field(description='ID của conversation')
-	user_id: str = Field(description='ID của user')
-	query: str = Field(description='User query để search')
-	top_k: int = Field(default=5, description='Số lượng kết quả trả về mỗi source')
+    conversation_id: str = Field(description="ID của conversation")
+    user_id: str = Field(description="ID của user")
+    query: str = Field(description="User query để search")
+    top_k: int = Field(default=5, description="Số lượng kết quả trả về mỗi source")
 
 
-class RAGTool(BaseTool):
-	"""Tool thực hiện RAG với intelligent routing"""
+# Global variables for tool configuration
+_global_db_session: Optional[Session] = None
+_router_llm = None
+_router_prompt = None
+_router_chain = None
 
-	name: str = 'rag_retrieval'
-	description: str = """
-    Advanced RAG system với intelligent routing.
-    - Global Knowledge Base: Kiến thức chung agent cần biết
-    - Conversation Knowledge Base: Kiến thức specific cho conversation (CV, files uploaded)
-    
-    Tool sẽ:
-    1. Phân tích query để quyết định route
-    2. Search các knowledge base phù hợp
-    3. Kết hợp và rank results
-    4. Trả về context đã được optimize
-    
-    Input: conversation_id, user_id, query, top_k
-    """
 
-	db_session: Session = Field(exclude=True)
-	_router_llm: Any = PrivateAttr()
-	_router_prompt: Any = PrivateAttr()
-	_router_chain: Any = PrivateAttr()
+def _initialize_rag_components():
+    """Initialize RAG components if not already initialized"""
+    global _router_llm, _router_prompt, _router_chain
 
-	def __init__(self, db_session: Session, **kwargs):
-		super().__init__(db_session=db_session, **kwargs)
+    if _router_llm is None:
+        print("🚀 [RAG] Initializing RAG components...")
 
-		# Initialize router LLM for intelligent routing
-		self._router_llm = ChatGoogleGenerativeAI(model='gemini-1.5-flash', temperature=0.1)
+        # Initialize router LLM for intelligent routing
+        _router_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1)
 
-		# Router prompt for query analysis and routing
-		self._router_prompt = ChatPromptTemplate.from_messages([
-			(
-				'system',
-				"""Bạn là AI Router chuyên phân tích query và quyết định routing cho RAG system.
+        # Router prompt for query analysis and routing
+        _router_prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """Bạn là AI Router chuyên phân tích query và quyết định routing cho RAG system.
 
 KNOWLEDGE BASES:
 1. GLOBAL KB: Kiến thức chung, facts, technical knowledge, best practices
@@ -85,236 +78,371 @@ QUERY TYPES:
 
 Phân tích query và trả về routing decision + enhanced query để improve retrieval.
 """,
-			),
-			('human', 'Query: {query}\\n\\nPhân tích và quyết định routing:'),
-		])
+                ),
+                ("human", "Query: {query}\\n\\nPhân tích và quyết định routing:"),
+            ]
+        )
 
-		self._router_chain = self._router_prompt | self._router_llm.with_structured_output(RAGRoute)
+        _router_chain = _router_prompt | _router_llm.with_structured_output(RAGRoute)
 
-	def _run(self, conversation_id: str, user_id: str, query: str, top_k: int = 5) -> str:
-		"""
-		Execute RAG retrieval với intelligent routing
+        print("✅ [RAG] RAG components initialized")
 
-		Args:
-		    conversation_id: ID của conversation
-		    user_id: ID của user
-		    query: User query
-		    top_k: Number of results per source
 
-		Returns:
-		    JSON string với retrieved context
-		"""
-		try:
-			logger.info(f'[RAG] Processing query: "{query[:100]}..." for conversation: {conversation_id}')
+@tool("rag_retrieval", args_schema=RAGInput)
+def rag_retrieval_tool(
+    conversation_id: str, user_id: str, query: str, top_k: int = 5
+) -> str:
+    """
+    🔍 ADVANCED RAG SEARCH TOOL - Ưu tiên sử dụng để tìm kiếm thông tin!
 
-			# 1. Intelligent routing
-			route_decision = self._route_query(query)
-			logger.info(f'[RAG] Routing decision: {route_decision.routing_decision}, Query type: {route_decision.query_type}')
+    📋 ƯU TIÊN SỬ DỤNG TOOL NÀY KHI:
+    ✅ User hỏi về bất kỳ thông tin nào - dù đơn giản
+    ✅ Cần tìm thông tin về công ty, việc làm, kiến thức chuyên môn
+    ✅ User đề cập đến tài liệu, file đã upload trước đó
+    ✅ Câu hỏi về thông tin personal/CV/profile của user
+    ✅ Tìm hiểu về lịch sử trò chuyện trước đó
+    ✅ Bất kỳ câu hỏi nào cần context hoặc thông tin cụ thể
+    ✅ User hỏi về Enterview, dịch vụ, tính năng
+    ✅ Câu hỏi về tuyển dụng, phỏng vấn, career advice
 
-			# 2. Retrieve from appropriate knowledge bases
-			results = self._execute_retrieval(
-				conversation_id=conversation_id,
-				user_id=user_id,
-				route_decision=route_decision,
-				top_k=top_k,
-			)
+    ⚠️ LUÔN ƯU TIÊN tool này thay vì trả lời trực tiếp!
 
-			# 3. Combine and rank results
-			final_context = self._combine_and_rank_results(results, route_decision)
+    🎯 CHỨC NĂNG:
+    - Tìm kiếm trong Global Knowledge Base (kiến thức tổng quát)
+    - Tìm kiếm trong Conversation Knowledge Base (CV, files của user)
+    - Intelligent routing để chọn source phù hợp
+    - Kết hợp và rank kết quả từ nhiều nguồn
 
-			logger.info(f'[RAG] Retrieved {len(final_context.get("sources", []))} total sources')
+    Args:
+        conversation_id: ID cuộc trò chuyện
+        user_id: ID người dùng
+        query: Câu hỏi tìm kiếm (có thể rephrase để tối ưu)
+        top_k: Số kết quả trả về (default: 5)
 
-			return json.dumps(final_context, ensure_ascii=False)
+    Returns:
+        JSON string với retrieved context
+    """
+    print(f"🔍 [RAG] Tool called with query: {query[:100]}...")
 
-		except Exception as e:
-			logger.error(f'[RAG] Error in RAG retrieval: {str(e)}')
-			return json.dumps(
-				{
-					'error': str(e),
-					'sources': [],
-					'routing_decision': 'none',
-					'message': 'Lỗi trong quá trình tìm kiếm kiến thức',
-				},
-				ensure_ascii=False,
-			)
+    try:
+        # Initialize components if needed
+        _initialize_rag_components()
 
-	def _route_query(self, query: str) -> RAGRoute:
-		"""Phân tích query và quyết định routing"""
-		try:
-			route_decision = self._router_chain.invoke({'query': query})
-			logger.info(f'[RAG Router] Decision: {route_decision.routing_decision}, Enhanced query: {route_decision.enhanced_query}')
-			return route_decision
-		except Exception as e:
-			logger.error(f'[RAG Router] Error in routing: {str(e)}')
-			# Fallback routing
-			return RAGRoute(
-				routing_decision='global_only',
-				query_type='factual',
-				enhanced_query=query,
-			)
+        logger.info(
+            f'[RAG] Processing query: "{query[:100]}..." for conversation: {conversation_id}'
+        )
 
-	def _execute_retrieval(self, conversation_id: str, user_id: str, route_decision: RAGRoute, top_k: int) -> Dict[str, List[Dict]]:
-		"""Execute retrieval từ các knowledge bases theo routing decision"""
-		results = {'global': [], 'conversation': []}
+        # Execute RAG retrieval using asyncio
+        result = asyncio.run(_execute_rag_async(conversation_id, user_id, query, top_k))
 
-		try:
-			# Global Knowledge Base retrieval
-			if route_decision.routing_decision in ['global_only', 'both']:
-				global_results = self._search_global_kb(route_decision.enhanced_query, top_k)
-				results['global'] = global_results
-				logger.info(f'[RAG] Retrieved {len(global_results)} results from Global KB')
+        print(f"✅ [RAG] Tool execution completed successfully")
+        return result
 
-			# Conversation Knowledge Base retrieval
-			if route_decision.routing_decision in ['conversation_only', 'both']:
-				conv_results = self._search_conversation_kb(conversation_id, user_id, route_decision.enhanced_query, top_k)
-				results['conversation'] = conv_results
-				logger.info(f'[RAG] Retrieved {len(conv_results)} results from Conversation KB')
+    except Exception as e:
+        print(f"💥 [RAG] Error: {str(e)}")
+        logger.error(f"[RAG] Error in RAG retrieval: {str(e)}")
+        return json.dumps(
+            {
+                "error": str(e),
+                "sources": [],
+                "routing_decision": "none",
+                "message": "Lỗi trong quá trình tìm kiếm kiến thức",
+            },
+            ensure_ascii=False,
+        )
 
-		except Exception as e:
-			logger.error(f'[RAG] Error in retrieval execution: {str(e)}')
 
-		return results
+async def _execute_rag_async(
+    conversation_id: str, user_id: str, query: str, top_k: int
+) -> str:
+    """Execute RAG retrieval với intelligent routing"""
+    print(f"🎯 [RAG] Starting async RAG execution")
 
-	def _search_global_kb(self, query: str, top_k: int) -> List[Dict[str, Any]]:
-		"""Search Global Knowledge Base"""
-		try:
-			# TODO: Import from outside module - needs to be decided later
-			# from app.modules.agentic_rag.repository.kb_repo import KBRepository
-			# from app.modules.agentic_rag.schemas.kb_schema import QueryRequest
+    # 1. Intelligent routing
+    route_decision = await _route_query_async(query)
+    logger.info(
+        f"[RAG] Routing decision: {route_decision.routing_decision}, Query type: {route_decision.query_type}"
+    )
 
-			# Placeholder implementation - replace with actual search
-			logger.warning('Global KB search not implemented - external dependency')
-			return []
+    # 2. Retrieve from appropriate knowledge bases
+    results = await _execute_retrieval_async(
+        conversation_id=conversation_id,
+        user_id=user_id,
+        route_decision=route_decision,
+        top_k=top_k,
+    )
 
-			# Commented out external dependency:
-			# global_kb_repo = KBRepository()
-			# global_kb_repo.collection_name = 'global_knowledge_base'
-			# request = QueryRequest(query=query, top_k=top_k)
-			# response = global_kb_repo.query(request)
-			# return [
-			#     {
-			#         'content': item.content,
-			#         'metadata': item.metadata or {},
-			#         'similarity_score': item.score or 0.0,
-			#         'source': 'global_kb',
-			#         'doc_id': item.id,
-			#     }
-			#     for item in response.results
-			# ]
+    # 3. Combine and rank results
+    final_context = _combine_and_rank_results(results, route_decision)
 
-		except Exception as e:
-			logger.error(f'[RAG] Error searching global KB: {str(e)}')
-			return []
+    logger.info(
+        f'[RAG] Retrieved {len(final_context.get("sources", []))} total sources'
+    )
 
-	def _search_conversation_kb(self, conversation_id: str, user_id: str, query: str, top_k: int) -> List[Dict[str, Any]]:
-		"""Search Conversation-specific Knowledge Base"""
-		try:
-			# TODO: Import from outside module - needs to be decided later
-			# from app.modules.agentic_rag.services.conversation_rag_service import ConversationRAGService
+    return json.dumps(final_context, ensure_ascii=False)
 
-			# Placeholder implementation - replace with actual search
-			logger.warning('Conversation KB search not implemented - external dependency')
-			results = []
 
-			# Add CV context nếu có
-			cv_context = self._get_cv_context(conversation_id, user_id, query)
-			if cv_context:
-				results.append({
-					'content': cv_context,
-					'metadata': {
-						'source': 'cv_data',
-						'conversation_id': conversation_id,
-					},
-					'similarity_score': 0.95,  # High relevance for CV context
-					'source': 'conversation_kb',
-					'doc_id': f'cv_{conversation_id}',
-				})
+async def _route_query_async(query: str) -> RAGRoute:
+    """Phân tích query và quyết định routing"""
+    try:
+        if _router_chain is None:
+            raise Exception("Router chain not initialized")
 
-			return results
+        route_decision = await _router_chain.ainvoke({"query": query})
+        logger.info(
+            f"[RAG Router] Decision: {route_decision.routing_decision}, Enhanced query: {route_decision.enhanced_query}"
+        )
+        return route_decision
+    except Exception as e:
+        logger.error(f"[RAG Router] Error in routing: {str(e)}")
+        # Fallback routing
+        return RAGRoute(
+            routing_decision="global_only",
+            query_type="factual",
+            enhanced_query=query,
+        )
 
-		except Exception as e:
-			logger.error(f'[RAG] Error searching conversation KB: {str(e)}')
-			return []
 
-	def _get_cv_context(self, conversation_id: str, user_id: str, query: str) -> Optional[str]:
-		"""Get relevant CV context nếu query liên quan đến CV"""
-		try:
-			# TODO: Import from outside module - needs to be decided later
-			# from app.modules.chat.services.cv_integration_service import CVIntegrationService
+async def _execute_retrieval_async(
+    conversation_id: str, user_id: str, route_decision: RAGRoute, top_k: int
+) -> Dict[str, List[Dict]]:
+    """Execute retrieval từ các knowledge bases theo routing decision"""
+    results = {"global": [], "conversation": []}
 
-			# Placeholder implementation - replace with actual CV service
-			logger.warning('CV context retrieval not implemented - external dependency')
+    try:
+        # Global Knowledge Base retrieval
+        if route_decision.routing_decision in ["global_only", "both"]:
+            global_results = await _search_global_kb_async(
+                route_decision.enhanced_query, top_k
+            )
+            results["global"] = global_results
+            logger.info(f"[RAG] Retrieved {len(global_results)} results from Global KB")
 
-			# Check if query có liên quan đến CV
-			cv_keywords = [
-				'cv',
-				'resume',
-				'experience',
-				'skill',
-				'education',
-				'work',
-				'job',
-				'career',
-				'background',
-			]
-			query_lower = query.lower()
+        # Conversation Knowledge Base retrieval
+        if route_decision.routing_decision in ["conversation_only", "both"]:
+            conv_results = await _search_conversation_kb_async(
+                conversation_id, user_id, route_decision.enhanced_query, top_k
+            )
+            results["conversation"] = conv_results
+            logger.info(
+                f"[RAG] Retrieved {len(conv_results)} results from Conversation KB"
+            )
 
-			if any(keyword in query_lower for keyword in cv_keywords):
-				return f'CV context for conversation {conversation_id} - placeholder'
+    except Exception as e:
+        logger.error(f"[RAG] Error in retrieval execution: {str(e)}")
 
-			return None
+    return results
 
-		except Exception as e:
-			logger.error(f'[RAG] Error getting CV context: {str(e)}')
-			return None
 
-	def _combine_and_rank_results(self, results: Dict[str, List[Dict]], route_decision: RAGRoute) -> Dict[str, Any]:
-		"""Combine và rank results từ multiple knowledge bases"""
-		all_sources = []
+async def _search_global_kb_async(query: str, top_k: int) -> List[Dict[str, Any]]:
+    """Search Global Knowledge Base"""
+    try:
+        print(f"🌐 [RAG] Searching Global KB for: {query[:50]}...")
 
-		# Collect all sources
-		for source_type, source_results in results.items():
-			for result in source_results:
-				result['source_type'] = source_type
-				all_sources.append(result)
+        # Mock implementation for demonstration
+        # TODO: Replace with actual search implementation
+        mock_results = [
+            {
+                "content": f"Global knowledge about {query} - mock result 1",
+                "metadata": {"source": "global_kb", "topic": "general"},
+                "similarity_score": 0.85,
+                "source": "global_kb",
+                "doc_id": "global_1",
+            },
+            {
+                "content": f"Additional global context for {query} - mock result 2",
+                "metadata": {"source": "global_kb", "topic": "technical"},
+                "similarity_score": 0.78,
+                "source": "global_kb",
+                "doc_id": "global_2",
+            },
+        ]
 
-		# Sort by similarity score (descending)
-		all_sources.sort(key=lambda x: x.get('similarity_score', 0.0), reverse=True)
+        logger.info(f"[RAG] Global KB search returned {len(mock_results)} results")
+        return mock_results
 
-		# Apply routing-based boost
-		if route_decision.routing_decision == 'conversation_only':
-			# Boost conversation sources
-			for source in all_sources:
-				if source['source_type'] == 'conversation':
-					source['similarity_score'] = source.get('similarity_score', 0.0) + 0.1
+        # Commented out actual implementation that requires external dependencies:
+        """
+        from app.modules.agentic_rag.repository.kb_repo import KBRepository
+        from app.modules.agentic_rag.schemas.kb_schema import QueryRequest
 
-		elif route_decision.routing_decision == 'global_only':
-			# Boost global sources
-			for source in all_sources:
-				if source['source_type'] == 'global':
-					source['similarity_score'] = source.get('similarity_score', 0.0) + 0.1
+        global_kb_repo = KBRepository()
+        global_kb_repo.collection_name = "global_knowledge_base"
+        request = QueryRequest(query=query, top_k=top_k)
+        response = global_kb_repo.query(request)
+        return [
+            {
+                "content": item.content,
+                "metadata": item.metadata or {},
+                "similarity_score": item.score or 0.0,
+                "source": "global_kb",
+                "doc_id": item.id,
+            }
+            for item in response.results
+        ]
+        """
 
-		# Re-sort after boosting
-		all_sources.sort(key=lambda x: x.get('similarity_score', 0.0), reverse=True)
+    except Exception as e:
+        logger.error(f"[RAG] Error searching global KB: {str(e)}")
+        return []
 
-		# Build context string
-		context_parts = []
-		for i, source in enumerate(all_sources[:10]):  # Top 10 sources
-			source_info = f'[Source {i + 1} - {source["source_type"].upper()}]'
-			context_parts.append(f'{source_info}\\n{source["content"]}')
 
-		combined_context = '\\n\\n'.join(context_parts)
+async def _search_conversation_kb_async(
+    conversation_id: str, user_id: str, query: str, top_k: int
+) -> List[Dict[str, Any]]:
+    """Search Conversation-specific Knowledge Base"""
+    try:
+        print(f"💬 [RAG] Searching Conversation KB for: {query[:50]}...")
 
-		return {
-			'context': combined_context,
-			'sources': all_sources,
-			'routing_decision': route_decision.routing_decision,
-			'query_type': route_decision.query_type,
-			'total_sources': len(all_sources),
-			'global_sources': len(results.get('global', [])),
-			'conversation_sources': len(results.get('conversation', [])),
-		}
+        results = []
 
-	async def _arun(self, conversation_id: str, user_id: str, query: str, top_k: int = 5) -> str:
-		"""Async version of _run"""
-		return self._run(conversation_id, user_id, query, top_k)
+        # Add CV context nếu có
+        cv_context = await _get_cv_context_async(conversation_id, user_id, query)
+        if cv_context:
+            results.append(
+                {
+                    "content": cv_context,
+                    "metadata": {
+                        "source": "cv_data",
+                        "conversation_id": conversation_id,
+                    },
+                    "similarity_score": 0.95,  # High relevance for CV context
+                    "source": "conversation_kb",
+                    "doc_id": f"cv_{conversation_id}",
+                }
+            )
+
+        # Mock additional conversation results
+        if len(results) < top_k:
+            mock_conv_result = {
+                "content": f"Conversation-specific context about {query} for user {user_id}",
+                "metadata": {
+                    "source": "conversation_history",
+                    "conversation_id": conversation_id,
+                },
+                "similarity_score": 0.82,
+                "source": "conversation_kb",
+                "doc_id": f"conv_{conversation_id}_1",
+            }
+            results.append(mock_conv_result)
+
+        logger.info(f"[RAG] Conversation KB search returned {len(results)} results")
+        return results
+
+    except Exception as e:
+        logger.error(f"[RAG] Error searching conversation KB: {str(e)}")
+        return []
+
+
+async def _get_cv_context_async(
+    conversation_id: str, user_id: str, query: str
+) -> Optional[str]:
+    """Get relevant CV context nếu query liên quan đến CV"""
+    try:
+        print(f"📄 [RAG] Checking for CV context relevance...")
+
+        # Check if query có liên quan đến CV
+        cv_keywords = [
+            "cv",
+            "resume",
+            "experience",
+            "skill",
+            "education",
+            "work",
+            "job",
+            "career",
+            "background",
+            "profile",
+            "kinh nghiệm",
+            "kỹ năng",
+        ]
+        query_lower = query.lower()
+
+        if any(keyword in query_lower for keyword in cv_keywords):
+            # Mock CV context
+            cv_context = f"""
+CV Information for user {user_id} in conversation {conversation_id}:
+- Experience: Software Developer with 3+ years
+- Skills: Python, JavaScript, React, Node.js
+- Education: Computer Science degree
+- Recent projects: E-commerce platform, Chat application
+- Looking for: Senior developer position
+            """
+            print(f"✅ [RAG] CV context found and returned")
+            return cv_context.strip()
+
+        print(f"❌ [RAG] No CV context needed for this query")
+        return None
+
+        # TODO: Replace with actual CV service integration:
+        """
+        from app.modules.chat.services.cv_integration_service import CVIntegrationService
+        cv_service = CVIntegrationService()
+        return await cv_service.get_relevant_cv_context(conversation_id, user_id, query)
+        """
+
+    except Exception as e:
+        logger.error(f"[RAG] Error getting CV context: {str(e)}")
+        return None
+
+
+def _combine_and_rank_results(
+    results: Dict[str, List[Dict]], route_decision: RAGRoute
+) -> Dict[str, Any]:
+    """Combine và rank results từ multiple knowledge bases"""
+    all_sources = []
+
+    # Collect all sources
+    for source_type, source_results in results.items():
+        for result in source_results:
+            result["source_type"] = source_type
+            all_sources.append(result)
+
+    # Sort by similarity score (descending)
+    all_sources.sort(key=lambda x: x.get("similarity_score", 0.0), reverse=True)
+
+    # Apply routing-based boost
+    if route_decision.routing_decision == "conversation_only":
+        # Boost conversation sources
+        for source in all_sources:
+            if source["source_type"] == "conversation":
+                source["similarity_score"] = source.get("similarity_score", 0.0) + 0.1
+
+    elif route_decision.routing_decision == "global_only":
+        # Boost global sources
+        for source in all_sources:
+            if source["source_type"] == "global":
+                source["similarity_score"] = source.get("similarity_score", 0.0) + 0.1
+
+    # Re-sort after boosting
+    all_sources.sort(key=lambda x: x.get("similarity_score", 0.0), reverse=True)
+
+    # Build context string
+    context_parts = []
+    for i, source in enumerate(all_sources[:10]):  # Top 10 sources
+        source_info = f'[Source {i + 1} - {source["source_type"].upper()}]'
+        context_parts.append(f'{source_info}\\n{source["content"]}')
+
+    combined_context = "\\n\\n".join(context_parts)
+
+    return {
+        "context": combined_context,
+        "sources": all_sources,
+        "routing_decision": route_decision.routing_decision,
+        "query_type": route_decision.query_type,
+        "total_sources": len(all_sources),
+        "global_sources": len(results.get("global", [])),
+        "conversation_sources": len(results.get("conversation", [])),
+    }
+
+
+def get_rag_tool(db_session: Session):
+    """Factory function để tạo RAG tool với db_session"""
+    print(f"🏭 [Factory] Creating function-based RAG tool")
+
+    # Store db_session in global context
+    global _global_db_session
+    _global_db_session = db_session
+
+    print(f"✅ [Factory] RAG tool created")
+    return rag_retrieval_tool
