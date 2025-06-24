@@ -10,7 +10,7 @@ class QuestionGenerationWorkflowConfig(BaseModel):
 	"""Configuration for question generation workflow"""
 
 	# Model settings
-	model_name: str = 'gemini-2.0-flash'
+	model_name: str = 'gemini-2.0-flash-lite'
 	temperature: float = 0.7
 	max_tokens: int = 10000
 

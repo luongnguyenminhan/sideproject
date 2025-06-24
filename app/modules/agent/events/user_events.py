@@ -34,7 +34,7 @@ def handle_user_created_event(user_id: str, email: str, username: str, **kwargs)
 			'user_id': user_id,  # Associate agent with user
 			'is_active': True,
 			'model_provider': ModelProvider.GOOGLE,
-			'model_name': 'gemini-2.0-flash',
+			'model_name': 'gemini-2.0-flash-lite',
 			'temperature': 0.7,
 			'max_tokens': 2048,
 			'default_system_prompt': """Bạn là Enterview AI Assistant - Trợ lý thông minh của Enterview, công cụ AI hỗ trợ người dùng khám phá bản thân và trong việc tìm kiếm việc làm.

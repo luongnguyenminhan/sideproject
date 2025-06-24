@@ -64,7 +64,7 @@ class RAGAgentGraph:
 		try:
 			logger.info(f'{LogColors.OKCYAN}[RAGAgentGraph] Initializing ChatGoogleGenerativeAI for agent workflow{LogColors.ENDC}')
 			self.llm = ChatGoogleGenerativeAI(
-				model='gemini-2.0-flash',
+				model='gemini-2.0-flash-lite',
 				google_api_key=GOOGLE_API_KEY,
 				temperature=0.7,
 				convert_system_message_to_human=True,
