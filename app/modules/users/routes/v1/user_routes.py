@@ -138,8 +138,7 @@ async def delete_user(
 	"""
 	Delete a user by ID (soft delete)
 
-	This endpoint sets the is_deleted field of a user to True, rather than actually removing
-	the record from the database.
+	This endpoint sets the is_deleted field of a user to True.
 	"""
 	# You could add permission check here, e.g., only admins can delete users
 	success = repo.delete_user(user_id)
