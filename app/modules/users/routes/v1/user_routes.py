@@ -1,6 +1,6 @@
 import json
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 
 from app.core.base_model import APIResponse, PagingInfo
 from app.enums.base_enums import BaseErrorCode
@@ -125,4 +125,27 @@ async def update_current_user_profile(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=UserResponse.model_validate(updated_user),
+	)
+
+
+@route.delete('/{user_id}', response_model=APIResponse)
+@handle_exceptions
+async def delete_user(
+	user_id: str = Path(..., description='The ID of the user to delete'),
+	current_user_payload: dict = Depends(get_current_user),
+	repo: UserRepo = Depends(),
+):
+	"""
+	Delete a user by ID (soft delete)
+
+	This endpoint sets the is_deleted field of a user to True, rather than actually removing
+	the record from the database.
+	"""
+	# You could add permission check here, e.g., only admins can delete users
+	success = repo.delete_user(user_id)
+
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('operation_successful'),
+		data={"deleted": success},
 	)

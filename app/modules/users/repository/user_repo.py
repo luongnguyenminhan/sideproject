@@ -93,6 +93,36 @@ class UserRepo(BaseRepo):
 		except Exception as ex:
 			raise ex
 
+	def delete_user(self, user_id: str) -> bool:
+		"""
+		Soft delete a user by setting is_deleted to True
+
+		Args:
+		    user_id: The ID of the user to delete
+
+		Returns:
+		    True if the user was successfully deleted, False otherwise
+		"""
+		try:
+			user = self.user_dal.get_by_id(user_id)
+			if not user:
+				raise CustomHTTPException(message=_('user_not_found'))
+
+			# Set is_deleted to True instead of actually deleting the record
+			user.is_deleted = True
+
+			with self.user_logs_dal.transaction():
+				self._log_user_action(
+					str(user.id),
+					'deleted_user',
+					'User was soft deleted successfully',
+				)
+
+			self.db.commit()
+			return True
+		except Exception as ex:
+			raise ex
+
 	def _log_user_action(self, user_id: str, action: str, details: str):
 		"""Log user action
 
