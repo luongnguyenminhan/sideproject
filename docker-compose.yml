@@ -10,7 +10,7 @@ services:
       - "11111:8000"
     volumes:
       - .:/app
-      - audio_data:/data/audio 
+      - cv_data:/temp_cvs
       - /home/configCompose/client-secret.json:/app/app/core/client-secret.json
     environment:
       - ENV=development
@@ -109,6 +109,6 @@ networks:
 
 volumes:
   minio-data:
-  audio_data:  # Add new volume for audio files
+  cv_data: 
   # qdrant-data:  # Add volume for QdrantDB storage
 

@@ -10,7 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - audio_data:/data/audio 
+      - cv_data:/temp_cvs
     environment:
       - ENV=development
       - RUN_TESTS=false  
@@ -124,6 +124,6 @@ networks:
 
 volumes:
   minio-data:
-  audio_data:  # Add new volume for audio files
+  cv_data:  # Add new volume for CV files
   qdrant-data:  # Add volume for QdrantDB storage
 

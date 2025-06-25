@@ -41,19 +41,11 @@ async def process_cv(
 @route.post("/process-file", response_model=APIResponse)
 async def process_cv_binary(
     file: UploadFile = File(...),
-    checksum: str = Header(...),
     cv_repo: CVRepository = Depends(CVRepository),
 ):
     """
     Xử lý file CV từ binary upload.
     """
-    # Validate checksum
-    if checksum != FERNET_KEY:
-        return APIResponse(
-            error_code=1,
-            message=_("checksum_invalid"),
-            data=None,
-        )
 
     # Validate file type
     if not file.filename or not file.filename.lower().endswith(
