@@ -1,7 +1,5 @@
 import aiohttp
-import aiofiles  # type: ignore
 import uuid
-import os
 from app.core.base_model import APIResponse
 from app.middleware.translation_manager import _
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
@@ -10,8 +8,8 @@ from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 class CVRepository:
 	async def process_cv(self, request: ProcessCVRequest) -> APIResponse:
 		# DOWNLOAD CV FROM URL
-		file_path = await self._download_file(request.cv_file_url)
-		if not file_path:
+		file_content, filename = await self._download_file_content(request.cv_file_url)
+		if not file_content:
 			return APIResponse(
 				error_code=1,
 				message=_('failed_to_download_file'),
@@ -20,7 +18,7 @@ class CVRepository:
 
 		# SEND FILE TO N8N API FOR ANALYSIS
 		try:
-			result = await self._send_file_to_api(file_path)
+			result = await self._send_file_content_to_api(file_content, filename)
 			if not result:
 				return APIResponse(
 					error_code=1,
@@ -33,10 +31,6 @@ class CVRepository:
 				message=_('error_analyzing_cv'),
 				data=None,
 			)
-		finally:
-			# Clean up the downloaded file
-			if os.path.exists(file_path):
-				os.remove(file_path)
 
 		return APIResponse(
 			error_code=0,
@@ -49,37 +43,21 @@ class CVRepository:
 
 	async def process_cv_binary(self, request: ProcessCVRequest, file_content: bytes, filename: str) -> APIResponse:
 		"""Process CV from binary file content"""
-		print("[process_cv_binary] Start processing binary file content.")
-		# Save binary content to temporary file
-		temp_dir = 'temp_cvs'
-		if not os.path.exists(temp_dir):
-			print(f"[process_cv_binary] Creating temp directory: {temp_dir}")
-			os.makedirs(temp_dir)
-
-		# Generate unique filename
-		file_extension = filename.split('.')[-1].lower()
-		unique_filename = f'cv_{uuid.uuid4()}.{file_extension}'
-		file_path = os.path.join(temp_dir, unique_filename)
-		print(f"[process_cv_binary] Generated file path: {file_path}")
+		print('[process_cv_binary] Start processing binary file content.')
 
 		try:
-			# Write binary content to file
-			print(f"[process_cv_binary] Writing binary content to file: {file_path}")
-			async with aiofiles.open(file_path, 'wb') as f:
-				await f.write(file_content)
-			print(f"[process_cv_binary] Saved binary content to: {file_path}")
-			# SEND FILE TO N8N API FOR ANALYSIS
-			print(f"[process_cv_binary] Sending file to N8N API for analysis: {file_path}")
-			result = await self._send_file_to_api(file_path)
+			# SEND FILE TO N8N API FOR ANALYSIS directly
+			print(f'[process_cv_binary] Sending file to N8N API for analysis: {filename}')
+			result = await self._send_file_content_to_api(file_content, filename)
 			if not result:
-				print("[process_cv_binary] Error analyzing CV: result is None")
+				print('[process_cv_binary] Error analyzing CV: result is None')
 				return APIResponse(
 					error_code=1,
 					message=_('error_analyzing_cv'),
 					data=None,
 				)
 
-			print("[process_cv_binary] CV processed successfully.")
+			print('[process_cv_binary] CV processed successfully.')
 			return APIResponse(
 				error_code=0,
 				message=_('cv_processed_successfully'),
@@ -90,24 +68,15 @@ class CVRepository:
 			)
 
 		except Exception as e:
-			print(f"[process_cv_binary] Exception occurred: {str(e)}")
+			print(f'[process_cv_binary] Exception occurred: {str(e)}')
 			return APIResponse(
 				error_code=1,
 				message=_('error_analyzing_cv'),
 				data=None,
 			)
-		finally:
-			# Clean up the temporary file
-			if os.path.exists(file_path):
-				print(f"[process_cv_binary] Removing temporary file: {file_path}")
-				os.remove(file_path)
 
-	async def _download_file(self, url: str) -> str | None:
-		temp_dir = 'temp_cvs'
-		if not os.path.exists(temp_dir):
-			os.makedirs(temp_dir)
-
-		# Extract file extension from the URL
+	async def _download_file_content(self, url: str) -> tuple[bytes | None, str]:
+		"""Download file content directly to memory without saving to disk"""
 		try:
 			# Try to get extension from URL
 			url_lower = url.lower()
@@ -123,36 +92,30 @@ class CVRepository:
 			file_extension = 'pdf'  # Default fallback
 
 		if file_extension not in ['pdf', 'docx', 'txt']:
-			return None
+			return None, ''
 
-		file_name = f'cv_{uuid.uuid4()}.{file_extension}'
-		file_path = os.path.join(temp_dir, file_name)
+		# Generate filename for API
+		filename = f'cv_{uuid.uuid4()}.{file_extension}'
 
 		try:
 			async with aiohttp.ClientSession() as session:
-				async with session.get(url, ssl=False) as response:  # Thêm ssl=False để bỏ qua SSL verification
+				async with session.get(url, ssl=False) as response:
 					if response.status == 200:
-						async with aiofiles.open(file_path, 'wb') as f:
-							await f.write(await response.read())
-						return file_path
+						file_content = await response.read()
+						return file_content, filename
 					else:
-						return None
+						return None, ''
 
 		except Exception as e:
-			return None
+			print(f'[_download_file_content] Error downloading file: {str(e)}')
+			return None, ''
 
-	async def _send_file_to_api(self, file_path: str) -> dict | None:
+	async def _send_file_content_to_api(self, file_content: bytes, filename: str) -> dict | None:
 		"""Send file binary data to N8N API for CV analysis"""
 		api_url = 'https://n8n.wc504.io.vn/webhook/888a07e8-25d6-4671-a36c-939a52740f31'
 		headers = {'X-Header-Authentication': 'n8ncvextraction'}
 
 		try:
-			async with aiofiles.open(file_path, 'rb') as f:
-				file_data = await f.read()
-
-			# Get filename from path
-			filename = os.path.basename(file_path)
-
 			# Determine content type based on file extension
 			file_extension = filename.split('.')[-1].lower()
 			content_type_map = {
@@ -164,11 +127,12 @@ class CVRepository:
 
 			# Create form data with the file
 			data = aiohttp.FormData()
-			data.add_field('file', file_data, filename=filename, content_type=content_type)
+			data.add_field('file', file_content, filename=filename, content_type=content_type)
 			print(f'[CVRepository] Sending file to N8N API: {filename}')
+
 			async with aiohttp.ClientSession() as session:
 				async with session.post(api_url, headers=headers, data=data, ssl=False) as response:
-					print(f'[CVRepository] N8N API response status: {response}')
+					print(f'[CVRepository] N8N API response status: {response.status}')
 					if response.status == 200:
 						result = await response.json()
 						return result
