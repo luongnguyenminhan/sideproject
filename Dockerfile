@@ -28,9 +28,9 @@ RUN apt-get update && \
 RUN addgroup --system appuser && \
     adduser --system --ingroup appuser appuser
 
-# Create audio data directory and set permissions
-RUN mkdir -p /data/audio && \
-    chmod -R 777 /data/audio
+# Create temporary CVs directory and set permissions
+RUN mkdir -p /temp_cvs && \
+    chmod -R 777 /temp_cvs
 
 RUN python -m venv venv
 
