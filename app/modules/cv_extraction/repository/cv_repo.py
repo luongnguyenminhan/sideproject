@@ -49,30 +49,37 @@ class CVRepository:
 
 	async def process_cv_binary(self, request: ProcessCVRequest, file_content: bytes, filename: str) -> APIResponse:
 		"""Process CV from binary file content"""
+		print("[process_cv_binary] Start processing binary file content.")
 		# Save binary content to temporary file
 		temp_dir = 'temp_cvs'
 		if not os.path.exists(temp_dir):
+			print(f"[process_cv_binary] Creating temp directory: {temp_dir}")
 			os.makedirs(temp_dir)
 
 		# Generate unique filename
 		file_extension = filename.split('.')[-1].lower()
 		unique_filename = f'cv_{uuid.uuid4()}.{file_extension}'
 		file_path = os.path.join(temp_dir, unique_filename)
+		print(f"[process_cv_binary] Generated file path: {file_path}")
 
 		try:
 			# Write binary content to file
+			print(f"[process_cv_binary] Writing binary content to file: {file_path}")
 			async with aiofiles.open(file_path, 'wb') as f:
 				await f.write(file_content)
-			print(f'[CVRepository] Saved binary content to: {file_path}')
+			print(f"[process_cv_binary] Saved binary content to: {file_path}")
 			# SEND FILE TO N8N API FOR ANALYSIS
+			print(f"[process_cv_binary] Sending file to N8N API for analysis: {file_path}")
 			result = await self._send_file_to_api(file_path)
 			if not result:
+				print("[process_cv_binary] Error analyzing CV: result is None")
 				return APIResponse(
 					error_code=1,
 					message=_('error_analyzing_cv'),
 					data=None,
 				)
 
+			print("[process_cv_binary] CV processed successfully.")
 			return APIResponse(
 				error_code=0,
 				message=_('cv_processed_successfully'),
@@ -83,6 +90,7 @@ class CVRepository:
 			)
 
 		except Exception as e:
+			print(f"[process_cv_binary] Exception occurred: {str(e)}")
 			return APIResponse(
 				error_code=1,
 				message=_('error_analyzing_cv'),
@@ -91,6 +99,7 @@ class CVRepository:
 		finally:
 			# Clean up the temporary file
 			if os.path.exists(file_path):
+				print(f"[process_cv_binary] Removing temporary file: {file_path}")
 				os.remove(file_path)
 
 	async def _download_file(self, url: str) -> str | None:
