@@ -127,7 +127,7 @@ class CVRepository:
 
 			# Create form data with the file
 			data = aiohttp.FormData()
-			data.add_field('file', file_content, filename=filename, content_type=content_type)
+			data.add_field('data', file_content, filename=filename, content_type=content_type)
 			print(f'[CVRepository] Sending file to N8N API: {filename}')
 
 			async with aiohttp.ClientSession() as session:
