@@ -1,5 +1,6 @@
+from typing import Optional
 from app.core.base_model import RequestSchema
 
 
 class ProcessCVRequest(RequestSchema):
-	cv_file_url: str
+    cv_file_url: Optional[str] = None
