@@ -63,7 +63,7 @@ class CVRepository:
 			# Write binary content to file
 			async with aiofiles.open(file_path, 'wb') as f:
 				await f.write(file_content)
-
+			print(f'[CVRepository] Saved binary content to: {file_path}')
 			# SEND FILE TO N8N API FOR ANALYSIS
 			result = await self._send_file_to_api(file_path)
 			if not result:
@@ -156,14 +156,17 @@ class CVRepository:
 			# Create form data with the file
 			data = aiohttp.FormData()
 			data.add_field('file', file_data, filename=filename, content_type=content_type)
-
+			print(f'[CVRepository] Sending file to N8N API: {filename}')
 			async with aiohttp.ClientSession() as session:
 				async with session.post(api_url, headers=headers, data=data, ssl=False) as response:
+					print(f'[CVRepository] N8N API response status: {response}')
 					if response.status == 200:
 						result = await response.json()
 						return result
 					else:
+						print(f'[CVRepository] N8N API error: {response.status}')
 						return None
 
 		except Exception as e:
+			print(f'[CVRepository] Error sending file to N8N API: {str(e)}')
 			return None
