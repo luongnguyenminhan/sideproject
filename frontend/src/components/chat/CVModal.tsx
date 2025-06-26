@@ -35,6 +35,7 @@ interface CVAnalysisResult {
   cv_file_url: string
   extracted_text: string
   cv_analysis_result: {
+    identified_sections?: string[]
     personal_information?: {
       full_name?: string
       email?: string
@@ -51,7 +52,7 @@ interface CVAnalysisResult {
         degree_name?: string
         major?: string
         graduation_date?: string
-        gpa?: string
+        gpa?: string | number
         relevant_courses?: string[]
         description?: string
       }>
@@ -70,11 +71,11 @@ interface CVAnalysisResult {
     skills_summary?: {
       items: Array<{
         skill_name?: string
-        proficiency_level?: string
+        proficiency_level?: string | number
         category?: string
       }>
     }
-    projects_showcase?: {
+    projects?: {
       items: Array<{
         project_name?: string
         description?: string
@@ -97,13 +98,12 @@ interface CVAnalysisResult {
     extracted_keywords?: {
       items: Array<{ keyword: string }>
     }
-    inferred_characteristics?: {
-      items: Array<{
-        characteristic_type?: string
-        statement?: string
-        evidence?: string[]
-      }>
-    }
+    keywords?: string[]
+    inferred_characteristics?: Array<{
+      characteristic_type?: string
+      statement?: string
+      evidence?: string[]
+    }>
     llm_token_usage?: {
       input_tokens?: number
       output_tokens?: number
@@ -144,16 +144,15 @@ export function CVModal({ isVisible, onClose, cvData }: CVModalProps) {
     experience_count,
     cv_analysis_result
   } = cvData
-
   const analysis = cv_analysis_result
   const personalInfo = analysis?.personal_information
   const skills = analysis?.skills_summary?.items || []
   const experiences = analysis?.work_experience_history?.items || []
   const education = analysis?.education_history?.items || []
   const certificates = analysis?.certificates_and_courses?.items || []
-  const projects = analysis?.projects_showcase?.items || []
-  const keywords = analysis?.extracted_keywords?.items || []
-  const characteristics = analysis?.inferred_characteristics?.items || []
+  const projects = analysis?.projects?.items || []
+  const keywords = analysis?.extracted_keywords?.items || analysis?.keywords || []
+  const characteristics = analysis?.inferred_characteristics || []
   const tokenUsage = analysis?.llm_token_usage
 
   return (
@@ -564,14 +563,13 @@ export function CVModal({ isVisible, onClose, cvData }: CVModalProps) {
                     <FontAwesomeIcon icon={faHashtag} className="mr-2 text-[color:var(--feature-blue)]" />
                     {t('cv.keywords') || 'Keywords'} ({keywords.length})
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {keywords.map((keyword, index) => (
+                  <div className="flex flex-wrap gap-2">                    {keywords.map((keyword, index) => (
                       <span
                         key={index}
                         className="bg-[color:var(--muted)] text-[color:var(--foreground)] px-3 py-1 rounded-full text-sm border border-[color:var(--border)] animate-fadeIn hover:bg-[color:var(--accent)] transition-all duration-200"
                         style={{ animationDelay: `${index * 30}ms` }}
                       >
-                        #{keyword.keyword}
+                        #{typeof keyword === 'string' ? keyword : keyword.keyword}
                       </span>
                     ))}
                   </div>

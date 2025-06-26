@@ -162,9 +162,9 @@ export interface CharacteristicItem {
 }
 
 export interface CVAnalysisResult {
+  identified_sections?: string[]
   raw_cv_content?: string
   processed_cv_text?: string
-  identified_sections?: unknown[]
   personal_information?: PersonalInformation
   education_history?: {
     items: EducationItem[]
@@ -175,7 +175,7 @@ export interface CVAnalysisResult {
   skills_summary?: {
     items: SkillItem[]
   }
-  projects_showcase?: {
+  projects?: {
     items: ProjectItem[]
   }
   certificates_and_courses?: {
@@ -189,9 +189,8 @@ export interface CVAnalysisResult {
   extracted_keywords?: {
     items: KeywordItem[]
   }
-  inferred_characteristics?: {
-    items: CharacteristicItem[]
-  }
+  inferred_characteristics?: CharacteristicItem[]
+  keywords?: string[]
   llm_token_usage?: {
     input_tokens?: number
     output_tokens?: number
