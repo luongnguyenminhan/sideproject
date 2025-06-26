@@ -134,7 +134,7 @@ class CVRepository:
 				async with session.post(api_url, headers=headers, data=data, ssl=False) as response:
 					print(f'[CVRepository] N8N API response status: {response.status}')
 					if response.status == 200:
-						result = await response.json()
+						result = await response.json()[0]
 						return result
 					else:
 						print(f'[CVRepository] N8N API error: {response.status}')

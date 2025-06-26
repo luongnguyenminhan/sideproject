@@ -81,7 +81,7 @@ class CVIntegrationService:
 			async with aiohttp.ClientSession() as session:
 				async with session.post(api_url, headers=headers, data=data, ssl=False) as response:
 					if response.status == 200:
-						result = await response.json()
+						result = await response.json()[0]
 						return result
 					else:
 						logger.error(f'N8N API HTTP error: {response.status}')
