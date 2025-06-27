@@ -44,11 +44,8 @@ QUYẾT ĐỊNH "use_tools" KHI:
 - Yêu cầu tạo, lưu, hoặc cập nhật dữ liệu
 
 QUYẾT ĐỊNH "no_tools" KHI:
-- Câu hỏi chung về tư vấn nghề nghiệp
 - Trò chuyện thông thường
 - Giải thích khái niệm, định nghĩa
-- Câu hỏi về kinh nghiệm cá nhân
-- Chỉ cần thông tin từ context đã có
 
 Hãy phân tích kỹ yêu cầu và đưa ra quyết định chính xác."""
 
