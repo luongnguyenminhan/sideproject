@@ -56,6 +56,7 @@ class CVIntegrationService:
 
 			# Call N8N API using unified client
 			result = await n8n_client.analyze_cv(file_content, file_name)
+			print(f'[CVIntegrationService] Result from N8N API: {result}')
 			logger.info(f'[CVIntegrationService] CV analysis completed for: {file_name}')
 
 			return result
