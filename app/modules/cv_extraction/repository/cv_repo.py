@@ -51,6 +51,9 @@ class CVRepo:
 			logger.info('[CVRepo] CV processed successfully via N8N API')
 			return self._build_success_response(result, request.cv_file_url)
 
+		except ValidationException as e:
+			logger.error(f'[CVRepo] Validation error processing CV: {str(e)}')
+			raise
 		except Exception as e:
 			logger.error(f'[CVRepo] Error processing CV: {str(e)}')
 			return APIResponse(
@@ -73,6 +76,9 @@ class CVRepo:
 			logger.info('[CVRepo] Binary CV processed successfully via N8N API')
 			return self._build_success_response(result, filename=filename)
 
+		except ValidationException as e:
+			logger.error(f'[CVRepo] Validation error processing binary CV: {str(e)}')
+			raise
 		except Exception as e:
 			logger.error(f'[CVRepo] Error processing binary CV: {str(e)}')
 			return APIResponse(
@@ -109,8 +115,15 @@ class CVRepo:
 				data=response_data,
 			)
 
-		except Exception as e:
+		except (ValueError, KeyError) as e:
 			logger.error(f'[CVRepo] Error building response: {str(e)}')
+			return APIResponse(
+				error_code=1,
+				message=_('error_processing_cv_response'),
+				data=None,
+			)
+		except Exception as e:
+			logger.error(f'[CVRepo] Unexpected error building response: {str(e)}')
 			return APIResponse(
 				error_code=1,
 				message=_('error_processing_cv_response'),

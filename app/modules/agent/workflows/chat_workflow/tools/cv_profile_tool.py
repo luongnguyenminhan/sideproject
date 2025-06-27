@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.modules.chat.dal.conversation_dal import ConversationDAL
 from app.modules.cv_extraction.repository.cv_repo import CVRepo
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
+from app.exceptions.exception import ValidationException
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +58,7 @@ def get_cv_profile_tool(db_session: Session):
 			# Merge with existing metadata
 			existing_metadata = {}
 			if conversation.extra_metadata:
-				try:
-					existing_metadata = json.loads(conversation.extra_metadata)
-				except json.JSONDecodeError:
-					existing_metadata = {}
+				existing_metadata = json.loads(conversation.extra_metadata)
 
 			existing_metadata.update(cv_data)
 
@@ -70,6 +68,12 @@ def get_cv_profile_tool(db_session: Session):
 
 			return 'CV profile updated successfully in conversation metadata'
 
+		except ValidationException as e:
+			logger.error(f'Validation error updating CV profile: {e}')
+			return f'Validation error: {str(e)}'
+		except json.JSONDecodeError as e:
+			logger.error(f'JSON decode error updating CV profile: {e}')
+			return f'Error parsing conversation metadata: {str(e)}'
 		except Exception as e:
 			logger.error(f'Error updating CV profile: {e}')
 			return f'Error updating CV profile: {str(e)}'
