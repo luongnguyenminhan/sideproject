@@ -1,4 +1,5 @@
 import type { RequestSchema, FilterableRequestSchema } from './common.type'
+import { Question } from './question.types'
 
 // ============================================
 // MESSAGE TYPES
@@ -248,7 +249,7 @@ export interface WebSocketOptions {
 }
 
 export interface WebSocketResponse {
-  type: 'user_message' | 'assistant_message_chunk' | 'assistant_message_complete' | 'assistant_typing' | 'error' | 'pong'
+  type: 'user_message' | 'assistant_message_chunk' | 'assistant_message_complete' | 'assistant_typing' | 'error' | 'pong' | 'survey_data'
   message?: {
     id?: string
     content: string
@@ -261,6 +262,9 @@ export interface WebSocketResponse {
   is_final?: boolean
   status?: boolean
   error?: string
+  data?: Question[] // For survey_data messages
+  conversation_id?: string
+  timestamp?: string
 }
 
 export interface ChatWebSocketMessage extends RequestSchema {
@@ -313,6 +317,7 @@ export interface Message {
   model_used?: string
   response_time_ms?: string
   file_attachments?: string[]
+  survey_data?: Question[] // For survey questions from N8N API
 }
 
 export interface UploadedFile {

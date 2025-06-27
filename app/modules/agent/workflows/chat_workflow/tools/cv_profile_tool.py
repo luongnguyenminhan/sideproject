@@ -9,7 +9,7 @@ from datetime import datetime
 from langchain_core.tools import tool
 from sqlalchemy.orm import Session
 from app.modules.chat.dal.conversation_dal import ConversationDAL
-from app.modules.cv_extraction.repository.cv_repo import CVRepository
+from app.modules.cv_extraction.repository.cv_repo import CVRepo
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def get_cv_profile_tool(db_session: Session):
     """Factory function to create CV profile tool"""
     conversation_dal = ConversationDAL(db_session)
-    cv_repo = CVRepository()
+    cv_repo = CVRepo(db_session)
 
     @tool(return_direct=False)
     def update_cv_profile(conversation_id: str, cv_file_url: str) -> str:

@@ -32,6 +32,7 @@ class ConversationWorkflowRepo:
 		user_message: str,
 		conversation_system_prompt: str = None,
 		conversation_history: List[Dict[str, Any]] = None,
+		authorization_token: str = None,
 	) -> Dict[str, Any]:
 		"""Execute optimized chat workflow using cached services"""
 		logger.info(f'execute_chat_workflow - Starting for conversation: {conversation_id}')
@@ -53,6 +54,7 @@ class ConversationWorkflowRepo:
 				user_message=user_message,
 				conversation_system_prompt=combined_system_prompt,
 				conversation_history=conversation_history or [],
+				authorization_token=authorization_token,
 			)
 
 			logger.info('Chat workflow executed successfully')

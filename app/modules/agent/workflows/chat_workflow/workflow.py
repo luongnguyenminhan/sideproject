@@ -104,12 +104,15 @@ class Workflow:
 
 		# Get tools
 		tools = get_tools(self.config)
+		
+		# Store tools for runtime updates
+		self._tools = tools
 		tool_node = ToolNode(tools)
 
 		# Add nodes
 		workflow.add_node('agent', self._agent_node)
 		workflow.add_node('tool_decision', self._tool_decision_node)
-		workflow.add_node('tools', lambda state, config=None: tool_node.invoke(state, config or {}))
+		workflow.add_node('tools', self._tools_node)
 
 		# Set entry point
 		workflow.set_entry_point('agent')
@@ -126,6 +129,19 @@ class Workflow:
 		# Compile with memory
 		checkpointer = MemorySaver()
 		return workflow.compile(checkpointer=checkpointer)
+
+	async def _tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+		"""Tools node with runtime authorization token update"""
+		# Update QuestionComposer tool with authorization token if available
+		auth_token = config.get('configurable', {}).get('authorization_token')
+		if auth_token:
+			for tool in self._tools:
+				if hasattr(tool, 'set_authorization_token'):
+					tool.set_authorization_token(auth_token)
+		
+		# Execute tools
+		tool_node = ToolNode(self._tools)
+		return await tool_node.ainvoke(state, config or {})
 
 	async def _agent_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Main Agent Node with RAG context - generates response without deciding on tools"""

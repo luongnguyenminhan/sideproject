@@ -111,6 +111,7 @@ class ChatRepo:
 		user_message: str,
 		api_key: str = None,
 		user_id: str = None,
+		authorization_token: str = None,
 	) -> dict:
 		"""Get AI response using Agent system"""
 
@@ -152,6 +153,7 @@ class ChatRepo:
 				user_message=user_message,
 				conversation_system_prompt=conversation_system_prompt,
 				conversation_history=conversation_history,
+				authorization_token=authorization_token,
 			)
 
 			return result

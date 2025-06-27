@@ -117,6 +117,7 @@ class LangGraphService(object):
 		user_message: str,
 		conversation_system_prompt: str = None,
 		conversation_history: List[Dict[str, Any]] = None,
+		authorization_token: str = None,
 	) -> Dict[str, Any]:
 		"""Execute conversation using basic workflow with Agentic RAG"""
 		start_time = time.time()
@@ -141,6 +142,10 @@ class LangGraphService(object):
 					'system_prompt': system_prompt,
 				}
 			}
+			
+			# Add authorization token if provided
+			if authorization_token:
+				config['configurable']['authorization_token'] = authorization_token
 
 			workflow_input = {'messages': messages}
 

@@ -172,6 +172,27 @@ export function ChatClientWrapper() {
         }))
         break
 
+      case 'survey_data':
+        console.log('[ChatClientWrapper] Received survey data:', message.data)
+        // Handle survey data from N8N API
+        if (message.data && Array.isArray(message.data)) {
+          // Add survey message to chat
+          const surveyMessage: Message = {
+            id: `survey_${Date.now()}`,
+            content: '📋 Survey questions generated! Please complete the survey below.',
+            role: 'assistant',
+            timestamp: new Date(),
+            survey_data: message.data // Store the survey questions
+          }
+          
+          setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, surveyMessage],
+            isTyping: false
+          }))
+        }
+        break
+
       case 'pong':
         console.log('[ChatClientWrapper] Received pong from server')
         break

@@ -98,6 +98,17 @@ async def websocket_chat_endpoint(
         # Get token from query parameters
         query_params = dict(websocket.query_params)
         token = query_params.get("token")
+        
+        # Get authorization token for N8N API from headers or query params
+        authorization_token = None
+        if hasattr(websocket, 'headers'):
+            authorization_header = websocket.headers.get('authorization')
+            if authorization_header and authorization_header.startswith('Bearer '):
+                authorization_token = authorization_header[7:]  # Remove 'Bearer ' prefix
+        
+        # Fallback to query parameter if header not available
+        if not authorization_token:
+            authorization_token = query_params.get("authorization_token")
 
         # Verify WebSocket token
         try:
@@ -203,6 +214,7 @@ async def websocket_chat_endpoint(
                             user_message=content,
                             api_key=api_key,
                             user_id=user_id,
+                            authorization_token=authorization_token,
                         )
 
                         # Create AI message in database
@@ -391,10 +403,10 @@ async def upload_cv_for_chat(
         cv_file_url = minio_handler.get_file_url(object_path, expires=3600)
 
         # Use cv_extraction module for CV processing
-        from app.modules.cv_extraction.repository.cv_repo import CVRepository
+        from app.modules.cv_extraction.repository.cv_repo import CVRepo
         from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
 
-        cv_repo = CVRepository()
+        cv_repo = CVRepo(db)
         cv_request = ProcessCVRequest(cv_file_url=cv_file_url)
         cv_result = await cv_repo.process_cv(cv_request)
 

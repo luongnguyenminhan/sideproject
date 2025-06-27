@@ -35,6 +35,12 @@ def get_tools(config: Dict[str, Any] = None) -> List:
 
 			print(f'❓ [BasicTools] Creating QuestionComposer tool')
 			question_composer_tool = get_question_composer_tool(db_session=config.db_session)
+			
+			# Set authorization token from config if available
+			if hasattr(config, 'authorization_token') and config.authorization_token:
+				question_composer_tool.set_authorization_token(config.authorization_token)
+				print(f'🔑 [BasicTools] Authorization token set for QuestionComposer tool')
+			
 			print(f'✅ [BasicTools] QuestionComposer tool created')
 
 			basic_tools.extend([rag_tool, question_composer_tool])

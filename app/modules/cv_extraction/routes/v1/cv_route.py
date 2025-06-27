@@ -4,7 +4,7 @@ from app.core.base_model import APIResponse
 from app.core.config import FERNET_KEY
 from app.middleware.translation_manager import _
 from app.modules.cv_extraction.schemas.cv import ProcessCVRequest
-from app.modules.cv_extraction.repository.cv_repo import CVRepository
+from app.modules.cv_extraction.repository.cv_repo import CVRepo
 
 
 route = APIRouter(prefix='/cv', tags=['CV'])
@@ -21,7 +21,7 @@ async def get_user_info():
 @route.post('/process', response_model=APIResponse)
 async def process_cv(
 	request: ProcessCVRequest,
-	cv_repo: CVRepository = Depends(CVRepository),
+	cv_repo: CVRepo = Depends(CVRepo),
 ):
 	"""
 	Xử lý file CV từ URL.
@@ -41,7 +41,7 @@ async def process_cv(
 @route.post('/process-file', response_model=APIResponse)
 async def process_cv_binary(
 	file: UploadFile = File(...),
-	cv_repo: CVRepository = Depends(CVRepository),
+	cv_repo: CVRepo = Depends(CVRepo),
 ):
 	"""
 	Xử lý file CV từ binary upload.

@@ -1,171 +1,121 @@
-import aiohttp
-import uuid
+import logging
+from typing import Optional, Dict, Any
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
 from app.core.base_model import APIResponse
+from app.core.database import get_db
 from app.middleware.translation_manager import _
 from app.modules.cv_extraction.schemas.cv import (
     ProcessCVRequest,
     CVAnalysisResult,
     ProcessCVResponse,
 )
+from app.utils.n8n_api_client import n8n_client
+from app.exceptions.exception import ValidationException
+
+logger = logging.getLogger(__name__)
 
 
-class CVRepository:
+class CVRepo:
+    """
+    CV Repository for handling CV processing operations using N8N API client.
+    Follows 3-layer architecture - repository layer for business logic.
+    """
+    
+    def __init__(self, db: Session = Depends(get_db)):
+        self.db = db
+        logger.info("[CVRepo] Initialized CV repository")
     async def process_cv(self, request: ProcessCVRequest) -> APIResponse:
-        # DOWNLOAD CV FROM URL
-        file_content, filename = await self._download_file_content(request.cv_file_url)
-        if not file_content:
-            return APIResponse(
-                error_code=1,
-                message=_("failed_to_download_file"),
-                data=None,
-            )
-
-        # SEND FILE TO N8N API FOR ANALYSIS
+        """Process CV from URL using N8N API client"""
+        logger.info(f"[CVRepo] Processing CV from URL: {request.cv_file_url}")
+        
+        if not request.cv_file_url:
+            raise ValidationException(_("cv_file_url_required"))
+        
         try:
-            result = await self._send_file_content_to_api(file_content, filename)
-            if not result:
+            # Download CV file using N8N client helper
+            file_content, filename = await n8n_client.download_file_content(request.cv_file_url)
+            if not file_content:
+                logger.error("[CVRepo] Failed to download CV file")
                 return APIResponse(
                     error_code=1,
-                    message=_("error_analyzing_cv"),
+                    message=_("failed_to_download_file"),
                     data=None,
                 )
+
+            # Analyze CV using N8N client
+            result = await n8n_client.analyze_cv(file_content, filename)
+            
+            logger.info("[CVRepo] CV processed successfully via N8N API")
+            return self._build_success_response(result, request.cv_file_url)
+            
         except Exception as e:
+            logger.error(f"[CVRepo] Error processing CV: {str(e)}")
             return APIResponse(
                 error_code=1,
                 message=_("error_analyzing_cv"),
                 data=None,
             )
-        return APIResponse(
-            error_code=0,
-            message=_("cv_processed_successfully"),
-            data=ProcessCVResponse(
-                cv_file_url=request.cv_file_url,
-                cv_analysis_result=CVAnalysisResult(**result),
-                personal_info=result.get("personal_information"),
-                skills_count=len(result.get("skills_summary", {}).get("items", [])),
-                experience_count=len(
-                    result.get("work_experience_history", {}).get("items", [])
-                ),
-                cv_summary=result.get("cv_summary"),
-            ),
-        )
 
     async def process_cv_binary(
         self, request: ProcessCVRequest, file_content: bytes, filename: str
     ) -> APIResponse:
-        """Process CV from binary file content"""
-        print("[process_cv_binary] Start processing binary file content.")
+        """Process CV from binary file content using N8N API client"""
+        logger.info(f"[CVRepo] Processing binary CV file: {filename}")
+        
+        if not file_content or not filename:
+            raise ValidationException(_("invalid_file_content_or_filename"))
+        
         try:
-            # SEND FILE TO N8N API FOR ANALYSIS directly
-            print(
-                f"[process_cv_binary] Sending file to N8N API for analysis: {filename}"
-            )
-            result = await self._send_file_content_to_api(file_content, filename)
-            if not result:
-                print("[process_cv_binary] Error analyzing CV: result is None")
-                return APIResponse(
-                    error_code=1,
-                    message=_("error_analyzing_cv"),
-                    data=None,
-                )
-
-            print("[process_cv_binary] CV processed successfully.")
-            return APIResponse(
-                error_code=0,
-                message=_("cv_processed_successfully"),
-                data=ProcessCVResponse(
-                    filename=filename,
-                    cv_analysis_result=CVAnalysisResult(**result),
-                    personal_info=result.get("personal_information"),
-                    skills_count=len(result.get("skills_summary", {}).get("items", [])),
-                    experience_count=len(
-                        result.get("work_experience_history", {}).get("items", [])
-                    ),
-                    cv_summary=result.get("cv_summary"),
-                ),
-            )
-
+            # Analyze CV using N8N client
+            result = await n8n_client.analyze_cv(file_content, filename)
+            
+            logger.info("[CVRepo] Binary CV processed successfully via N8N API")
+            return self._build_success_response(result, filename=filename)
+            
         except Exception as e:
-            print(f"[process_cv_binary] Exception occurred: {str(e)}")
+            logger.error(f"[CVRepo] Error processing binary CV: {str(e)}")
             return APIResponse(
                 error_code=1,
                 message=_("error_analyzing_cv"),
                 data=None,
             )
 
-    async def _download_file_content(self, url: str) -> tuple[bytes | None, str]:
-        """Download file content directly to memory without saving to disk"""
+    def _build_success_response(
+        self, 
+        result: Dict[str, Any], 
+        cv_file_url: Optional[str] = None, 
+        filename: Optional[str] = None
+    ) -> APIResponse:
+        """Build success response from N8N API result"""
         try:
-            # Try to get extension from URL
-            url_lower = url.lower()
-            if ".pdf" in url_lower:
-                file_extension = "pdf"
-            elif ".docx" in url_lower:
-                file_extension = "docx"
-            elif ".txt" in url_lower:
-                file_extension = "txt"
-            else:
-                file_extension = "pdf"  # Default to PDF
-        except:
-            file_extension = "pdf"  # Default fallback
-
-        if file_extension not in ["pdf", "docx", "txt"]:
-            return None, ""
-
-        # Generate filename for API
-        filename = f"cv_{uuid.uuid4()}.{file_extension}"
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, ssl=False) as response:
-                    if response.status == 200:
-                        file_content = await response.read()
-                        return file_content, filename
-                    else:
-                        return None, ""
-
+            # Extract data with safe defaults
+            skills_items = result.get("skills_summary", {}).get("items", [])
+            experience_items = result.get("work_experience_history", {}).get("items", [])
+            
+            response_data = ProcessCVResponse(
+                cv_file_url=cv_file_url,
+                filename=filename,
+                cv_analysis_result=CVAnalysisResult(**result),
+                personal_info=result.get("personal_information"),
+                skills_count=len(skills_items) if isinstance(skills_items, list) else 0,
+                experience_count=len(experience_items) if isinstance(experience_items, list) else 0,
+                cv_summary=result.get("cv_summary"),
+            )
+            
+            return APIResponse(
+                error_code=0,
+                message=_("cv_processed_successfully"),
+                data=response_data,
+            )
+            
         except Exception as e:
-            print(f"[_download_file_content] Error downloading file: {str(e)}")
-            return None, ""
-
-    async def _send_file_content_to_api(
-        self, file_content: bytes, filename: str
-    ) -> dict | None:
-        """Send file binary data to N8N API for CV analysis"""
-        api_url = "https://n8n.wc504.io.vn/webhook/888a07e8-25d6-4671-a36c-939a52740f31"
-        headers = {"X-Header-Authentication": "n8ncvextraction"}
-
-        try:
-            # Determine content type based on file extension
-            file_extension = filename.split(".")[-1].lower()
-            content_type_map = {
-                "pdf": "application/pdf",
-                "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "txt": "text/plain",
-            }
-            content_type = content_type_map.get(
-                file_extension, "application/octet-stream"
+            logger.error(f"[CVRepo] Error building response: {str(e)}")
+            return APIResponse(
+                error_code=1,
+                message=_("error_processing_cv_response"),
+                data=None,
             )
 
-            # Create form data with the file
-            data = aiohttp.FormData()
-            data.add_field(
-                "data", file_content, filename=filename, content_type=content_type
-            )
-            print(f"[CVRepository] Sending file to N8N API: {filename}")
 
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    api_url, headers=headers, data=data, ssl=False
-                ) as response:
-                    print(f"[CVRepository] N8N API response status: {response.status}")
-                    if response.status == 200:
-                        result = await response.json()
-                        return result[0]
-                    else:
-                        print(f"[CVRepository] N8N API error: {response.status}")
-                        return None
-
-        except Exception as e:
-            print(f"[CVRepository] Error sending file to N8N API: {str(e)}")
-            return None

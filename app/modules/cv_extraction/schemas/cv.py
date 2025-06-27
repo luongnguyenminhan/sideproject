@@ -125,6 +125,7 @@ class CVAnalysisResult(BaseModel):
 
 
 class ProcessCVResponse(BaseModel):
+    filename: Optional[str] = None
     file_path: Optional[str] = None
     cv_file_url: Optional[str] = None
     extracted_text: Optional[str] = None

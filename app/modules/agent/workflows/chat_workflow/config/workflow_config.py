@@ -21,6 +21,9 @@ class WorkflowConfig:
 	max_tokens: int = 10000
 	api_key: Optional[str] = None
 
+	# Authorization token for N8N API calls
+	authorization_token: Optional[str] = None
+
 	# RAG settings (simplified from dual_rag)
 	rag_enabled: bool = True
 	similarity_threshold: float = 0.7
