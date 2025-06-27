@@ -104,7 +104,7 @@ class Workflow:
 
 		# Get tools
 		tools = get_tools(self.config)
-		
+
 		# Store tools for runtime updates
 		self._tools = tools
 		tool_node = ToolNode(tools)
@@ -138,7 +138,7 @@ class Workflow:
 			for tool in self._tools:
 				if hasattr(tool, 'set_authorization_token'):
 					tool.set_authorization_token(auth_token)
-		
+
 		# Execute tools
 		tool_node = ToolNode(self._tools)
 		return await tool_node.ainvoke(state, config or {})

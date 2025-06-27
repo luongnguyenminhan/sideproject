@@ -142,7 +142,7 @@ class LangGraphService(object):
 					'system_prompt': system_prompt,
 				}
 			}
-			
+
 			# Add authorization token if provided
 			if authorization_token:
 				config['configurable']['authorization_token'] = authorization_token
