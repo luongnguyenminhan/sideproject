@@ -44,11 +44,6 @@ class LLMGuardrailDecision(BaseModel):
 class LLMInputGuardrail(BaseGuardrail):
 	"""LLM-powered Input Guardrail for intelligent content analysis."""
 
-	"""LLM-powered Input Guardrail for intelligent content analysis."""
-
-	def __init__(self, model_name: str = 'gemini-2.0-flash-lite', temperature: float = 0.1):
-		super().__init__('llm_input_guardrail', True, GuardrailSeverity.HIGH)
-
 	def __init__(self, model_name: str = 'gemini-2.0-flash-lite', temperature: float = 0.1):
 		super().__init__('llm_input_guardrail', True, GuardrailSeverity.HIGH)
 

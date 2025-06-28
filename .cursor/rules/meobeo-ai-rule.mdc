@@ -352,3 +352,57 @@ app/modules/{module_name}/
 - **Responses**: `{module}_response.py` inheriting `ResponseSchema`
 - **Always use APIResponse for route responses**
 
+## Agent Tools and Authorization Patterns
+
+### Agent Tool Development (`tools/`)
+- **MUST use `@tool` decorator** from langchain_core.tools for LangGraph integration
+- **Function-based tools are preferred** over class-based tools for simplicity
+- **Tools requiring external API authentication MUST use global state pattern** for authorization token management
+- **Use factory functions** for tool instantiation when database sessions are needed
+
+### Authorization Token Flow for Agent Tools
+- **WebSocket endpoints MUST extract authorization tokens** from headers or query parameters
+- **Authorization tokens MUST flow through the complete chain**:
+  1. WebSocket endpoint → ChatRepo
+  2. ChatRepo → ConversationWorkflowRepo  
+  3. ConversationWorkflowRepo → LangGraphService
+  4. LangGraphService → Workflow config
+  5. Workflow → Tools via global state functions
+- **Tools requiring external API authentication MUST implement global state pattern** for token access
+- **Authorization tokens MUST be passed in workflow config under 'configurable' key**
+
+### Function-Based Tool Implementation Pattern
+```python
+from langchain_core.tools import tool
+from typing import Optional
+
+# Global variable for authorization token
+_current_authorization_token: Optional[str] = None
+
+def set_authorization_token(token: str):
+    """Set authorization token for current request context"""
+    global _current_authorization_token
+    _current_authorization_token = token
+
+def get_authorization_token() -> Optional[str]:
+    """Get current authorization token"""
+    return _current_authorization_token
+
+@tool
+async def custom_tool(param1: str, param2: str = None) -> str:
+    """Tool description for the agent"""
+    
+    # Get authorization token from global context
+    auth_token = get_authorization_token()
+    
+    # Use auth_token for external API calls
+    # Your tool logic here
+    pass
+```
+
+### Workflow Authorization Integration
+- **Workflow `_tools_node` MUST set authorization tokens** using global state functions
+- **Import and call `set_authorization_token()` function** for function-based tools
+- **Log authorization token status** for debugging (first 20 chars only)
+- **Handle ImportError gracefully** when tools don't support authorization
+

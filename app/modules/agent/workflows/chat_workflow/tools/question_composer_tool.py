@@ -5,7 +5,7 @@ Tool để agent có thể tạo câu hỏi thông minh cho người dùng thôn
 
 import logging
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 from langchain_core.tools import tool
 from sqlalchemy.orm import Session
@@ -15,8 +15,23 @@ from app.exceptions.exception import ValidationException
 
 logger = logging.getLogger(__name__)
 
+# Global variable to store authorization token for the current request context
+_current_authorization_token: Optional[str] = None
 
-@tool
+
+def set_authorization_token(token: str):
+	"""Set authorization token for N8N API calls in current context"""
+	global _current_authorization_token
+	_current_authorization_token = token
+	logger.info(f'[QuestionComposer] Authorization token set: {token[:20] if token else None}...')
+
+
+def get_authorization_token() -> Optional[str]:
+	"""Get current authorization token"""
+	return _current_authorization_token
+
+
+@tool(return_direct=True)
 async def generate_survey_questions(conversation_id: str, user_id: str = None) -> str:
 	"""
 	Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
@@ -40,12 +55,16 @@ async def generate_survey_questions(conversation_id: str, user_id: str = None) -
 		raise ValidationException('conversation_id is required')
 
 	try:
+		# Get authorization token from global context
+		authorization_token = get_authorization_token()
+
 		# Call N8N API to generate questions
 		logger.info(f'[generate_survey_questions] Calling N8N API for conversation: {conversation_id}')
+		logger.info(f'[generate_survey_questions] Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
 
 		n8n_response = await n8n_client.generate_questions(
 			session_id=conversation_id,
-			authorization_token=None,  # Will be set by agent if needed
+			authorization_token=authorization_token,  # Use global token
 		)
 
 		logger.info('[generate_survey_questions] N8N API call successful')
@@ -87,7 +106,7 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 		# Don't raise - this is not critical, the N8N call was successful
 
 
-def get_question_composer_tool(db_session: Session):
+def get_question_composer_tool(db_session: Session = None):
 	"""Factory function để tạo question composer tool instance"""
 	logger.info('[get_question_composer_tool] Creating question composer tool')
 	return generate_survey_questions

@@ -49,6 +49,7 @@ class RAGTool(BaseTool):
     
     Input: conversation_id, user_id, query, top_k
     """
+	return_direct: bool = True
 
 	db_session: Session = Field(exclude=True)
 	_router_llm: Any = PrivateAttr()

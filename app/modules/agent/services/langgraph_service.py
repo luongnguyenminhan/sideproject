@@ -146,6 +146,9 @@ class LangGraphService(object):
 			# Add authorization token if provided
 			if authorization_token:
 				config['configurable']['authorization_token'] = authorization_token
+				logger.info(f'[execute_conversation] Authorization token added to config: {authorization_token[:20] if authorization_token else None}...')
+			else:
+				logger.warning('[execute_conversation] No authorization token provided')
 
 			workflow_input = {'messages': messages}
 
