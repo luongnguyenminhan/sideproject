@@ -32,7 +32,6 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 # Google OAuth Settings
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-GOOGLE_PROJECT_ID = os.getenv('GOOGLE_PROJECT_ID')
 # Update the redirect URI to support Next.js frontend
 GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'https://api.wc504.io.vn/api/v1/auth/google/callback')
 
