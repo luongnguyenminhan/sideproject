@@ -3,6 +3,7 @@ import { FallingText } from '@/components/animations';
 import type { UserResponse } from '@/types/auth.type';
 import HeroButtons from '@/components/home/heroButtons';
 import { TranslationProvider } from '@/contexts/TranslationContext';
+import { LiquidGlass } from '@/components/ui';
 
 interface HeroSectionProps {
   user: UserResponse | null;
@@ -28,24 +29,42 @@ export default function HeroSection({
   return (
     <section className="relative py-32 px-6 sm:px-8 lg:px-12">
       <div className="max-w-6xl mx-auto text-center space-y-12">
-        {/* Main Title with Shiny Effect */}
+        {/* Main Title with Glass Effect */}
         <FallingText variant="bounce" delay={0.2} duration={1.5}>
-          <div 
-            className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] mb-8"
+          <LiquidGlass 
+            variant="subtle" 
+            blur="md" 
+            rounded="3xl" 
+            className="p-8 inline-block"
+            opacity={0.05}
           >
-            {isAuthenticated 
-              ? welcomeTitle.replace('{name}', user?.name || user?.username || '')
-              : welcomeTitle
-            }
-          </div>
+            <div 
+              className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent leading-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 mb-8"
+            >
+              {isAuthenticated 
+                ? welcomeTitle.replace('{name}', user?.name || user?.username || '')
+                : welcomeTitle
+              }
+            </div>
+          </LiquidGlass>
         </FallingText>
 
-        {/* Subtitle */}
+        {/* Subtitle with Glass Card */}
         <FallingText variant="fade" delay={0.6} duration={1.2}>
-          <div className="text-xl md:text-2xl lg:text-3xl text-[color:var(--muted-foreground)] max-w-4xl mx-auto leading-relaxed">
-            {description}
-          </div>
-        </FallingText>        {/* Call to Action Buttons */}
+          <LiquidGlass 
+            variant="card" 
+            blur="lg" 
+            rounded="2xl" 
+            className="p-6 max-w-4xl mx-auto"
+            opacity={0.08}
+          >
+            <div className="text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-200 leading-relaxed">
+              {description}
+            </div>
+          </LiquidGlass>
+        </FallingText>
+
+        {/* Call to Action Buttons */}
         <FallingText variant="scale" delay={1} duration={1}>
           <TranslationProvider dictionary={dictionary} locale={locale}>
             <HeroButtons

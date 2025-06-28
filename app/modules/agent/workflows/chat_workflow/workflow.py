@@ -161,7 +161,7 @@ class Workflow:
 
 		# Store tools for runtime updates
 		self._tools = tools
-		tool_node = ToolNode(tools)
+		tool_node = ToolNode(tools)  # noqa: F841
 
 		# Add nodes
 		workflow.add_node('input_validation', self._input_validation_node)
@@ -743,7 +743,6 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 		messages = final_state.get('messages', [])
 		tool_calls_count = 0
 		tools_used = []
-		tool_validations = []
 
 		for msg in messages:
 			if hasattr(msg, 'tool_calls') and msg.tool_calls:

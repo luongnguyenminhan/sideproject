@@ -3,11 +3,11 @@ import { getCurrentLocale } from '@/utils/getCurrentLocale';
 import getDictionary, { createTranslator } from '@/utils/translation';
 import { 
   FallingText, 
-  MagneticCard, 
   ScrollReveal,
   ShinyText,
   GradientOrb
 } from '@/components/animations';
+import { LiquidGlass } from '@/components/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faFacebook, 
@@ -44,20 +44,20 @@ const Footer: React.FC = async () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-[color:var(--card)] to-[color:var(--muted)] border-t border-[color:var(--border)] overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-slate-50/80 to-blue-50/60 dark:from-slate-900/80 dark:to-blue-950/60 border-t border-white/20 dark:border-white/10 backdrop-blur-sm overflow-hidden">
       {/* Background Effects */}
       <GradientOrb 
         size={200} 
         className="top-10 -left-10" 
-        color1="rgba(59, 130, 246, 0.05)"
-        color2="rgba(147, 51, 234, 0.05)"
+        color1="rgba(59, 130, 246, 0.03)"
+        color2="rgba(147, 51, 234, 0.03)"
         duration={20}
       />
       <GradientOrb 
         size={150} 
         className="bottom-10 -right-10" 
-        color1="rgba(147, 51, 234, 0.05)"
-        color2="rgba(236, 72, 153, 0.05)"
+        color1="rgba(147, 51, 234, 0.03)"
+        color2="rgba(236, 72, 153, 0.03)"
         duration={25}
         delay={5}
       />
@@ -77,7 +77,7 @@ const Footer: React.FC = async () => {
                 </FallingText>
                 
                 <FallingText variant="fade" delay={0.3}>
-                  <p className="text-[color:var(--muted-foreground)] leading-relaxed max-w-md">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed max-w-md">
                     {t('home.description')}
                   </p>
                 </FallingText>
@@ -85,26 +85,31 @@ const Footer: React.FC = async () => {
                 {/* Social Links */}
                 <ScrollReveal direction="left" delay={0.4}>
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-[color:var(--card-foreground)]">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-100">
                       {t('footer.social.followUs')}
                     </h4>
                     <div className="flex space-x-4 ">
                       {socialLinks.map((social, index) => (
                         <FallingText key={social.name} variant="scale" delay={0.1 * index}>
-                          <MagneticCard strength={10}>
+                          <LiquidGlass 
+                            variant="card" 
+                            blur="md" 
+                            rounded="xl" 
+                            hover={true}
+                            className="w-12 h-12 flex items-center justify-center group"
+                          >
                             <a 
                               href={social.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-12 h-12 bg-gradient-to-br from-[color:var(--feature-blue)] to-[color:var(--feature-purple)] rounded-xl flex items-center justify-center text-lg text-white hover:scale-110 transition-transform duration-300 group relative overflow-hidden"
+                              className="w-full h-full flex items-center justify-center text-lg group-hover:scale-110 transition-transform duration-300"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                               <FontAwesomeIcon 
                                 icon={social.icon} 
-                                className="relative z-10 w-5 h-5 text-[color:var(--foreground)]" 
+                                className="w-5 h-5 text-blue-600 dark:text-blue-400" 
                               />
                             </a>
-                          </MagneticCard>
+                          </LiquidGlass>
                         </FallingText>
                       ))}
                     </div>
@@ -117,7 +122,7 @@ const Footer: React.FC = async () => {
                 <div key={section.key} className="space-y-6">
                   <ScrollReveal direction="up" delay={0.2 + sectionIndex * 0.1}>
                     <FallingText variant="slide" delay={0.3}>
-                      <h4 className="font-bold text-lg text-[color:var(--card-foreground)]">
+                      <h4 className="font-bold text-lg text-gray-800 dark:text-gray-100">
                         {t(`footer.${section.key}.title`)}
                       </h4>
                     </FallingText>
@@ -126,14 +131,12 @@ const Footer: React.FC = async () => {
                       {section.links.map((link, linkIndex) => (
                         <li key={link}>
                           <FallingText variant="fade" delay={0.4 + linkIndex * 0.05}>
-                            <MagneticCard strength={5}>
-                              <a 
-                                href="#" 
-                                className="text-[color:var(--muted-foreground)] hover:text-[color:var(--primary)] transition-colors duration-300 hover:underline"
-                              >
-                                {t(`footer.${section.key}.${link}`)}
-                              </a>
-                            </MagneticCard>
+                            <a 
+                              href="#" 
+                              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
+                            >
+                              {t(`footer.${section.key}.${link}`)}
+                            </a>
                           </FallingText>
                         </li>
                       ))}
@@ -147,26 +150,29 @@ const Footer: React.FC = async () => {
 
         {/* Bottom Bar */}
         <ScrollReveal direction="up" delay={0.5}>
-          <div className="border-t border-[color:var(--border)] bg-[color:var(--muted)]/50 backdrop-blur-sm">
+          <LiquidGlass 
+            variant="card" 
+            blur="md" 
+            border={true} 
+            className="border-t"
+          >
             <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-6">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 
                 {/* Copyright */}
                 <FallingText variant="fade" delay={0.6}>
-                  <p className="text-[color:var(--muted-foreground)] text-sm">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     {t('footer.copyright')}
                   </p>
                 </FallingText>
 
                 {/* Made with love */}
                 <FallingText variant="fade" delay={0.7}>
-                  <div className="flex items-center space-x-2 text-sm text-[color:var(--muted-foreground)]">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                     <span>{t('footer.madeWith')}</span>
-                    <MagneticCard strength={15}>
                       <span className="text-red-500 hover:scale-125 transition-transform duration-300 cursor-pointer">
                         ❤️
                       </span>
-                    </MagneticCard>
                     <span>{t('footer.location')}</span>
                   </div>
                 </FallingText>
@@ -174,26 +180,20 @@ const Footer: React.FC = async () => {
                 {/* Legal Links */}
                 <FallingText variant="fade" delay={0.8}>
                   <div className="flex space-x-6 text-sm">
-                    <MagneticCard strength={5}>
-                      <a href="#" className="text-[color:var(--muted-foreground)] hover:text-[color:var(--primary)] transition-colors duration-300">
+                      <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                         {t('footer.legal.privacy')}
                       </a>
-                    </MagneticCard>
-                    <MagneticCard strength={5}>
-                      <a href="#" className="text-[color:var(--muted-foreground)] hover:text-[color:var(--primary)] transition-colors duration-300">
+                      <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                         {t('footer.legal.terms')}
                       </a>
-                    </MagneticCard>
-                    <MagneticCard strength={5}>
-                      <a href="#" className="text-[color:var(--muted-foreground)] hover:text-[color:var(--primary)] transition-colors duration-300">
+                      <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                         {t('footer.legal.cookies')}
                       </a>
-                    </MagneticCard>
                   </div>
                 </FallingText>
               </div>
             </div>
-          </div>
+          </LiquidGlass>
         </ScrollReveal>
       </div>
     </footer>

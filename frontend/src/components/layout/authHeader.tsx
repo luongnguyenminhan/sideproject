@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { LiquidGlass } from '@/components/ui';
 import LoginModal from '@/components/auth/loginModal';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -69,28 +70,36 @@ export default function AuthHeader({ user: serverUser, locale }: AuthHeaderProps
   if (currentUser) {
     return (
       <div className="relative group ml-2">
-        <button
-          type="button"
-          className="flex items-center gap-2 bg-white/60 dark:bg-gray-800/60 px-2 py-1 rounded-xl shadow-md backdrop-blur-md transition-all duration-300 hover:bg-white/80 dark:hover:bg-gray-700/80 group cursor-pointer focus:outline-none min-h-0 h-8"
-          tabIndex={0}
+        <LiquidGlass
+          blur="md"
+          opacity={60}
+          border={true}
+          shadow="md"
+          rounded="xl"
+          className="p-0 transition-all duration-300 hover:opacity-80 group focus:outline-none min-h-0 h-8"
         >
+          <button
+            type="button"
+            className="flex items-center gap-2 px-2 py-1 w-full h-full cursor-pointer focus:outline-none"
+            tabIndex={0}
+          >
           <Image
             src={currentUser.profile_picture || '/file.svg'}
             alt={currentUser.name || currentUser.username}
             width={24}
             height={24}
-            className="rounded-full border border-[color:var(--gradient-text-from)] shadow-sm"
+            className="rounded-full border border-blue-400/50 dark:border-blue-500/50 shadow-sm"
           />
           <div className="flex flex-col text-right">
-            <span className="font-semibold text-gray-900 dark:text-white text-xs truncate max-w-[120px]">
+            <span className="font-semibold text-[color:var(--card-foreground)] text-xs truncate max-w-[120px]">
               {currentUser.name || "Unnamed User"}
             </span>
-            <span className="text-[10px] text-gray-500 dark:text-gray-300 truncate max-w-[120px]">
+            <span className="text-[10px] text-[color:var(--muted-foreground)] truncate max-w-[120px]">
               {currentUser.email}
             </span>
           </div>
           <svg 
-            className="ml-1 w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-transform duration-200 group-hover:rotate-180 group-focus:rotate-180" 
+            className="ml-1 w-3 h-3 text-[color:var(--muted-foreground)] group-hover:text-[color:var(--card-foreground)] transition-transform duration-200 group-hover:rotate-180 group-focus:rotate-180" 
             fill="none" 
             stroke="currentColor" 
             strokeWidth="2" 
@@ -98,34 +107,42 @@ export default function AuthHeader({ user: serverUser, locale }: AuthHeaderProps
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
-        </button>
-        <div className="absolute right-0 mt-1 min-w-[160px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-200 z-50">
+          </button>
+        </LiquidGlass>
+        <LiquidGlass
+          blur="lg"
+          opacity={95}
+          border={true}
+          shadow="lg"
+          rounded="lg"
+          className="absolute right-0 mt-1 min-w-[160px] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-200 z-50"
+        >
           <Link
             href={`/${locale}/profile`}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors text-xs"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-[color:var(--card-foreground)] hover:bg-[color:var(--muted)] transition-colors text-xs rounded-t-lg"
           >
             <FontAwesomeIcon icon={faUser} className="w-3 h-3" />
             {t('navigation.profile')}
           </Link>
           <Link
             href={`/${locale}/settings`}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-[color:var(--card-foreground)] hover:bg-[color:var(--muted)] transition-colors text-xs"
           >
             <FontAwesomeIcon icon={faCog} className="w-3 h-3" />
             {t('navigation.settings')}
           </Link>
-          <div className="border-t border-gray-100 dark:border-gray-700"></div>
+          <div className="border-t border-[color:var(--border)]"></div>
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg transition-colors text-xs"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-[color:var(--destructive)] hover:bg-[color:var(--muted)] rounded-b-lg transition-colors text-xs"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
             </svg>
             {t('auth.logout')}
           </button>
-        </div>
+        </LiquidGlass>
       </div>
     );
   }
