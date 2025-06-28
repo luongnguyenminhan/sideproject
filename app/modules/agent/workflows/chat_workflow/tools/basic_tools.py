@@ -25,11 +25,11 @@ def get_tools(config: Dict[str, Any] = None) -> List:
 		print(f'💾 [BasicTools] Database session found, adding CV profile tool')
 		try:
 			from .cv_profile_tool import get_cv_profile_tool
-			
+
 			print(f'👤 [BasicTools] Creating CV profile tool')
 			cv_tool = get_cv_profile_tool(config.db_session)
 			print(f'✅ [BasicTools] CV profile tool created')
-			
+
 			all_tools.append(cv_tool)
 			print(f'🎉 [BasicTools] CV profile tool added')
 			logger.info('CV profile tool added')

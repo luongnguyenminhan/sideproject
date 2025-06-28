@@ -11,7 +11,7 @@ from langgraph.graph.message import add_messages
 class AgentState(TypedDict):
 	"""
 	Simplified state definition for LangGraph workflow
-	
+
 	Essential state management with core fields only
 	"""
 
@@ -21,32 +21,32 @@ class AgentState(TypedDict):
 	# Basic metadata
 	conversation_id: Optional[str]
 	user_id: Optional[str]
-	
+
 	# Simple workflow control
 	current_node: Optional[str]
-	
+
 	# Tool execution state
 	tool_results: Optional[List[Dict[str, Any]]]
-	
+
 	# RAG context
 	combined_rag_context: Optional[str]
 	rag_used: Optional[bool]
-	
+
 	# Business process state
 	business_process_type: Optional[str]
 	business_process_definition: Optional[str]
 	triggered_rules: Optional[List[str]]
 	required_tools: Optional[List[str]]
-	
+
 	# Tool decision state
 	tool_decision: Optional[Dict[str, Any]]
-	
+
 	# Guardrails state
 	input_validation: Optional[Dict[str, Any]]
 	output_validation: Optional[Dict[str, Any]]
 	validation_passed: Optional[bool]
 	response_safe: Optional[bool]
-	
+
 	# Retry management
 	retry_count: Optional[int]
 
@@ -61,7 +61,7 @@ class StateManager:
 		user_id: Optional[str] = None,
 	) -> AgentState:
 		"""Create initial state from user message"""
-		
+
 		initial_message = HumanMessage(content=user_message)
 
 		return AgentState(

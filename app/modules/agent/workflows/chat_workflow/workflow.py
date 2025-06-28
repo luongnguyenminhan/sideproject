@@ -37,7 +37,10 @@ from .state.workflow_state import AgentState, StateManager
 from .config.workflow_config import WorkflowConfig
 from .tools.basic_tools import get_tools, get_tool_definitions
 from .config.business_process import get_business_process_manager, BusinessProcessType
-from .config.llm_guardrails import get_llm_guardrails_manager, initialize_guardrails_with_llm
+from .config.llm_guardrails import (
+	get_llm_guardrails_manager,
+	initialize_guardrails_with_llm,
+)
 
 load_dotenv()
 
@@ -95,14 +98,14 @@ class ToolDecision(BaseModel):
 
 class Workflow:
 	"""Enhanced Chat Workflow: EnterViu AI Assistant with Business Process Management and LLM Guardrails
-	
+
 	This workflow provides:
 	1. Persona-based responses focused on CV building and career support
 	2. Business process-aware tool selection and validation
 	3. Unified LLM-based guardrails for input, output, and tool validation
 	4. Dynamic tool configuration based on business requirements
 	5. Retry logic for critical validation failures
-	
+
 	Workflow integrates:
 	- EnterViu persona prompts for CV assistant behavior
 	- Business process management for context-aware responses
@@ -194,7 +197,7 @@ class Workflow:
 	async def _input_validation_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Input Validation Node - Validates user input through LLM guardrails"""
 		logger.info('[_input_validation_node] Starting input validation')
-		
+
 		# Get user message
 		user_message = StateManager.extract_last_user_message(state)
 		if not user_message:
@@ -204,12 +207,12 @@ class Workflow:
 		try:
 			# Validate user input through guardrails
 			validation_result = await self.guardrails_manager.validate_user_input(
-				user_message, 
+				user_message,
 				context={
 					'user_id': state.get('user_id'),
 					'conversation_id': state.get('conversation_id'),
-					'timestamp': datetime.now().isoformat()
-				}
+					'timestamp': datetime.now().isoformat(),
+				},
 			)
 
 			logger.info(f'[_input_validation_node] Validation result: {validation_result["is_safe"]} - {validation_result["summary"]}')
@@ -218,7 +221,7 @@ class Workflow:
 			return {
 				**state,
 				'input_validation': validation_result,
-				'validation_passed': validation_result['is_safe']
+				'validation_passed': validation_result['is_safe'],
 			}
 
 		except Exception as e:
@@ -227,13 +230,13 @@ class Workflow:
 			return {
 				**state,
 				'input_validation': {'is_safe': True, 'error': str(e)},
-				'validation_passed': True
+				'validation_passed': True,
 			}
 
 	async def _business_process_analysis_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Business Process Analysis Node - Identifies process type and applicable rules"""
 		logger.info('[_business_process_analysis_node] Starting business process analysis')
-		
+
 		# Get user message
 		user_message = StateManager.extract_last_user_message(state)
 		if not user_message:
@@ -243,29 +246,32 @@ class Workflow:
 		try:
 			# Identify business process type
 			process_type = self.business_process_manager.identify_process_type(
-				user_message, 
+				user_message,
 				context={
 					'user_id': state.get('user_id'),
 					'conversation_id': state.get('conversation_id'),
 					'has_cv_context': bool(state.get('cv_context')),
 					'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
-					'user_input': user_message
-				}
+					'user_input': user_message,
+				},
 			)
 
 			logger.info(f'[_business_process_analysis_node] Identified process type: {process_type.value}')
 
 			# Get process definition
 			process_def = self.business_process_manager.get_process_definition(process_type)
-			
+
 			# Evaluate business rules
-			triggered_rules = self.business_process_manager.evaluate_rules(process_type, {
-				'user_input': user_message,
-				'has_cv_context': bool(state.get('cv_context')),
-				'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
-				'profile_completeness': 1.0,  # Default complete
-				'context_completeness': 1.0   # Default complete
-			})
+			triggered_rules = self.business_process_manager.evaluate_rules(
+				process_type,
+				{
+					'user_input': user_message,
+					'has_cv_context': bool(state.get('cv_context')),
+					'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
+					'profile_completeness': 1.0,  # Default complete
+					'context_completeness': 1.0,  # Default complete
+				},
+			)
 
 			logger.info(f'[_business_process_analysis_node] Triggered {len(triggered_rules)} business rules')
 
@@ -273,9 +279,9 @@ class Workflow:
 			return {
 				**state,
 				'business_process_type': process_type.value,
-				'business_process_definition': process_def.name if process_def else None,
+				'business_process_definition': (process_def.name if process_def else None),
 				'triggered_rules': [rule.name for rule in triggered_rules],
-				'required_tools': process_def.required_tools if process_def else []
+				'required_tools': process_def.required_tools if process_def else [],
 			}
 
 		except Exception as e:
@@ -284,13 +290,13 @@ class Workflow:
 			return {
 				**state,
 				'business_process_type': BusinessProcessType.GENERAL_CONVERSATION.value,
-				'business_process_error': str(e)
+				'business_process_error': str(e),
 			}
 
 	async def _output_validation_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Output Validation Node - Validates AI response through LLM guardrails"""
 		logger.info('[_output_validation_node] Starting output validation')
-		
+
 		# Get the last AI message
 		messages = state.get('messages', [])
 		ai_response = None
@@ -301,7 +307,10 @@ class Workflow:
 
 		if not ai_response:
 			logger.warning('[_output_validation_node] No AI response found')
-			return {**state, 'output_validation': {'is_safe': True, 'no_response': True}}
+			return {
+				**state,
+				'output_validation': {'is_safe': True, 'no_response': True},
+			}
 
 		try:
 			# Validate AI response through guardrails
@@ -311,8 +320,8 @@ class Workflow:
 					'user_id': state.get('user_id'),
 					'conversation_id': state.get('conversation_id'),
 					'business_process_type': state.get('business_process_type'),
-					'timestamp': datetime.now().isoformat()
-				}
+					'timestamp': datetime.now().isoformat(),
+				},
 			)
 
 			logger.info(f'[_output_validation_node] Output validation: {validation_result["is_safe"]} - {validation_result["summary"]}')
@@ -321,7 +330,7 @@ class Workflow:
 			return {
 				**state,
 				'output_validation': validation_result,
-				'response_safe': validation_result['is_safe']
+				'response_safe': validation_result['is_safe'],
 			}
 
 		except Exception as e:
@@ -330,13 +339,13 @@ class Workflow:
 			return {
 				**state,
 				'output_validation': {'is_safe': True, 'error': str(e)},
-				'response_safe': True
+				'response_safe': True,
 			}
 
 	def _route_after_output_validation(self, state: AgentState) -> str:
 		"""Route after output validation - check if we need to continue or end"""
 		validation_result = state.get('output_validation', {})
-		
+
 		# If output validation failed critically, we might want to retry
 		if not validation_result.get('is_safe', True):
 			severity = validation_result.get('overall_severity', 'low')
@@ -374,8 +383,8 @@ class Workflow:
 						context={
 							'user_id': state.get('user_id'),
 							'business_process_type': state.get('business_process_type'),
-							'conversation_id': state.get('conversation_id')
-						}
+							'conversation_id': state.get('conversation_id'),
+						},
 					)
 					if not tool_validation.get('is_safe', True):
 						logger.warning(f'[_tools_node] Tool call validation failed: {tool_validation["summary"]}')
@@ -438,7 +447,7 @@ class Workflow:
 			process_context = f'\n\nBUSINESS PROCESS: {business_process_type}'
 			triggered_rules = state.get('triggered_rules', [])
 			if triggered_rules:
-				process_context += f'\nActive Rules: {', '.join(triggered_rules)}'
+				process_context += f'\nActive Rules: {", ".join(triggered_rules)}'
 			system_prompt += process_context
 
 		# Add RAG context if available
@@ -457,14 +466,14 @@ class Workflow:
 			# If we decided to use tools, bind appropriate tools based on business process
 			required_tools = state.get('required_tools', [])
 			all_tools = get_tool_definitions(self.config)
-			
+
 			# Filter tools based on business process requirements if specified
 			if required_tools:
 				filtered_tools = [tool for tool in all_tools if getattr(tool, 'name', '') in required_tools]
 				if filtered_tools:
 					all_tools = filtered_tools
 					logger.info(f'[_agent_node] Using filtered tools for business process: {required_tools}')
-			
+
 			model_with_tools = self.llm.bind_tools(all_tools)
 
 			# Add instruction to use tools with business context
@@ -518,8 +527,8 @@ class Workflow:
 Yêu cầu của người dùng: "{user_message}"
 
 Quy trình nghiệp vụ: {business_process_type}
-{f'Công cụ bắt buộc: {', '.join(required_tools)}' if required_tools else ''}
-{f'Quy tắc đã kích hoạt: {', '.join(triggered_rules)}' if triggered_rules else ''}
+{f'Công cụ bắt buộc: {", ".join(required_tools)}' if required_tools else ''}
+{f'Quy tắc đã kích hoạt: {", ".join(triggered_rules)}' if triggered_rules else ''}
 
 Tất cả công cụ có sẵn: {', '.join(tool_names)}
 
@@ -548,8 +557,8 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 				logger.info(f'[_tool_decision_node] Overriding decision due to business process requirements: {required_tools}')
 				tool_decision.update({
 					'decision': 'use_tools',
-					'reasoning': f'Business process {business_process_type} requires tools: {', '.join(required_tools)}',
-					'business_override': True
+					'reasoning': f'Business process {business_process_type} requires tools: {", ".join(required_tools)}',
+					'business_override': True,
 				})
 
 			logger.info(f'Tool Decision: {tool_decision.get("decision")} - {tool_decision.get("reasoning")}')
@@ -566,7 +575,7 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 					'decision': default_decision,
 					'reasoning': f'Decision failed: {str(e)}. Using business process default.',
 					'confidence': 0.5,
-					'fallback': True
+					'fallback': True,
 				},
 			}
 
@@ -681,7 +690,7 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 				'state': final_state,
 				'metadata': {
 					'workflow_type': 'enhanced_enterview_workflow',
-					'persona_type': self.config.persona_type.value if self.config else 'enterview_assistant',
+					'persona_type': (self.config.persona_type.value if self.config else 'enterview_assistant'),
 					'rag_used': bool(final_state.get('combined_rag_context')),
 					'tool_decision': final_state.get('tool_decision', {}),
 					'tools_used': self._count_tool_usage(final_state),
@@ -689,14 +698,14 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 						'type': final_state.get('business_process_type'),
 						'definition': final_state.get('business_process_definition'),
 						'triggered_rules': final_state.get('triggered_rules', []),
-						'required_tools': final_state.get('required_tools', [])
+						'required_tools': final_state.get('required_tools', []),
 					},
 					'guardrails': {
 						'input_validation': final_state.get('input_validation', {}),
 						'output_validation': final_state.get('output_validation', {}),
 						'validation_passed': final_state.get('validation_passed', True),
-						'response_safe': final_state.get('response_safe', True)
-					}
+						'response_safe': final_state.get('response_safe', True),
+					},
 				},
 			}
 		except Exception as e:
@@ -706,9 +715,9 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 				'metadata': {
 					'error': str(e),
 					'workflow_type': 'enhanced_enterview_workflow',
-					'persona_type': self.config.persona_type.value if self.config else 'enterview_assistant',
+					'persona_type': (self.config.persona_type.value if self.config else 'enterview_assistant'),
 					'guardrails_active': True,
-					'business_process_active': True
+					'business_process_active': True,
 				},
 			}
 
@@ -718,14 +727,14 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 		if messages:
 			last_message = messages[-1]
 			response = last_message.content if hasattr(last_message, 'content') else str(last_message)
-			
+
 			# Check if there were validation issues and add appropriate notices
 			validation_result = final_state.get('output_validation', {})
 			if not validation_result.get('is_safe', True):
 				severity = validation_result.get('overall_severity', 'low')
 				if severity in ['medium', 'high', 'critical']:
 					response += '\n\n⚠️ Lưu ý: Phản hồi này đã được xem xét qua hệ thống kiểm duyệt.'
-			
+
 			return response
 		return 'Xin lỗi, không thể tạo phản hồi phù hợp. Vui lòng thử lại với câu hỏi khác.'
 
@@ -751,7 +760,7 @@ Dựa trên quy trình nghiệp vụ và yêu cầu người dùng, hãy quyết
 			'business_process_type': final_state.get('business_process_type'),
 			'required_tools_met': all(tool in tools_used for tool in final_state.get('required_tools', [])),
 			'triggered_rules': final_state.get('triggered_rules', []),
-			'guardrails_passed': final_state.get('validation_passed', True) and final_state.get('response_safe', True)
+			'guardrails_passed': final_state.get('validation_passed', True) and final_state.get('response_safe', True),
 		}
 
 	async def initialize_global_knowledge(self) -> Dict[str, Any]:
