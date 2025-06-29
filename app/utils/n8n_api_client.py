@@ -44,7 +44,7 @@ class N8NAPIClient:
 		headers = {'Content-Type': 'application/json'}
 
 		if authorization_token:
-			headers['Authorization'] = f"Bearer {authorization_token}"
+			headers['Authorization'] = f'Bearer {authorization_token}'
 			headers['X-Header-Authentication'] = 'n8ncvextraction'
 			logger.info(f'🔑 [N8NAPIClient] Authorization token provided')
 		else:

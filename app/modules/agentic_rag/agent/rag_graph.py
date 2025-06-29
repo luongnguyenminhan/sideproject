@@ -67,6 +67,7 @@ class RAGAgentGraph:
 				convert_system_message_to_human=True,
 			)
 		except Exception as e:
+			logger.error(f'[RAGAgentGraph] Failed to initialize LLM: {str(e)}')
 			raise CustomHTTPException(status_code=500, message=_('error_occurred'))
 
 		self.memory = MemorySaver()  # In-memory checkpointer for state
@@ -76,7 +77,6 @@ class RAGAgentGraph:
 	async def _planning_node(self, state: AgentState) -> Dict[str, Any]:
 		"""Plan a list of sub-queries to maximize information retrieval."""
 		query = state.get('query', '')
-		collection_id = state.get('collection_id', self.collection_id)
 
 		if not query:
 			return {
@@ -156,7 +156,6 @@ class RAGAgentGraph:
 				'retrieved_documents': retrieved_docs,
 				'all_contexts': all_contexts,
 				'current_plan_index': current_plan_index + 1,
-				'all_contexts': all_contexts,
 				'messages': state.get('messages', []) + [AIMessage(content=f'Retrieved {len(retrieved_docs)} documents for plan: "{query}"')],
 			}
 		except Exception as e:
@@ -328,7 +327,6 @@ class RAGAgentGraph:
 			sources = result.get('sources', [])
 			messages = result.get('messages', [])
 
-
 			return {
 				'answer': answer,
 				'sources': sources,
@@ -336,4 +334,5 @@ class RAGAgentGraph:
 				'collection_id': collection_id,
 			}
 		except Exception as e:
+			logger.error(f'[RAGAgentGraph] Error processing query "{query}" in collection "{collection_id}": {str(e)}')
 			raise CustomHTTPException(status_code=500, message=_('error_occurred'))

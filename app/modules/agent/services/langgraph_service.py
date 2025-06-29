@@ -148,12 +148,11 @@ class LangGraphService(object):
 			if authorization_token:
 				config['configurable']['authorization_token'] = authorization_token
 				logger.info(f'[execute_conversation] Authorization token added to config: {authorization_token[:20] if authorization_token else None}...')
-				logger.info(f'[execute_conversation] conversation_id: {conversation_id}') 
+				logger.info(f'[execute_conversation] conversation_id: {conversation_id}')
 			else:
 				logger.warning('[execute_conversation] No authorization token provided')
 
 			workflow_input = {'messages': messages}
-
 
 			# Get result from global workflow (using ainvoke for direct result)
 			final_state = await LangGraphService._global_workflow.ainvoke(workflow_input, config)

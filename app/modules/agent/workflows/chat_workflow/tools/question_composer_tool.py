@@ -47,7 +47,7 @@ def get_conversation_context() -> tuple[Optional[str], Optional[str]]:
 
 
 @tool(return_direct=True)
-async def generate_survey_questions(description: str = "Generate personalized survey questions") -> str:
+async def generate_survey_questions(description: str = 'Generate personalized survey questions') -> str:
 	"""
 	Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
 
@@ -110,7 +110,7 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 			'conversation_id': conversation_id,
 			'timestamp': datetime.now().isoformat(),
 		}
-
+		print(survey_message)  # Debug print to check survey data format
 		# Send via WebSocket if user is connected
 		if user_id and user_id in websocket_manager.active_connections:
 			logger.info(f'[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id}')

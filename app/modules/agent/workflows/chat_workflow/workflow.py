@@ -18,9 +18,9 @@ from .workflow.main import Workflow, create_workflow
 
 # Import additional components for backwards compatibility
 from .workflow.prompts import (
-    DEFAULT_SYSTEM_PROMPT,
-    TOOL_DECISION_SYSTEM_PROMPT,
-    ToolDecision,
+	DEFAULT_SYSTEM_PROMPT,
+	TOOL_DECISION_SYSTEM_PROMPT,
+	ToolDecision,
 )
 from .workflow.nodes import WorkflowNodes
 from .workflow.routing import WorkflowRouter
@@ -28,19 +28,19 @@ from .workflow.workflow_builder import WorkflowBuilder
 
 # Maintain backward compatibility by exposing the same interface
 __all__ = [
-    "Workflow",
-    "create_workflow",
-    "DEFAULT_SYSTEM_PROMPT",
-    "TOOL_DECISION_SYSTEM_PROMPT",
-    "ToolDecision",
-    "WorkflowNodes",
-    "WorkflowRouter",
-    "WorkflowBuilder",
+	'Workflow',
+	'create_workflow',
+	'DEFAULT_SYSTEM_PROMPT',
+	'TOOL_DECISION_SYSTEM_PROMPT',
+	'ToolDecision',
+	'WorkflowNodes',
+	'WorkflowRouter',
+	'WorkflowBuilder',
 ]
 
 
 # Legacy class alias for backward compatibility
 class EnhancedWorkflow(Workflow):
-    """Legacy alias for the refactored Workflow class"""
+	"""Legacy alias for the refactored Workflow class"""
 
-    pass
+	pass

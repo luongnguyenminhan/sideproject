@@ -53,12 +53,12 @@ class WebSocketManager:
 			try:
 				message_str = json.dumps(message)
 				message_type = message.get('type', 'unknown')
-				
+
 				# Log the outgoing message with details
 				logger.info(f'[WebSocketManager] 📤 SENDING to user {user_id}:')
 				logger.info(f'[WebSocketManager] 📤   Message type: {message_type}')
 				logger.info(f'[WebSocketManager] 📤   Message size: {len(message_str)} chars')
-				
+
 				# Log content preview based on message type
 				if message_type == 'user_message':
 					content = message.get('message', {}).get('content', '')
@@ -79,10 +79,10 @@ class WebSocketManager:
 					logger.info(f'[WebSocketManager] 📤   Heartbeat: {message_type}')
 				else:
 					logger.info(f'[WebSocketManager] 📤   Message keys: {list(message.keys())}')
-				
+
 				await websocket.send_text(message_str)
 				logger.info(f'[WebSocketManager] ✅ Message sent successfully to user {user_id}')
-				
+
 			except Exception as e:
 				logger.error(f'[WebSocketManager] ❌ Error sending message to user {user_id}: {e}')
 				logger.error(f'[WebSocketManager] ❌ Message that failed: {message.get("type", "unknown")} type')
@@ -136,7 +136,7 @@ async def websocket_chat_endpoint(
 
 		# Get authorization token for N8N API from query params
 		authorization_token = query_params.get('authorization_token')
-		
+
 		# 🔍 LOG: WebSocket connection attempt
 		logger.info(f'[WebSocket] 🚀 CONNECTION ATTEMPT')
 		logger.info(f'[WebSocket] 📝 Conversation ID: {conversation_id}')
@@ -161,7 +161,7 @@ async def websocket_chat_endpoint(
 				logger.error('[WebSocket] ❌ TOKEN ERROR: Invalid token - no user_id found')
 				await WebSocketErrorHandler.handle_auth_error(websocket, reason='Invalid token')
 				return
-			
+
 			logger.info(f'[WebSocket] ✅ TOKEN VERIFIED: User ID = {user_id}')
 
 		except Exception as e:
@@ -206,7 +206,7 @@ async def websocket_chat_endpoint(
 				if message_data.get('type') == 'chat_message':
 					content = message_data.get('content', '').strip()
 					api_key = message_data.get('api_key')
-					
+
 					logger.info(f'[WebSocket] 💬 CHAT MESSAGE received:')
 					logger.info(f'[WebSocket] 💬   Content length: {len(content)} chars')
 					logger.info(f'[WebSocket] 💬   Content preview: {content[:100]}...' + (' (truncated)' if len(content) > 100 else ''))
@@ -262,7 +262,7 @@ async def websocket_chat_endpoint(
 						logger.info(f'[WebSocket] 🤖   User ID: {user_id}')
 						logger.info(f'[WebSocket] 🤖   Authorization token available: {bool(authorization_token)}')
 						logger.info(f'[WebSocket] 🤖   API key provided: {bool(api_key)}')
-						
+
 						ai_response = await chat_repo.get_ai_response(
 							conversation_id=conversation_id,
 							user_message=content,
@@ -270,7 +270,7 @@ async def websocket_chat_endpoint(
 							user_id=user_id,
 							authorization_token=authorization_token,  # Pass authorization token
 						)
-						
+
 						logger.info(f'[WebSocket] ✅ AI RESPONSE received:')
 						logger.info(f'[WebSocket] ✅   Content length: {len(ai_response.get("content", ""))} chars')
 						logger.info(f'[WebSocket] ✅   Model used: {ai_response.get("model_used")}')
@@ -313,12 +313,12 @@ async def websocket_chat_endpoint(
 					finally:
 						# Stop typing indicator
 						await websocket_manager.send_message(user_id, {'type': 'assistant_typing', 'status': False})
-						
+
 				elif message_data.get('type') == 'ping':
 					logger.info('[WebSocket] 🏓 PING received, responding with PONG')
 					# Respond to ping
 					await websocket_manager.send_message(user_id, {'type': 'pong'})
-					
+
 				else:
 					message_type = message_data.get('type', 'unknown')
 					logger.warning(f'[WebSocket] ⚠️ UNKNOWN MESSAGE TYPE: {message_type}')
