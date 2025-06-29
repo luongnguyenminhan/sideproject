@@ -25,6 +25,8 @@ interface FileSidebarProps {
   isCollapsed?: boolean
   onToggleCollapse?: () => void
   isCVUploading?: boolean
+  hasSurveyData?: boolean
+  onOpenSurvey?: () => void
 }
 
 export function FileSidebar({ 
@@ -36,7 +38,7 @@ export function FileSidebar({
   onUploadCV,
   isCollapsed = false,
   onToggleCollapse,
-  isCVUploading = false
+  isCVUploading = false,
 }: FileSidebarProps) {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)

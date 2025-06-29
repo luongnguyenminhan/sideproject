@@ -50,6 +50,11 @@ class AgentState(TypedDict):
 	# Retry management
 	retry_count: Optional[int]
 
+	# Survey generation state
+	survey_generated: Optional[bool]
+	survey_questions_count: Optional[int]
+	survey_data: Optional[Dict[str, Any]]
+
 
 class StateManager:
 	"""Simplified helper class for state management"""

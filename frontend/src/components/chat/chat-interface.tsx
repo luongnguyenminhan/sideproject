@@ -43,6 +43,7 @@ interface ChatInterfaceProps {
   onToggleConversationSidebar?: () => void;
   onToggleFileSidebar?: () => void;
   onToggleSurvey?: () => void;
+  onOpenSurvey?: () => void;
   hasSurveyData?: boolean;
   isSurveyOpen?: boolean;
 }
@@ -61,6 +62,7 @@ export function ChatInterface({
   onToggleConversationSidebar,
   onToggleFileSidebar,
   onToggleSurvey,
+  onOpenSurvey,
   hasSurveyData = false,
   isSurveyOpen = false
 }: ChatInterfaceProps) {
@@ -122,6 +124,7 @@ export function ChatInterface({
         startConversationText={t('chat.startConversation')}
         hasSurveyData={hasSurveyData}
         onToggleSurvey={onToggleSurvey}
+        onOpenSurvey={onOpenSurvey}
       />
 
       {/* Input Area */}

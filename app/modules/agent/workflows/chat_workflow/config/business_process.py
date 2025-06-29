@@ -106,15 +106,34 @@ class BusinessProcessManager:
 		"""Identify the appropriate business process for user input"""
 		user_input_lower = user_input.lower()
 
-		# Priority-based detection
-		if any(keyword in user_input_lower for keyword in ['survey', 'question', 'questionnaire', 'form']):
+		# Enhanced survey detection - more proactive approach
+		survey_keywords = [
+			'survey', 'question', 'questionnaire', 'form', 'assessment', 'evaluation',
+			'khảo sát', 'câu hỏi', 'đánh giá', 'phỏng vấn', 'interview',
+			'skill', 'kỹ năng', 'experience', 'kinh nghiệm',
+			'tạo', 'create', 'generate', 'analyze', 'phân tích'
+		]
+		
+		# CV-related requests should also trigger survey generation
+		cv_survey_keywords = ['cv', 'resume', 'curriculum', 'profile', 'hồ sơ']
+		
+		# Career-related requests should trigger survey generation  
+		career_survey_keywords = [
+			'career', 'job', 'work', 'professional', 'interview', 'sự nghiệp',
+			'nghề nghiệp', 'công việc', 'tư vấn', 'advice', 'guidance'
+		]
+
+		# Priority-based detection - SURVEY FIRST!
+		if any(keyword in user_input_lower for keyword in survey_keywords):
 			return BusinessProcessType.SURVEY_GENERATION
 
-		if any(keyword in user_input_lower for keyword in ['cv', 'resume', 'curriculum']):
-			return BusinessProcessType.CV_ANALYSIS
+		# CV analysis should also generate surveys for better analysis
+		if any(keyword in user_input_lower for keyword in cv_survey_keywords):
+			return BusinessProcessType.SURVEY_GENERATION
 
-		if any(keyword in user_input_lower for keyword in ['career', 'job', 'work', 'professional', 'interview']):
-			return BusinessProcessType.CAREER_GUIDANCE
+		# Career guidance should include survey generation
+		if any(keyword in user_input_lower for keyword in career_survey_keywords):
+			return BusinessProcessType.SURVEY_GENERATION
 
 		if any(keyword in user_input_lower for keyword in ['help', 'support', 'problem', 'issue']):
 			return BusinessProcessType.CUSTOMER_SUPPORT

@@ -50,6 +50,7 @@ class CVRepo:
 			print(f'[CVRepo] Result from N8N API: {result}')
 
 			logger.info('[CVRepo] CV processed successfully via N8N API')
+			print(f'[CVRepo] Processed CV result: {result}')
 			return self._build_success_response(result, request.cv_file_url)
 
 		except ValidationException as e:
@@ -97,8 +98,9 @@ class CVRepo:
 		"""Build success response from N8N API result"""
 		try:
 			# Extract data with safe defaults
-			skills_items = result.get('skills_summary', {}).get('items', [])
-			experience_items = result.get('work_experience_history', {}).get('items', [])
+			print(f'[CVRepo] Building response from result: {result}')
+			skills_items = result.get('skills_summary', {}).get('items', []) if isinstance(result.get('skills_summary'), dict) else []
+			experience_items = result.get('work_experience_history', {}).get('items', []) if isinstance(result.get('work_experience_history'), dict) else []
 
 			response_data = ProcessCVResponse(
 				cv_file_url=cv_file_url,

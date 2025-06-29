@@ -36,6 +36,7 @@ interface MessagesContainerProps {
   // Survey props
   hasSurveyData?: boolean;
   onToggleSurvey?: () => void;
+  onOpenSurvey?: () => void;
 }
 
 export function MessagesContainer({
@@ -49,7 +50,8 @@ export function MessagesContainer({
   noMessagesText,
   startConversationText,
   hasSurveyData = false,
-  onToggleSurvey
+  onToggleSurvey,
+  onOpenSurvey
 }: MessagesContainerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -91,6 +93,7 @@ export function MessagesContainer({
                 copiedText={copiedText}
                 hasSurveyData={hasSurveyData}
                 onToggleSurvey={onToggleSurvey}
+                onOpenSurvey={onOpenSurvey}
               />
             </div>
           ))}

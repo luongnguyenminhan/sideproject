@@ -4,8 +4,8 @@ import { getNestedValue, type Dictionary } from './translationHelpers'
 
 // Dictionary cache để tránh load lại
 const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
-  vi: () => import('@/locales/vi_enterviu.json').then((module) => module.default),
-  en: () => import('@/locales/en_enterviu.json').then((module) => module.default),
+  vi: () => import('@/locales/vi.json').then((module) => module.default),
+  en: () => import('@/locales/en.json').then((module) => module.default),
 }
 
 // Dictionary cache

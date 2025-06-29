@@ -54,6 +54,7 @@ export function ChatClientWrapper() {
   const [surveyModalVisible, setSurveyModalVisible] = useState(false)
   const [surveyData, setSurveyData] = useState<Question[]>([])
   const [surveyTitle, setSurveyTitle] = useState('Survey Form')
+  const [surveyConversationId, setSurveyConversationId] = useState<string | null>(null)
 
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
@@ -88,6 +89,18 @@ export function ChatClientWrapper() {
     }
   }, [state.activeConversationId])
 
+  // Clear survey data when conversation changes or no conversation is active
+  useEffect(() => {
+    if (!state.activeConversationId || (surveyConversationId && surveyConversationId !== state.activeConversationId)) {
+      // Clear survey data if no conversation is active or if we switched to a different conversation
+      setSurveyData([])
+      setSurveyModalVisible(false)
+      setSurveyConversationId(null)
+      setSurveyTitle('Survey Form')
+    }
+    // Don't auto-close survey if we have data for the current conversation
+  }, [state.activeConversationId])
+
   // Handle WebSocket messages
   const handleWebSocketMessage = useCallback((message: WebSocketResponse) => {
     console.log('[ChatClientWrapper] Received WebSocket message:', message.type)
@@ -113,10 +126,18 @@ export function ChatClientWrapper() {
             if (lastMessage && lastMessage.role === 'assistant' && lastMessage.isStreaming) {
               // Update existing streaming message
               const updatedMessages = [...prev.messages]
+              const updatedContent = lastMessage.content + message.chunk
               updatedMessages[updatedMessages.length - 1] = {
                 ...lastMessage,
-                content: lastMessage.content + message.chunk
+                content: updatedContent
               }
+              
+              // Check if we've received the survey token during streaming
+              const hasSurveyToken = updatedContent.includes('</survey>')
+              if (hasSurveyToken) {
+                console.log('[ChatClientWrapper] Survey token detected during streaming!')
+              }
+              
               return { 
                 ...prev, 
                 messages: updatedMessages,
@@ -154,6 +175,10 @@ export function ChatClientWrapper() {
               isStreaming: false
             }
             
+            // Check if message contains survey token
+            const hasSurveyToken = message.message!.content.includes('</survey>')
+            console.log('[ChatClientWrapper] Message contains survey token:', hasSurveyToken)
+            
             // Replace streaming message or add new one
             const messages = [...prev.messages]
             const lastMessage = messages[messages.length - 1]
@@ -183,24 +208,36 @@ export function ChatClientWrapper() {
       case 'survey_data':
         console.log('[ChatClientWrapper] Survey data received:', message.data)
         if (message.data && Array.isArray(message.data)) {
-          // Add survey message to chat
-          const surveyMessage: Message = {
-            id: `survey_${Date.now()}`,
-            content: 'Survey questions generated! Click the "Survey" button to complete the interactive survey.',
-            role: 'assistant',
-            timestamp: new Date(),
-            survey_data: message.data // Store the survey questions
-          }
+          // Only process survey data if it's for the current active conversation
+          const surveyConversationId = message.conversation_id || state.activeConversationId
           
-          setState(prev => ({
-            ...prev,
-            messages: [...prev.messages, surveyMessage],
-            isTyping: false
-          }))
+          if (surveyConversationId === state.activeConversationId) {
+            // Add survey message to chat
+            const surveyMessage: Message = {
+              id: `survey_${Date.now()}`,
+              content: 'Survey questions generated! Click the "Survey" button to complete the interactive survey.',
+              role: 'assistant',
+              timestamp: new Date(),
+              survey_data: message.data // Store the survey questions
+            }
+            
+            setState(prev => ({
+              ...prev,
+              messages: [...prev.messages, surveyMessage],
+              isTyping: false
+            }))
 
-          // Set survey data but don't auto-open modal
-          setSurveyData(message.data)
-          setSurveyTitle(message.conversation_id ? `Survey - ${message.conversation_id}` : 'Career Survey')
+            // Set survey data and track which conversation it belongs to
+            setSurveyData(message.data)
+            setSurveyConversationId(surveyConversationId)
+            setSurveyTitle(surveyConversationId ? `Survey - ${surveyConversationId}` : 'Career Survey')
+            
+            // Auto-open survey panel when survey data is received
+            setSurveyModalVisible(true)
+            console.log('[ChatClientWrapper] Survey panel auto-opened for new survey data')
+          } else {
+            console.log('[ChatClientWrapper] Survey data ignored - not for current conversation')
+          }
         }
         break
 
@@ -685,7 +722,75 @@ export function ChatClientWrapper() {
 
   // Handle survey modal toggle
   const handleToggleSurveyModal = () => {
-    setSurveyModalVisible(prev => !prev)
+    setSurveyModalVisible(prev => {
+      // If closing the survey, also clear the conversation ID
+      if (prev === true) {
+        setSurveyConversationId(null)
+      }
+      return !prev
+    })
+  }
+
+  // Handle opening survey panel manually
+  const handleOpenSurvey = () => {
+    console.log('[ChatClientWrapper] handleOpenSurvey called:', {
+      surveyDataLength: surveyData.length,
+      surveyConversationId,
+      activeConversationId: state.activeConversationId,
+      surveyModalVisible,
+      surveyDataContent: surveyData.slice(0, 2) // Show first 2 questions for debugging
+    })
+    
+    if (surveyData.length > 0 && surveyConversationId === state.activeConversationId) {
+      setSurveyModalVisible(true)
+      console.log('[ChatClientWrapper] Survey panel opened manually')
+    } else {
+      console.log('[ChatClientWrapper] No survey data available to open. Conditions:', {
+        hasSurveyData: surveyData.length > 0,
+        conversationMatch: surveyConversationId === state.activeConversationId
+      })
+    }
+  }
+
+  // TEST FUNCTION: Simulate survey message with special token
+  const handleTestSurveyMessage = () => {
+    console.log('[ChatClientWrapper] TEST: Adding survey message with </survey> token')
+    
+    const testSurveyMessage: Message = {
+      id: `test-survey-${Date.now()}`,
+      content: 'Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa. Bạn có thể nhấn nút "Survey" để hoàn thành khảo sát tương tác này.</survey>',
+      role: 'assistant',
+      timestamp: new Date(),
+    }
+    
+    setState(prev => ({
+      ...prev,
+      messages: [...prev.messages, testSurveyMessage]
+    }))
+    
+    // Also simulate survey data
+    const testSurveyData: Question[] = [
+      {
+        Question: 'Test question 1',
+        Question_type: 'single_option',
+        Question_data: [
+          { id: 'opt1', label: 'Option A' },
+          { id: 'opt2', label: 'Option B' },
+          { id: 'opt3', label: 'Option C' }
+        ]
+      },
+      {
+        Question: 'Test question 2', 
+        Question_type: 'text_input',
+        Question_data: null
+      }
+    ]
+    
+    setSurveyData(testSurveyData)
+    setSurveyConversationId(state.activeConversationId)
+    setSurveyTitle('Test Survey')
+    
+    console.log('[ChatClientWrapper] TEST: Survey data set:', testSurveyData)
   }
 
   const handleOpenCVModal = async (conversationId: string) => {
@@ -778,7 +883,7 @@ export function ChatClientWrapper() {
 
       {/* Main Chat Area - adjusts width based on survey state */}
       <div className={`flex flex-col min-w-0 transition-all duration-300 ease-in-out ${
-        surveyModalVisible && surveyData.length > 0 
+        surveyModalVisible && surveyData.length > 0 && surveyConversationId === state.activeConversationId
           ? 'w-1/2' // 50% when survey is open
           : 'flex-1' // full width when survey is closed
       }`}>
@@ -796,17 +901,33 @@ export function ChatClientWrapper() {
           onToggleConversationSidebar={handleToggleConversationSidebar}
           onToggleFileSidebar={handleToggleFileSidebar}
           onToggleSurvey={handleToggleSurveyModal}
-          hasSurveyData={surveyData.length > 0}
+          onOpenSurvey={handleOpenSurvey}
+          hasSurveyData={surveyData.length > 0 && surveyConversationId === state.activeConversationId}
           isSurveyOpen={surveyModalVisible}
         />
       </div>
 
+      {/* DEBUG: Test Survey Button */}
+      {state.activeConversationId && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button
+            onClick={handleTestSurveyMessage}
+            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded shadow-lg"
+          >
+            🧪 Test Survey
+          </Button>
+        </div>
+      )}
+
       {/* Survey Panel - 50% width when active */}
-      {surveyModalVisible && surveyData.length > 0 && (
+      {surveyModalVisible && surveyData.length > 0 && surveyConversationId === state.activeConversationId && (
         <div className="w-1/2 border-l border-[color:var(--border)] hidden lg:block">
           <SurveyPanel
             isOpen={surveyModalVisible}
-            onClose={() => setSurveyModalVisible(false)}
+            onClose={() => {
+              setSurveyModalVisible(false)
+              setSurveyConversationId(null)
+            }}
             questions={surveyData}
             title={surveyTitle}
             websocket={websocket}
@@ -835,22 +956,40 @@ export function ChatClientWrapper() {
         </div>
       )}
 
-      {/* Desktop File Sidebar - only show when survey is not active */}
-      {(!surveyModalVisible || surveyData.length === 0) && (
-        <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
-          isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
-        }`}>
-          <FileSidebar
-            uploadedFiles={state.uploadedFiles}
-            isLoading={fileLoadingStates.files || false}
-            conversationId={state.activeConversationId}
-            onDeleteFile={handleDeleteFile}
-            onUploadFiles={handleUploadFiles}
-            onUploadCV={handleUploadCV}
-            isCVUploading={isCVUploading}
-            isCollapsed={isFileSidebarCollapsed}
-            onToggleCollapse={handleToggleFileSidebar}
-          />
+      {/* Desktop File Sidebar - always show but adjust position based on survey state */}
+      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+        isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+      }`}>
+        <FileSidebar
+          uploadedFiles={state.uploadedFiles}
+          isLoading={fileLoadingStates.files || false}
+          conversationId={state.activeConversationId}
+          onDeleteFile={handleDeleteFile}
+          onUploadFiles={handleUploadFiles}
+          onUploadCV={handleUploadCV}
+          isCVUploading={isCVUploading}
+          isCollapsed={isFileSidebarCollapsed}
+          onToggleCollapse={handleToggleFileSidebar}
+          hasSurveyData={surveyData.length > 0 && surveyConversationId === state.activeConversationId}
+          onOpenSurvey={handleOpenSurvey}
+        />
+      </div>
+
+      {/* Expand button for File Sidebar when collapsed */}
+      {isFileSidebarCollapsed && (
+        <div className="hidden lg:flex items-center justify-center w-12 border-l border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
+          <Button
+            onClick={handleToggleFileSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group rotate-180"
+            title={t('chat.tooltips.expandSidebar') || 'Expand file sidebar'}
+          >
+            <FontAwesomeIcon 
+              icon={faChevronRight} 
+              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
+            />
+          </Button>
         </div>
       )}
 

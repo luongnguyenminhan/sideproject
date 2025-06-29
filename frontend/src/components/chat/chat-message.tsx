@@ -37,6 +37,7 @@ interface ChatMessageProps {
   copiedText: string;
   hasSurveyData?: boolean;
   onToggleSurvey?: () => void;
+  onOpenSurvey?: () => void;
 }
 
 export function ChatMessage({ 
@@ -45,10 +46,29 @@ export function ChatMessage({
   copyText, 
   copiedText, 
   hasSurveyData = false, 
-  onToggleSurvey 
+  onToggleSurvey,
+  onOpenSurvey
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { t } = useTranslation();
+
+  // Check for survey token in message
+  const hasSurveyToken = message.content.includes('</survey>')
+  const shouldShowSurveyButton = message.role === 'assistant' && (hasSurveyData || hasSurveyToken) && (onToggleSurvey || onOpenSurvey)
+  
+  // Enhanced debug logging
+  if (message.role === 'assistant') {
+    console.log('[ChatMessage] Assistant message analysis:', {
+      messageId: message.id,
+      hasSurveyData,
+      hasSurveyToken,
+      shouldShowSurveyButton,
+      hasToggleFunction: !!onToggleSurvey,
+      hasOpenFunction: !!onOpenSurvey,
+      contentSnippet: message.content.substring(0, 100) + '...',
+      fullContent: message.content // Show full content for debugging
+    })
+  }
   const handleCopyMessage = async (messageId: string, content: string) => {
     try {
       await navigator.clipboard.writeText(content);
@@ -263,16 +283,30 @@ export function ChatMessage({
               )
             }}
           >
-            {processMessageText(message.content)}
+            {processMessageText(message.content.replace('</survey>', ''))}
           </ReactMarkdown>
         </div>
         
         
-        {/* Survey Button - Show if this is an assistant message with survey-related content */}
-        {message.role === 'assistant' && (hasSurveyData || message.content.toLowerCase().includes('survey')) && onToggleSurvey && (
+        {/* Survey Button - Show if this is an assistant message with special survey token or has survey data */}
+        {shouldShowSurveyButton && (
           <div className="mb-3">
             <button
-              onClick={onToggleSurvey}
+              onClick={() => {
+                console.log('[ChatMessage] Survey button clicked:', { 
+                  hasSurveyData, 
+                  hasToggle: !!onToggleSurvey, 
+                  hasOpen: !!onOpenSurvey,
+                  hasSurveyToken
+                })
+                if (hasSurveyData && onOpenSurvey) {
+                  onOpenSurvey()
+                } else if (onToggleSurvey) {
+                  onToggleSurvey()
+                } else if (onOpenSurvey) {
+                  onOpenSurvey()
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

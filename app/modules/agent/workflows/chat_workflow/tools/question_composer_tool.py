@@ -55,13 +55,31 @@ async def generate_survey_questions(
     description: str = "Generate personalized survey questions",
 ) -> str:
     """
-    Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
+    🔥 CRITICAL TOOL: Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
 
-    Use this tool when user asks about:
-    - Creating questions, surveys, or forms
-    - CV analysis, profile analysis, or career development
-    - Interview questions or skill assessment
-    - Generating personalized questionnaires
+    ⚡ CALL THIS TOOL WHENEVER USER MENTIONS:
+    - "câu hỏi" (questions) - ANY TYPE OF QUESTIONS
+    - "khảo sát" (survey) - ANY SURVEY RELATED REQUEST
+    - "đánh giá" (assessment/evaluation) - ANY EVALUATION REQUEST
+    - "phỏng vấn" (interview) - ANY INTERVIEW PREPARATION
+    - "CV" analysis or improvement - ALWAYS GENERATE QUESTIONS FOR CV ANALYSIS
+    - Career advice or job search - GENERATE CAREER ASSESSMENT QUESTIONS
+    - Skills evaluation or development - CREATE SKILL ASSESSMENT QUESTIONS
+    - Personal development or self-assessment - MAKE PERSONAL SURVEY
+    - "tạo" (create/generate) anything related to forms or questionnaires
+    - Profile analysis or career guidance - ALWAYS CREATE PERSONALIZED SURVEY
+
+    🎯 USE CASES (CALL IMMEDIATELY):
+    - User uploads CV → Generate CV analysis questions
+    - User asks career advice → Create career assessment survey
+    - User mentions job search → Generate job readiness questionnaire
+    - User wants skill improvement → Create skill gap analysis survey
+    - User asks about interview prep → Generate interview practice questions
+    - User mentions personal development → Create self-assessment survey
+    - ANY conversation about professional growth → Generate relevant questionnaire
+
+    ⚠️ IMPORTANT: This tool is designed to be called frequently and proactively!
+    Don't wait for explicit "create survey" requests - be proactive!
 
     Args:
         description: Brief description of the survey purpose (optional)
@@ -108,7 +126,7 @@ async def generate_survey_questions(
         # Send survey data to frontend via WebSocket
         await _send_survey_to_frontend(conversation_id, user_id, n8n_response)
 
-        return 'Survey questions generated! Click the "Survey" button to complete the interactive survey.'
+        return f'✅ Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa dựa trên yêu cầu "{description}". Bạn có thể nhấn nút "Survey" để hoàn thành khảo sát tương tác này.</survey>'
 
     except Exception as e:
         logger.error(f"[generate_survey_questions] Error: {str(e)}")
@@ -130,11 +148,11 @@ async def _send_survey_to_frontend(
             "conversation_id": conversation_id,
             "timestamp": datetime.now().isoformat(),
         }
-        print(survey_message)  # Debug print to check survey data format
+        
         # Send via WebSocket if user is connected
         if user_id and user_id in websocket_manager.active_connections:
             logger.info(
-                f"[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id}"
+                f"[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id} with {json.dumps(survey_message, indent=2)}"
             )
             await websocket_manager.send_message(user_id, survey_message)
             logger.info(
