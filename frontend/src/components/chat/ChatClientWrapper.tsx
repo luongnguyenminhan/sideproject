@@ -206,19 +206,46 @@ export function ChatClientWrapper() {
         break
 
       case 'survey_data':
-        console.log('[ChatClientWrapper] Survey data received:', message.data)
+        console.log('[ChatClientWrapper] Raw survey data received:')
+        console.log('- Message object:', message)
+        console.log('- Data field:', message.data)
+        console.log('- Data type:', typeof message.data)
+        console.log('- Is array:', Array.isArray(message.data))
+        
+        if (message.data) {
+          console.log('- Data length:', Array.isArray(message.data) ? message.data.length : 'Not an array')
+          console.log('- First item:', Array.isArray(message.data) && message.data.length > 0 ? message.data[0] : 'No items')
+          console.log('- Data structure:', JSON.stringify(message.data, null, 2))
+        }
+        
         if (message.data && Array.isArray(message.data)) {
-          // Only process survey data if it's for the current active conversation
-          const surveyConversationId = message.conversation_id || state.activeConversationId
+          // Validate survey data structure
+          const validQuestions = message.data.filter((item: any) => {
+            const isValid = item && 
+                           typeof item.Question === 'string' && 
+                           typeof item.Question_type === 'string' &&
+                           (item.Question_data === null || Array.isArray(item.Question_data))
+            if (!isValid) {
+              console.warn('[ChatClientWrapper] Invalid question item:', item)
+            }
+            return isValid
+          })
           
-          if (surveyConversationId === state.activeConversationId) {
+          console.log(`[ChatClientWrapper] Validated ${validQuestions.length}/${message.data.length} questions`)
+          
+          if (validQuestions.length > 0) {
+            // Always process survey data when received
+            const receivedConversationId = message.conversation_id || state.activeConversationId
+            
+            console.log('[ChatClientWrapper] Processing survey data for conversation:', receivedConversationId)
+            
             // Add survey message to chat
             const surveyMessage: Message = {
               id: `survey_${Date.now()}`,
               content: 'Survey questions generated! Click the "Survey" button to complete the interactive survey.',
               role: 'assistant',
               timestamp: new Date(),
-              survey_data: message.data // Store the survey questions
+              survey_data: validQuestions // Store the validated survey questions
             }
             
             setState(prev => ({
@@ -228,16 +255,28 @@ export function ChatClientWrapper() {
             }))
 
             // Set survey data and track which conversation it belongs to
-            setSurveyData(message.data)
-            setSurveyConversationId(surveyConversationId)
-            setSurveyTitle(surveyConversationId ? `Survey - ${surveyConversationId}` : 'Career Survey')
+            setSurveyData(validQuestions)
+            setSurveyConversationId(receivedConversationId)
+            setSurveyTitle(receivedConversationId ? `Survey - ${receivedConversationId}` : 'Career Survey')
             
-            // Auto-open survey panel when survey data is received
-            setSurveyModalVisible(true)
-            console.log('[ChatClientWrapper] Survey panel auto-opened for new survey data')
+            console.log('[ChatClientWrapper] Survey state updated:', {
+              questionsCount: validQuestions.length,
+              conversationId: receivedConversationId,
+              title: receivedConversationId ? `Survey - ${receivedConversationId}` : 'Career Survey'
+            })
+            
+            // Auto-open survey panel when survey data is received (only if it's for current conversation)
+            if (receivedConversationId === state.activeConversationId) {
+              setSurveyModalVisible(true)
+              console.log('[ChatClientWrapper] Survey panel auto-opened for current conversation')
+            } else {
+              console.log('[ChatClientWrapper] Survey data received but not auto-opening (different conversation)')
+            }
           } else {
-            console.log('[ChatClientWrapper] Survey data ignored - not for current conversation')
+            console.error('[ChatClientWrapper] No valid questions found in survey data')
           }
+        } else {
+          console.error('[ChatClientWrapper] Invalid survey data format - expected array but got:', typeof message.data)
         }
         break
 
@@ -741,56 +780,24 @@ export function ChatClientWrapper() {
       surveyDataContent: surveyData.slice(0, 2) // Show first 2 questions for debugging
     })
     
-    if (surveyData.length > 0 && surveyConversationId === state.activeConversationId) {
-      setSurveyModalVisible(true)
-      console.log('[ChatClientWrapper] Survey panel opened manually')
-    } else {
-      console.log('[ChatClientWrapper] No survey data available to open. Conditions:', {
-        hasSurveyData: surveyData.length > 0,
-        conversationMatch: surveyConversationId === state.activeConversationId
-      })
-    }
-  }
-
-  // TEST FUNCTION: Simulate survey message with special token
-  const handleTestSurveyMessage = () => {
-    console.log('[ChatClientWrapper] TEST: Adding survey message with </survey> token')
-    
-    const testSurveyMessage: Message = {
-      id: `test-survey-${Date.now()}`,
-      content: 'Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa. Bạn có thể nhấn nút "Survey" để hoàn thành khảo sát tương tác này.</survey>',
-      role: 'assistant',
-      timestamp: new Date(),
-    }
-    
-    setState(prev => ({
-      ...prev,
-      messages: [...prev.messages, testSurveyMessage]
-    }))
-    
-    // Also simulate survey data
-    const testSurveyData: Question[] = [
-      {
-        Question: 'Test question 1',
-        Question_type: 'single_option',
-        Question_data: [
-          { id: 'opt1', label: 'Option A' },
-          { id: 'opt2', label: 'Option B' },
-          { id: 'opt3', label: 'Option C' }
-        ]
-      },
-      {
-        Question: 'Test question 2', 
-        Question_type: 'text_input',
-        Question_data: null
+    if (surveyData.length > 0) {
+      // If we have survey data, always try to open it
+      if (surveyConversationId === state.activeConversationId || !surveyConversationId) {
+        setSurveyModalVisible(true)
+        console.log('[ChatClientWrapper] Survey panel opened manually - data available for current conversation')
+      } else {
+        console.log('[ChatClientWrapper] Survey data exists but for different conversation:', {
+          surveyConversationId,
+          activeConversationId: state.activeConversationId
+        })
+        // Still try to open it as user explicitly requested
+        setSurveyModalVisible(true)
       }
-    ]
-    
-    setSurveyData(testSurveyData)
-    setSurveyConversationId(state.activeConversationId)
-    setSurveyTitle('Test Survey')
-    
-    console.log('[ChatClientWrapper] TEST: Survey data set:', testSurveyData)
+    } else {
+      console.log('[ChatClientWrapper] No survey data available to open. Trying to fetch or show empty state.')
+      // Try to open empty survey panel or show a message
+      setSurveyModalVisible(true)
+    }
   }
 
   const handleOpenCVModal = async (conversationId: string) => {
@@ -883,44 +890,65 @@ export function ChatClientWrapper() {
 
       {/* Main Chat Area - adjusts width based on survey state */}
       <div className={`flex flex-col min-w-0 transition-all duration-300 ease-in-out ${
-        surveyModalVisible && surveyData.length > 0 && surveyConversationId === state.activeConversationId
+        surveyModalVisible && surveyData.length > 0
           ? 'w-1/2' // 50% when survey is open
           : 'flex-1' // full width when survey is closed
       }`}>
         <ChatInterface
-          conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
-          activeConversationId={state.activeConversationId}
-          messages={state.messages}
-          isLoading={state.isLoading}
-          isTyping={state.isTyping}
-          error={state.error}
-          onSendMessage={handleSendMessage}
-          onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
-          isConversationSidebarCollapsed={isConversationSidebarCollapsed}
-          isFileSidebarCollapsed={isFileSidebarCollapsed}
-          onToggleConversationSidebar={handleToggleConversationSidebar}
-          onToggleFileSidebar={handleToggleFileSidebar}
-          onToggleSurvey={handleToggleSurveyModal}
-          onOpenSurvey={handleOpenSurvey}
-          hasSurveyData={surveyData.length > 0 && surveyConversationId === state.activeConversationId}
-          isSurveyOpen={surveyModalVisible}
+        conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
+        activeConversationId={state.activeConversationId}
+        messages={state.messages}
+        isLoading={state.isLoading}
+        isTyping={state.isTyping}
+        error={state.error}
+        onSendMessage={handleSendMessage}
+        onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+        isConversationSidebarCollapsed={isConversationSidebarCollapsed}
+        isFileSidebarCollapsed={isFileSidebarCollapsed}
+        onToggleConversationSidebar={handleToggleConversationSidebar}
+        onToggleFileSidebar={handleToggleFileSidebar}
+        onToggleSurvey={handleToggleSurveyModal}
+        onOpenSurvey={handleOpenSurvey}
+        hasSurveyData={surveyData.length > 0}
+        isSurveyOpen={surveyModalVisible}
         />
       </div>
 
-      {/* DEBUG: Test Survey Button */}
+      {/* DEBUG: Survey State Logging */}
       {state.activeConversationId && (
-        <div className="fixed bottom-4 right-4 z-50">
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
           <Button
-            onClick={handleTestSurveyMessage}
-            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded shadow-lg"
+            onClick={() => {
+              console.log('[DEBUG] Current Survey State:', {
+                surveyDataLength: surveyData.length,
+                surveyConversationId,
+                activeConversationId: state.activeConversationId,
+                surveyModalVisible,
+                surveyData: surveyData.slice(0, 1),
+                surveyDataFull: surveyData
+              })
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded shadow-lg"
           >
-            🧪 Test Survey
+            🔍 Log Survey State
+          </Button>
+          <Button
+            onClick={() => {
+              console.log('[DEBUG] WebSocket State:', {
+                isConnected: websocket?.isConnected(),
+                hasWebSocket: !!websocket,
+                connectionState: websocket?.getConnectionState()
+              })
+            }}
+            className="bg-purple-500 hover:bg-purple-600 text-white text-xs px-3 py-1 rounded shadow-lg"
+          >
+            🌐 Log WebSocket State
           </Button>
         </div>
       )}
 
       {/* Survey Panel - 50% width when active */}
-      {surveyModalVisible && surveyData.length > 0 && surveyConversationId === state.activeConversationId && (
+      {surveyModalVisible && surveyData.length > 0 && (
         <div className="w-1/2 border-l border-[color:var(--border)] hidden lg:block">
           <SurveyPanel
             isOpen={surveyModalVisible}
@@ -970,7 +998,7 @@ export function ChatClientWrapper() {
           isCVUploading={isCVUploading}
           isCollapsed={isFileSidebarCollapsed}
           onToggleCollapse={handleToggleFileSidebar}
-          hasSurveyData={surveyData.length > 0 && surveyConversationId === state.activeConversationId}
+          hasSurveyData={surveyData.length > 0}
           onOpenSurvey={handleOpenSurvey}
         />
       </div>

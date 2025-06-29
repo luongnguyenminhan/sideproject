@@ -31,6 +31,23 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Debug logging for SurveyContainer
+  console.log('[SurveyContainer] Render with questions:', {
+    questionsCount: questions.length,
+    currentStep,
+    isEmbedded,
+    conversationId,
+    hasWebsocket: !!websocket,
+    websocketConnected: websocket?.isConnected?.(),
+    questions: questions.map((q, i) => ({
+      index: i,
+      question: q.Question,
+      type: q.Question_type,
+      hasData: !!q.Question_data,
+      dataLength: Array.isArray(q.Question_data) ? q.Question_data.length : 'not array'
+    }))
+  })
+
 
   const progress = ((currentStep + 1) / questions.length) * 100;
 

@@ -30,6 +30,23 @@ export function SurveyPanel({
   const { t } = useTranslation()
   const [isMinimized, setIsMinimized] = useState(false)
 
+  // Debug logging for survey panel
+  console.log('[SurveyPanel] Render with props:', {
+    isOpen,
+    questionsCount: questions.length,
+    hasQuestions: questions.length > 0,
+    title,
+    conversationId,
+    questionsPreview: questions.slice(0, 2),
+    questionsStructure: questions.map((q, i) => ({
+      index: i,
+      question: q.Question?.substring(0, 50) + '...',
+      type: q.Question_type,
+      hasData: !!q.Question_data,
+      dataType: Array.isArray(q.Question_data) ? 'array' : typeof q.Question_data
+    }))
+  })
+
   if (!isOpen) return null
 
   return (

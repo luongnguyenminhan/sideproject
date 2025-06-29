@@ -530,11 +530,11 @@ class WorkflowNodes:
 		# Execute tools
 		tool_node = ToolNode(self.workflow._tools)
 		result = await tool_node.ainvoke(updated_state, config or {})
-		
+
 		# Track survey generation in state
 		survey_generated = False
 		survey_questions_count = 0
-		
+
 		# Check if survey generation tool was called
 		last_message = result.get('messages', [])[-1] if result.get('messages') else None
 		if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
@@ -543,14 +543,14 @@ class WorkflowNodes:
 					survey_generated = True
 					print('[tools_node] ✅ Survey generation tool was executed')
 					break
-		
+
 		# Add survey tracking to result state
 		result_with_survey_tracking = {
 			**result,
 			'survey_generated': survey_generated,
 			'survey_questions_count': survey_questions_count,
 		}
-		
+
 		print('[tools_node] Tools execution completed')
 		return result_with_survey_tracking
 

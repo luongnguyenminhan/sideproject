@@ -66,7 +66,8 @@ export function ChatMessage({
       hasToggleFunction: !!onToggleSurvey,
       hasOpenFunction: !!onOpenSurvey,
       contentSnippet: message.content.substring(0, 100) + '...',
-      fullContent: message.content // Show full content for debugging
+      surveyTokenPosition: message.content.indexOf('</survey>'),
+      messageTimestamp: message.timestamp
     })
   }
   const handleCopyMessage = async (messageId: string, content: string) => {
@@ -292,27 +293,31 @@ export function ChatMessage({
         {shouldShowSurveyButton && (
           <div className="mb-3">
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
                 console.log('[ChatMessage] Survey button clicked:', { 
                   hasSurveyData, 
                   hasToggle: !!onToggleSurvey, 
                   hasOpen: !!onOpenSurvey,
                   hasSurveyToken
                 })
-                if (hasSurveyData && onOpenSurvey) {
+                
+                // Priority: onOpenSurvey first if available and there's survey data
+                if (onOpenSurvey) {
+                  console.log('[ChatMessage] Calling onOpenSurvey')
                   onOpenSurvey()
                 } else if (onToggleSurvey) {
+                  console.log('[ChatMessage] Calling onToggleSurvey')
                   onToggleSurvey()
-                } else if (onOpenSurvey) {
-                  onOpenSurvey()
                 }
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md active:scale-95 transform"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
-              {t('survey.openSurvey')}
+              {t('survey.openSurvey') || 'Open Survey'}
             </button>
           </div>
         )}

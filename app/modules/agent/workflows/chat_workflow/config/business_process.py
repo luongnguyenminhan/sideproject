@@ -74,31 +74,116 @@ class BusinessProcessManager:
 				process_type=BusinessProcessType.CV_ANALYSIS,
 				name='CV Analysis Process',
 				description='Process for analyzing user CVs and providing career guidance',
-				steps=[ProcessStep.INTAKE, ProcessStep.PROCESSING, ProcessStep.REVIEW, ProcessStep.COMPLETION],
-				rules=[BusinessRule(name='cv_required', description='CV file must be provided for analysis', condition="'cv' in user_input.lower() and not has_cv_context", action='request_cv_upload', priority=3), BusinessRule(name='privacy_protection', description='Protect user privacy in CV analysis', condition='contains_personal_info', action='sanitize_response', priority=5)],
-				required_tools=['get_cv_profile', 'rag_retrieval', 'generate_survey_questions'],
-				escalation_conditions=['analysis_confidence < 0.7', 'user_requests_human_review'],
-				completion_criteria=['cv_analyzed', 'feedback_provided', 'user_satisfied'],
+				steps=[
+					ProcessStep.INTAKE,
+					ProcessStep.PROCESSING,
+					ProcessStep.REVIEW,
+					ProcessStep.COMPLETION,
+				],
+				rules=[
+					BusinessRule(
+						name='cv_required',
+						description='CV file must be provided for analysis',
+						condition="'cv' in user_input.lower() and not has_cv_context",
+						action='request_cv_upload',
+						priority=3,
+					),
+					BusinessRule(
+						name='privacy_protection',
+						description='Protect user privacy in CV analysis',
+						condition='contains_personal_info',
+						action='sanitize_response',
+						priority=5,
+					),
+				],
+				required_tools=[
+					'get_cv_profile',
+					'rag_retrieval',
+					'generate_survey_questions',
+				],
+				escalation_conditions=[
+					'analysis_confidence < 0.7',
+					'user_requests_human_review',
+				],
+				completion_criteria=[
+					'cv_analyzed',
+					'feedback_provided',
+					'user_satisfied',
+				],
 			),
 			BusinessProcessType.SURVEY_GENERATION: ProcessDefinition(
 				process_type=BusinessProcessType.SURVEY_GENERATION,
 				name='Survey Generation Process',
 				description='Process for generating intelligent surveys via N8N integration',
-				steps=[ProcessStep.INTAKE, ProcessStep.VALIDATION, ProcessStep.PROCESSING, ProcessStep.COMPLETION],
-				rules=[BusinessRule(name='authorization_required', description='Valid authorization token required for N8N API', condition='not has_valid_auth_token', action='request_authentication', priority=5), BusinessRule(name='survey_context_validation', description='Ensure sufficient context for survey generation', condition='insufficient_context_for_survey', action='gather_more_context', priority=3)],
+				steps=[
+					ProcessStep.INTAKE,
+					ProcessStep.VALIDATION,
+					ProcessStep.PROCESSING,
+					ProcessStep.COMPLETION,
+				],
+				rules=[
+					BusinessRule(
+						name='authorization_required',
+						description='Valid authorization token required for N8N API',
+						condition='not has_valid_auth_token',
+						action='request_authentication',
+						priority=5,
+					),
+					BusinessRule(
+						name='survey_context_validation',
+						description='Ensure sufficient context for survey generation',
+						condition='insufficient_context_for_survey',
+						action='gather_more_context',
+						priority=3,
+					),
+				],
 				required_tools=['generate_survey_questions'],
-				escalation_conditions=['n8n_api_unavailable', 'repeated_survey_failures'],
-				completion_criteria=['survey_generated', 'websocket_delivered', 'user_acknowledged'],
+				escalation_conditions=[
+					'n8n_api_unavailable',
+					'repeated_survey_failures',
+				],
+				completion_criteria=[
+					'survey_generated',
+					'websocket_delivered',
+					'user_acknowledged',
+				],
 			),
 			BusinessProcessType.CAREER_GUIDANCE: ProcessDefinition(
 				process_type=BusinessProcessType.CAREER_GUIDANCE,
 				name='Career Guidance Process',
 				description='Process for providing comprehensive career guidance',
-				steps=[ProcessStep.INTAKE, ProcessStep.PROCESSING, ProcessStep.REVIEW, ProcessStep.COMPLETION],
-				rules=[BusinessRule(name='profile_completeness', description='Ensure user profile is complete enough for guidance', condition='profile_completeness < 0.6', action='request_profile_completion', priority=4), BusinessRule(name='evidence_based_advice', description='Provide evidence-based career advice', condition='advice_without_evidence', action='include_supporting_data', priority=3)],
+				steps=[
+					ProcessStep.INTAKE,
+					ProcessStep.PROCESSING,
+					ProcessStep.REVIEW,
+					ProcessStep.COMPLETION,
+				],
+				rules=[
+					BusinessRule(
+						name='profile_completeness',
+						description='Ensure user profile is complete enough for guidance',
+						condition='profile_completeness < 0.6',
+						action='request_profile_completion',
+						priority=4,
+					),
+					BusinessRule(
+						name='evidence_based_advice',
+						description='Provide evidence-based career advice',
+						condition='advice_without_evidence',
+						action='include_supporting_data',
+						priority=3,
+					),
+				],
 				required_tools=['rag_retrieval', 'generate_survey_questions'],
-				escalation_conditions=['complex_career_transition', 'user_requires_professional_counselor'],
-				completion_criteria=['guidance_provided', 'actionable_steps_given', 'user_understanding_confirmed'],
+				escalation_conditions=[
+					'complex_career_transition',
+					'user_requires_professional_counselor',
+				],
+				completion_criteria=[
+					'guidance_provided',
+					'actionable_steps_given',
+					'user_understanding_confirmed',
+				],
 			),
 		}
 
@@ -108,19 +193,44 @@ class BusinessProcessManager:
 
 		# Enhanced survey detection - more proactive approach
 		survey_keywords = [
-			'survey', 'question', 'questionnaire', 'form', 'assessment', 'evaluation',
-			'khảo sát', 'câu hỏi', 'đánh giá', 'phỏng vấn', 'interview',
-			'skill', 'kỹ năng', 'experience', 'kinh nghiệm',
-			'tạo', 'create', 'generate', 'analyze', 'phân tích'
+			'survey',
+			'question',
+			'questionnaire',
+			'form',
+			'assessment',
+			'evaluation',
+			'khảo sát',
+			'câu hỏi',
+			'đánh giá',
+			'phỏng vấn',
+			'interview',
+			'skill',
+			'kỹ năng',
+			'experience',
+			'kinh nghiệm',
+			'tạo',
+			'create',
+			'generate',
+			'analyze',
+			'phân tích',
 		]
-		
+
 		# CV-related requests should also trigger survey generation
 		cv_survey_keywords = ['cv', 'resume', 'curriculum', 'profile', 'hồ sơ']
-		
-		# Career-related requests should trigger survey generation  
+
+		# Career-related requests should trigger survey generation
 		career_survey_keywords = [
-			'career', 'job', 'work', 'professional', 'interview', 'sự nghiệp',
-			'nghề nghiệp', 'công việc', 'tư vấn', 'advice', 'guidance'
+			'career',
+			'job',
+			'work',
+			'professional',
+			'interview',
+			'sự nghiệp',
+			'nghề nghiệp',
+			'công việc',
+			'tư vấn',
+			'advice',
+			'guidance',
 		]
 
 		# Priority-based detection - SURVEY FIRST!

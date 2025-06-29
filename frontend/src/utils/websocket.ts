@@ -63,14 +63,25 @@ export class ChatWebSocket {
 
       this.ws.onmessage = (event) => {
         try {
+          console.log('[ChatWebSocket] Raw message received:', event.data)
           const data: WebSocketResponse = JSON.parse(event.data)
-          console.log('[ChatWebSocket] Message received:', data.type)
+          console.log('[ChatWebSocket] Parsed message:', data)
+          console.log('[ChatWebSocket] Message type:', data.type)
+          
+          if (data.type === 'survey_data') {
+            console.log('[ChatWebSocket] Survey data details:')
+            console.log('- Data field exists:', !!data.data)
+            console.log('- Data is array:', Array.isArray(data.data))
+            console.log('- Data length:', Array.isArray(data.data) ? data.data.length : 'N/A')
+            console.log('- Full data object:', JSON.stringify(data, null, 2))
+          }
           
           if (this.options.onMessage) {
             this.options.onMessage(data)
           }
         } catch (error) {
           console.error('[ChatWebSocket] Error parsing message:', error)
+          console.error('[ChatWebSocket] Raw message that failed:', event.data)
         }
       }
 
