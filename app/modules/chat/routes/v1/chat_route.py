@@ -314,6 +314,81 @@ async def websocket_chat_endpoint(
 						# Stop typing indicator
 						await websocket_manager.send_message(user_id, {'type': 'assistant_typing', 'status': False})
 
+				elif message_data.get('type') == 'survey_response':
+					logger.info('[WebSocket] 📝 SURVEY_RESPONSE received')
+					logger.info(f'[WebSocket] 📝   Answers keys: {list(message_data.get("answers", {}).keys())}')
+					logger.info(f'[WebSocket] 📝   Conversation ID: {message_data.get("conversation_id")}')
+
+					try:
+						# Import here to avoid circular imports
+						from app.modules.question_session.repository.question_session_repo import (
+							QuestionSessionRepo,
+						)
+						from app.modules.question_session.schemas.question_session_request import (
+							ParseSurveyResponseRequest,
+						)
+						from app.modules.question_session.services.question_session_integration_service import (
+							QuestionSessionIntegrationService,
+						)
+
+						# First check if there's an active session, if not create one from current survey data
+						integration_service = QuestionSessionIntegrationService(db)
+						active_session_id = await integration_service.get_active_session_for_conversation(
+							conversation_id=message_data.get('conversation_id'),
+							user_id=user_id,
+						)
+
+						if not active_session_id:
+							logger.info('[WebSocket] 📝 No active session found, attempting to create one from survey response')
+							# Try to create a session with minimal data if none exists
+							try:
+								active_session_id = await integration_service.create_session_from_survey_data(
+									conversation_id=message_data.get('conversation_id'),
+									user_id=user_id,
+									survey_data=[],  # Empty data, will be populated from answers
+									session_name='Survey Response Session',
+								)
+								logger.info(f'[WebSocket] 📝 Created new session: {active_session_id}')
+							except Exception as session_error:
+								logger.warning(f'[WebSocket] 📝 Could not create session: {session_error}')
+
+						# Create the request object for processing
+						survey_request = ParseSurveyResponseRequest(
+							type=message_data.get('type'),
+							answers=message_data.get('answers', {}),
+							conversation_id=message_data.get('conversation_id'),
+							timestamp=message_data.get('timestamp'),
+						)
+
+						# Process the survey response
+						question_session_repo = QuestionSessionRepo(db)
+						result = question_session_repo.parse_survey_response(survey_request, user_id)
+
+						logger.info(f'[WebSocket] ✅ SURVEY_RESPONSE processed: {result.session_id}')
+
+						# Send confirmation back to client
+						await websocket_manager.send_message(
+							user_id,
+							{
+								'type': 'survey_response_processed',
+								'session_id': result.session_id,
+								'answers_processed': result.answers_processed,
+								'session_status': result.session_status,
+								'message': _('survey_response_processed_successfully'),
+							},
+						)
+
+					except Exception as e:
+						logger.error(f'[WebSocket] ❌ Error processing survey response: {e}')
+						await websocket_manager.send_message(
+							user_id,
+							{
+								'type': 'error',
+								'message': _('survey_response_processing_failed'),
+								'error_details': str(e),
+							},
+						)
+
 				elif message_data.get('type') == 'ping':
 					logger.info('[WebSocket] 🏓 PING received, responding with PONG')
 					# Respond to ping
@@ -522,7 +597,6 @@ async def get_cv_metadata(
 	"""Get CV metadata from conversation"""
 	try:
 		user_id = current_user.get('user_id')
-		cv_service = CVIntegrationService(db)
 
 		# Get conversation và check access
 		chat_repo = ChatRepo(db)

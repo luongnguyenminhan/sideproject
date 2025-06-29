@@ -28,6 +28,7 @@ class User(BaseEntity):
 	conversations = relationship('Conversation', back_populates='user', cascade='all, delete-orphan')
 	messages = relationship('Message', back_populates='user', cascade='all, delete-orphan')
 	files = relationship('File', back_populates='user', cascade='all, delete-orphan')
+	question_sessions = relationship('QuestionSession', back_populates='user', cascade='all, delete-orphan')
 
 	# Agent relationship (if users can own agents)
 	agents = relationship('Agent', back_populates='user', cascade='all, delete-orphan')

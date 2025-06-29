@@ -123,17 +123,21 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 		# Import WebSocket manager
 		from app.modules.chat.routes.v1.chat_route import websocket_manager
 
-		# Format survey data for frontend
+		# Create question session in database
+		enhanced_data = await _create_question_session(conversation_id, user_id, n8n_response)
+
+		# Format survey message for frontend
 		survey_message = {
 			'type': 'survey_data',
-			'data': n8n_response,
+			'data': enhanced_data.get('survey_data', n8n_response),
 			'conversation_id': conversation_id,
+			'session_id': enhanced_data.get('session_id'),
 			'timestamp': datetime.now().isoformat(),
 		}
 
 		# Send via WebSocket if user is connected
 		if user_id and user_id in websocket_manager.active_connections:
-			logger.info(f'[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id} with {json.dumps(survey_message, indent=2)}')
+			logger.info(f'[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id}')
 			await websocket_manager.send_message(user_id, survey_message)
 			logger.info('[_send_survey_to_frontend] Survey data sent successfully via WebSocket')
 		else:
@@ -142,6 +146,47 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 	except Exception as e:
 		logger.error(f'[_send_survey_to_frontend] Error sending survey data: {str(e)}')
 		# Don't raise - this is not critical, the N8N call was successful
+
+
+async def _create_question_session(conversation_id: str, user_id: str, survey_data: Dict[str, Any]) -> Dict[str, Any]:
+	"""Create question session in database for the generated survey"""
+	try:
+		# Import here to avoid circular imports
+		from app.core.database import get_db
+		from app.modules.question_session.services.question_session_integration_service import (
+			QuestionSessionIntegrationService,
+		)
+
+		# Create database session
+		db_gen = get_db()
+		db = next(db_gen)
+
+		try:
+			# Initialize integration service
+			integration_service = QuestionSessionIntegrationService(db)
+
+			# Handle survey generation and session creation
+			result = await integration_service.handle_survey_generation(
+				conversation_id=conversation_id,
+				user_id=user_id,
+				survey_data=(survey_data if isinstance(survey_data, list) else [survey_data]),
+				description='AI Generated Career Survey',
+			)
+
+			logger.info(f'[_create_question_session] Question session created: {result.get("session_id")}')
+			return result
+
+		finally:
+			db.close()
+
+	except Exception as e:
+		logger.error(f'[_create_question_session] Error creating question session: {str(e)}')
+		# Return original data if session creation fails
+		return {
+			'conversation_id': conversation_id,
+			'survey_data': survey_data,
+			'error': str(e),
+		}
 
 
 def get_question_composer_tool(db_session: Session = None):

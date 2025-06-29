@@ -19,3 +19,4 @@ class Conversation(BaseEntity):
 	messages = relationship('Message', back_populates='conversation', cascade='all, delete-orphan')
 	files = relationship('File', back_populates='conversation', cascade='all, delete-orphan')
 	message_files = relationship('MessageFile', back_populates='conversation', cascade='all, delete-orphan')
+	question_sessions = relationship('QuestionSession', back_populates='conversation', cascade='all, delete-orphan')

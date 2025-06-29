@@ -44,7 +44,7 @@ class ChatRepo:
 		"""Get conversation message history for context"""
 
 		# Verify conversation access
-		conversation = self.get_conversation_by_id(conversation_id, user_id)
+		self.get_conversation_by_id(conversation_id, user_id)
 
 		# Get messages from database using conversation_history method for better performance
 		messages = self.message_dal.get_conversation_history(conversation_id, limit=limit)
