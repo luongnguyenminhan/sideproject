@@ -154,6 +154,7 @@ class ChatRepo:
 				conversation_system_prompt=conversation_system_prompt,
 				conversation_history=conversation_history,
 				authorization_token=authorization_token,
+				user_id=user_id,
 			)
 
 			return result

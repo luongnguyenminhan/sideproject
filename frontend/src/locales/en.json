@@ -275,14 +275,23 @@
     "complete": "Complete",
     "continue": "Continue",
     "previous": "Previous",
+    "noQuestions": "No Questions Available",
+    "waitingForData": "Waiting for survey data from the agent...",
     "results": {
       "completed": "Survey completed",
-      "description": "See your results and insights.",
+      "description": "Thank you for completing the survey! Your responses have been recorded.",
       "retake": "Retake survey",
       "title": "Survey Results"
     },
     "step": "Step",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "type": {
+      "single_option": "Single Choice",
+      "multiple_choice": "Multiple Choice", 
+      "text_input": "Text Input",
+      "sub_form": "Sub Form",
+      "unknown_type": "Unknown Type"
+    }
   },
   "team": {
     "leadership": {

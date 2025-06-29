@@ -23,7 +23,6 @@ from .config.workflow_config import WorkflowConfig
 
 # Note: LangChainQdrantService removed - now using Agentic RAG KBRepository
 from .utils.color_logger import get_color_logger, Colors
-from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 
 load_dotenv()

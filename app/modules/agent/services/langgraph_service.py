@@ -118,6 +118,7 @@ class LangGraphService(object):
 		conversation_system_prompt: str = None,
 		conversation_history: List[Dict[str, Any]] = None,
 		authorization_token: str = None,
+		user_id: str = None,
 	) -> Dict[str, Any]:
 		"""Execute conversation using basic workflow with Agentic RAG"""
 		start_time = time.time()
@@ -133,12 +134,12 @@ class LangGraphService(object):
 			# Prepare messages
 			messages = self._prepare_messages(system_prompt, user_message, conversation_history or [])
 
-			print(f'[LangGraphService] Prepared messages: {messages}')
-
 			# Execute workflow - use ainvoke instead of astream to avoid __end__ issues
 			config = {
 				'configurable': {
 					'thread_id': conversation_id,
+					'conversation_id': conversation_id,
+					'user_id': user_id,  # Add for WebSocket delivery
 					'system_prompt': system_prompt,
 				}
 			}
@@ -147,17 +148,15 @@ class LangGraphService(object):
 			if authorization_token:
 				config['configurable']['authorization_token'] = authorization_token
 				logger.info(f'[execute_conversation] Authorization token added to config: {authorization_token[:20] if authorization_token else None}...')
+				logger.info(f'[execute_conversation] conversation_id: {conversation_id}') 
 			else:
 				logger.warning('[execute_conversation] No authorization token provided')
 
 			workflow_input = {'messages': messages}
 
-			print(f'[LangGraphService] Invoking workflow with input: {workflow_input} and config: {config}')
 
 			# Get result from global workflow (using ainvoke for direct result)
 			final_state = await LangGraphService._global_workflow.ainvoke(workflow_input, config)
-
-			print(f'[LangGraphService] Workflow execution completed. Final state: {final_state}')
 
 			# Extract response from final state
 			content = self._extract_response_content(final_state)
@@ -214,7 +213,8 @@ class LangGraphService(object):
 			# Try to extract from metadata if available
 			metadata = final_state.get('metadata', {})
 			return metadata.get('tokens_used', 0)
-		except:
+		except Exception as e:
+			logger.error(f'\033[91m[_get_tokens_used] Error extracting tokens used: {str(e)}\033[0m')
 			# Fallback: estimate based on content length
 			messages = final_state.get('messages', [])
 			total_chars = sum(len(str(msg)) for msg in messages)

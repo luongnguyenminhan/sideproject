@@ -15,8 +15,10 @@ from app.exceptions.exception import ValidationException
 
 logger = logging.getLogger(__name__)
 
-# Global variable to store authorization token for the current request context
+# Global variables to store context for the current request
 _current_authorization_token: Optional[str] = None
+_current_conversation_id: Optional[str] = None
+_current_user_id: Optional[str] = None
 
 
 def set_authorization_token(token: str):
@@ -26,13 +28,26 @@ def set_authorization_token(token: str):
 	logger.info(f'[QuestionComposer] Authorization token set: {token[:20] if token else None}...')
 
 
+def set_conversation_context(conversation_id: str, user_id: str = None):
+	"""Set conversation context for current request"""
+	global _current_conversation_id, _current_user_id
+	_current_conversation_id = conversation_id
+	_current_user_id = user_id
+	logger.info(f'[QuestionComposer] Context set - Conversation: {conversation_id}, User: {user_id}')
+
+
 def get_authorization_token() -> Optional[str]:
 	"""Get current authorization token"""
 	return _current_authorization_token
 
 
+def get_conversation_context() -> tuple[Optional[str], Optional[str]]:
+	"""Get current conversation context (conversation_id, user_id)"""
+	return _current_conversation_id, _current_user_id
+
+
 @tool(return_direct=True)
-async def generate_survey_questions(conversation_id: str, user_id: str = None) -> str:
+async def generate_survey_questions(description: str = "Generate personalized survey questions") -> str:
 	"""
 	Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
 
@@ -43,28 +58,31 @@ async def generate_survey_questions(conversation_id: str, user_id: str = None) -
 	- Generating personalized questionnaires
 
 	Args:
-	    conversation_id: ID of the current conversation (required)
-	    user_id: ID of the user for WebSocket delivery (optional)
+	    description: Brief description of the survey purpose (optional)
 
 	Returns:
 	    Success message confirming survey was generated and sent to user interface
 	"""
-	logger.info(f'[generate_survey_questions] Starting for conversation: {conversation_id}')
+	logger.info(f'[generate_survey_questions] Starting survey generation: {description}')
+
+	# Get context from global variables
+	conversation_id, user_id = get_conversation_context()
+	authorization_token = get_authorization_token()
+
+	logger.info(f'[generate_survey_questions] Context - Conversation: {conversation_id}, User: {user_id}')
+	logger.info(f'[generate_survey_questions] Authorization token available: {bool(authorization_token)}')
 
 	if not conversation_id:
-		raise ValidationException('conversation_id is required')
+		raise ValidationException('conversation_id is required but not available in context')
 
 	try:
-		# Get authorization token from global context
-		authorization_token = get_authorization_token()
-
 		# Call N8N API to generate questions
 		logger.info(f'[generate_survey_questions] Calling N8N API for conversation: {conversation_id}')
 		logger.info(f'[generate_survey_questions] Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
 
 		n8n_response = await n8n_client.generate_questions(
 			session_id=conversation_id,
-			authorization_token=authorization_token,  # Use global token
+			authorization_token=authorization_token,
 		)
 
 		logger.info('[generate_survey_questions] N8N API call successful')

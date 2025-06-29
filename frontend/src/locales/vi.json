@@ -276,14 +276,23 @@
     "complete": "Hoàn thành",
     "continue": "Tiếp tục",
     "previous": "Trước",
+    "noQuestions": "Không có câu hỏi nào",
+    "waitingForData": "Đang chờ dữ liệu khảo sát từ agent...",
     "results": {
       "completed": "Đã hoàn thành khảo sát",
-      "description": "Xem kết quả và nhận xét.",
+      "description": "Cảm ơn bạn đã hoàn thành khảo sát! Câu trả lời của bạn đã được ghi nhận.",
       "retake": "Làm lại khảo sát",
       "title": "Kết quả khảo sát"
     },
     "step": "Bước",
-    "submitting": "Đang gửi..."
+    "submitting": "Đang gửi...",
+    "type": {
+      "single_option": "Một lựa chọn",
+      "multiple_choice": "Nhiều lựa chọn",
+      "text_input": "Nhập văn bản",
+      "sub_form": "Biểu mẫu con",
+      "unknown_type": "Loại không xác định"
+    }
   },
   "team": {
     "leadership": {

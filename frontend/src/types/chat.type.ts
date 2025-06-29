@@ -242,6 +242,7 @@ export interface WebSocketTokenResponse {
 export interface WebSocketOptions {
   conversationId: string
   token: string
+  authorizationToken?: string
   onMessage?: (message: WebSocketResponse) => void
   onError?: (error: Event) => void
   onClose?: (event: CloseEvent) => void

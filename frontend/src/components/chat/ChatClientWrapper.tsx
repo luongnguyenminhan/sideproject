@@ -13,11 +13,13 @@ import {
   convertToUIFile,
   convertToUIMessage
 } from '@/types/chat.type'
+import type { Question } from '@/types/question.types'
 import { getErrorMessage } from '@/utils/apiHandler'
 import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
 import { faChevronRight, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useCallback, useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
 import { AgentManagement } from './AgentManagement'
 import { ChatInterface } from './ChatInterface'
 import { ConversationSidebar } from './ConversationSidebar'
@@ -25,6 +27,7 @@ import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
 import { SystemPromptEditor } from './SystemPromptEditor'
 import { CVModal } from '@/components/chat/CVModal'
+import { SurveyModal } from './SurveyModal'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -46,6 +49,11 @@ export function ChatClientWrapper() {
   const [isCVUploading, setIsCVUploading] = useState(false)
   const [cvModalVisible, setCvModalVisible] = useState(false)
   const [cvData, setCvData] = useState<any>(null)
+
+  // Survey state management
+  const [surveyModalVisible, setSurveyModalVisible] = useState(false)
+  const [surveyData, setSurveyData] = useState<Question[]>([])
+  const [surveyTitle, setSurveyTitle] = useState('Survey Form')
 
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
@@ -190,6 +198,15 @@ export function ChatClientWrapper() {
             messages: [...prev.messages, surveyMessage],
             isTyping: false
           }))
+        }
+        break
+
+      case 'survey_data':
+        console.log('[ChatClientWrapper] Survey data received:', message.data)
+        if (message.data && Array.isArray(message.data)) {
+          setSurveyData(message.data)
+          setSurveyTitle(message.conversation_id ? `Survey - ${message.conversation_id}` : 'Survey Form')
+          setSurveyModalVisible(true)
         }
         break
 
@@ -362,7 +379,14 @@ export function ChatClientWrapper() {
       // Close existing connection
       if (websocket) {
         websocket.close()
-      }      // Get WebSocket token
+      }
+      
+      // Get authorization token from cookies using js-cookie
+      const authorizationToken = Cookies.get('access_token')
+      
+      console.log('[setupWebSocket] Authorization token:', authorizationToken ? authorizationToken.substring(0, 20) + '...' : 'Not found')
+      
+      // Get WebSocket token
       console.log('[setupWebSocket] Requesting WebSocket token for conversation:', conversationId)
       const tokenResponse = await chatApi.getWebSocketToken({ conversation_id: conversationId })
       console.log('[setupWebSocket] Token response received:', tokenResponse)
@@ -371,10 +395,11 @@ export function ChatClientWrapper() {
         console.log('[setupWebSocket] Token extracted:', tokenResponse.token)
         setState(prev => ({ ...prev, wsToken: tokenResponse.token }))
 
-        // Create WebSocket connection
+        // Create WebSocket connection with both tokens
         const ws = createChatWebSocket({
           conversationId,
           token: tokenResponse.token,
+          authorizationToken, // Pass the authorization token
           onMessage: handleWebSocketMessage,
           onError: (error) => {
             console.error('[ChatClientWrapper] WebSocket error:', error)
@@ -386,7 +411,8 @@ export function ChatClientWrapper() {
           },
           onClose: (event) => {
             console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
-          },          onOpen: () => {
+          },
+          onOpen: () => {
             console.log('[ChatClientWrapper] WebSocket connected')
             setState(prev => ({ ...prev, error: null }))
           }
@@ -663,6 +689,35 @@ export function ChatClientWrapper() {
     setIsSystemPromptEditorOpen(true)
   }
 
+  // Handle survey completion
+  const handleSurveyComplete = async (answers: Record<number, any>) => {
+    console.log('[ChatClientWrapper] Survey completed with answers:', answers)
+    
+    // Send survey response back via WebSocket if connected
+    if (websocket && websocket.isConnected()) {
+      try {
+        // Format answers as needed by backend
+        const surveyResponse = {
+          type: 'survey_response',
+          answers: answers,
+          conversation_id: state.activeConversationId,
+          timestamp: new Date().toISOString()
+        }
+        
+        // Send via WebSocket using raw message method
+        websocket.sendRawMessage(JSON.stringify(surveyResponse))
+        console.log('[ChatClientWrapper] Survey response sent via WebSocket')
+      } catch (error) {
+        console.error('[ChatClientWrapper] Failed to send survey response:', error)
+      }
+    }
+  }
+
+  // Handle survey modal toggle
+  const handleToggleSurveyModal = () => {
+    setSurveyModalVisible(prev => !prev)
+  }
+
   const handleOpenCVModal = async (conversationId: string) => {
     try {
       const response = await chatApi.getCVMetadata(conversationId)
@@ -766,6 +821,9 @@ export function ChatClientWrapper() {
           isFileSidebarCollapsed={isFileSidebarCollapsed}
           onToggleConversationSidebar={handleToggleConversationSidebar}
           onToggleFileSidebar={handleToggleFileSidebar}
+          onToggleSurvey={handleToggleSurveyModal}
+          hasSurveyData={surveyData.length > 0}
+          isSurveyOpen={surveyModalVisible}
         />
       </div>
 
@@ -852,6 +910,15 @@ export function ChatClientWrapper() {
           setCvData(null)
         }}
         cvData={cvData}
+      />
+
+      {/* Survey Modal */}
+      <SurveyModal
+        isOpen={surveyModalVisible}
+        onClose={() => setSurveyModalVisible(false)}
+        questions={surveyData}
+        onComplete={handleSurveyComplete}
+        title={surveyTitle}
       />
     </div>
   )

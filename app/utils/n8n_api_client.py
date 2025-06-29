@@ -18,7 +18,7 @@ class N8NAPIClient:
 
 	def __init__(self):
 		self.base_url = 'https://n8n.wc504.io.vn'
-		self.question_webhook_endpoint = '/webhook-test/888a07e8-25d6-4671-a36c-939a52740f31/ask'
+		self.question_webhook_endpoint = '/webhook/888a07e8-25d6-4671-a36c-939a52740f31/ask'
 		self.cv_webhook_endpoint = '/webhook/888a07e8-25d6-4671-a36c-939a52740f31'
 		self.timeout = 30.0
 
@@ -44,7 +44,8 @@ class N8NAPIClient:
 		headers = {'Content-Type': 'application/json'}
 
 		if authorization_token:
-			headers['Authorization'] = authorization_token
+			headers['Authorization'] = f"Bearer {authorization_token}"
+			headers['X-Header-Authentication'] = 'n8ncvextraction'
 			logger.info(f'🔑 [N8NAPIClient] Authorization token provided')
 		else:
 			logger.warning(f'⚠️ [N8NAPIClient] No authorization token provided')

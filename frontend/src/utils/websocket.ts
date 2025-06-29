@@ -25,8 +25,17 @@ export class ChatWebSocket {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const basePath = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('http://', '').replace('https://', '').replace('/api', '').replace('/v1', '') || 'localhost:8000'
 
+    // Build query parameters
+    const params = new URLSearchParams()
+    params.append('token', token)
+    
+    // Add authorization token if available
+    if (this.options.authorizationToken) {
+      params.append('authorization_token', this.options.authorizationToken)
+    }
+
     // Match the backend WebSocket route: /api/v1/chat/ws/{conversation_id}
-    return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?token=${encodeURIComponent(token)}`
+    return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?${params.toString()}`
   }
 
   async connect(): Promise<void> {
@@ -145,6 +154,16 @@ export class ChatWebSocket {
     this.ws.send(JSON.stringify(message))
   }
 
+  sendRawMessage(messageData: string): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.error('[ChatWebSocket] Cannot send raw message: WebSocket not connected')
+      return
+    }
+
+    console.log('[ChatWebSocket] Sending raw message')
+    this.ws.send(messageData)
+  }
+
   sendPing(): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       return
@@ -177,17 +196,20 @@ export class ChatWebSocket {
     return this.ws !== null && this.ws.readyState === WebSocket.OPEN
   }
 
-  updateToken(newToken: string): void {
-    console.log('[ChatWebSocket] Updating token and reconnecting')
+  updateToken(newToken: string, newAuthorizationToken?: string): void {
+    console.log('[ChatWebSocket] Updating tokens and reconnecting')
     this.options.token = newToken
+    if (newAuthorizationToken !== undefined) {
+      this.options.authorizationToken = newAuthorizationToken
+    }
     this.url = this.buildWebSocketUrl(this.options.conversationId, newToken)
     
-    // Reconnect with new token
+    // Reconnect with new tokens
     this.close()
     this.isManualClose = false
     setTimeout(() => {
       this.connect().catch(error => {
-        console.error('[ChatWebSocket] Failed to reconnect with new token:', error)
+        console.error('[ChatWebSocket] Failed to reconnect with new tokens:', error)
       })
     }, 1000)
   }
