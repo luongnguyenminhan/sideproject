@@ -28,6 +28,7 @@ SERVICE = 'gemini'
 MODEL_NAME = 'model/gemini-2.0-flash'
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+print(f'GOOGLE_API_KEY: {GOOGLE_API_KEY}')
 
 # Google OAuth Settings
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')

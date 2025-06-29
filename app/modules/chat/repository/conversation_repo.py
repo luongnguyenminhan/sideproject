@@ -1,14 +1,16 @@
+import logging
+from datetime import datetime
+
+from fastapi import Depends
 from pytz import timezone
 from sqlalchemy.orm import Session
-from fastapi import Depends
+
+from app.core.base_dal import CustomHTTPException
 from app.core.database import get_db
-from app.modules.chat.dal.conversation_dal import ConversationDAL
-from app.modules.chat.dal.message_dal import MessageDAL
-from app.modules.chat.schemas.conversation_request import ConversationListRequest
-from app.exceptions.exception import NotFoundException
 from app.middleware.translation_manager import _
-from datetime import datetime
-import logging
+from ..schemas.conversation_request import ConversationListRequest
+from ..dal.message_dal import MessageDAL
+from ..dal.conversation_dal import ConversationDAL
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,10 @@ class ConversationRepo:
 		"""Get conversation by ID and verify user access"""
 		conversation = self.conversation_dal.get_user_conversation_by_id(conversation_id, user_id)
 		if not conversation:
-			raise NotFoundException(_('conversation_not_found'))
+			raise CustomHTTPException(
+				status_code=404,
+				detail=_('Conversation not found or access denied'),
+			)
 		return conversation
 
 	def create_conversation(
@@ -87,7 +92,7 @@ class ConversationRepo:
 
 	def delete_conversation(self, conversation_id: str, user_id: str):
 		"""Delete a conversation and its messages"""
-		conversation = self.get_conversation_by_id(conversation_id, user_id)
+		self.get_conversation_by_id(conversation_id, user_id)
 
 		with self.conversation_dal.transaction():
 			# Soft delete related messages in MySQL first

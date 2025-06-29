@@ -1,24 +1,25 @@
-import os
-from pytz import timezone
-from sqlalchemy.orm import Session
-from fastapi import Depends
-from app.core.database import get_db
-from app.modules.agent.dal.agent_dal import AgentDAL
-from app.modules.chat.dal.conversation_dal import ConversationDAL
-from app.modules.chat.dal.message_dal import MessageDAL
-from app.modules.agent.repository.conversation_workflow_repo import (
-	ConversationWorkflowRepo,
-)
-from app.exceptions.exception import NotFoundException, ValidationException
-from app.middleware.translation_manager import _
-from datetime import datetime
-import time
 import asyncio
 import json
 import logging
-from typing import List, Dict, Any
+import os
+import time
+from datetime import datetime
+from typing import Any, Dict, List
 
+from fastapi import Depends
+from pytz import timezone
+from sqlalchemy.orm import Session
+
+from app.core.database import get_db
+from app.exceptions.exception import NotFoundException, ValidationException
+from app.middleware.translation_manager import _
 from app.modules.chat.services.cv_integration_service import CVIntegrationService
+
+from ....core.config import GOOGLE_API_KEY
+from ...agent.dal.agent_dal import AgentDAL
+from ...agent.repository.conversation_workflow_repo import ConversationWorkflowRepo
+from ..dal.conversation_dal import ConversationDAL
+from ..dal.message_dal import MessageDAL
 
 # Remove CV integration import to avoid circular import
 
@@ -124,7 +125,7 @@ class ChatRepo:
 		if not api_key:
 			logger.error(f'\033[91m[ChatRepo.get_ai_response] No API key provided\033[0m')
 			# Use environment variable as fallback
-			api_key = os.getenv('GOOGLE_API_KEY')
+			api_key = GOOGLE_API_KEY
 
 		try:
 			# Get conversation history for context
@@ -189,7 +190,7 @@ class ChatRepo:
 		if not api_key:
 			logger.error(f'\033[91m[ChatRepo.get_ai_response_streaming] No API key provided\033[0m')
 			# Use environment variable as fallback
-			api_key = os.getenv('GOOGLE_API_KEY')
+			api_key = GOOGLE_API_KEY
 
 		try:
 			# Get conversation history for context

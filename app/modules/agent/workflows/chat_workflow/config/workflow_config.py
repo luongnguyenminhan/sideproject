@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import os
 
+from ......core.config import GOOGLE_API_KEY
+
 # Import persona types using relative import
 from .persona_prompts import PersonaType, PersonaPrompts
 
@@ -64,7 +66,7 @@ class WorkflowConfig:
 	def __post_init__(self):
 		"""Initialize từ environment variables nếu không được set"""
 		if not self.api_key:
-			self.api_key = os.getenv('GOOGLE_API_KEY')
+			self.api_key = GOOGLE_API_KEY
 
 	@classmethod
 	def from_env(cls) -> 'WorkflowConfig':
@@ -73,7 +75,7 @@ class WorkflowConfig:
 			model_name=os.getenv('MODEL_NAME', 'gemini-2.0-flash'),
 			temperature=float(os.getenv('MODEL_TEMPERATURE', '0')),
 			max_tokens=int(os.getenv('MAX_TOKENS', '2048')),
-			api_key=os.getenv('GOOGLE_API_KEY'),
+			api_key=GOOGLE_API_KEY,
 			rag_enabled=os.getenv('RAG_ENABLED', 'true').lower() == 'true',
 			similarity_threshold=float(os.getenv('SIMILARITY_THRESHOLD', '0.7')),
 			max_retrieved_docs=int(os.getenv('MAX_RETRIEVED_DOCS', '5')),

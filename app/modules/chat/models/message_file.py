@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import relationship
+
 from app.core.base_model import BaseEntity
 
 

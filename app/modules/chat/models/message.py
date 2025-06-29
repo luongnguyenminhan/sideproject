@@ -1,7 +1,9 @@
-from sqlalchemy import Column, String, Text, DateTime, Enum, ForeignKey
-from sqlalchemy.orm import relationship
-from app.core.base_model import BaseEntity
 import enum
+
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, String, Text
+from sqlalchemy.orm import relationship
+
+from app.core.base_model import BaseEntity
 
 
 class MessageRole(str, enum.Enum):
