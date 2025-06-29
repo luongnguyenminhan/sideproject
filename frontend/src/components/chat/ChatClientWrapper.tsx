@@ -21,13 +21,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useCallback, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import { AgentManagement } from './AgentManagement'
-import { ChatInterface } from './ChatInterface'
+import { ChatInterface } from './chat-interface'
 import { ConversationSidebar } from './ConversationSidebar'
 import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
 import { SystemPromptEditor } from './SystemPromptEditor'
 import { CVModal } from '@/components/chat/CVModal'
-import { SurveyModal } from './SurveyModal'
+import { SurveyPanel } from './SurveyPanel'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -181,13 +181,12 @@ export function ChatClientWrapper() {
         break
 
       case 'survey_data':
-        console.log('[ChatClientWrapper] Received survey data:', message.data)
-        // Handle survey data from N8N API
+        console.log('[ChatClientWrapper] Survey data received:', message.data)
         if (message.data && Array.isArray(message.data)) {
           // Add survey message to chat
           const surveyMessage: Message = {
             id: `survey_${Date.now()}`,
-            content: '📋 Survey questions generated! Please complete the survey below.',
+            content: 'Survey questions generated! Click the "Survey" button to complete the interactive survey.',
             role: 'assistant',
             timestamp: new Date(),
             survey_data: message.data // Store the survey questions
@@ -198,15 +197,10 @@ export function ChatClientWrapper() {
             messages: [...prev.messages, surveyMessage],
             isTyping: false
           }))
-        }
-        break
 
-      case 'survey_data':
-        console.log('[ChatClientWrapper] Survey data received:', message.data)
-        if (message.data && Array.isArray(message.data)) {
+          // Set survey data but don't auto-open modal
           setSurveyData(message.data)
-          setSurveyTitle(message.conversation_id ? `Survey - ${message.conversation_id}` : 'Survey Form')
-          setSurveyModalVisible(true)
+          setSurveyTitle(message.conversation_id ? `Survey - ${message.conversation_id}` : 'Career Survey')
         }
         break
 
@@ -689,30 +683,6 @@ export function ChatClientWrapper() {
     setIsSystemPromptEditorOpen(true)
   }
 
-  // Handle survey completion
-  const handleSurveyComplete = async (answers: Record<number, any>) => {
-    console.log('[ChatClientWrapper] Survey completed with answers:', answers)
-    
-    // Send survey response back via WebSocket if connected
-    if (websocket && websocket.isConnected()) {
-      try {
-        // Format answers as needed by backend
-        const surveyResponse = {
-          type: 'survey_response',
-          answers: answers,
-          conversation_id: state.activeConversationId,
-          timestamp: new Date().toISOString()
-        }
-        
-        // Send via WebSocket using raw message method
-        websocket.sendRawMessage(JSON.stringify(surveyResponse))
-        console.log('[ChatClientWrapper] Survey response sent via WebSocket')
-      } catch (error) {
-        console.error('[ChatClientWrapper] Failed to send survey response:', error)
-      }
-    }
-  }
-
   // Handle survey modal toggle
   const handleToggleSurveyModal = () => {
     setSurveyModalVisible(prev => !prev)
@@ -806,8 +776,12 @@ export function ChatClientWrapper() {
         />
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Main Chat Area - adjusts width based on survey state */}
+      <div className={`flex flex-col min-w-0 transition-all duration-300 ease-in-out ${
+        surveyModalVisible && surveyData.length > 0 
+          ? 'w-1/2' // 50% when survey is open
+          : 'flex-1' // full width when survey is closed
+      }`}>
         <ChatInterface
           conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
           activeConversationId={state.activeConversationId}
@@ -827,22 +801,58 @@ export function ChatClientWrapper() {
         />
       </div>
 
-      {/* Desktop File Sidebar */}
-      <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
-        isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
-      }`}>
-        <FileSidebar
-          uploadedFiles={state.uploadedFiles}
-          isLoading={fileLoadingStates.files || false}
-          conversationId={state.activeConversationId}
-          onDeleteFile={handleDeleteFile}
-          onUploadFiles={handleUploadFiles}
-          onUploadCV={handleUploadCV}
-          isCVUploading={isCVUploading}
-          isCollapsed={isFileSidebarCollapsed}
-          onToggleCollapse={handleToggleFileSidebar}
-        />
-      </div>
+      {/* Survey Panel - 50% width when active */}
+      {surveyModalVisible && surveyData.length > 0 && (
+        <div className="w-1/2 border-l border-[color:var(--border)] hidden lg:block">
+          <SurveyPanel
+            isOpen={surveyModalVisible}
+            onClose={() => setSurveyModalVisible(false)}
+            questions={surveyData}
+            title={surveyTitle}
+            websocket={websocket}
+            conversationId={state.activeConversationId || undefined}
+            onSurveyComplete={async (answers) => {
+              console.log('[ChatClientWrapper] Survey completed with answers:', answers)
+              
+              // Send survey response back via WebSocket if connected
+              if (websocket && websocket.isConnected()) {
+                try {
+                  const surveyResponse = {
+                    type: 'survey_response',
+                    answers: answers,
+                    conversation_id: state.activeConversationId,
+                    timestamp: new Date().toISOString()
+                  }
+                  
+                  websocket.sendRawMessage(JSON.stringify(surveyResponse))
+                  console.log('[ChatClientWrapper] Survey response sent via WebSocket')
+                } catch (error) {
+                  console.error('[ChatClientWrapper] Failed to send survey response:', error)
+                }
+              }
+            }}
+          />
+        </div>
+      )}
+
+      {/* Desktop File Sidebar - only show when survey is not active */}
+      {(!surveyModalVisible || surveyData.length === 0) && (
+        <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+          isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+        }`}>
+          <FileSidebar
+            uploadedFiles={state.uploadedFiles}
+            isLoading={fileLoadingStates.files || false}
+            conversationId={state.activeConversationId}
+            onDeleteFile={handleDeleteFile}
+            onUploadFiles={handleUploadFiles}
+            onUploadCV={handleUploadCV}
+            isCVUploading={isCVUploading}
+            isCollapsed={isFileSidebarCollapsed}
+            onToggleCollapse={handleToggleFileSidebar}
+          />
+        </div>
+      )}
 
       {/* Mobile Sidebar */}
       <MobileSidebar
@@ -910,15 +920,6 @@ export function ChatClientWrapper() {
           setCvData(null)
         }}
         cvData={cvData}
-      />
-
-      {/* Survey Modal */}
-      <SurveyModal
-        isOpen={surveyModalVisible}
-        onClose={() => setSurveyModalVisible(false)}
-        questions={surveyData}
-        onComplete={handleSurveyComplete}
-        title={surveyTitle}
       />
     </div>
   )

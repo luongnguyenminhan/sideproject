@@ -64,13 +64,13 @@ export function ChatHeader({
           {/* Survey button - Show when there's survey data */}
           {hasSurveyData && onToggleSurvey && (
             <Button
-              variant={isSurveyOpen ? "default" : "ghost"}
+              variant={isSurveyOpen ? "default" : "outline"}
               size="sm"
               onClick={onToggleSurvey}
-              className={`h-8 px-3 transition-all duration-200 group ${
+              className={`h-8 px-3 transition-all duration-200 group relative ${
                 isSurveyOpen 
-                  ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white shadow-lg' 
-                  : 'hover:bg-[color:var(--accent)]'
+                  ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white shadow-lg border-0' 
+                  : 'hover:bg-[color:var(--accent)] border-[color:var(--feature-blue)] text-[color:var(--feature-blue)] hover:text-[color:var(--foreground)]'
               }`}
               title={isSurveyOpen ? "Close survey" : "Open survey"}
             >
@@ -79,15 +79,17 @@ export function ChatHeader({
                 className={`text-sm transition-all duration-200 mr-2 ${
                   isSurveyOpen 
                     ? 'text-white' 
-                    : 'text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] group-hover:scale-110'
+                    : 'text-[color:var(--feature-blue)] group-hover:text-[color:var(--foreground)] group-hover:scale-110'
                 }`}
               />
               <span className="hidden sm:inline text-sm font-medium">
-                {isSurveyOpen ? 'Close Survey' : 'Survey'}
+                {isSurveyOpen ? 'Close Survey' : 'Open Survey'}
               </span>
-              {/* Indicator for new survey */}
+              {/* Indicator for new/available survey */}
               {!isSurveyOpen && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-[color:var(--feature-green)] rounded-full animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[color:var(--feature-green)] rounded-full animate-pulse border-2 border-[color:var(--background)]">
+                  <div className="absolute inset-0 w-3 h-3 bg-[color:var(--feature-green)] rounded-full animate-ping opacity-75"></div>
+                </div>
               )}
             </Button>
           )}

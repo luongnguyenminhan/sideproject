@@ -64,17 +64,16 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
   const useGridLayout = options.length <= 12;
 
   if (useGridLayout) {
-    const rows = options.length <= 4 
-      ? 'grid-rows-1 sm:grid-rows-2 lg:grid-rows-4' 
-      : options.length <= 6 
-      ? 'grid-rows-1 sm:grid-rows-2 lg:grid-rows-3' 
-      : options.length <= 9
-      ? 'grid-rows-1 sm:grid-rows-2 md:grid-rows-3'
-      : 'grid-rows-1 sm:grid-rows-2 md:grid-rows-3 lg:grid-rows-4';
+    const getGridCols = () => {
+      if (options.length <= 2) return 'grid-cols-1 sm:grid-cols-2';
+      if (options.length <= 4) return 'grid-cols-1 sm:grid-cols-2';
+      if (options.length <= 6) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+      return 'grid-cols-1 sm:grid-cols-2';
+    };
 
     return (
       <motion.div 
-        className={`grid ${rows} gap-3 md:gap-4 h-full overflow-y-auto pr-2`}
+        className={`grid ${getGridCols()} gap-3 md:gap-4 h-full overflow-y-auto pr-2 p-4`}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -87,7 +86,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
               variants={itemVariants}
               onClick={() => handleOptionSelect(option.id)}
               className={`
-                relative cursor-pointer rounded-2xl p-6 text-center border-2 group overflow-hidden
+                relative cursor-pointer rounded-xl p-4 md:p-5 text-center border-2 group overflow-hidden transition-all duration-300
                 ${getClasses(isSelected)}
               `}
               whileTap={{ scale: 0.98 }}
@@ -107,7 +106,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
               />
 
               <motion.div 
-                className='font-semibold text-lg relative z-10'
+                className='font-semibold text-base md:text-lg relative z-10'
                 initial={{ y: 0, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: index * 0.05 + 0.2 }}
@@ -148,7 +147,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
   }
 
   return (
-    <div className='space-y-3 h-full overflow-y-auto pr-2 -mr-2'>
+    <div className='space-y-3 h-full overflow-y-auto pr-2 -mr-2 p-4'>
       {options.map((option) => {
         const isSelected = currentAnswers.includes(option.id);
         return (

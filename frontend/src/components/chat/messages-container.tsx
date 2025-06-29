@@ -33,6 +33,9 @@ interface MessagesContainerProps {
   typingText: string;
   noMessagesText: string;
   startConversationText: string;
+  // Survey props
+  hasSurveyData?: boolean;
+  onToggleSurvey?: () => void;
 }
 
 export function MessagesContainer({
@@ -44,7 +47,9 @@ export function MessagesContainer({
   copiedText,
   typingText,
   noMessagesText,
-  startConversationText
+  startConversationText,
+  hasSurveyData = false,
+  onToggleSurvey
 }: MessagesContainerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +89,8 @@ export function MessagesContainer({
                 user={user}
                 copyText={copyText}
                 copiedText={copiedText}
+                hasSurveyData={hasSurveyData}
+                onToggleSurvey={onToggleSurvey}
               />
             </div>
           ))}

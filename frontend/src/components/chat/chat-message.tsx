@@ -35,9 +35,18 @@ interface ChatMessageProps {
   user?: User;
   copyText: string;
   copiedText: string;
+  hasSurveyData?: boolean;
+  onToggleSurvey?: () => void;
 }
 
-export function ChatMessage({ message, user, copyText, copiedText }: ChatMessageProps) {
+export function ChatMessage({ 
+  message, 
+  user, 
+  copyText, 
+  copiedText, 
+  hasSurveyData = false, 
+  onToggleSurvey 
+}: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { t } = useTranslation();
   const handleCopyMessage = async (messageId: string, content: string) => {
@@ -258,6 +267,22 @@ export function ChatMessage({ message, user, copyText, copiedText }: ChatMessage
           </ReactMarkdown>
         </div>
         
+        
+        {/* Survey Button - Show if this is an assistant message with survey-related content */}
+        {message.role === 'assistant' && (hasSurveyData || message.content.toLowerCase().includes('survey')) && onToggleSurvey && (
+          <div className="mb-3">
+            <button
+              onClick={onToggleSurvey}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              {t('survey.openSurvey')}
+            </button>
+          </div>
+        )}
+
         {/* Copy Button */}
         <div className="flex justify-end">
           <Button

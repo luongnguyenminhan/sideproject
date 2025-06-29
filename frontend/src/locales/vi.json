@@ -278,6 +278,9 @@
     "previous": "Trước",
     "noQuestions": "Không có câu hỏi nào",
     "waitingForData": "Đang chờ dữ liệu khảo sát từ agent...",
+    "newSurveyAvailable": "Có khảo sát mới",
+    "openSurvey": "Mở Khảo Sát",
+    "surveyDescription": "Tôi đã chuẩn bị một khảo sát cho bạn. Nhấn nút bên dưới để bắt đầu!",
     "results": {
       "completed": "Đã hoàn thành khảo sát",
       "description": "Cảm ơn bạn đã hoàn thành khảo sát! Câu trả lời của bạn đã được ghi nhận.",

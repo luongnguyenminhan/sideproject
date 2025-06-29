@@ -12,9 +12,19 @@ import AnimatedStepper from './AnimatedStepper';
 
 interface SurveyContainerProps {
   questions: Question[];
+  onSurveyComplete?: (answers: Record<number, unknown>) => void;
+  websocket?: { isConnected: () => boolean; sendRawMessage: (message: string) => void } | null;
+  conversationId?: string;
+  isEmbedded?: boolean; // Để biết có phải đang chạy trong panel hay không
 }
 
-const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
+const SurveyContainer: React.FC<SurveyContainerProps> = ({ 
+  questions, 
+  onSurveyComplete,
+  websocket,
+  conversationId,
+  isEmbedded = false
+}) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, any>>({});
@@ -37,7 +47,27 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
     } else {
       setIsSubmitting(true);
       try {
-        await submitSurveyResponse(selectedAnswers);
+        // Send survey response via WebSocket if available
+        if (websocket && websocket.isConnected()) {
+          const surveyResponse = {
+            type: 'survey_response',
+            answers: selectedAnswers,
+            conversation_id: conversationId,
+            timestamp: new Date().toISOString()
+          };
+          
+          websocket.sendRawMessage(JSON.stringify(surveyResponse));
+          console.log('[SurveyContainer] Survey response sent via WebSocket');
+        }
+
+        // Call completion callback if provided
+        if (onSurveyComplete) {
+          await onSurveyComplete(selectedAnswers);
+        } else {
+          // Fallback to API submission
+          await submitSurveyResponse(selectedAnswers);
+        }
+        
         setShowResults(true);
       } catch (error) {
         console.error('Error submitting survey:', error);
@@ -90,7 +120,6 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
     return (
       <AnimatedSurveyWrapper currentStep={questions.length} totalSteps={questions.length}>
         <div className="w-full h-screen flex flex-col">
-          <div className="h-14 flex-shrink-0"></div>
           <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center">
             <div className="w-full max-w-4xl mx-auto">
               <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-8 md:p-12 text-center">
@@ -139,13 +168,15 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
 
   return (
     <AnimatedSurveyWrapper currentStep={currentStep} totalSteps={questions.length}>
-      <div className="w-full h-screen flex flex-col">
-        {/* Header offset */}
-        <div className="h-14 flex-shrink-0"></div>
+      <div className={`w-full h-full flex flex-col ${isEmbedded ? '' : 'h-screen'}`}>
+        {/* Header offset - only for full screen mode */}
+        {!isEmbedded && <div className="h-14 flex-shrink-0"></div>}
         
-        <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center">
+        <div className={`flex-1 ${isEmbedded ? 'p-1' : 'container mx-auto px-4 py-4 md:py-8'} flex items-center`}>
           <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-4 md:p-8 h-[calc(100vh-160px)] flex flex-col overflow-hidden">
+            <div className={`bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm ${
+              isEmbedded ? 'h-full p-2' : 'h-[calc(100vh-160px)] p-4 md:p-8'
+            } flex flex-col overflow-hidden`}>
               {/* Animated Progress Indicator */}
               <AnimatedStepper 
                 currentStep={currentStep}
@@ -154,8 +185,10 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
               />
 
               {/* Question Header */}
-              <div className="text-center mb-4 md:mb-6 flex-shrink-0">
-                <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)] px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className={`text-center ${isEmbedded ? 'mb-2 md:mb-4' : 'mb-4 md:mb-6'} flex-shrink-0`}>
+                <div className={`inline-flex items-center space-x-2 bg-[color:var(--feature-blue)] text-[color:var(--feature-blue-text)] px-4 py-2 rounded-full ${
+                  isEmbedded ? 'text-xs' : 'text-sm'
+                } font-medium mb-4`}>
                   <span>
                     Question {currentStep + 1} of {questions.length}
                   </span>
@@ -169,19 +202,19 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
                   </span>
                 </div>
                 
-                <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-3">
+                <h1 className={`${isEmbedded ? 'text-lg md:text-xl' : 'text-xl md:text-3xl'} font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent mb-3`}>
                   {currentQuestion.Question}
                 </h1>
                 
                 {currentQuestion.subtitle && (
-                  <p className="text-base md:text-lg text-[color:var(--muted-foreground)] max-w-3xl mx-auto">
+                  <p className={`${isEmbedded ? 'text-sm' : 'text-base md:text-lg'} text-[color:var(--muted-foreground)] max-w-3xl mx-auto`}>
                     {currentQuestion.subtitle}
                   </p>
                 )}
               </div>
 
               {/* Question Content */}
-              <div className="flex-1 overflow-y-auto mb-4 md:mb-6 min-h-0 overflow-x-hidden">
+              <div className={`flex-1 overflow-y-auto ${isEmbedded ? 'mb-2 md:mb-4' : 'mb-4 md:mb-6'} min-h-0 overflow-x-hidden`}>
                 <QuestionRenderer
                   question={currentQuestion}
                   questionIndex={currentStep}
@@ -191,12 +224,12 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
               </div>
 
               {/* Navigation */}
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 flex-shrink-0">
+              <div className={`flex flex-col sm:flex-row justify-between items-center gap-2 md:gap-4 ${isEmbedded ? 'mb-1' : 'mb-4'} flex-shrink-0 px-2`}>
                 <button
                   onClick={handleBack}
                   disabled={currentStep === 0}
                   className={`
-                    flex items-center space-x-2 px-4 md:px-6 py-3 rounded-xl font-semibold transition-all duration-300 w-full md:w-auto justify-center md:justify-start
+                    flex items-center space-x-2 px-3 md:px-6 py-2 md:py-3 rounded-xl font-semibold transition-all duration-300 w-full sm:w-auto justify-center sm:justify-start text-sm md:text-base
                     ${
                       currentStep === 0
                         ? 'text-[color:var(--muted-foreground)] cursor-not-allowed bg-[color:var(--muted)]/30'
@@ -204,7 +237,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
                     }
                   `}
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                   <span>{t('survey.previous')}</span>
                 </button>
 
@@ -212,7 +245,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
                   onClick={handleNext}
                   disabled={!isQuestionAnswered(currentStep) || isSubmitting}
                   className={`
-                    flex items-center space-x-2 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 transform w-full md:w-auto justify-center
+                    flex items-center space-x-2 px-4 md:px-8 py-2 md:py-4 rounded-xl font-semibold transition-all duration-300 transform w-full sm:w-auto justify-center text-sm md:text-base
                     ${
                       isQuestionAnswered(currentStep) && !isSubmitting
                         ? 'bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white hover:shadow-lg hover:-translate-y-1'
@@ -228,20 +261,20 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
                       : t('survey.continue')
                     }
                   </span>
-                  {!isSubmitting && <ArrowRight className="w-5 h-5" />}
+                  {!isSubmitting && <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />}
                   {isSubmitting && (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   )}
                 </button>
               </div>
 
               {/* Progress Bar */}
-              <div className="space-y-3 flex-shrink-0">
-                <div className="flex justify-between text-sm font-medium text-[color:var(--muted-foreground)]">
+              <div className={`space-y-2 flex-shrink-0 px-2 ${isEmbedded ? 'pb-1' : 'pb-4'}`}>
+                <div className={`flex justify-between ${isEmbedded ? 'text-xs' : 'text-sm'} font-medium text-[color:var(--muted-foreground)]`}>
                   <span>Progress</span>
                   <span>{Math.round(progress)}% Complete</span>
                 </div>
-                <div className="w-full bg-[color:var(--muted)] rounded-full h-3 md:h-4 overflow-hidden">
+                <div className={`w-full bg-[color:var(--muted)] rounded-full ${isEmbedded ? 'h-1.5' : 'h-3 md:h-4'} overflow-hidden`}>
                   <div
                     className="bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] h-full rounded-full transition-all duration-700 ease-out relative"
                     style={{ width: `${progress}%` }}
@@ -249,7 +282,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({ questions }) => {
                     <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
                   </div>
                 </div>
-                <div className="text-center text-sm text-[color:var(--muted-foreground)]">
+                <div className={`text-center ${isEmbedded ? 'text-xs' : 'text-sm'} text-[color:var(--muted-foreground)]`}>
                   {t('survey.step')} {currentStep + 1} / {questions.length}
                 </div>
               </div>

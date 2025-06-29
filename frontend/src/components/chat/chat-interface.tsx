@@ -9,6 +9,7 @@ import { ChatWelcome } from './chat-welcome';
 import { MessagesContainer } from './messages-container';
 import { MessageInput } from './message-input';
 
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -119,6 +120,8 @@ export function ChatInterface({
         typingText={t('chat.typing')}
         noMessagesText={t('chat.noMessages')}
         startConversationText={t('chat.startConversation')}
+        hasSurveyData={hasSurveyData}
+        onToggleSurvey={onToggleSurvey}
       />
 
       {/* Input Area */}

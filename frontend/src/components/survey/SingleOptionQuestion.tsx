@@ -54,7 +54,7 @@ const SingleOptionQuestion: React.FC<QuestionComponentProps> = ({
 
   return (
     <motion.div 
-      className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-8'
+      className='grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 md:p-6'
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -67,7 +67,7 @@ const SingleOptionQuestion: React.FC<QuestionComponentProps> = ({
             variants={itemVariants}
             onClick={() => handleOptionSelect(option.id)}
             className={`
-              relative cursor-pointer rounded-2xl p-8 text-center border-2 group overflow-hidden
+              relative cursor-pointer rounded-xl p-4 md:p-6 text-center border-2 group overflow-hidden transition-all duration-300
               ${getClasses(isSelected)}
             `}
             whileHover={{ 
@@ -98,7 +98,7 @@ const SingleOptionQuestion: React.FC<QuestionComponentProps> = ({
             />
 
             <motion.div 
-              className='font-bold text-xl relative z-10'
+              className='font-bold text-lg md:text-xl relative z-10'
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 + 0.3 }}

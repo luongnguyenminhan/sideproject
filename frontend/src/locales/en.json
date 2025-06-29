@@ -277,6 +277,9 @@
     "previous": "Previous",
     "noQuestions": "No Questions Available",
     "waitingForData": "Waiting for survey data from the agent...",
+    "newSurveyAvailable": "New survey available",
+    "openSurvey": "Open Survey",
+    "surveyDescription": "I've prepared a survey for you. Click the button below to get started!",
     "results": {
       "completed": "Survey completed",
       "description": "Thank you for completing the survey! Your responses have been recorded.",
