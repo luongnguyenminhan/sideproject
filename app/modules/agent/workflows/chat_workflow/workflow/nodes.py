@@ -355,10 +355,10 @@ class WorkflowNodes:
 			}
 
 	async def agent_with_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""ULTRA-SIMPLIFIED Agent Node WITH Tools - direct tool usage, NO RAG"""
-		logger.info('[agent_with_tools_node] � Starting ULTRA-SIMPLIFIED agent WITH tools (NO RAG)')
+		"""Agent Node WITH Tools - direct tool usage, NO RAG"""
+		logger.info('[agent_with_tools_node] � Starting agent WITH tools (NO RAG)')
 
-		# ===== ULTRA-SIMPLIFIED APPROACH =====
+		# ===== APPROACH =====
 		# Skip all RAG, business process analysis, complex tool decision
 		# Go directly to agent with tools for survey generation
 

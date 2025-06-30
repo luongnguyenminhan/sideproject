@@ -40,7 +40,7 @@ class Colors:
 
 
 class SimpleColorLogger:
-	"""Simplified color logger for the workflow module"""
+	"""Color logger for the workflow module"""
 
 	def __init__(self, name: str):
 		self.logger = logging.getLogger(name)

@@ -69,24 +69,10 @@ class ChatWorkflow:
 		self.compiled_graph = None
 
 		try:
-			# Initialize Agentic RAG workflow
-			color_logger.info(
-				f'🔧 {Colors.BOLD}INITIALIZING:{Colors.RESET}{Colors.YELLOW} Agentic RAG workflow services...',
-				Colors.YELLOW,
-			)
-
-			# Create workflow with Unified features
 			from .workflow import create_workflow
 
 			workflow_instance = create_workflow(db_session, self.config)
 			self.compiled_graph = workflow_instance.compiled_graph
-
-			color_logger.success(
-				'🚀 ChatWorkflow initialized with Agentic RAG functionality',
-				initialization_time=time.time() - self.start_time,
-				workflow_type='Agentic-RAG-KBRepository-enabled',
-				services_count=1,
-			)
 
 		except Exception as e:
 			color_logger.error(
@@ -162,11 +148,6 @@ class ChatWorkflow:
 				rag_enabled=runtime_config['configurable'].get('use_rag', False),
 			)
 
-			# Execute workflow
-			color_logger.info(
-				f'🚀 {Colors.BOLD}EXECUTING:{Colors.RESET}{Colors.BRIGHT_YELLOW} Agentic RAG workflow invocation',
-				Colors.BRIGHT_YELLOW,
-			)
 			final_state = await self.compiled_graph.ainvoke(initial_state, config=runtime_config)
 
 			# Extract response
@@ -310,26 +291,8 @@ class ChatWorkflow:
 
 
 # Factory function cho easy initialization với Agentic RAG
-def create_chat_workflow(db_session: Session, config: Optional[WorkflowConfig] = None) -> ChatWorkflow:
+def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] = None) -> ChatWorkflow:
 	"""
 	Factory function để create ChatWorkflow instance với Agentic RAG
 	"""
-	color_logger.info('🏗️ Creating ChatWorkflow with Agentic RAG')
-	return ChatWorkflow(db_session, config)
-
-
-def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] = None):
-	"""Get compiled workflow cho compatibility"""
-	workflow = create_chat_workflow(db_session, config)
-	return workflow.compiled_graph
-
-
-color_logger.success('🚀 MoneyEZ Enhanced Chat Workflow with Agentic RAG module loaded!')
-color_logger.info(
-	f'📊 {Colors.BOLD}FEATURES:{Colors.RESET}{Colors.BRIGHT_MAGENTA} Agentic RAG KBRepository, Query Optimization, Knowledge Retrieval, Basic Tools',
-	Colors.BRIGHT_MAGENTA,
-)
-color_logger.info(
-	f'🔧 {Colors.BOLD}STATUS:{Colors.RESET}{Colors.BRIGHT_GREEN} Production-ready với comprehensive Agentic RAG functionality',
-	Colors.BRIGHT_GREEN,
-)
+	return ChatWorkflow(db_session, config).compiled_graph

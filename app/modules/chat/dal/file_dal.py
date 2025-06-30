@@ -173,7 +173,7 @@ class FileDAL(BaseDAL[File]):
 		file = self.db.query(self.model).filter(self.model.id == file_id).first()
 		if file:
 			file.is_indexed = success
-			file.indexed_at = datetime.utcnow() if success else None
+			file.indexed_at = datetime.now(timezone('Asia/Ho_Chi_Minh')) if success else None
 			file.indexing_error = error_message if not success else None
 			self.db.commit()
 			pass  # logger.info(f'[FileDAL.mark_file_as_indexed] File {file_id} marked as indexed')

@@ -1,6 +1,6 @@
 """
 Base workflow class for conversation processing.
-Note: This module is simplified - most workflow logic is now handled
+Note: This module is streamlined - most workflow logic is now handled
 in the LangGraphService for conversation-based processing.
 """
 
@@ -9,7 +9,7 @@ from typing import Dict, Any, AsyncGenerator
 
 
 class BaseWorkflow(ABC):
-	"""Base class for simplified conversation workflows"""
+	"""Base class for conversation workflows"""
 
 	def __init__(self, config: Dict[str, Any]):
 		self.config = config

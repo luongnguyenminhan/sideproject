@@ -21,7 +21,7 @@ class ModelProvider(str, enum.Enum):
 
 
 class Agent(BaseEntity):
-	"""Ultra-simplified Agent model - single record with embedded config AND API key"""
+	"""Agent model - single record with embedded config AND API key"""
 
 	__tablename__ = 'agents'
 

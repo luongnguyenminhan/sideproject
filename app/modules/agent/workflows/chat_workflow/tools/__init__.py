@@ -1,5 +1,5 @@
 """
-Basic tools for simple workflow - Simplified and self-contained
+Basic tools for simple workflow - self-contained
 """
 
 from .basic_tools import tools, get_tools, get_tool_definitions

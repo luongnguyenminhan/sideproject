@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class AgentFactory(object):
-	"""Simplified factory for model validation and basic utilities"""
+	"""Factory for model validation and basic utilities"""
 
 	@classmethod
 	def list_available_models(cls) -> Dict[str, List[str]]:

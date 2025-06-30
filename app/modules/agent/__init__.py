@@ -1,5 +1,5 @@
 """
-Simplified Agent Module
+Agent Module
 
 This module provides conversation-based AI functionality with a single system-wide configuration.
 Key components:

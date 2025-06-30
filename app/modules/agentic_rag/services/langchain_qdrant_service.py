@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class LangChainQdrantService:
-	"""Simplified service using KB Repository for all document operations"""
+	"""Service using KB Repository for all document operations"""
 
 	def __init__(self, db: Session):
 		logger.info('LangChainQdrantService - Initializing with KB Repository integration')
@@ -43,7 +43,10 @@ class LangChainQdrantService:
 
 				# Tạo Document objects từ semantic chunks
 				for chunk_text in semantic_chunks:
-					chunk_doc = Document(page_content=chunk_text, metadata={**doc.metadata, 'chunk_method': 'semantic'})
+					chunk_doc = Document(
+						page_content=chunk_text,
+						metadata={**doc.metadata, 'chunk_method': 'semantic'},
+					)
 					doc_chunks.append(chunk_doc)
 
 			# Initialize KB Repository

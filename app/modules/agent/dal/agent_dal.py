@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 
 
 class AgentDAL(BaseDAL[Agent]):
-	"""Data Access Layer for ultra-simplified Agent operations"""
+	"""Data Access Layer for Agent operations"""
 
 	def __init__(self, db: Session):
 		super().__init__(db, Agent)
@@ -53,7 +53,15 @@ class AgentDAL(BaseDAL[Agent]):
 
 	def get_agent_api_key(self, user_id: str) -> Optional[str]:
 		"""Get the API key for a specific agent"""
-		agent = self.db.query(self.model).filter(self.model.user_id == user_id, self.model.is_active == True, self.model.is_deleted == False).first()
+		agent = (
+			self.db.query(self.model)
+			.filter(
+				self.model.user_id == user_id,
+				self.model.is_active == True,
+				self.model.is_deleted == False,
+			)
+			.first()
+		)
 		return agent.api_key
 
 	def create_user_agent(self, user_id: str, agent_data: Dict[str, Any]) -> Agent:

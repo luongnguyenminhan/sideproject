@@ -1,5 +1,5 @@
 """
-Utilities module cho Chat Workflow - Simplified and self-contained
+Utilities module cho Chat Workflow - self-contained
 """
 
 from .color_logger import get_color_logger, Colors, SimpleColorLogger

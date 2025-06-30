@@ -19,5 +19,3 @@ class LogColors:
 	ENDC = '\033[0m'
 	BOLD = '\033[1m'
 
-
-logger.info(f'{LogColors.HEADER}[AgenticRAG-Services] Agentic RAG services module initialized{LogColors.ENDC}')

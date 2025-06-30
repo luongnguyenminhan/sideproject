@@ -4,20 +4,22 @@ Service for indexing conversation files into Qdrant for RAG functionality via Ag
 
 import logging
 import uuid
-from typing import List, Dict, Any, Optional
-from sqlalchemy.orm import Session
-from langchain_core.documents import Document
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from app.modules.chat.services.file_extraction_service import file_extraction_service
+from langchain_core.documents import Document
+from pytz import timezone
+from sqlalchemy.orm import Session
+
+from app.exceptions.exception import ValidationException
+from app.middleware.translation_manager import _
 from app.modules.agentic_rag.repository.kb_repo import KBRepository
 from app.modules.agentic_rag.schemas.kb_schema import (
 	AddDocumentsRequest,
 	DocumentModel,
 	QueryRequest,
 )
-from app.exceptions.exception import ValidationException
-from app.middleware.translation_manager import _
+from app.modules.chat.services.file_extraction_service import file_extraction_service
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +81,7 @@ class ConversationFileIndexingService:
 								'file_name': file_data['file_name'],
 								'file_type': file_data['file_type'],
 								'conversation_id': conversation_id,
-								'indexed_at': datetime.utcnow().isoformat(),
+								'indexed_at': datetime.now(timezone('Asia/Ho_Chi_Minh')).isoformat(),
 								'char_count': extraction_result['char_count'],
 								'original_file_id': file_data['file_id'],  # Lưu original file_id để reference
 							},
@@ -247,7 +249,7 @@ class ConversationFileIndexingService:
 			kb_repo = KBRepository()
 
 			# Check if collection exists by trying to list documents
-			documents = kb_repo.list_all_documents(collection_id=collection_id)
+			kb_repo.list_all_documents(collection_id=collection_id)
 			return True  # If no exception, collection exists
 
 		except Exception as e:

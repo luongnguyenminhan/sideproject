@@ -1,32 +1,35 @@
-from sqlalchemy.orm import Session
+import json
+import logging
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from fastapi import Depends
+from pytz import timezone
+from sqlalchemy.orm import Session
+
+from app.core.base_model import PaginatedResponse, Pagination, PagingInfo
 from app.core.database import get_db
-from app.modules.question_session.dal.question_session_dal import QuestionSessionDAL
-from app.modules.question_session.dal.question_answer_dal import QuestionAnswerDAL
-from app.modules.chat.dal.conversation_dal import ConversationDAL
-from app.modules.question_session.schemas.question_session_request import (
-	CreateQuestionSessionRequest,
-	UpdateQuestionSessionRequest,
-	SubmitAnswersRequest,
-	GetQuestionSessionsRequest,
-	ParseSurveyResponseRequest,
-)
-from app.modules.question_session.schemas.question_session_response import (
-	QuestionSessionResponse,
-	QuestionSessionDetailResponse,
-	ParsedSurveyResponse,
-)
 from app.exceptions.exception import (
 	NotFoundException,
 	ValidationException,
-	ForbiddenException,
 )
 from app.middleware.translation_manager import _
-from app.core.base_model import Pagination, PaginatedResponse, PagingInfo
-from typing import Optional, Dict, Any, List
-from datetime import datetime
-import json
-import logging
+from app.modules.chat.dal.conversation_dal import ConversationDAL
+from app.modules.question_session.dal.question_answer_dal import QuestionAnswerDAL
+from app.modules.question_session.dal.question_session_dal import QuestionSessionDAL
+from app.modules.question_session.schemas.question_session_request import (
+	CreateQuestionSessionRequest,
+	GetQuestionSessionsRequest,
+	ParseSurveyResponseRequest,
+	SubmitAnswersRequest,
+	UpdateQuestionSessionRequest,
+)
+from app.modules.question_session.schemas.question_session_response import (
+	ParsedSurveyResponse,
+	QuestionSessionDetailResponse,
+	QuestionSessionResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +55,8 @@ class QuestionSessionRepo:
 				raise NotFoundException(_('parent_session_not_found'))
 
 		session_data = {
+			'id': str(uuid.uuid4()),  # Ensure id is a valid string
+			'create_date': datetime.now(timezone('Asia/Ho_Chi_Minh')),  # Ensure create_date is a valid datetime
 			'name': request.name,
 			'conversation_id': request.conversation_id,
 			'user_id': user_id,
@@ -59,7 +64,7 @@ class QuestionSessionRepo:
 			'session_type': request.session_type,
 			'questions_data': request.questions_data,
 			'session_status': 'active',
-			'start_date': datetime.utcnow(),
+			'start_date': datetime.now(timezone('Asia/Ho_Chi_Minh')),
 			'extra_metadata': request.extra_metadata,
 		}
 
@@ -128,7 +133,7 @@ class QuestionSessionRepo:
 		if request.session_status is not None:
 			update_data['session_status'] = request.session_status
 			if request.session_status == 'completed':
-				update_data['completion_date'] = datetime.utcnow()
+				update_data['completion_date'] = datetime.now(timezone('Asia/Ho_Chi_Minh'))
 		if request.questions_data is not None:
 			update_data['questions_data'] = request.questions_data
 		if request.extra_metadata is not None:

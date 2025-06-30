@@ -1,5 +1,5 @@
 """
-RAG Tool for Chat Agent - Simplified version as a proper LangChain tool
+RAG Tool for Chat Agent - version as a proper LangChain tool
 This tool provides RAG functionality that can be called by the agent when needed
 """
 
@@ -24,18 +24,24 @@ async def rag_search(conversation_id: str, query: str, top_k: int = 5) -> str:
 	- Retrieve relevant CV or profile data
 
 	Args:
-		conversation_id: ID of the current conversation
-		query: What to search for
-		top_k: Number of results to return (default: 5)
+	        conversation_id: ID of the current conversation
+	        query: What to search for
+	        top_k: Number of results to return (default: 5)
 
 	Returns:
-		JSON string containing search results and context
+	        JSON string containing search results and context
 	"""
 	logger.info(f'[rag_search] Searching for: "{query}" in conversation: {conversation_id}')
 
 	try:
 		# Placeholder implementation - will be enhanced with actual RAG
-		results = {'query': query, 'conversation_id': conversation_id, 'results': [], 'context': '', 'sources': []}
+		results = {
+			'query': query,
+			'conversation_id': conversation_id,
+			'results': [],
+			'context': '',
+			'sources': [],
+		}
 
 		# Try to get conversation-specific context
 		conv_context = await _search_conversation_context(conversation_id, query, top_k)
@@ -68,9 +74,24 @@ async def _search_conversation_context(conversation_id: str, query: str, top_k: 
 		logger.info(f'[_search_conversation_context] Searching conversation {conversation_id} for: {query}')
 
 		# Placeholder - check for CV-related keywords
-		cv_keywords = ['cv', 'resume', 'experience', 'skill', 'education', 'work', 'job', 'career']
+		cv_keywords = [
+			'cv',
+			'resume',
+			'experience',
+			'skill',
+			'education',
+			'work',
+			'job',
+			'career',
+		]
 		if any(keyword in query.lower() for keyword in cv_keywords):
-			return [{'content': f'CV and profile information for conversation {conversation_id}', 'source': 'cv_data', 'relevance': 0.9}]
+			return [
+				{
+					'content': f'CV and profile information for conversation {conversation_id}',
+					'source': 'cv_data',
+					'relevance': 0.9,
+				}
+			]
 
 		return []
 
@@ -86,9 +107,23 @@ async def _search_global_knowledge(query: str, top_k: int) -> list:
 		logger.info(f'[_search_global_knowledge] Searching global KB for: {query}')
 
 		# Placeholder - provide generic career advice for career-related queries
-		career_keywords = ['cv', 'interview', 'job', 'career', 'skill', 'experience', 'resume']
+		career_keywords = [
+			'cv',
+			'interview',
+			'job',
+			'career',
+			'skill',
+			'experience',
+			'resume',
+		]
 		if any(keyword in query.lower() for keyword in career_keywords):
-			return [{'content': 'General career and CV best practices: Focus on achievements, use action verbs, tailor to job requirements, include relevant skills and experience.', 'source': 'global_knowledge', 'relevance': 0.8}]
+			return [
+				{
+					'content': 'General career and CV best practices: Focus on achievements, use action verbs, tailor to job requirements, include relevant skills and experience.',
+					'source': 'global_knowledge',
+					'relevance': 0.8,
+				}
+			]
 
 		return []
 

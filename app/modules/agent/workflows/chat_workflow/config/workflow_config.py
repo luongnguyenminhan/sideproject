@@ -1,6 +1,6 @@
 """
 Centralized configuration cho Chat Workflow
-Production-ready settings với Vietnamese context - Simplified version
+Production-ready settings với Vietnamese context
 """
 
 from dataclasses import dataclass, field
@@ -26,7 +26,7 @@ class WorkflowConfig:
 	# Authorization token for N8N API calls
 	authorization_token: Optional[str] = None
 
-	# RAG settings (simplified from dual_rag)
+	# RAG settings
 	rag_enabled: bool = True
 	similarity_threshold: float = 0.7
 	max_retrieved_docs: int = 5

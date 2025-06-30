@@ -136,13 +136,6 @@ async def websocket_chat_endpoint(
 
 		# Get authorization token for N8N API from query params
 		authorization_token = query_params.get('authorization_token')
-
-		# 🔍 LOG: WebSocket connection attempt
-		logger.info(f'[WebSocket] 🚀 CONNECTION ATTEMPT')
-		logger.info(f'[WebSocket] 📝 Conversation ID: {conversation_id}')
-		logger.info(f'[WebSocket] 🔑 Query params: {list(query_params.keys())}')
-		logger.info(f'[WebSocket] 🎫 Token available: {bool(token)}')
-		logger.info(f'[WebSocket] 🔐 Authorization token available: {bool(authorization_token)}')
 		if authorization_token:
 			logger.info(f'[WebSocket] 🔐 Authorization token (first 20 chars): {authorization_token[:20]}...')
 
@@ -173,17 +166,13 @@ async def websocket_chat_endpoint(
 
 		# Verify user has access to conversation
 		try:
-			logger.info(f'[WebSocket] 🔍 Verifying access to conversation: {conversation_id}')
-			conversation = chat_repo.get_conversation_by_id(conversation_id, user_id)
-			logger.info(f'[WebSocket] ✅ CONVERSATION ACCESS VERIFIED: {conversation.name if hasattr(conversation, "name") else "Unnamed"}')
+			chat_repo.get_conversation_by_id(conversation_id, user_id)
 		except Exception as e:
 			logger.error(f'[WebSocket] ❌ ACCESS DENIED: {str(e)}')
 			await WebSocketErrorHandler.handle_forbidden_error(websocket, reason='Access denied to conversation')
 			return
 
-		logger.info(f'[WebSocket] 🔗 CONNECTING WebSocket for user: {user_id}')
 		await websocket_manager.connect(websocket, user_id)
-		logger.info(f'[WebSocket] ✅ CONNECTION ESTABLISHED successfully')
 		try:
 			while True:
 				# Receive message from client
@@ -303,8 +292,7 @@ async def websocket_chat_endpoint(
 							},
 						)
 
-					except Exception as e:
-						logger.error(f'[WebSocket] ❌ Error getting AI response: {e}')
+					except Exception:
 						await websocket_manager.send_message(
 							user_id,
 							{'type': 'error', 'message': _('ai_response_error')},
@@ -339,7 +327,6 @@ async def websocket_chat_endpoint(
 						)
 
 						if not active_session_id:
-							logger.info('[WebSocket] 📝 No active session found, attempting to create one from survey response')
 							# Try to create a session with minimal data if none exists
 							try:
 								active_session_id = await integration_service.create_session_from_survey_data(
@@ -379,7 +366,6 @@ async def websocket_chat_endpoint(
 						)
 
 					except Exception as e:
-						logger.error(f'[WebSocket] ❌ Error processing survey response: {e}')
 						await websocket_manager.send_message(
 							user_id,
 							{
@@ -390,7 +376,6 @@ async def websocket_chat_endpoint(
 						)
 
 				elif message_data.get('type') == 'ping':
-					logger.info('[WebSocket] 🏓 PING received, responding with PONG')
 					# Respond to ping
 					await websocket_manager.send_message(user_id, {'type': 'pong'})
 

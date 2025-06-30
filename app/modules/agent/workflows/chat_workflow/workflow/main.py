@@ -153,7 +153,7 @@ class Workflow:
 		conversation_id: Optional[str] = None,
 		config_override: Optional[Dict[str, Any]] = None,
 	) -> Dict[str, Any]:
-		"""Process message with simplified workflow"""
+		"""Process message with workflow"""
 		session_id = conversation_id or f'session_{int(time.time())}'
 
 		try:

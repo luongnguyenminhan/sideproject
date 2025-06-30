@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SystemAgentRepo:
-	"""Repository for ultra-simplified System Agent operations"""
+	"""Repository for System Agent operations"""
 
 	def __init__(self, db: Session = Depends(get_db)):
 		self.db = db

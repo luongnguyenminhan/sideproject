@@ -152,6 +152,7 @@ class LLMInputGuardrail(BaseGuardrail):
 			color_logger.info(
 				f'🤖 {Colors.BOLD}LLM GUARDRAIL DECISION:{Colors.RESET} {decision.action}',
 				Colors.BRIGHT_CYAN,
+				data=decision.model_dump(),
 				violation=decision.has_violation,
 				severity=decision.severity,
 				confidence=decision.confidence,

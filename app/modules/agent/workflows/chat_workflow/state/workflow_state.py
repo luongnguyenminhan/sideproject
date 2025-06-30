@@ -1,5 +1,5 @@
 """
-Simplified State definition for Chat Workflow
+State definition for Chat Workflow
 Streamlined state management with essential fields only
 """
 
@@ -10,7 +10,7 @@ from langgraph.graph.message import add_messages
 
 class AgentState(TypedDict):
 	"""
-	Simplified state definition for LangGraph workflow
+	State definition for LangGraph workflow
 
 	Essential state management with core fields only
 	"""
@@ -57,7 +57,7 @@ class AgentState(TypedDict):
 
 
 class StateManager:
-	"""Simplified helper class for state management"""
+	"""Helper class for state management"""
 
 	@staticmethod
 	def create_initial_state(

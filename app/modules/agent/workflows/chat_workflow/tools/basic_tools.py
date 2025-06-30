@@ -1,5 +1,5 @@
 """
-Tools for the simplified chat workflow
+Tools for the chat workflow
 """
 
 import logging
