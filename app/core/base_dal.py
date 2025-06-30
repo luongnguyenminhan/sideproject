@@ -29,9 +29,13 @@ class BaseDAL(Generic[T]):
 		"""Tạo một bản ghi mới"""
 		new_obj = self.model(**obj_data)
 		self.db.add(new_obj)
+		# Always flush to ensure the object gets an ID
+		self.db.flush()
+		# Only commit if we're not in a transaction context
 		if not self.db.in_transaction():
 			self.db.commit()
-			self.db.refresh(new_obj)
+		# Always refresh to get the latest state
+		self.db.refresh(new_obj)
 		return new_obj
 
 	def update(self, item_id: str, update_data: dict):

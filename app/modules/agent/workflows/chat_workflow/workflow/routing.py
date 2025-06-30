@@ -19,29 +19,11 @@ logger = logging.getLogger(__name__)
 
 
 class WorkflowRouter:
-	"""Container for all workflow routing functions"""
+	"""Container for workflow routing functions"""
 
 	def __init__(self, workflow_instance):
 		"""Initialize with reference to main workflow instance"""
 		self.workflow = workflow_instance
-
-	def route_after_tool_decision(self, state: AgentState) -> str:
-		"""Route based on tool decision"""
-		tool_decision = state.get('tool_decision', {})
-		decision = tool_decision.get('decision', 'no_tools')
-		tools_needed = tool_decision.get('tools_needed', [])
-		reasoning = tool_decision.get('reasoning', 'No reasoning provided')
-
-		logger.info(f'[route_after_tool_decision] 🧭 Routing decision: {decision}')
-		logger.info(f'[route_after_tool_decision] 🛠️ Tools needed: {tools_needed}')
-		logger.info(f'[route_after_tool_decision] 💭 Reasoning: {reasoning}')
-
-		if decision == 'use_tools':
-			logger.info(f'[route_after_tool_decision] ✅ Routing to: use_tools (agent_with_tools)')
-			return 'use_tools'
-		else:
-			logger.info(f'[route_after_tool_decision] ❌ Routing to: no_tools (agent_no_tools)')
-			return 'no_tools'
 
 	def should_continue_after_agent(self, state: AgentState) -> str:
 		"""Determine if agent should continue with tools or end (used after agent_with_tools)"""

@@ -16,7 +16,7 @@ import {
 import type { Question } from '@/types/question.types'
 import { getErrorMessage } from '@/utils/apiHandler'
 import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
-import { faChevronRight, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useCallback, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
@@ -762,11 +762,18 @@ export function ChatClientWrapper() {
   // Handle survey modal toggle
   const handleToggleSurveyModal = () => {
     setSurveyModalVisible(prev => {
+      const newState = !prev
+      
+      // Auto collapse file sidebar when survey opens
+      if (newState === true) {
+        setIsFileSidebarCollapsed(true)
+      }
+      
       // If closing the survey, also clear the conversation ID
       if (prev === true) {
         setSurveyConversationId(null)
       }
-      return !prev
+      return newState
     })
   }
 
@@ -779,6 +786,9 @@ export function ChatClientWrapper() {
       surveyModalVisible,
       surveyDataContent: surveyData.slice(0, 2) // Show first 2 questions for debugging
     })
+    
+    // Auto collapse file sidebar when survey opens
+    setIsFileSidebarCollapsed(true)
     
     if (surveyData.length > 0) {
       // If we have survey data, always try to open it
@@ -849,23 +859,6 @@ export function ChatClientWrapper() {
 
   return (
     <div className="flex h-full">
-      {/* Expand button for Conversation Sidebar when collapsed */}
-      {isConversationSidebarCollapsed && (
-        <div className="hidden md:flex items-center justify-center w-12 border-r border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
-          <Button
-            onClick={handleToggleConversationSidebar}
-            size="sm"
-            variant="ghost"
-            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group"
-            title={t('chat.tooltips.expandSidebar') || 'Expand sidebar'}
-          >
-            <FontAwesomeIcon 
-              icon={faChevronRight} 
-              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
-            />
-          </Button>
-        </div>
-      )}
 
       {/* Desktop Conversation Sidebar */}
       <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ease-in-out ${
@@ -996,31 +989,12 @@ export function ChatClientWrapper() {
           onUploadFiles={handleUploadFiles}
           onUploadCV={handleUploadCV}
           isCVUploading={isCVUploading}
-          isCollapsed={isFileSidebarCollapsed}
-          onToggleCollapse={handleToggleFileSidebar}
           hasSurveyData={surveyData.length > 0}
           onOpenSurvey={handleOpenSurvey}
+          onClose={() => setIsFileSidebarCollapsed(true)}
         />
       </div>
-
-      {/* Expand button for File Sidebar when collapsed */}
-      {isFileSidebarCollapsed && (
-        <div className="hidden lg:flex items-center justify-center w-12 border-l border-[color:var(--border)] bg-[color:var(--card)]/50 backdrop-blur-sm hover:bg-[color:var(--accent)]/50 transition-all duration-300">
-          <Button
-            onClick={handleToggleFileSidebar}
-            size="sm"
-            variant="ghost"
-            className="h-10 w-10 p-0 hover:bg-[color:var(--accent)] transition-all duration-300 group rotate-180"
-            title={t('chat.tooltips.expandSidebar') || 'Expand file sidebar'}
-          >
-            <FontAwesomeIcon 
-              icon={faChevronRight} 
-              className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] transition-colors duration-200" 
-            />
-          </Button>
-        </div>
-      )}
-
+     
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={isMobileSidebarOpen}

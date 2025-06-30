@@ -85,11 +85,6 @@ class ChatWorkflowGuardrailManager:
 	def _setup_traditional_guardrails(self):
 		"""Setup traditional rule-based guardrail rules as backup/complement."""
 
-		color_logger.info(
-			f'⚙️ {Colors.BOLD}SETTING UP TRADITIONAL GUARDRAILS:{Colors.RESET} Adding rule-based protection',
-			Colors.BRIGHT_CYAN,
-			complement_llm=self.enable_llm_guardrails,
-		)
 		if self.enable_input_guardrails:
 			# Input guardrails (as backup or complement to LLM)
 			self.engine.add_input_guardrail(ProfanityGuardrail())
@@ -273,13 +268,6 @@ def create_llm_only_manager(
 		'model_name': model_name,
 		'strict_mode': False,
 	}
-
-	color_logger.info(
-		f'🧠 {Colors.BOLD}CREATING LLM-ONLY GUARDRAIL MANAGER:{Colors.RESET} AI-powered protection only',
-		Colors.BRIGHT_MAGENTA,
-		model=model_name,
-	)
-
 	return ChatWorkflowGuardrailManager(config)
 
 

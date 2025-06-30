@@ -59,13 +59,6 @@ class ChatWorkflow:
 		self.config.db_session = db_session
 		print('^^' * 100, f'Config: {self.config.to_dict()}')
 
-		color_logger.info(
-			f'⚙️ {Colors.BOLD}CONFIG:{Colors.RESET}{Colors.CYAN} Agentic RAG workflow configuration loaded',
-			Colors.CYAN,
-			model_name=self.config.model_name,
-			collection_name=self.config.collection_name,
-		)
-
 		self.compiled_graph = None
 
 		try:
@@ -140,13 +133,6 @@ class ChatWorkflow:
 					Colors.YELLOW,
 					overrides_count=len(config_override),
 				)
-
-			color_logger.info(
-				f'⚙️ {Colors.BOLD}RUNTIME_CONFIG:{Colors.RESET}{Colors.DIM} Prepared',
-				Colors.DIM,
-				thread_id=processing_session,
-				rag_enabled=runtime_config['configurable'].get('use_rag', False),
-			)
 
 			final_state = await self.compiled_graph.ainvoke(initial_state, config=runtime_config)
 

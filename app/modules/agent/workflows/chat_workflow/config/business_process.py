@@ -191,59 +191,19 @@ class BusinessProcessManager:
 		"""Identify the appropriate business process for user input"""
 		user_input_lower = user_input.lower()
 
-		# Enhanced survey detection - more proactive approach
-		survey_keywords = [
-			'survey',
-			'question',
-			'questionnaire',
-			'form',
-			'assessment',
-			'evaluation',
-			'khảo sát',
-			'câu hỏi',
-			'đánh giá',
-			'phỏng vấn',
-			'interview',
-			'skill',
-			'kỹ năng',
-			'experience',
-			'kinh nghiệm',
-			'tạo',
-			'create',
-			'generate',
-			'analyze',
-			'phân tích',
-		]
+		# Simple keyword-based detection
+		survey_keywords = ['survey', 'question', 'questionnaire', 'assessment', 'khảo sát', 'câu hỏi', 'đánh giá']
+		cv_keywords = ['cv', 'resume', 'curriculum', 'profile', 'hồ sơ']
+		career_keywords = ['career', 'job', 'work', 'sự nghiệp', 'nghề nghiệp', 'công việc', 'tư vấn']
 
-		# CV-related requests should also trigger survey generation
-		cv_survey_keywords = ['cv', 'resume', 'curriculum', 'profile', 'hồ sơ']
-
-		# Career-related requests should trigger survey generation
-		career_survey_keywords = [
-			'career',
-			'job',
-			'work',
-			'professional',
-			'interview',
-			'sự nghiệp',
-			'nghề nghiệp',
-			'công việc',
-			'tư vấn',
-			'advice',
-			'guidance',
-		]
-
-		# Priority-based detection - SURVEY FIRST!
 		if any(keyword in user_input_lower for keyword in survey_keywords):
 			return BusinessProcessType.SURVEY_GENERATION
 
-		# CV analysis should also generate surveys for better analysis
-		if any(keyword in user_input_lower for keyword in cv_survey_keywords):
-			return BusinessProcessType.SURVEY_GENERATION
+		if any(keyword in user_input_lower for keyword in cv_keywords):
+			return BusinessProcessType.CV_ANALYSIS
 
-		# Career guidance should include survey generation
-		if any(keyword in user_input_lower for keyword in career_survey_keywords):
-			return BusinessProcessType.SURVEY_GENERATION
+		if any(keyword in user_input_lower for keyword in career_keywords):
+			return BusinessProcessType.CAREER_GUIDANCE
 
 		if any(keyword in user_input_lower for keyword in ['help', 'support', 'problem', 'issue']):
 			return BusinessProcessType.CUSTOMER_SUPPORT

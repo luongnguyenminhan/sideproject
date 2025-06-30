@@ -53,7 +53,9 @@ export function ChatMessage({
   const { t } = useTranslation();
 
   // Check for survey token in message
-  const hasSurveyToken = message.content.includes('</survey>')
+  const surveyTokenMatch = message.content.match(/<survey>([^<]+)<\/survey>/)
+  const hasSurveyToken = !!surveyTokenMatch
+  const surveySessionId = surveyTokenMatch ? surveyTokenMatch[1] : null
   const shouldShowSurveyButton = message.role === 'assistant' && (hasSurveyData || hasSurveyToken) && (onToggleSurvey || onOpenSurvey)
   
   // Enhanced debug logging
@@ -62,11 +64,12 @@ export function ChatMessage({
       messageId: message.id,
       hasSurveyData,
       hasSurveyToken,
+      surveySessionId,
       shouldShowSurveyButton,
       hasToggleFunction: !!onToggleSurvey,
       hasOpenFunction: !!onOpenSurvey,
       contentSnippet: message.content.substring(0, 100) + '...',
-      surveyTokenPosition: message.content.indexOf('</survey>'),
+      surveyTokenPosition: message.content.indexOf('<survey>'),
       messageTimestamp: message.timestamp
     })
   }
@@ -284,7 +287,7 @@ export function ChatMessage({
               )
             }}
           >
-            {processMessageText(message.content.replace('</survey>', ''))}
+            {processMessageText(message.content.replace(/<survey>[^<]+<\/survey>/g, ''))}
           </ReactMarkdown>
         </div>
         
@@ -300,11 +303,17 @@ export function ChatMessage({
                   hasSurveyData, 
                   hasToggle: !!onToggleSurvey, 
                   hasOpen: !!onOpenSurvey,
-                  hasSurveyToken
+                  hasSurveyToken,
+                  surveySessionId
                 })
                 
-                // Priority: onOpenSurvey first if available and there's survey data
-                if (onOpenSurvey) {
+                // If we have a session ID from the token, we need to fetch the survey data
+                if (surveySessionId && onOpenSurvey) {
+                  console.log('[ChatMessage] Opening survey with session ID:', surveySessionId)
+                  // Store session ID for the survey component to fetch
+                  window.sessionStorage.setItem('current_survey_session_id', surveySessionId)
+                  onOpenSurvey()
+                } else if (onOpenSurvey) {
                   console.log('[ChatMessage] Calling onOpenSurvey')
                   onOpenSurvey()
                 } else if (onToggleSurvey) {

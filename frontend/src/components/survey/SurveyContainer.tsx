@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
-import { ArrowRight, Check, ChevronLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, ChevronLeft, ArrowRight } from 'lucide-react';
+import { questionSessionService } from '@/apis/questionSessionService';
 import { Question, QuestionOption } from '@/types/question.types';
 import { useTranslation } from '@/contexts/TranslationContext';
-import QuestionRenderer from './QuestionRenderer';
 import { submitSurveyResponse } from '@/apis/questionApi';
 import AnimatedSurveyWrapper from './AnimatedSurveyWrapper';
 import AnimatedStepper from './AnimatedStepper';
+import QuestionRenderer from './QuestionRenderer';
 
 interface SurveyContainerProps {
   questions: Question[];
@@ -16,6 +17,7 @@ interface SurveyContainerProps {
   websocket?: { isConnected: () => boolean; sendRawMessage: (message: string) => void } | null;
   conversationId?: string;
   isEmbedded?: boolean; // Để biết có phải đang chạy trong panel hay không
+  onClose?: () => void;
 }
 
 const SurveyContainer: React.FC<SurveyContainerProps> = ({ 
@@ -23,23 +25,62 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   onSurveyComplete,
   websocket,
   conversationId,
-  isEmbedded = false
+  isEmbedded = false,
+  onClose
 }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, any>>({});
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingSession, setIsLoadingSession] = useState(false);
+  const [sessionQuestions, setSessionQuestions] = useState<Question[] | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+
+  // Use session questions if available, otherwise use prop questions
+  const effectiveQuestions = sessionQuestions || questions;
+
+  // Check for session ID from storage and fetch questions (only once)
+  useEffect(() => {
+    const checkForSessionId = async () => {
+      const sessionId = window.sessionStorage.getItem('current_survey_session_id');
+      if (sessionId && sessionId !== currentSessionId) {
+        console.log('[SurveyContainer] Found session ID in storage:', sessionId);
+        setCurrentSessionId(sessionId);
+        setIsLoadingSession(true);
+        
+        try {
+          const sessionData = await questionSessionService.getSessionQuestions(sessionId);
+          console.log('[SurveyContainer] Fetched session questions:', sessionData);
+          
+          if (sessionData.questions && sessionData.questions.length > 0) {
+            setSessionQuestions(sessionData.questions);
+            // Clear the session ID from storage
+            window.sessionStorage.removeItem('current_survey_session_id');
+          }
+        } catch (error) {
+          console.error('[SurveyContainer] Error fetching session questions:', error);
+        } finally {
+          setIsLoadingSession(false);
+        }
+      }
+    };
+
+    checkForSessionId();
+  }, [currentSessionId]);
 
   // Debug logging for SurveyContainer
   console.log('[SurveyContainer] Render with questions:', {
-    questionsCount: questions.length,
+    questionsCount: effectiveQuestions.length,
     currentStep,
     isEmbedded,
     conversationId,
     hasWebsocket: !!websocket,
     websocketConnected: websocket?.isConnected?.(),
-    questions: questions.map((q, i) => ({
+    isLoadingSession,
+    hasSessionQuestions: !!sessionQuestions,
+    currentSessionId,
+    questions: effectiveQuestions.map((q, i) => ({
       index: i,
       question: q.Question,
       type: q.Question_type,
@@ -49,7 +90,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   })
 
 
-  const progress = ((currentStep + 1) / questions.length) * 100;
+  const progress = ((currentStep + 1) / effectiveQuestions.length) * 100;
 
   const handleAnswerChange = (questionIndex: number, answerId: string, value?: any) => {
     setSelectedAnswers({
@@ -59,7 +100,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   };
 
   const handleNext = async () => {
-    if (currentStep < questions.length - 1) {
+    if (currentStep < effectiveQuestions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       setIsSubmitting(true);
@@ -80,8 +121,8 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
         // Call completion callback if provided
         if (onSurveyComplete) {
           await onSurveyComplete(selectedAnswers);
-        } else {
-          // Fallback to API submission
+        } else if (!websocket?.isConnected()) {
+          // Fallback to API submission if no websocket and no callback
           await submitSurveyResponse(selectedAnswers);
         }
         
@@ -101,7 +142,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   };
 
   const isQuestionAnswered = (questionIndex: number): boolean => {
-    const question = questions[questionIndex];
+    const question = effectiveQuestions[questionIndex];
     const answers = selectedAnswers[questionIndex];
 
     if (!answers) return false;
@@ -131,13 +172,12 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
     }
   };
 
-  const currentQuestion = questions[currentStep];
+  const currentQuestion = effectiveQuestions[currentStep];
 
-  if (showResults) {
-    return (
-      <AnimatedSurveyWrapper currentStep={questions.length} totalSteps={questions.length}>
-        <div className="w-full h-screen flex flex-col">
-          <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center">
+  if (showResults) {      return (
+        <AnimatedSurveyWrapper currentStep={effectiveQuestions.length} totalSteps={effectiveQuestions.length}>
+        <div className="w-full h-full flex flex-col">
+          <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center justify-center">
             <div className="w-full max-w-4xl mx-auto">
               <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-8 md:p-12 text-center">
           <div className="mb-8">
@@ -151,7 +191,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
             </h1>
             
             <p className="text-xl text-[color:var(--muted-foreground)] max-w-2xl mx-auto mb-8">
-              {t('survey.results.description')}
+              {t('survey.results.description_sent')}
             </p>
 
             {/* Success animation */}
@@ -163,18 +203,16 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-4">
-            <button
-              onClick={() => {
-                setShowResults(false);
-                setCurrentStep(0);
-                setSelectedAnswers({});
-              }}
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-            >
-              {t('survey.results.retake')}
-            </button>
-                </div>
+          {onClose && (
+            <div className="space-y-4">
+              <button
+                onClick={onClose}
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[color:var(--gradient-button-from)] to-[color:var(--gradient-button-to)] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {t('common.close')}
+              </button>
+            </div>
+          )}
               </div>
             </div>
           </div>
@@ -184,21 +222,21 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
     }
 
   return (
-    <AnimatedSurveyWrapper currentStep={currentStep} totalSteps={questions.length}>
+    <AnimatedSurveyWrapper currentStep={currentStep} totalSteps={effectiveQuestions.length}>
       <div className={`w-full h-full flex flex-col ${isEmbedded ? '' : 'h-screen'}`}>
         {/* Header offset - only for full screen mode */}
         {!isEmbedded && <div className="h-14 flex-shrink-0"></div>}
         
-        <div className={`flex-1 ${isEmbedded ? 'p-1' : 'container mx-auto px-4 py-4 md:py-8'} flex items-center`}>
-          <div className="w-full max-w-4xl mx-auto">
+        <div className={`flex-1 ${isEmbedded ? 'p-1' : 'container mx-auto px-4 py-4 md:py-8'} flex items-center overflow-hidden`}>
+          <div className="w-full max-w-4xl mx-auto h-full">
             <div className={`bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm ${
-              isEmbedded ? 'h-full p-2' : 'h-[calc(100vh-160px)] p-4 md:p-8'
+              isEmbedded ? 'h-full p-2' : 'h-full max-h-[calc(100vh-160px)] p-4 md:p-8'
             } flex flex-col overflow-hidden`}>
               {/* Animated Progress Indicator */}
               <AnimatedStepper 
                 currentStep={currentStep}
-                totalSteps={questions.length}
-                questions={questions}
+                totalSteps={effectiveQuestions.length}
+                questions={effectiveQuestions}
               />
 
               {/* Question Header */}
@@ -207,7 +245,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
                   isEmbedded ? 'text-xs' : 'text-sm'
                 } font-medium mb-4`}>
                   <span>
-                    Question {currentStep + 1} of {questions.length}
+                    Question {currentStep + 1} of {effectiveQuestions.length}
                   </span>
                   <span>•</span>
                   <span className="capitalize">
@@ -273,7 +311,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
                   <span>
                     {isSubmitting
                       ? t('survey.submitting')
-                      : currentStep === questions.length - 1
+                      : currentStep === effectiveQuestions.length - 1
                       ? t('survey.complete')
                       : t('survey.continue')
                     }
@@ -300,7 +338,7 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
                   </div>
                 </div>
                 <div className={`text-center ${isEmbedded ? 'text-xs' : 'text-sm'} text-[color:var(--muted-foreground)]`}>
-                  {t('survey.step')} {currentStep + 1} / {questions.length}
+                  {t('survey.step')} {currentStep + 1} / {effectiveQuestions.length}
                 </div>
               </div>
             </div>

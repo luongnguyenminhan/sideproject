@@ -28,8 +28,6 @@ from .prompts import (
 	TOOL_DECISION_SYSTEM_PROMPT,
 	ToolDecision,
 	SURVEY_KEYWORDS,
-	SEARCH_KEYWORDS,
-	TEST_KEYWORDS,
 	build_enhanced_system_prompt,
 	build_tool_decision_prompt,
 )
@@ -44,8 +42,6 @@ __all__ = [
 	'TOOL_DECISION_SYSTEM_PROMPT',
 	'ToolDecision',
 	'SURVEY_KEYWORDS',
-	'SEARCH_KEYWORDS',
-	'TEST_KEYWORDS',
 	'build_enhanced_system_prompt',
 	'build_tool_decision_prompt',
 ]

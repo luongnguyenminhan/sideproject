@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFile, faTrash, faDownload, faPlus, faChevronRight, faUser, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faFile, faTrash, faDownload, faPlus, faUser, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 
 interface UploadedFile {
@@ -22,11 +22,10 @@ interface FileSidebarProps {
   onDeleteFile: (id: string) => void
   onUploadFiles?: (files: File[]) => void
   onUploadCV?: (file: File) => void
-  isCollapsed?: boolean
-  onToggleCollapse?: () => void
   isCVUploading?: boolean
   hasSurveyData?: boolean
   onOpenSurvey?: () => void
+  onClose?: () => void
 }
 
 export function FileSidebar({ 
@@ -36,9 +35,8 @@ export function FileSidebar({
   onDeleteFile, 
   onUploadFiles,
   onUploadCV,
-  isCollapsed = false,
-  onToggleCollapse,
   isCVUploading = false,
+  onClose,
 }: FileSidebarProps) {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -130,17 +128,17 @@ export function FileSidebar({
             </Button>
           </div>
 
-          {/* Collapse button */}
-          {!isCollapsed && (
+          {/* Close button */}
+          {onClose && (
             <Button
-              onClick={onToggleCollapse}
+              onClick={onClose}
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group"
-              title={t('chat.tooltips.collapseSidebar') || 'Collapse sidebar'}
+              title={t('chat.tooltips.closeSidebar') || 'Close sidebar'}
             >
               <FontAwesomeIcon 
-                icon={faChevronRight} 
+                icon={faTimes} 
                 className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)] group-hover:scale-110 transition-all duration-200" 
               />
             </Button>

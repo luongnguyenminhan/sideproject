@@ -64,7 +64,6 @@ export function ChatInterface({
   onToggleSurvey,
   onOpenSurvey,
   hasSurveyData = false,
-  isSurveyOpen = false
 }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -106,9 +105,6 @@ export function ChatInterface({
         isFileSidebarCollapsed={isFileSidebarCollapsed}
         onToggleConversationSidebar={onToggleConversationSidebar}
         onToggleFileSidebar={onToggleFileSidebar}
-        onToggleSurvey={onToggleSurvey}
-        hasSurveyData={hasSurveyData}
-        isSurveyOpen={isSurveyOpen}
       />
 
       {/* Messages Area */}

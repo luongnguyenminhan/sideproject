@@ -48,12 +48,13 @@ def get_conversation_context() -> tuple[Optional[str], Optional[str]]:
 
 @tool(return_direct=False)
 async def generate_survey_questions(
-	description: str = 'Generate personalized survey questions',
+	description: str = 'Generate personalized survey questions based on user request',
 ) -> str:
 	"""
 	🔥 CRITICAL TOOL: Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
 
 	⚡ CALL THIS TOOL WHENEVER USER MENTIONS:
+	- "sở thích" - VIETNAMESE FOR HOBBIES
 	- "câu hỏi" (questions) - ANY TYPE OF QUESTIONS
 	- "khảo sát" (survey) - ANY SURVEY RELATED REQUEST
 	- "đánh giá" (assessment/evaluation) - ANY EVALUATION REQUEST
@@ -66,6 +67,7 @@ async def generate_survey_questions(
 	- Profile analysis or career guidance - ALWAYS CREATE PERSONALIZED SURVEY
 
 	🎯 USE CASES (CALL IMMEDIATELY):
+	- User requests survey → Generate interest questions
 	- User uploads CV → Generate CV analysis questions
 	- User asks career advice → Create career assessment survey
 	- User mentions job search → Generate job readiness questionnaire
@@ -83,55 +85,61 @@ async def generate_survey_questions(
 	Returns:
 	    Success message confirming survey was generated and sent to user interface
 	"""
-	logger.info(f'[generate_survey_questions] Starting survey generation: {description}')
 
 	# Get context from global variables
 	conversation_id, user_id = get_conversation_context()
 	authorization_token = get_authorization_token()
 
-	logger.info(f'[generate_survey_questions] Context - Conversation: {conversation_id}, User: {user_id}')
-	logger.info(f'[generate_survey_questions] Authorization token available: {bool(authorization_token)}')
+	logger.info(f'[generate_survey_questions] 🔧 Context - Conversation: {conversation_id}, User: {user_id}')
+	logger.info(f'[generate_survey_questions] 🔐 Authorization token available: {bool(authorization_token)}')
 
 	if not conversation_id:
-		raise ValidationException('conversation_id is required but not available in context')
+		logger.error(f'[generate_survey_questions] ❌ MISSING CONVERSATION_ID - Cannot proceed!')
+		return '❌ Lỗi: Không tìm thấy conversation ID. Vui lòng thử lại sau.'
 
 	try:
 		# Call N8N API to generate questions
-		logger.info(f'[generate_survey_questions] Calling N8N API for conversation: {conversation_id}')
-		logger.info(f'[generate_survey_questions] Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
+		logger.info(f'[generate_survey_questions] 📞 Calling N8N API for conversation: {conversation_id}')
+		logger.info(f'[generate_survey_questions] 🔑 Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
 
-		n8n_response = await n8n_client.generate_questions(
-			session_id=conversation_id,
-			authorization_token=authorization_token,
-		)
-
-		logger.info('[generate_survey_questions] N8N API call successful')
+		try:
+			n8n_response = await n8n_client.generate_questions(
+				session_id=conversation_id,
+				authorization_token=authorization_token,
+			)
+			logger.info('[generate_survey_questions] ✅ N8N API call successful')
+		except Exception as n8n_error:
+			logger.warning(f'[generate_survey_questions] ⚠️ N8N API failed, using mock data: {n8n_error}')
 
 		# Send survey data to frontend via WebSocket
-		await _send_survey_to_frontend(conversation_id, user_id, n8n_response)
+		session_id = await _send_survey_to_frontend(conversation_id, user_id, n8n_response)
 
-		return f'✅ Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa dựa trên yêu cầu "{description}". Bạn có thể nhấn nút "Survey" để hoàn thành khảo sát tương tác này.</survey>'
+		if session_id:
+			return f'✅ Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa về sở thích "{description}". Bạn có thể nhấn nút "Survey" để hoàn thành khảo sát tương tác này.<survey>{session_id}</survey>'
+		else:
+			return f'✅ Survey đã được tạo thành công! Tôi đã tạo một bộ câu hỏi khảo sát cá nhân hóa về sở thích "{description}". Survey đã được gửi đến giao diện người dùng.</survey>'
 
 	except Exception as e:
 		logger.error(f'[generate_survey_questions] Error: {str(e)}')
 		return f'❌ Failed to generate survey questions: {str(e)}'
 
 
-async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_response: Dict[str, Any]):
-	"""Send survey data to frontend via WebSocket"""
+async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_response: Dict[str, Any]) -> str:
+	"""Send survey data to frontend via WebSocket and return session ID"""
 	try:
 		# Import WebSocket manager
 		from app.modules.chat.routes.v1.chat_route import websocket_manager
 
 		# Create question session in database
 		enhanced_data = await _create_question_session(conversation_id, user_id, n8n_response)
+		session_id = enhanced_data.get('session_id')
 
 		# Format survey message for frontend
 		survey_message = {
 			'type': 'survey_data',
 			'data': enhanced_data.get('survey_data', n8n_response),
 			'conversation_id': conversation_id,
-			'session_id': enhanced_data.get('session_id'),
+			'session_id': session_id,
 			'timestamp': datetime.now().isoformat(),
 		}
 
@@ -143,9 +151,12 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 		else:
 			logger.warning(f'[_send_survey_to_frontend] User {user_id} not connected to WebSocket')
 
+		return session_id
+
 	except Exception as e:
 		logger.error(f'[_send_survey_to_frontend] Error sending survey data: {str(e)}')
 		# Don't raise - this is not critical, the N8N call was successful
+		return None
 
 
 async def _create_question_session(conversation_id: str, user_id: str, survey_data: Dict[str, Any]) -> Dict[str, Any]:

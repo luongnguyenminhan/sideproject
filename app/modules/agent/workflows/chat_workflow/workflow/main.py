@@ -27,7 +27,6 @@ from ..state.workflow_state import AgentState, StateManager
 from ..config.workflow_config import WorkflowConfig
 from ..config.business_process import get_business_process_manager
 from ..config.llm_guardrails import initialize_guardrails_with_llm
-from .prompts import ToolDecision
 from .workflow_builder import WorkflowBuilder
 
 load_dotenv()
@@ -53,19 +52,13 @@ class Workflow:
 	"""
 
 	def __init__(self, db_session: Session, config: Optional[WorkflowConfig] = None):
-		"""Initialize enhanced workflow with business process and guardrails"""
+		"""Initialize simplified workflow"""
 		self.db_session = db_session
 		self.config = config or WorkflowConfig.from_env()
 		self.config.db_session = db_session
 
 		# Initialize LLM
 		self.llm = ChatGoogleGenerativeAI(model=self.config.model_name, temperature=self.config.temperature)
-
-		# Initialize Tool Decision LLM (with structured output)
-		self.tool_decision_llm = ChatGoogleGenerativeAI(
-			model=self.config.model_name,
-			temperature=0.1,  # Lower temperature for more consistent decisions
-		).with_structured_output(ToolDecision)
 
 		# Initialize Business Process Manager
 		self.business_process_manager = get_business_process_manager()

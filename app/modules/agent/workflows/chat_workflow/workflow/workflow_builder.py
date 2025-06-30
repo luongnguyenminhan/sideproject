@@ -64,23 +64,33 @@ class WorkflowBuilder:
 		return compiled_graph
 
 	def _register_nodes(self, workflow: StateGraph) -> None:
-		"""Register workflow nodes - NO RAG, NO complex analysis"""
+		"""Register workflow nodes - simplified to always use tools"""
+		logger.info('[WorkflowBuilder] Registering simplified nodes')
 
-		# Only essential nodes for direct tool usage
+		# Simplified nodes - always use tools
 		workflow.add_node('input_validation', self.nodes.input_validation_node)
-		workflow.add_node('agent_with_tools', self.nodes.agent_with_tools_node)  # Direct to agent with tools
+		workflow.add_node('business_process_analysis', self.nodes.business_process_analysis_node)
+		workflow.add_node('agent_with_tools', self.nodes.agent_with_tools_node)
 		workflow.add_node('tools', self.nodes.tools_node)
 		workflow.add_node('output_validation', self.nodes.output_validation_node)
 
-	def _configure_edges(self, workflow: StateGraph) -> None:
-		"""Configure workflow edges - direct to agent with tools, skip all RAG"""
-		logger.info('[WorkflowBuilder] Configuring workflow edges (NO RAG)')
-		workflow.add_edge('input_validation', 'agent_with_tools')
+		logger.info('[WorkflowBuilder] All nodes registered successfully')
 
-		workflow.add_conditional_edges(
-			'agent_with_tools',
-			self.router.should_continue_after_agent,
-			{'tools': 'tools', 'end': 'output_validation'},
-		)
+	def _configure_edges(self, workflow: StateGraph) -> None:
+		"""Configure workflow edges - simplified flow always using tools"""
+		logger.info('[WorkflowBuilder] Configuring simplified workflow edges')
+
+		# Simplified flow: input -> business analysis -> agent with tools -> tools (if needed) -> output
+		workflow.add_edge('input_validation', 'business_process_analysis')
+		workflow.add_edge('business_process_analysis', 'agent_with_tools')
+
+		# Route after agent_with_tools (check for tool calls)
+		workflow.add_conditional_edges('agent_with_tools', self.router.should_continue_after_agent, {'tools': 'tools', 'end': 'output_validation'})
+
+		# After tools execution, go to output validation
 		workflow.add_edge('tools', 'output_validation')
+
+		# End after output validation
 		workflow.add_edge('output_validation', END)
+
+		logger.info('[WorkflowBuilder] Simplified workflow edges configured successfully')

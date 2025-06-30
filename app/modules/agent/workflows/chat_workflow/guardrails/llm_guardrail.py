@@ -503,11 +503,3 @@ class LLMGuardrailEngine(GuardrailEngine):
 			# Add LLM guardrails as primary guards
 			self.add_input_guardrail(LLMInputGuardrail(model_name))
 			self.add_output_guardrail(LLMOutputGuardrail(model_name))
-
-			color_logger.info(
-				f'🧠 {Colors.BOLD}LLM GUARDRAILS ENABLED:{Colors.RESET} Enhanced protection active',
-				Colors.BRIGHT_GREEN,
-				model=model_name,
-				llm_input_guard=True,
-				llm_output_guard=True,
-			)

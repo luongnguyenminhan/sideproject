@@ -25,15 +25,10 @@ from ..state.workflow_state import AgentState, StateManager
 from ..tools.basic_tools import get_tools, get_tool_definitions
 from .prompts import (
 	DEFAULT_SYSTEM_PROMPT,
-	TOOL_DECISION_SYSTEM_PROMPT,
-	ToolDecision,
 	has_survey_keywords as check_survey_keywords,
 	get_matched_keywords,
 	build_enhanced_system_prompt,
-	build_tool_decision_prompt,
 	SURVEY_KEYWORDS,
-	SURVEY_SAFETY_KEYWORDS,
-	SURVEY_FALLBACK_KEYWORDS,
 )
 
 logger = logging.getLogger(__name__)
@@ -87,25 +82,15 @@ class WorkflowNodes:
 
 	async def business_process_analysis_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Business Process Analysis Node - Identifies process type and applicable rules"""
-		logger.info('[business_process_analysis_node] 🔍 Starting business process analysis')
+		logger.info('[business_process_analysis_node] Starting business process analysis')
 
 		# Get user message
 		user_message = StateManager.extract_last_user_message(state)
 		if not user_message:
-			logger.warning('[business_process_analysis_node] ⚠️ No user message found')
+			logger.warning('[business_process_analysis_node] No user message found')
 			return state
 
-		logger.info(f'[business_process_analysis_node] 💬 Analyzing user message: "{user_message[:100]}..."')
-
 		try:
-			# ENHANCED: Pre-check for survey keywords to force survey_generation process
-			survey_keywords_detected = check_survey_keywords(user_message, SURVEY_KEYWORDS)
-
-			logger.info(f'[business_process_analysis_node] 🔍 Survey keywords check: {survey_keywords_detected}')
-			if survey_keywords_detected:
-				matched_keywords = get_matched_keywords(user_message, SURVEY_KEYWORDS)
-				logger.info(f'[business_process_analysis_node] 🎯 Matched survey keywords: {matched_keywords}')
-
 			# Identify business process type
 			process_type = self.workflow.business_process_manager.identify_process_type(
 				user_message,
@@ -118,20 +103,8 @@ class WorkflowNodes:
 				},
 			)
 
-			logger.info(f'[business_process_analysis_node] 📋 Identified process type: {process_type.value}')
-
-			# OVERRIDE: Force survey_generation if keywords detected
-			if survey_keywords_detected and process_type.value != 'survey_generation':
-				logger.info(f'[business_process_analysis_node] 🚀 FORCE OVERRIDE: Changing process type from {process_type.value} to survey_generation')
-				from app.modules.agent.workflows.chat_workflow.config.business_process import (
-					BusinessProcessType,
-				)
-
-				process_type = BusinessProcessType.SURVEY_GENERATION
-
 			# Get process definition
 			process_def = self.workflow.business_process_manager.get_process_definition(process_type)
-			logger.info(f'[business_process_analysis_node] 📖 Process definition: {process_def.name if process_def else "None"}')
 
 			# Evaluate business rules
 			triggered_rules = self.workflow.business_process_manager.evaluate_rules(
@@ -140,16 +113,11 @@ class WorkflowNodes:
 					'user_input': user_message,
 					'has_cv_context': bool(state.get('cv_context')),
 					'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
-					'profile_completeness': 1.0,  # Default complete
-					'context_completeness': 1.0,  # Default complete
+					'profile_completeness': 1.0,
+					'context_completeness': 1.0,
 				},
 			)
 
-			logger.info(f'[business_process_analysis_node] ⚡ Triggered {len(triggered_rules)} business rules')
-			logger.info(f'[business_process_analysis_node] ⚡ Rule names: {[rule.name for rule in triggered_rules]}')
-			logger.info(f'[business_process_analysis_node] 🛠️ Required tools: {process_def.required_tools if process_def else []}')
-
-			# Store business process information
 			return {
 				**state,
 				'business_process_type': process_type.value,
@@ -159,305 +127,74 @@ class WorkflowNodes:
 			}
 
 		except Exception as e:
-			logger.error(f'[business_process_analysis_node] ❌ Analysis failed: {str(e)}')
+			logger.error(f'[business_process_analysis_node] Analysis failed: {str(e)}')
 
-			# FALLBACK: Check for survey keywords even in error case
-			survey_keywords_detected = check_survey_keywords(user_message, SURVEY_FALLBACK_KEYWORDS)
-
-			if survey_keywords_detected:
-				logger.info(f'[business_process_analysis_node] 🚀 FALLBACK: Survey keywords detected, using survey_generation process')
-				from app.modules.agent.workflows.chat_workflow.config.business_process import (
-					BusinessProcessType,
-				)
-
-				return {
-					**state,
-					'business_process_type': BusinessProcessType.SURVEY_GENERATION.value,
-					'business_process_error': str(e),
-					'required_tools': ['generate_survey_questions'],
-					'fallback_survey_detection': True,
-				}
-			else:
-				logger.info(f'[business_process_analysis_node] 🔄 FALLBACK: Using general conversation')
-				from app.modules.agent.workflows.chat_workflow.config.business_process import (
-					BusinessProcessType,
-				)
-
-				return {
-					**state,
-					'business_process_type': BusinessProcessType.GENERAL_CONVERSATION.value,
-					'business_process_error': str(e),
-				}
-
-	async def tool_decision_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""Tool Decision Node - Decides whether to use tools based on user query and business process"""
-		messages = state.get('messages', [])
-		if not messages:
-			return {
-				**state,
-				'tool_decision': {
-					'decision': 'no_tools',
-					'reasoning': 'No messages found',
-				},
-			}
-
-		# Get the latest user message
-		user_message = None
-		for msg in reversed(messages):
-			if isinstance(msg, HumanMessage) or (hasattr(msg, 'content') and not isinstance(msg, (AIMessage, SystemMessage))):
-				user_message = msg.content if hasattr(msg, 'content') else str(msg)
-				break
-
-		if not user_message:
-			return {
-				**state,
-				'tool_decision': {
-					'decision': 'no_tools',
-					'reasoning': 'No user message found',
-				},
-			}
-
-		# Get available tools and business process context
-		available_tools = get_tools(self.workflow.config)
-		tool_names = [tool.name for tool in available_tools]
-		business_process_type = state.get('business_process_type', 'general_conversation')
-		required_tools = state.get('required_tools', [])
-		triggered_rules = state.get('triggered_rules', [])
-
-		# Create enhanced decision prompt with business context
-		decision_prompt = build_tool_decision_prompt(
-			user_message=user_message,
-			business_process_type=business_process_type,
-			required_tools=required_tools,
-			triggered_rules=triggered_rules,
-			tool_names=tool_names,
-			context=state.get('combined_rag_context', ''),
-		)
-
-		print(f'[tool_decision_node] User message: {user_message[:100]}...')
-		print(f'[tool_decision_node] Available tools: {tool_names}')
-		print(f'[tool_decision_node] Business process: {business_process_type}')
-		print(f'[tool_decision_node] Required tools: {required_tools}')
-
-		# ENHANCED FORCE FOR TESTING: Force question_composer_tool on certain keywords
-		logger.info(f'[tool_decision_node] 🔍 Checking for force keywords in message: "{user_message}"')
-		logger.info(f'[tool_decision_node] 🎯 Test keywords: {SURVEY_KEYWORDS}')
-
-		should_force_survey = check_survey_keywords(user_message, SURVEY_KEYWORDS)
-		matched_keywords = get_matched_keywords(user_message, SURVEY_KEYWORDS)
-
-		logger.info(f'[tool_decision_node] 🚀 Should force survey: {should_force_survey}')
-		logger.info(f'[tool_decision_node] ✅ Matched keywords: {matched_keywords}')
-
-		if should_force_survey:
-			logger.info(f'[tool_decision_node] 🎯 FORCE TEST: Detected survey keywords, forcing question_composer_tool')
-			logger.info(f'[tool_decision_node] 🎯 Matched keywords: {matched_keywords}')
-			return {
-				**state,
-				'tool_decision': {
-					'decision': 'use_tools',
-					'reasoning': f'FORCE TEST: Survey keywords detected: {matched_keywords}, using question_composer_tool for testing',
-					'confidence': 1.0,
-					'tools_needed': ['generate_survey_questions'],
-					'force_test': True,
-					'matched_keywords': matched_keywords,
-				},
-			}
-
-		# Get tool decision
-		try:
-			decision_messages = [
-				SystemMessage(content=TOOL_DECISION_SYSTEM_PROMPT),
-				HumanMessage(content=decision_prompt),
-			]
-
-			decision_response = await self.workflow.tool_decision_llm.ainvoke(decision_messages)
-
-			# Convert to dict if it's a Pydantic model
-			if hasattr(decision_response, 'model_dump'):
-				tool_decision = decision_response.model_dump()
-			else:
-				tool_decision = decision_response
-
-			# Override decision if business process requires tools
-			logger.info(f'[tool_decision_node] 📋 Required tools from business process: {required_tools}')
-			logger.info(f'[tool_decision_node] 🤖 LLM Tool decision: {tool_decision.get("decision")}')
-			logger.info(f'[tool_decision_node] 💭 LLM Reasoning: {tool_decision.get("reasoning")}')
-
-			if required_tools and tool_decision.get('decision') == 'no_tools':
-				logger.info(f'[tool_decision_node] 🔄 Overriding decision due to business process requirements: {required_tools}')
-				tool_decision.update({
-					'decision': 'use_tools',
-					'reasoning': f'Business process {business_process_type} requires tools: {", ".join(required_tools)}',
-					'business_override': True,
-				})
-
-			# ADDITIONAL FORCE: If business process is survey_generation, force tools regardless
-			if business_process_type == 'survey_generation' and tool_decision.get('decision') == 'no_tools':
-				logger.info(f'[tool_decision_node] 🚀 BUSINESS PROCESS FORCE: survey_generation detected, forcing tools')
-				tool_decision.update({
-					'decision': 'use_tools',
-					'reasoning': f'Business process {business_process_type} requires survey tools',
-					'confidence': 1.0,
-					'tools_needed': ['generate_survey_questions'],
-					'business_override': True,
-					'force_test': True,
-				})
-
-			# ADDITIONAL SAFETY: Check if any survey keywords in user message and force if needed
-			has_survey_keyword = check_survey_keywords(user_message, SURVEY_SAFETY_KEYWORDS)
-
-			if has_survey_keyword and tool_decision.get('decision') == 'no_tools':
-				found_keywords = get_matched_keywords(user_message, SURVEY_SAFETY_KEYWORDS)
-				logger.warning(f'[tool_decision_node] 🚨 SAFETY OVERRIDE: Survey keywords detected but LLM said no_tools, forcing use_tools')
-				logger.warning(f'[tool_decision_node] 🚨 Found keywords: {found_keywords}')
-				tool_decision.update({
-					'decision': 'use_tools',
-					'reasoning': f'Safety override: Survey keywords detected in user message',
-					'confidence': 1.0,
-					'tools_needed': ['generate_survey_questions'],
-					'safety_override': True,
-				})
-
-			logger.info(f'[tool_decision_node] 🎯 FINAL Tool Decision: {tool_decision.get("decision")} - {tool_decision.get("reasoning")}')
-			logger.info(f'[tool_decision_node] 🛠️ Tools needed: {tool_decision.get("tools_needed", [])}')
-
-			return {**state, 'tool_decision': tool_decision}
-
-		except Exception as e:
-			logger.error(f'[tool_decision_node] ❌ Tool decision failed: {str(e)}')
-			logger.error(f'[tool_decision_node] ❌ Falling back to business process default')
-
-			# Default based on business process requirements or keyword detection
-			has_survey_keyword = check_survey_keywords(user_message, SURVEY_FALLBACK_KEYWORDS)
-
-			if required_tools or has_survey_keyword:
-				default_decision = 'use_tools'
-				default_tools = ['generate_survey_questions'] if has_survey_keyword else required_tools
-				reasoning = f'Fallback decision due to error: {str(e)}. Detected survey keywords or business requirements.'
-			else:
-				default_decision = 'no_tools'
-				default_tools = []
-				reasoning = f'Fallback decision due to error: {str(e)}. No clear tool requirements detected.'
-
-			logger.info(f'[tool_decision_node] 🔄 FALLBACK Decision: {default_decision}')
-			logger.info(f'[tool_decision_node] 🔄 FALLBACK Tools: {default_tools}')
+			# Simple fallback
+			from app.modules.agent.workflows.chat_workflow.config.business_process import (
+				BusinessProcessType,
+			)
 
 			return {
 				**state,
-				'tool_decision': {
-					'decision': default_decision,
-					'reasoning': reasoning,
-					'confidence': 0.5,
-					'tools_needed': default_tools,
-					'fallback': True,
-				},
+				'business_process_type': BusinessProcessType.GENERAL_CONVERSATION.value,
+				'business_process_error': str(e),
 			}
+
+	
 
 	async def agent_with_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""Agent Node WITH Tools - direct tool usage, NO RAG"""
-		logger.info('[agent_with_tools_node] � Starting agent WITH tools (NO RAG)')
+		"""Agent Node WITH Tools - Uses tools when needed"""
+		logger.info('[agent_with_tools_node] Starting agent WITH tools')
 
-		# ===== APPROACH =====
-		# Skip all RAG, business process analysis, complex tool decision
-		# Go directly to agent with tools for survey generation
-
-		# Simple system prompt focused on survey generation
+		# Get system prompt
 		system_prompt = DEFAULT_SYSTEM_PROMPT
 		if self.workflow.config and self.workflow.config.persona_enabled:
 			persona_prompt = self.workflow.config.get_persona_prompt()
 			if persona_prompt:
 				system_prompt = persona_prompt
-				logger.info(f'[agent_with_tools_node] 🎭 Using persona prompt')
-
-		# Add simple survey focus instruction
-		system_prompt += '\n\n🎯 FOCUS: Use generate_survey_questions tool when users ask about surveys, questions, or assessments.'
-		system_prompt += '\n\n⚡ DIRECT MODE: No RAG retrieval, direct tool usage for efficient responses.'
 
 		# Get messages
 		messages = state.get('messages', [])
 		if not messages:
 			return {'messages': [SystemMessage(content=system_prompt)]}
 
-		# Get ALL available tools (no filtering, no complex logic)
+		# Get ALL available tools
 		all_tools = get_tool_definitions(self.workflow.config)
-
-		logger.info(f'[agent_with_tools_node] � Available tools: {[getattr(tool, "name", "unknown") for tool in all_tools]}')
+		logger.info(f'[agent_with_tools_node] Available tools: {[getattr(tool, "name", "unknown") for tool in all_tools]}')
 
 		# Bind tools to model
 		try:
 			model_with_tools = self.workflow.llm.bind_tools(all_tools)
-			logger.info(f'[agent_with_tools_node] ✅ Successfully bound {len(all_tools)} tools to LLM')
+			logger.info(f'[agent_with_tools_node] Successfully bound {len(all_tools)} tools to LLM')
 		except Exception as e:
-			logger.error(f'[agent_with_tools_node] ❌ ERROR binding tools: {str(e)}')
+			logger.error(f'[agent_with_tools_node] ERROR binding tools: {str(e)}')
 			raise
 
 		# Prepare messages for LLM
 		enhanced_messages = [SystemMessage(content=system_prompt)] + messages
 
-		logger.info(f'[agent_with_tools_node] � Calling LLM with {len(enhanced_messages)} messages and {len(all_tools)} tools')
+		logger.info(f'[agent_with_tools_node] Calling LLM with {len(enhanced_messages)} messages and {len(all_tools)} tools')
 
 		try:
 			response = await model_with_tools.ainvoke(enhanced_messages)
-			logger.info('[agent_with_tools_node] ✅ LLM response received')
+			logger.info('[agent_with_tools_node] LLM response received')
+
+			# Check if response contains tool calls
+			if hasattr(response, 'tool_calls') and response.tool_calls:
+				logger.info(f'[agent_with_tools_node] {len(response.tool_calls)} tool calls generated!')
+				for i, tool_call in enumerate(response.tool_calls):
+					logger.info(f'[agent_with_tools_node] Tool {i + 1}: {tool_call.get("name", "unknown")}')
+			else:
+				logger.info('[agent_with_tools_node] No tool calls in response')
+
 		except Exception as e:
-			logger.error(f'[agent_with_tools_node] ❌ LLM call failed: {str(e)}')
+			logger.error(f'[agent_with_tools_node] LLM call failed: {str(e)}')
 			raise
 
 		# Return updated state
 		return {**state, 'messages': messages + [response]}
 
-	async def agent_no_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
-		"""Agent Node WITHOUT Tools - for regular conversation"""
-		print('[agent_no_tools_node] Starting agent WITHOUT tools')
-		thread_id = config.get('configurable', {}).get('thread_id', 'unknown')
 
-		# Get RAG context if available
-		if not state.get('combined_rag_context'):
-			state = await self.workflow._get_rag_context(state, thread_id)
-
-		# Build system prompt with persona
-		system_prompt = DEFAULT_SYSTEM_PROMPT
-		if self.workflow.config and self.workflow.config.persona_enabled:
-			persona_prompt = self.workflow.config.get_persona_prompt()
-			if persona_prompt:
-				system_prompt = persona_prompt
-				print(f'[agent_no_tools_node] Using persona prompt: {self.workflow.config.persona_type.value}')
-
-		# Add business process context
-		business_process_type = state.get('business_process_type')
-		if business_process_type:
-			process_context = f'\n\nBUSINESS PROCESS: {business_process_type}'
-			triggered_rules = state.get('triggered_rules', [])
-			if triggered_rules:
-				process_context += f'\nActive Rules: {", ".join(triggered_rules)}'
-			system_prompt += process_context
-
-		# Add RAG context if available
-		combined_context = state.get('combined_rag_context')
-		if combined_context:
-			system_prompt += f'\n\nKNOWLEDGE CONTEXT:\n{combined_context[:1000]}\n'
-
-		# Prepare messages
-		messages = state.get('messages', [])
-		if not messages:
-			return {'messages': [SystemMessage(content=system_prompt)]}
-
-		# No tools needed - just get a regular response
-		print(f'[agent_no_tools_node] No tools needed, getting regular response')
-		print(f'[agent_no_tools_node] System prompt length: {len(system_prompt)}')
-
-		enhanced_messages = [SystemMessage(content=system_prompt)] + messages
-
-		try:
-			response = await self.workflow.llm.ainvoke(enhanced_messages)
-			print(f'[agent_no_tools_node] Regular LLM response received: {type(response)}')
-			print(f'[agent_no_tools_node] Response content: {getattr(response, "content", "No content")[:200]}...')
-		except Exception as e:
-			print(f'[agent_no_tools_node] ERROR in regular LLM call: {str(e)}')
-			raise
-
-		return {**state, 'messages': messages + [response]}
 
 	async def tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Tools execution node"""
