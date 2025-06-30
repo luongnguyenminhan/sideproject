@@ -44,7 +44,7 @@ interface ChatInterfaceProps {
   onToggleFileSidebar?: () => void;
   onToggleSurvey?: () => void;
   onOpenSurvey?: () => void;
-  hasSurveyData?: boolean;
+  // hasSurveyData?: boolean; // Now handled per-message
   isSurveyOpen?: boolean;
 }
 
@@ -63,7 +63,7 @@ export function ChatInterface({
   onToggleFileSidebar,
   onToggleSurvey,
   onOpenSurvey,
-  hasSurveyData = false,
+  // hasSurveyData = false, // Now handled per-message
 }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -118,7 +118,7 @@ export function ChatInterface({
         typingText={t('chat.typing')}
         noMessagesText={t('chat.noMessages')}
         startConversationText={t('chat.startConversation')}
-        hasSurveyData={hasSurveyData}
+        // hasSurveyData now checked per-message in MessagesContainer
         onToggleSurvey={onToggleSurvey}
         onOpenSurvey={onOpenSurvey}
       />

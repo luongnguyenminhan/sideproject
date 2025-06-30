@@ -34,7 +34,7 @@ interface MessagesContainerProps {
   noMessagesText: string;
   startConversationText: string;
   // Survey props
-  hasSurveyData?: boolean;
+  globalSurveyData?: boolean; // Global survey state (for overall context)
   onToggleSurvey?: () => void;
   onOpenSurvey?: () => void;
 }
@@ -49,7 +49,7 @@ export function MessagesContainer({
   typingText,
   noMessagesText,
   startConversationText,
-  hasSurveyData = false,
+  // globalSurveyData = false, // Not used currently
   onToggleSurvey,
   onOpenSurvey
 }: MessagesContainerProps) {
@@ -91,7 +91,8 @@ export function MessagesContainer({
                 user={user}
                 copyText={copyText}
                 copiedText={copiedText}
-                hasSurveyData={hasSurveyData}
+                // Check each message individually for survey tokens
+                hasSurveyData={message.role === 'assistant' && message.content.includes('<survey>')}
                 onToggleSurvey={onToggleSurvey}
                 onOpenSurvey={onOpenSurvey}
               />

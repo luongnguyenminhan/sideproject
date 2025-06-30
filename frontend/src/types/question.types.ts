@@ -39,3 +39,22 @@ export interface SurveyState {
   startTime: Date;
   endTime?: Date;
 }
+
+export interface SurveyProcessRequest {
+  type: string;
+  answers: Record<number, unknown>;
+  conversation_id?: string;
+  timestamp?: string;
+}
+
+export interface WebsocketMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface SurveyProcessResponse {
+  session_id?: string;
+  human_readable_response?: string;
+  ai_response?: string;
+  websocket_messages?: WebsocketMessage[];
+}

@@ -140,8 +140,6 @@ class WorkflowNodes:
 				'business_process_error': str(e),
 			}
 
-	
-
 	async def agent_with_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Agent Node WITH Tools - Uses tools when needed"""
 		logger.info('[agent_with_tools_node] Starting agent WITH tools')
@@ -193,8 +191,6 @@ class WorkflowNodes:
 
 		# Return updated state
 		return {**state, 'messages': messages + [response]}
-
-
 
 	async def tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Tools execution node"""

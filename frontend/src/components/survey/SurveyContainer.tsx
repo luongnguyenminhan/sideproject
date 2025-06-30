@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 import { Check, ChevronLeft, ArrowRight } from 'lucide-react';
 import { questionSessionService } from '@/apis/questionSessionService';
-import { Question, QuestionOption } from '@/types/question.types';
+import { Question, QuestionOption, SurveyProcessRequest, SurveyProcessResponse } from '@/types/question.types';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { handleApiCall } from '@/utils/apiHandler';
 import { submitSurveyResponse } from '@/apis/questionApi';
 import AnimatedSurveyWrapper from './AnimatedSurveyWrapper';
 import AnimatedStepper from './AnimatedStepper';
@@ -122,8 +123,37 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
         if (onSurveyComplete) {
           await onSurveyComplete(selectedAnswers);
         } else if (!websocket?.isConnected()) {
-          // Fallback to API submission if no websocket and no callback
-          await submitSurveyResponse(selectedAnswers);
+          // Enhanced API call for survey processing with AI integration
+          try {
+            const requestData: SurveyProcessRequest = {
+              type: 'survey_response',
+              answers: selectedAnswers,
+              conversation_id: conversationId,
+              timestamp: new Date().toISOString()
+            }
+
+            const result = await handleApiCall<SurveyProcessResponse>(
+              () => questionSessionService.completeSurveyWorkflow(requestData)
+            )
+
+            if (result) {
+              console.log('[SurveyContainer] Complete survey workflow processed:', result);
+              
+              // If there's an AI response, you might want to display it or handle it
+              if (result.ai_response) {
+                console.log('[SurveyContainer] AI Response:', result.ai_response);
+                // You could emit this to the parent component or handle it as needed
+              }
+            } else {
+              console.error('[SurveyContainer] Failed to process complete survey workflow');
+              // Fallback to original API submission
+              await submitSurveyResponse(selectedAnswers);
+            }
+          } catch (apiError) {
+            console.error('[SurveyContainer] Error calling complete survey workflow API:', apiError);
+            // Fallback to original API submission
+            await submitSurveyResponse(selectedAnswers);
+          }
         }
         
         setShowResults(true);
@@ -174,12 +204,13 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
 
   const currentQuestion = effectiveQuestions[currentStep];
 
-  if (showResults) {      return (
+  if (showResults) {
+    return (
         <AnimatedSurveyWrapper currentStep={effectiveQuestions.length} totalSteps={effectiveQuestions.length}>
         <div className="w-full h-full flex flex-col">
           <div className="flex-1 container mx-auto px-4 py-4 md:py-8 flex items-center justify-center">
             <div className="w-full max-w-4xl mx-auto">
-              <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-8 md:p-12 text-center">
+              <div className="bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm p-8 md:p-12 py-10 md:py-16 text-center">
           <div className="mb-8">
             <div className="inline-flex items-center space-x-2 bg-[color:var(--feature-green)] text-[color:var(--feature-green-text)] px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
               <Check className="w-5 h-5" />
@@ -229,8 +260,8 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
         
         <div className={`flex-1 ${isEmbedded ? 'p-1' : 'container mx-auto px-4 py-4 md:py-8'} flex items-center overflow-hidden`}>
           <div className="w-full max-w-4xl mx-auto h-full">
-            <div className={`bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border border-[color:var(--border)]/50 backdrop-blur-sm ${
-              isEmbedded ? 'h-full p-2' : 'h-full max-h-[calc(100vh-160px)] p-4 md:p-8'
+            <div className={`bg-[color:var(--background)]/95 rounded-3xl shadow-2xl border py-10 border-[color:var(--border)]/50 backdrop-blur-sm ${
+              isEmbedded ? 'h-full p-2 py-4' : 'h-full max-h-[calc(100vh-160px)] p-4 md:p-8 py-6 md:py-10'
             } flex flex-col overflow-hidden`}>
               {/* Animated Progress Indicator */}
               <AnimatedStepper 
@@ -269,13 +300,15 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
               </div>
 
               {/* Question Content */}
-              <div className={`flex-1 overflow-y-auto ${isEmbedded ? 'mb-2 md:mb-4' : 'mb-4 md:mb-6'} min-h-0 overflow-x-hidden`}>
-                <QuestionRenderer
-                  question={currentQuestion}
-                  questionIndex={currentStep}
-                  selectedAnswers={selectedAnswers}
-                  onAnswerChange={handleAnswerChange}
-                />
+              <div className={`flex-1 ${isEmbedded ? 'mb-2 md:mb-4 px-1 py-2' : 'mb-4 md:mb-6 px-2 py-3'} min-h-0 overflow-x-hidden`}>
+                <div className="w-full h-full overflow-y-auto">
+                  <QuestionRenderer
+                    question={currentQuestion}
+                    questionIndex={currentStep}
+                    selectedAnswers={selectedAnswers}
+                    onAnswerChange={handleAnswerChange}
+                  />
+                </div>
               </div>
 
               {/* Navigation */}

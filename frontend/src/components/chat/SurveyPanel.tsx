@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardList, faTimes, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
-import { Question } from '@/types/question.types'
+import { Question, SurveyProcessRequest, SurveyProcessResponse } from '@/types/question.types'
+import { handleApiCall } from '@/utils/apiHandler'
+import { questionSessionService } from '@/apis/questionSessionService'
 import SurveyContainer from '@/components/survey/SurveyContainer'
 
 interface SurveyPanelProps {
@@ -16,6 +18,7 @@ interface SurveyPanelProps {
   websocket?: { isConnected: () => boolean; sendRawMessage: (message: string) => void } | null
   conversationId?: string
   onSurveyComplete?: (answers: Record<number, unknown>) => void
+  onSendToChat?: (message: string, isAIResponse?: boolean) => void // New prop for sending to chat
 }
 
 export function SurveyPanel({
@@ -25,10 +28,111 @@ export function SurveyPanel({
   title = 'Career Survey',
   websocket,
   conversationId,
-  onSurveyComplete
+  onSurveyComplete,
+  onSendToChat
 }: SurveyPanelProps) {
   const { t } = useTranslation()
   const [isMinimized, setIsMinimized] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // Enhanced survey completion handler
+  const handleSurveyComplete = async (answers: Record<number, unknown>) => {
+    console.log('[SurveyPanel] Survey completed with answers:', answers)
+    setIsProcessing(true)
+
+    try {
+      // Call the enhanced survey processing API that's optimized for chat integration
+      const requestData: SurveyProcessRequest = {
+        type: 'survey_response',
+        answers: answers,
+        conversation_id: conversationId,
+        timestamp: new Date().toISOString()
+      }
+      
+      const result = await handleApiCall<SurveyProcessResponse>(
+        () => questionSessionService.processAndSendToChat(requestData)
+      )
+
+      if (result) {
+        console.log('[SurveyPanel] Enhanced survey processing result:', result)
+        
+        // Extract the processed data  
+        const websocketMessages = result.websocket_messages || []
+        
+        // Send messages to chat using the callback
+        if (onSendToChat && websocketMessages.length > 0) {
+          for (let i = 0; i < websocketMessages.length; i++) {
+            const message = websocketMessages[i]
+            const isAIMessage = message.role === 'assistant'
+            
+            // Add delay between messages for better UX
+            if (i > 0) {
+              await new Promise(resolve => setTimeout(resolve, 1000))
+            }
+            
+            await onSendToChat(message.content, isAIMessage)
+            console.log(`[SurveyPanel] Message ${i + 1}/${websocketMessages.length} sent to chat (AI: ${isAIMessage})`)
+          }
+        }
+
+        // Send via WebSocket if available (alternative/backup method)
+        if (websocket && websocket.isConnected() && websocketMessages.length > 0) {
+          for (let i = 0; i < websocketMessages.length; i++) {
+            const message = websocketMessages[i]
+            
+            // Add delay between WebSocket messages
+            if (i > 0) {
+              await new Promise(resolve => setTimeout(resolve, 1500))
+            }
+            
+            websocket.sendRawMessage(JSON.stringify(message))
+            console.log(`[SurveyPanel] WebSocket message ${i + 1}/${websocketMessages.length} sent`)
+          }
+        }
+
+        // Call original completion callback if provided
+        if (onSurveyComplete) {
+          await onSurveyComplete(answers)
+        }
+
+        console.log('[SurveyPanel] Enhanced survey processing completed successfully')
+        
+      } else {
+        console.log('[SurveyPanel] Failed to process survey workflow')
+        
+        // Fallback: try the original complete workflow endpoint
+        const fallbackResult = await handleApiCall<SurveyProcessResponse>(
+          () => questionSessionService.completeSurveyWorkflow(requestData)
+        )
+
+        if (fallbackResult) {
+          const humanMessage = fallbackResult.human_readable_response
+          const aiResponse = fallbackResult.ai_response
+          
+          if (humanMessage && onSendToChat) {
+            await onSendToChat(humanMessage, false)
+            if (aiResponse) {
+              setTimeout(() => onSendToChat(aiResponse, true), 1000)
+            }
+          }
+        }
+        
+        // Final fallback: just call original callback
+        if (onSurveyComplete) {
+          await onSurveyComplete(answers)
+        }
+      }
+    } catch (error) {
+      console.error('[SurveyPanel] Error processing survey:', error)
+      
+      // Fallback: call original completion callback
+      if (onSurveyComplete) {
+        await onSurveyComplete(answers)
+      }
+    } finally {
+      setIsProcessing(false)
+    }
+  }
 
   // Debug logging for survey panel
   console.log('[SurveyPanel] Render with props:', {
@@ -37,6 +141,7 @@ export function SurveyPanel({
     hasQuestions: questions.length > 0,
     title,
     conversationId,
+    isProcessing,
     questionsPreview: questions.slice(0, 2),
     questionsStructure: questions.map((q, i) => ({
       index: i,
@@ -64,9 +169,17 @@ export function SurveyPanel({
               <div>
                 <h2 className="text-lg font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent">
                   {title}
+                  {isProcessing && (
+                    <span className="ml-2 inline-flex items-center">
+                      <div className="w-4 h-4 border-2 border-[color:var(--feature-blue)] border-t-transparent rounded-full animate-spin"></div>
+                    </span>
+                  )}
                 </h2>
                 <p className="text-xs text-[color:var(--muted-foreground)]">
-                  {questions.length} questions • AI-Generated
+                  {isProcessing 
+                    ? 'Processing survey response...' 
+                    : `${questions.length} questions • AI-Generated`
+                  }
                 </p>
               </div>
             </div>
@@ -119,11 +232,11 @@ export function SurveyPanel({
       {!isMinimized && (
         <div className="flex-1 overflow-hidden">
           {questions.length > 0 ? (
-            <div className="h-full p-2">
-              <div className="bg-[color:var(--background)]/95 rounded-2xl shadow-xl border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden">
+            <div className="h-full p-2 py-3">
+              <div className="bg-[color:var(--background)]/95 rounded-2xl shadow-xl border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden py-2">
                 <SurveyContainer 
                   questions={questions}
-                  onSurveyComplete={onSurveyComplete}
+                  onSurveyComplete={handleSurveyComplete} // Use our enhanced handler
                   websocket={websocket}
                   conversationId={conversationId}
                   isEmbedded={true}

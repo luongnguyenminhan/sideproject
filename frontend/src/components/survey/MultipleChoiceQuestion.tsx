@@ -73,7 +73,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
 
     return (
       <motion.div 
-        className={`grid ${getGridCols()} gap-3 md:gap-4 h-full overflow-y-auto pr-2 p-4`}
+        className={`grid ${getGridCols()} gap-2 md:gap-3 w-full overflow-y-auto pr-2 px-2 md:px-4 py-2`}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -86,7 +86,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
               variants={itemVariants}
               onClick={() => handleOptionSelect(option.id)}
               className={`
-                relative cursor-pointer rounded-xl p-4 md:p-5 text-center border-2 group overflow-hidden transition-all duration-300
+                relative cursor-pointer rounded-lg p-3 md:p-4 text-center border-2 group overflow-hidden transition-all duration-300
                 ${getClasses(isSelected)}
               `}
               whileTap={{ scale: 0.98 }}
@@ -106,7 +106,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
               />
 
               <motion.div 
-                className='font-semibold text-base md:text-lg relative z-10'
+                className='font-medium text-sm md:text-base relative z-10 leading-snug'
                 initial={{ y: 0, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: index * 0.05 + 0.2 }}
@@ -116,7 +116,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
 
               {isSelected && (
                 <motion.div 
-                  className='absolute top-2 right-2'
+                  className='absolute top-1.5 right-1.5'
                   initial={{ scale: 0, rotate: 180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   exit={{ scale: 0, rotate: -180 }}
@@ -127,7 +127,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
                   }}
                 >
                   <motion.div 
-                    className='w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md'
+                    className='w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md'
                     animate={{ 
                       scale: [1, 1.1, 1]
                     }}
@@ -135,7 +135,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
                       scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
                     }}
                   >
-                    <Check className='w-4 h-4 text-green-600' />
+                    <Check className='w-3 h-3 text-green-600' />
                   </motion.div>
                 </motion.div>
               )}
@@ -147,7 +147,7 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
   }
 
   return (
-    <div className='space-y-3 h-full overflow-y-auto pr-2 -mr-2 p-4'>
+    <div className='space-y-2 w-full overflow-y-auto pr-2 -mr-2 px-2 md:px-4 py-2'>
       {options.map((option) => {
         const isSelected = currentAnswers.includes(option.id);
         return (
@@ -155,17 +155,17 @@ const MultipleChoiceQuestion: React.FC<QuestionComponentProps> = ({
             key={option.id}
             onClick={() => handleOptionSelect(option.id)}
             className={`
-              relative cursor-pointer rounded-xl p-4 transition-all duration-300 border-2 group flex items-center space-x-4 !overflow-x-hidden
+              relative cursor-pointer rounded-lg p-3 md:p-4 transition-all duration-300 border-2 group flex items-center space-x-3 !overflow-x-hidden
               ${getClasses(isSelected)}
               ${isSelected ? 'transform shadow-md' : 'hover:shadow-sm'}
             `}
           >
             <div className='flex-1'>
-              <div className='font-semibold text-lg'>{option.label}</div>
+              <div className='font-medium text-sm md:text-base leading-snug'>{option.label}</div>
             </div>
             {isSelected && (
-              <div className='w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md'>
-                <Check className='w-4 h-4 text-green-600' />
+              <div className='w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md'>
+                <Check className='w-3 h-3 text-green-600' />
               </div>
             )}
           </div>

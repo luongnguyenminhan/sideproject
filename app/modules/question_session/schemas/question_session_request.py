@@ -48,3 +48,25 @@ class ParseSurveyResponseRequest(RequestSchema):
 	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
 	conversation_id: str = Field(..., description='Conversation ID')
 	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
+
+
+class CompleteSurveyWorkflowRequest(RequestSchema):
+	"""Request schema for complete survey workflow processing with AI integration"""
+
+	type: str = Field(..., description="Message type (should be 'survey_response')")
+	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
+	conversation_id: str = Field(..., description='Conversation ID')
+	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
+	processing_type: Optional[str] = Field(default='analysis', description='Type of AI processing: analysis, summary, insights')
+	custom_ai_prompt: Optional[str] = Field(default=None, description='Custom prompt for AI processing')
+	enable_chat_integration: Optional[bool] = Field(default=True, description='Enable chat integration')
+
+
+class FormatSurveyAsHumanMessageRequest(RequestSchema):
+	"""Request schema for formatting survey response as human message"""
+
+	type: str = Field(..., description="Message type (should be 'survey_response')")
+	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
+	conversation_id: str = Field(..., description='Conversation ID')
+	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
+	include_analysis_request: Optional[bool] = Field(default=True, description='Include request for AI analysis')

@@ -84,7 +84,17 @@ class QuestionSessionService {
     try {
       console.log('[QuestionSessionService] Fetching session questions:', sessionId);
       const response = await axiosInstance.get(`/question-sessions/${sessionId}/questions`);
-      return response.data;
+      
+      console.log('[QuestionSessionService] Raw API response:', {
+        status: response.status,
+        data: response.data,
+        dataType: typeof response.data,
+        hasDataProperty: 'data' in response.data,
+        actualData: response.data.data
+      });
+      
+      // API returns nested structure: { error_code: 0, message: "...", data: { actual_data } }
+      return response.data.data || response.data;
     } catch (error) {
       console.error('[QuestionSessionService] Error fetching session questions:', error);
       throw error;
@@ -176,6 +186,44 @@ class QuestionSessionService {
       return response.data;
     } catch (error) {
       console.error('[QuestionSessionService] Error getting active session:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process survey response and send to chat (enhanced endpoint)
+   */
+  async processAndSendToChat(data: {
+    type: string;
+    answers: Record<number, unknown>;
+    conversation_id?: string;
+    timestamp?: string;
+  }) {
+    try {
+      console.log('[QuestionSessionService] Processing survey and sending to chat:', data);
+      const response = await axiosInstance.post('/question-sessions/process-and-send-to-chat', data);
+      return response;
+    } catch (error) {
+      console.error('[QuestionSessionService] Error processing survey and sending to chat:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Complete survey workflow (fallback endpoint)
+   */
+  async completeSurveyWorkflow(data: {
+    type: string;
+    answers: Record<number, unknown>;
+    conversation_id?: string;
+    timestamp?: string;
+  }) {
+    try {
+      console.log('[QuestionSessionService] Completing survey workflow:', data);
+      const response = await axiosInstance.post('/question-sessions/complete-survey-workflow', data);
+      return response;
+    } catch (error) {
+      console.error('[QuestionSessionService] Error completing survey workflow:', error);
       throw error;
     }
   }

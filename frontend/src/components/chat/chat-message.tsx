@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { MessageCodeBlock } from './message-code-block';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { processMessageText } from '@/utils/text-processing';
+import { useSurveyQuestions } from '@/hooks/useSurveyQuestions';
 
 interface Message {
   id: string;
@@ -51,6 +52,7 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const { t } = useTranslation();
+  const { loading, error, fetchQuestions } = useSurveyQuestions();
 
   // Check for survey token in message
   const surveyTokenMatch = message.content.match(/<survey>([^<]+)<\/survey>/)
@@ -296,7 +298,7 @@ export function ChatMessage({
         {shouldShowSurveyButton && (
           <div className="mb-3">
             <button
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 console.log('[ChatMessage] Survey button clicked:', { 
@@ -307,12 +309,25 @@ export function ChatMessage({
                   surveySessionId
                 })
                 
-                // If we have a session ID from the token, we need to fetch the survey data
-                if (surveySessionId && onOpenSurvey) {
-                  console.log('[ChatMessage] Opening survey with session ID:', surveySessionId)
-                  // Store session ID for the survey component to fetch
+                // If we have a session ID from the token, set it first then open survey
+                if (surveySessionId) {
+                  console.log('[ChatMessage] Setting session ID and opening survey:', surveySessionId)
+                  
+                  // Store session ID FIRST for the survey component to pick up
                   window.sessionStorage.setItem('current_survey_session_id', surveySessionId)
-                  onOpenSurvey()
+                  
+                  // Then open survey - SurveyPanelWrapper will fetch questions automatically
+                  if (onOpenSurvey) {
+                    onOpenSurvey()
+                  }
+                  
+                  // Optional: Pre-fetch questions in background for better UX
+                  try {
+                    await fetchQuestions(surveySessionId)
+                    console.log('[ChatMessage] Background fetch completed successfully')
+                  } catch (err) {
+                    console.error('[ChatMessage] Background fetch failed (not critical):', err)
+                  }
                 } else if (onOpenSurvey) {
                   console.log('[ChatMessage] Calling onOpenSurvey')
                   onOpenSurvey()
@@ -321,13 +336,29 @@ export function ChatMessage({
                   onToggleSurvey()
                 }
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md active:scale-95 transform"
+              disabled={loading}
+              className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm hover:shadow-md active:scale-95 transform ${
+                loading 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-              </svg>
-              {t('survey.openSurvey') || 'Open Survey'}
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              )}
+              {loading ? 'Loading...' : (t('survey.openSurvey') || 'Open Survey')}
             </button>
+            
+            {/* Error message */}
+            {error && (
+              <div className="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
+                {error}
+              </div>
+            )}
           </div>
         )}
 

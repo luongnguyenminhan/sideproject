@@ -79,3 +79,32 @@ class ParsedSurveyResponse(ResponseSchema):
 	answers_processed: int
 	session_status: str
 	completion_date: Optional[datetime]
+
+
+class CompleteSurveyWorkflowResponse(ResponseSchema):
+	"""Response schema for complete survey workflow processing"""
+
+	survey_processing: Dict[str, Any]
+	human_readable_response: str
+	ai_response: Optional[Dict[str, Any]]
+	processing_metadata: Dict[str, Any]
+
+
+class FormatSurveyAsHumanMessageResponse(ResponseSchema):
+	"""Response schema for formatted survey as human message"""
+
+	human_message: str
+	conversation_id: str
+	processed_at: str
+	user_id: str
+	message_length: int
+	include_analysis_request: bool
+
+
+class SurveyChatIntegrationResponse(ResponseSchema):
+	"""Response schema for survey chat integration"""
+
+	survey_data: Dict[str, Any]
+	human_message: str
+	ai_response: Dict[str, Any]
+	integration_metadata: Dict[str, Any]
