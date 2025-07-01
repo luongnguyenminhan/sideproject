@@ -36,7 +36,7 @@ export default function FloatingChatBubble() {
   const [showPromptEditor, setShowPromptEditor] = useState(false);
   const [systemPrompt, setSystemPrompt] = useState('');
   const [promptDraft, setPromptDraft] = useState('');
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
   // Auto-scroll to bottom when messages or loading state changes

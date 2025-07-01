@@ -340,5 +340,34 @@
         "description": "We build a cohesive student community that supports each other in learning and skill development."
       }
     }
+  },
+  "userProfile": {
+    "email": "Email",
+    "name": "Full Name",
+    "profilePicture": "Profile Picture",
+    "role": "Role",
+    "subtitle": "Personal Information",
+    "title": "User Profile",
+    "username": "Username",
+    "editProfile": "Edit Profile",
+    "birthday": "Date of Birth",
+    "address": "Address"
+  },
+  "userSidebar": {
+    "profile": "Account",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "userSettings": {
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "themeDescription": "Switch between light and dark mode.",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language.",
+    "notifications": "Notifications",
+    "emailNotifications": "Email notifications",
+    "emailNotificationsDescription": "Receive updates and news via email.",
+    "pushNotifications": "Push notifications",
+    "pushNotificationsDescription": "Get instant updates on your device."
   }
 }

@@ -1,18 +1,18 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import LoginModal from '@/components/auth/loginModal';
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import type { UserResponse } from '@/types/auth.type';
 import { logoutAction } from '@/actions/auth';
-import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCog } from '@fortawesome/free-solid-svg-icons';
+import LoginModal from '@/components/auth/loginModal';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setUser, logout as logoutUser } from '@/redux/slices/authSlice';
+import { logout as logoutUser, setUser } from '@/redux/slices/authSlice';
+import type { UserResponse } from '@/types/auth.type';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface AuthHeaderProps {
   user: UserResponse | null;
@@ -106,13 +106,6 @@ export default function AuthHeader({ user: serverUser, locale }: AuthHeaderProps
           >
             <FontAwesomeIcon icon={faUser} className="w-3 h-3" />
             {t('navigation.profile')}
-          </Link>
-          <Link
-            href={`/${locale}/settings`}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs"
-          >
-            <FontAwesomeIcon icon={faCog} className="w-3 h-3" />
-            {t('navigation.settings')}
           </Link>
           <div className="border-t border-gray-100 dark:border-gray-700"></div>
           <button
