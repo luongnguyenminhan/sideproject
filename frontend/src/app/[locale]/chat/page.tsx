@@ -10,8 +10,8 @@ export default async function ChatPage() {
 
   return (
     <ClientWrapper>
-        <div className="min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
-          <div className="h-[calc(100vh-56px)] bg-background overflow-hidden">
+        <div className="h-[calc(100vh-56px)] bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
+          <div className="h-full bg-background overflow-hidden">
             <TranslationProvider dictionary={dictionary} locale={locale}>
               <ChatClientWrapper />
             </TranslationProvider>
