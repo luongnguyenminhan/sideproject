@@ -21,34 +21,34 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     default: "Enterviu",
-    template: "%s | Enterviu"
+    template: "%s | Enterviu",
   },
   description: "Enterviu",
   keywords: [
-    "Enterviu", 
-    "Geoscience", 
-    "Engineering", 
-    "Management", 
-    "Club", 
-    "Education", 
-    "Research", 
-    "Geology", 
-    "Earth Sciences", 
-    "Mining", 
-    "Environmental", 
-    "Next.js", 
-    "React", 
-    "TypeScript", 
-    "i18n", 
-    "Internationalization", 
+    "Enterviu",
+    "Geoscience",
+    "Engineering",
+    "Management",
+    "Club",
+    "Education",
+    "Research",
+    "Geology",
+    "Earth Sciences",
+    "Mining",
+    "Environmental",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "i18n",
+    "Internationalization",
     "Dark Mode",
     "Student Organization",
     "Academic Club",
-    "Science Community"
+    "Science Community",
   ],
   authors: [
     { name: "Enterviu Team", url: "https://app.wc504.io.vn" },
-    { name: "Club Development Team" }
+    { name: "Club Development Team" },
   ],
   creator: "Enterviu",
   publisher: "Enterviu Organization",
@@ -82,7 +82,8 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     url: "https://app.wc504.io.vn",
     title: "Enterviu",
-    description: "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    description:
+      "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
     siteName: "Enterviu Platform",
     images: [
       {
@@ -99,7 +100,8 @@ export const metadata: Metadata = {
     site: "@Enterviu_official",
     creator: "@Enterviu_official",
     title: "Enterviu - Club Geoscience Engineering & Management",
-    description: "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
+    description:
+      "Join Enterviu community for geoscience education, research collaboration, and professional development in earth sciences and engineering.",
     images: ["/assets/logo/logo_web.jpg"],
   },
   robots: {
@@ -133,16 +135,16 @@ export const metadata: Metadata = {
 };
 
 interface RootLayoutProps {
-  children: React.ReactNode
-  params: Promise<{ locale: Locale }>
+  children: React.ReactNode;
+  params: Promise<{ locale: Locale }>;
 }
 
 export default async function RootLayout({
   children,
   params,
 }: RootLayoutProps) {
-  const { locale } = await params
-  
+  const { locale } = await params;
+
   return (
     <html
       lang={locale}
@@ -157,26 +159,31 @@ export default async function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen transition-colors duration-300`}
-        suppressHydrationWarning={true}>
-          <ThemeProvider attribute="class">
-            <ReduxProvider>
-              <ClientWrapper>
-                <PageWrapper>
-                  <div className="relative min-h-screen">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
+        suppressHydrationWarning={true}
+      >
+        <ThemeProvider attribute="class">
+          <ReduxProvider>
+            <ClientWrapper>
+              <PageWrapper>
+                <div className="relative min-h-screen">
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
 
-                    {/* Main Content */}
-                    <div className="relative z-10">
+                  {/* Main Content */}
+                  <div className="relative z-10 flex flex-col min-h-screen">
+                    {/* Header sticky trên đầu */}
+                    <div className="sticky top-0 z-50 bg-inherit">
                       <Header withChatBubble={true} />
-                      {children}
                     </div>
+                    {/* Children nằm dưới header */}
+                    <main className="flex-1">{children}</main>
                   </div>
-                </PageWrapper>
-              </ClientWrapper>
-            </ReduxProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-  )
+                </div>
+              </PageWrapper>
+            </ClientWrapper>
+          </ReduxProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }
