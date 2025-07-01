@@ -15,398 +15,450 @@ from app.http.oauth2 import get_current_user
 from app.middleware.translation_manager import _
 from app.enums.base_enums import BaseErrorCode
 from app.modules.question_session.repository.question_session_repo import (
-	QuestionSessionRepo,
+    QuestionSessionRepo,
 )
 from app.modules.question_session.services.question_session_integration_service import (
-	QuestionSessionIntegrationService,
+    QuestionSessionIntegrationService,
 )
 from app.modules.question_session.services.survey_response_processor import (
-	SurveyResponseProcessor,
+    SurveyResponseProcessor,
 )
 from app.modules.question_session.schemas.question_session_request import (
-	CreateQuestionSessionRequest,
-	UpdateQuestionSessionRequest,
-	SubmitAnswersRequest,
-	GetQuestionSessionsRequest,
-	ParseSurveyResponseRequest,
+    CreateQuestionSessionRequest,
+    UpdateQuestionSessionRequest,
+    SubmitAnswersRequest,
+    GetQuestionSessionsRequest,
+    ParseSurveyResponseRequest,
 )
 from app.modules.question_session.schemas.question_session_response import (
-	CreateQuestionSessionResponse,
-	SubmitAnswersResponse,
-	GetQuestionSessionsResponse,
+    CreateQuestionSessionResponse,
+    SubmitAnswersResponse,
+    GetQuestionSessionsResponse,
 )
 
 logger = logging.getLogger(__name__)
 
-route = APIRouter(prefix='/question-sessions', tags=['Question Sessions'])
+route = APIRouter(prefix="/question-sessions", tags=["Question Sessions"])
 
 
-@route.post('/', response_model=APIResponse)
+@route.post("/", response_model=APIResponse)
 @handle_exceptions
 async def create_question_session(
-	request: CreateQuestionSessionRequest,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    request: CreateQuestionSessionRequest,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Create a new question session"""
-	user_id = current_user_payload['user_id']
-	session = repo.create_question_session(request, user_id)
+    """Create a new question session"""
+    user_id = current_user_payload["user_id"]
+    session = repo.create_question_session(request, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('question_session_created_successfully'),
-		data=session,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("question_session_created_successfully"),
+        data=session,
+    )
 
 
-@route.get('/', response_model=APIResponse)
+@route.get("/", response_model=APIResponse)
 @handle_exceptions
 async def get_question_sessions(
-	request: GetQuestionSessionsRequest = Depends(),
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    request: GetQuestionSessionsRequest = Depends(),
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Get user's question sessions with filtering and pagination"""
-	user_id = current_user_payload['user_id']
-	result = repo.get_user_sessions(request, user_id)
+    """Get user's question sessions with filtering and pagination"""
+    user_id = current_user_payload["user_id"]
+    result = repo.get_user_sessions(request, user_id)
 
-	return APIResponse(error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_('success'), data=result)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_("success"), data=result
+    )
 
 
-@route.get('/{session_id}', response_model=APIResponse)
+@route.get("/{session_id}", response_model=APIResponse)
 @handle_exceptions
 async def get_question_session_detail(
-	session_id: str,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    session_id: str,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Get detailed question session information"""
-	user_id = current_user_payload['user_id']
-	session_detail = repo.get_session_detail(session_id, user_id)
+    """Get detailed question session information"""
+    user_id = current_user_payload["user_id"]
+    session_detail = repo.get_session_detail(session_id, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('success'),
-		data=session_detail,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("success"),
+        data=session_detail,
+    )
 
 
-@route.put('/{session_id}', response_model=APIResponse)
+@route.put("/{session_id}", response_model=APIResponse)
 @handle_exceptions
 async def update_question_session(
-	session_id: str,
-	request: UpdateQuestionSessionRequest,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    session_id: str,
+    request: UpdateQuestionSessionRequest,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Update a question session"""
-	user_id = current_user_payload['user_id']
-	session = repo.update_session(session_id, request, user_id)
+    """Update a question session"""
+    user_id = current_user_payload["user_id"]
+    session = repo.update_session(session_id, request, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('question_session_updated_successfully'),
-		data=session,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("question_session_updated_successfully"),
+        data=session,
+    )
 
 
-@route.delete('/{session_id}', response_model=APIResponse)
+@route.delete("/{session_id}", response_model=APIResponse)
 @handle_exceptions
 async def delete_question_session(
-	session_id: str,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    session_id: str,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Delete a question session"""
-	user_id = current_user_payload['user_id']
-	success = repo.delete_session(session_id, user_id)
+    """Delete a question session"""
+    user_id = current_user_payload["user_id"]
+    success = repo.delete_session(session_id, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('question_session_deleted_successfully'),
-		data={'deleted': success},
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("question_session_deleted_successfully"),
+        data={"deleted": success},
+    )
 
 
-@route.post('/submit-answers', response_model=APIResponse)
+@route.post("/submit-answers", response_model=APIResponse)
 @handle_exceptions
 async def submit_answers(
-	request: SubmitAnswersRequest,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    request: SubmitAnswersRequest,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Submit answers to a question session"""
-	user_id = current_user_payload['user_id']
-	result = repo.submit_answers(request, user_id)
+    """Submit answers to a question session"""
+    user_id = current_user_payload["user_id"]
+    result = repo.submit_answers(request, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('answers_submitted_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("answers_submitted_successfully"),
+        data=result,
+    )
 
 
-@route.post('/parse-survey-response', response_model=APIResponse)
+@route.post("/parse-survey-response", response_model=APIResponse)
 @handle_exceptions
 async def parse_survey_response(
-	request: ParseSurveyResponseRequest,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    request: ParseSurveyResponseRequest,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Parse and store survey response from WebSocket"""
-	user_id = current_user_payload['user_id']
+    """Parse and store survey response from WebSocket"""
+    user_id = current_user_payload["user_id"]
 
-	logger.info(f'Received survey response for user {user_id}')
-	logger.info(f'Request data: {request.model_dump()}')
+    logger.info(f"Received survey response for user {user_id}")
+    logger.info(f"Request data: {request.model_dump()}")
 
-	result = repo.parse_survey_response(request, user_id)
+    result = repo.parse_survey_response(request, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('survey_response_processed_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("survey_response_processed_successfully"),
+        data=result,
+    )
 
 
-@route.get('/{session_id}/questions', response_model=APIResponse)
+@route.get("/{session_id}/questions", response_model=APIResponse)
 @handle_exceptions
 async def get_session_questions(
-	session_id: str,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    session_id: str,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Get questions data for a specific session"""
-	user_id = current_user_payload['user_id']
-	session_detail = repo.get_session_detail(session_id, user_id)
+    """Get questions data for a specific session"""
+    user_id = current_user_payload["user_id"]
+    session_detail = repo.get_session_detail(session_id, user_id)
 
-	# Extract questions data from session
-	questions_data = session_detail.session.questions_data
+    # Extract questions data from session
+    questions_data = session_detail.session.questions_data
 
-	if not questions_data:
-		raise ValueError('No questions found for this session')
+    if not questions_data:
+        raise ValueError("No questions found for this session")
 
-	result = {
-		'session_id': session_id,
-		'session_name': session_detail.session.name,
-		'session_type': session_detail.session.session_type,
-		'questions': questions_data,
-		'total_questions': (len(questions_data) if isinstance(questions_data, list) else 1),
-		'session_status': session_detail.session.session_status,
-	}
+    result = {
+        "session_id": session_id,
+        "session_name": session_detail.session.name,
+        "session_type": session_detail.session.session_type,
+        "questions": questions_data,
+        "total_questions": (
+            len(questions_data) if isinstance(questions_data, list) else 1
+        ),
+        "session_status": session_detail.session.session_status,
+    }
 
-	return APIResponse(error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_('success'), data=result)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_("success"), data=result
+    )
 
 
-@route.post('/{session_id}/submit', response_model=APIResponse)
+@route.post("/{session_id}/submit", response_model=APIResponse)
 @handle_exceptions
 async def submit_session_answers(
-	session_id: str,
-	request: SubmitAnswersRequest,
-	repo: QuestionSessionRepo = Depends(),
-	current_user_payload: dict = Depends(get_current_user),
+    session_id: str,
+    request: SubmitAnswersRequest,
+    repo: QuestionSessionRepo = Depends(),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Submit answers for a question session"""
-	# Ensure session_id matches
-	request.session_id = session_id
-	user_id = current_user_payload['user_id']
-	result = repo.submit_answers(request, user_id)
+    """Submit answers for a question session"""
+    # Ensure session_id matches
+    request.session_id = session_id
+    user_id = current_user_payload["user_id"]
+    result = repo.submit_answers(request, user_id)
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('answers_submitted_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("answers_submitted_successfully"),
+        data=result,
+    )
 
 
-@route.get('/conversation/{conversation_id}/active', response_model=APIResponse)
+@route.get("/conversation/{conversation_id}/active", response_model=APIResponse)
 @handle_exceptions
 async def get_active_session_for_conversation(
-	conversation_id: str,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
+    conversation_id: str,
+    db: Session = Depends(get_db),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""Get the most recent active session for a conversation"""
-	user_id = current_user_payload['user_id']
-	integration_service = QuestionSessionIntegrationService(db)
-	session_id = await integration_service.get_active_session_for_conversation(conversation_id, user_id)
+    """Get the most recent active session for a conversation"""
+    user_id = current_user_payload["user_id"]
+    integration_service = QuestionSessionIntegrationService(db)
+    session_id = await integration_service.get_active_session_for_conversation(
+        conversation_id, user_id
+    )
 
-	if session_id:
-		result = {'session_id': session_id}
-	else:
-		raise ValueError('No active session found for this conversation')
+    if session_id:
+        result = {"session_id": session_id}
+    else:
+        raise ValueError("No active session found for this conversation")
 
-	return APIResponse(error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_('success'), data=result)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_("success"), data=result
+    )
 
 
-@route.post('/process-survey-response', response_model=APIResponse)
+@route.post("/process-survey-response", response_model=APIResponse)
 @handle_exceptions
 async def process_survey_response_for_ai(
-	request: ParseSurveyResponseRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
+    request: ParseSurveyResponseRequest,
+    db: Session = Depends(get_db),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""
-	Enhanced API endpoint for processing survey responses and integrating with AI workflow
+    """
+    Enhanced API endpoint for processing survey responses and integrating with AI workflow
 
-	This endpoint:
-	1. Stores survey responses in the database
-	2. Converts responses to human-readable text
-	3. Processes the text through AI workflow
-	4. Returns comprehensive response including AI feedback
-	"""
-	user_id = current_user_payload['user_id']
+    This endpoint:
+    1. Stores survey responses in the database
+    2. Converts responses to human-readable text
+    3. Processes the text through AI workflow
+    4. Returns comprehensive response including AI feedback
+    """
+    user_id = current_user_payload["user_id"]
 
-	logger.info(f'Processing survey response for AI integration - user: {user_id}, conversation: {request.conversation_id}')
+    logger.info(
+        f"Processing survey response for AI integration - user: {user_id}, conversation: {request.conversation_id}"
+    )
 
-	# Initialize the survey response processor
-	processor = SurveyResponseProcessor(db)
+    # Initialize the survey response processor
+    processor = SurveyResponseProcessor(db)
 
-	# Get agent instance if available (optional - can be None for text-only processing)
-	agent_instance = None
-	try:
-		# Import and get system agent for AI processing
-		from app.modules.agent.repository.system_agent_repo import SystemAgentRepo
+    # Get agent instance if available (optional - can be None for text-only processing)
+    agent_instance = None
+    try:
+        # Import and get system agent for AI processing
+        from app.modules.agent.repository.system_agent_repo import SystemAgentRepo
+        
+        agent_repo = SystemAgentRepo(db)
+        agent_instance = agent_repo.get_system_agent()
+        logger.info(f"Loaded system agent for survey processing: {agent_instance.name if hasattr(agent_instance, 'name') else 'SystemAgent'}")
+    except Exception as e:
+        logger.warning(f"Could not load agent instance: {e}")
+        agent_instance = None
 
-		agent_repo = SystemAgentRepo(db)
-		agent_instance = agent_repo.get_system_agent()
-		logger.info(f'Loaded system agent for survey processing: {agent_instance.name if hasattr(agent_instance, "name") else "SystemAgent"}')
-	except Exception as e:
-		logger.warning(f'Could not load agent instance: {e}')
-		agent_instance = None
+    # Process the survey response
+    result = await processor.process_survey_response_for_ai(
+        request=request, user_id=user_id, agent_instance=agent_instance
+    )
 
-	# Process the survey response
-	result = await processor.process_survey_response_for_ai(request=request, user_id=user_id, agent_instance=agent_instance)
-
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('survey_response_processed_and_ai_integrated_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("survey_response_processed_and_ai_integrated_successfully"),
+        data=result,
+    )
 
 
-@route.post('/format-survey-as-human-message', response_model=APIResponse)
+@route.post("/format-survey-as-human-message", response_model=APIResponse)
 @handle_exceptions
 async def format_survey_as_human_message(
-	request: ParseSurveyResponseRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
+    request: ParseSurveyResponseRequest,
+    db: Session = Depends(get_db),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""
-	Convert survey response to human-readable message format
+    """
+    Convert survey response to human-readable message format
 
-	This endpoint is useful for converting survey responses to text that can be
-	sent to AI systems as human input messages.
-	"""
-	user_id = current_user_payload['user_id']
+    This endpoint is useful for converting survey responses to text that can be
+    sent to AI systems as human input messages.
+    """
+    user_id = current_user_payload["user_id"]
 
-	logger.info(f'Formatting survey response as human message - user: {user_id}')
+    logger.info(f"Formatting survey response as human message - user: {user_id}")
 
-	# Initialize the survey response processor
-	processor = SurveyResponseProcessor(db)
+    # Initialize the survey response processor
+    processor = SurveyResponseProcessor(db)
 
-	# Format as human message
-	human_message = await processor.format_survey_response_as_human_message(request=request, user_id=user_id)
+    # Format as human message
+    human_message = await processor.format_survey_response_as_human_message(
+        request=request, user_id=user_id
+    )
 
-	result = {
-		'human_message': human_message,
-		'conversation_id': request.conversation_id,
-		'processed_at': request.timestamp or datetime.now().isoformat(),
-		'user_id': user_id,
-	}
+    result = {
+        "human_message": human_message,
+        "conversation_id": request.conversation_id,
+        "processed_at": request.timestamp or datetime.now().isoformat(),
+        "user_id": user_id,
+    }
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('survey_formatted_as_human_message_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("survey_formatted_as_human_message_successfully"),
+        data=result,
+    )
 
 
-@route.post('/complete-survey-workflow', response_model=APIResponse)
+@route.post("/complete-survey-workflow", response_model=APIResponse)
 @handle_exceptions
 async def complete_survey_workflow(
-	request: ParseSurveyResponseRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
+    request: ParseSurveyResponseRequest,
+    db: Session = Depends(get_db),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""
-	Complete survey workflow: Process responses + AI analysis + Chat integration
+    """
+    Complete survey workflow: Process responses + AI analysis + Chat integration
 
-	This endpoint provides the full pipeline:
-	1. Process and store survey responses
-	2. Convert to human-readable format
-	3. Send to AI agent for analysis
-	4. Return comprehensive results including AI feedback
-	5. Optionally send to chat as human message
-	"""
-	user_id = current_user_payload['user_id']
+    This endpoint provides the full pipeline:
+    1. Process and store survey responses
+    2. Convert to human-readable format
+    3. Send to AI agent for analysis
+    4. Return comprehensive results including AI feedback
+    5. Optionally send to chat as human message
+    """
+    user_id = current_user_payload["user_id"]
 
-	logger.info(f'Starting complete survey workflow - user: {user_id}, conversation: {request.conversation_id}')
+    logger.info(
+        f"Starting complete survey workflow - user: {user_id}, conversation: {request.conversation_id}"
+    )
 
-	# Import the integration service
-	from app.modules.question_session.services.survey_chat_integration import (
-		SurveyChatIntegrationService,
-	)
+    # Import the integration service
+    from app.modules.question_session.services.survey_chat_integration import (
+        SurveyChatIntegrationService,
+    )
 
-	# Initialize the integration service
-	integration_service = SurveyChatIntegrationService(db)
+    # Initialize the integration service
+    integration_service = SurveyChatIntegrationService(db)
 
-	# Process the complete workflow
-	result = await integration_service.process_survey_and_chat_response(
-		survey_request=request.model_dump(),
-		conversation_id=request.conversation_id,
-		user_id=user_id,
-		custom_ai_prompt='Please analyze this survey response and provide thoughtful insights and feedback.',  # Enhanced prompt
-	)
+    # Process the complete workflow
+    result = await integration_service.process_survey_and_chat_response(
+        survey_request=request.model_dump(),
+        conversation_id=request.conversation_id,
+        user_id=user_id,
+        custom_ai_prompt="Please analyze this survey response and provide thoughtful insights and feedback." # Enhanced prompt
+    )
 
-	return APIResponse(
-		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('complete_survey_workflow_processed_successfully'),
-		data=result,
-	)
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_("complete_survey_workflow_processed_successfully"),
+        data=result,
+    )
 
 
 @route.post('/process-and-send-to-chat', response_model=APIResponse)
 @handle_exceptions
 async def process_survey_and_send_to_chat(
-	request: ParseSurveyResponseRequest,
-	db: Session = Depends(get_db),
-	current_user_payload: dict = Depends(get_current_user),
+    request: ParseSurveyResponseRequest,
+    db: Session = Depends(get_db),
+    current_user_payload: dict = Depends(get_current_user),
 ):
-	"""
-	Process survey response and automatically send to chat workflow
-
-	This endpoint:
-	1. Processes and stores survey responses
-	2. Converts to human-readable format
-	3. Gets AI analysis
-	4. Returns formatted messages for chat integration
-	5. Provides WebSocket-ready message formats
-	"""
-	user_id = current_user_payload['user_id']
-
-	logger.info(f'Processing survey and preparing for chat integration - user: {user_id}, conversation: {request.conversation_id}')
-
-	# Import the integration service
-	from app.modules.question_session.services.survey_chat_integration import SurveyChatIntegrationService
-
-	# Initialize the integration service
-	integration_service = SurveyChatIntegrationService(db)
-
-	# Process the complete workflow
-	result = await integration_service.process_survey_and_chat_response(survey_request=request.model_dump(), conversation_id=request.conversation_id, user_id=user_id, custom_ai_prompt='Please analyze this survey response and provide helpful insights, recommendations, or follow-up questions.')
-
-	# Prepare WebSocket-ready messages
-	websocket_messages = []
-
-	# Human message for WebSocket
-	if result.get('human_message'):
-		websocket_messages.append({'type': 'chat_message', 'role': 'user', 'content': result['human_message'], 'conversation_id': request.conversation_id, 'user_id': user_id, 'source': 'survey_completion', 'timestamp': datetime.now().isoformat()})
-
-	# AI response message for WebSocket
-	if result.get('ai_response', {}).get('content'):
-		websocket_messages.append({'type': 'chat_message', 'role': 'assistant', 'content': result['ai_response']['content'], 'conversation_id': request.conversation_id, 'user_id': user_id, 'source': 'survey_analysis', 'timestamp': datetime.now().isoformat()})
-
-	# Enhanced result with WebSocket messages
-	enhanced_result = {**result, 'websocket_messages': websocket_messages, 'chat_integration': {'ready_for_websocket': len(websocket_messages) > 0, 'human_message_available': bool(result.get('human_message')), 'ai_response_available': bool(result.get('ai_response', {}).get('content')), 'total_messages': len(websocket_messages)}}
-
-	return APIResponse(error_code=BaseErrorCode.ERROR_CODE_SUCCESS, message=_('survey_processed_and_ready_for_chat_integration'), data=enhanced_result)
+    """
+    Process survey response and automatically send to chat workflow
+    
+    This endpoint:
+    1. Processes and stores survey responses
+    2. Converts to human-readable format
+    3. Gets AI analysis
+    4. Returns formatted messages for chat integration
+    5. Provides WebSocket-ready message formats
+    """
+    user_id = current_user_payload['user_id']
+    
+    logger.info(f'Processing survey and preparing for chat integration - user: {user_id}, conversation: {request.conversation_id}')
+    
+    # Import the integration service
+    from app.modules.question_session.services.survey_chat_integration import SurveyChatIntegrationService
+    
+    # Initialize the integration service
+    integration_service = SurveyChatIntegrationService(db)
+    
+    # Process the complete workflow
+    result = await integration_service.process_survey_and_chat_response(
+        survey_request=request.model_dump(),
+        conversation_id=request.conversation_id,
+        user_id=user_id,
+        custom_ai_prompt="Please analyze this survey response and provide helpful insights, recommendations, or follow-up questions."
+    )
+    
+    # Prepare WebSocket-ready messages
+    websocket_messages = []
+    
+    # Human message for WebSocket
+    if result.get('human_message'):
+        websocket_messages.append({
+            'type': 'chat_message',
+            'role': 'user',
+            'content': result['human_message'],
+            'conversation_id': request.conversation_id,
+            'user_id': user_id,
+            'source': 'survey_completion',
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    # AI response message for WebSocket
+    if result.get('ai_response', {}).get('content'):
+        websocket_messages.append({
+            'type': 'chat_message',
+            'role': 'assistant',
+            'content': result['ai_response']['content'],
+            'conversation_id': request.conversation_id,
+            'user_id': user_id,
+            'source': 'survey_analysis',
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    # Enhanced result with WebSocket messages
+    enhanced_result = {
+        **result,
+        'websocket_messages': websocket_messages,
+        'chat_integration': {
+            'ready_for_websocket': len(websocket_messages) > 0,
+            'human_message_available': bool(result.get('human_message')),
+            'ai_response_available': bool(result.get('ai_response', {}).get('content')),
+            'total_messages': len(websocket_messages)
+        }
+    }
+    
+    return APIResponse(
+        error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+        message=_('survey_processed_and_ready_for_chat_integration'),
+        data=enhanced_result
+    )

@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardList, faTimes, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
-import { Question, SurveyProcessRequest, SurveyProcessResponse } from '@/types/question.types'
-import { handleApiCall } from '@/utils/apiHandler'
-import { questionSessionService } from '@/apis/questionSessionService'
+import { Question } from '@/types/question.types'
 import SurveyContainer from '@/components/survey/SurveyContainer'
 
 interface SurveyPanelProps {
@@ -42,22 +40,29 @@ export function SurveyPanel({
 
     try {
       // Call the enhanced survey processing API that's optimized for chat integration
-      const requestData: SurveyProcessRequest = {
-        type: 'survey_response',
-        answers: answers,
-        conversation_id: conversationId,
-        timestamp: new Date().toISOString()
-      }
+      const token = localStorage.getItem('access_token') // Adjust based on your auth implementation
       
-      const result = await handleApiCall<SurveyProcessResponse>(
-        () => questionSessionService.processAndSendToChat(requestData)
-      )
+      const response = await fetch('/api/v1/question-sessions/process-and-send-to-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          type: 'survey_response',
+          answers: answers,
+          conversation_id: conversationId,
+          timestamp: new Date().toISOString()
+        })
+      })
 
-      if (result) {
+      if (response.ok) {
+        const result = await response.json()
         console.log('[SurveyPanel] Enhanced survey processing result:', result)
         
-        // Extract the processed data  
-        const websocketMessages = result.websocket_messages || []
+        // Extract the processed data
+        const surveyData = result.data
+        const websocketMessages = surveyData?.websocket_messages || []
         
         // Send messages to chat using the callback
         if (onSendToChat && websocketMessages.length > 0) {
@@ -98,16 +103,27 @@ export function SurveyPanel({
         console.log('[SurveyPanel] Enhanced survey processing completed successfully')
         
       } else {
-        console.log('[SurveyPanel] Failed to process survey workflow')
+        console.error('[SurveyPanel] Failed to process survey workflow:', response.statusText)
         
         // Fallback: try the original complete workflow endpoint
-        const fallbackResult = await handleApiCall<SurveyProcessResponse>(
-          () => questionSessionService.completeSurveyWorkflow(requestData)
-        )
+        const fallbackResponse = await fetch('/api/v1/question-sessions/complete-survey-workflow', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            type: 'survey_response',
+            answers: answers,
+            conversation_id: conversationId,
+            timestamp: new Date().toISOString()
+          })
+        })
 
-        if (fallbackResult) {
-          const humanMessage = fallbackResult.human_readable_response
-          const aiResponse = fallbackResult.ai_response
+        if (fallbackResponse.ok) {
+          const fallbackResult = await fallbackResponse.json()
+          const humanMessage = fallbackResult.data?.human_readable_response
+          const aiResponse = fallbackResult.data?.ai_response
           
           if (humanMessage && onSendToChat) {
             await onSendToChat(humanMessage, false)
@@ -232,8 +248,8 @@ export function SurveyPanel({
       {!isMinimized && (
         <div className="flex-1 overflow-hidden">
           {questions.length > 0 ? (
-            <div className="h-full p-2 py-3">
-              <div className="bg-[color:var(--background)]/95 rounded-2xl shadow-xl border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden py-2">
+            <div className="h-full p-2">
+              <div className="bg-[color:var(--background)]/95 rounded-2xl shadow-xl border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden">
                 <SurveyContainer 
                   questions={questions}
                   onSurveyComplete={handleSurveyComplete} // Use our enhanced handler
