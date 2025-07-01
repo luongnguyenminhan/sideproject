@@ -1125,22 +1125,22 @@ export function ChatClientWrapper() {
       )}
 
       {/* Desktop File Sidebar - hide when survey is open, show when closed */}
-      {!surveyModalVisible && (
+      {!surveyModalVisible && state.activeConversationId && (
         <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
           isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
         }`}>
-        <FileSidebar
-          uploadedFiles={state.uploadedFiles}
-          isLoading={fileLoadingStates.files || false}
-          conversationId={state.activeConversationId}
-          onDeleteFile={handleDeleteFile}
-          onUploadFiles={handleUploadFiles}
-          onUploadCV={handleUploadCV}
-          isCVUploading={isCVUploading}
-          hasSurveyData={surveyData.length > 0}
-          onOpenSurvey={handleOpenSurvey}
-          onClose={() => setIsFileSidebarCollapsed(true)}
-        />
+            <FileSidebar
+              uploadedFiles={state.uploadedFiles}
+              isLoading={fileLoadingStates.files || false}
+              conversationId={state.activeConversationId}
+              onDeleteFile={handleDeleteFile}
+              onUploadFiles={handleUploadFiles}
+              onUploadCV={handleUploadCV}
+              isCVUploading={isCVUploading}
+              hasSurveyData={surveyData.length > 0}
+              onOpenSurvey={handleOpenSurvey}
+              onClose={() => setIsFileSidebarCollapsed(true)}
+            />
         </div>
       )}
      

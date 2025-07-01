@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { ReduxProvider } from "@/redux/provider";
 import PageWrapper from "@/components/layout/page-wrapper";
 import ClientWrapper from "@/components/layout/client-wrapper";
+import Header from "@/components/layout/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -167,6 +168,7 @@ export default async function RootLayout({
 
                     {/* Main Content */}
                     <div className="relative z-10">
+                      <Header withChatBubble={true} />
                       {children}
                     </div>
                   </div>

@@ -341,5 +341,34 @@
         "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
       }
     }
+  },
+  "userProfile": {
+    "email": "Email",
+    "name": "Họ và tên",
+    "profilePicture": "Ảnh đại diện",
+    "role": "Vai trò",
+    "subtitle": "Thông tin cá nhân",
+    "title": "Hồ sơ người dùng",
+    "username": "Tên đăng nhập",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "birthday": "Ngày sinh",
+    "address": "Địa chỉ"
+  },
+  "userSidebar": {
+    "profile": "Tài khoản",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "userSettings": {
+    "appearance": "Giao diện",
+    "theme": "Chủ đề",
+    "themeDescription": "Chuyển đổi giữa chế độ sáng và tối.",
+    "language": "Ngôn ngữ",
+    "languageDescription": "Chọn ngôn ngữ bạn muốn.",
+    "notifications": "Thông báo",
+    "emailNotifications": "Thông báo qua email",
+    "emailNotificationsDescription": "Nhận cập nhật và tin tức qua email.",
+    "pushNotifications": "Thông báo đẩy",
+    "pushNotificationsDescription": "Nhận cập nhật tức thì trên thiết bị của bạn."
   }
 }

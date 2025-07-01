@@ -156,7 +156,7 @@ async function Home({ user, isAuthenticated }: HomeProps) {
 
   return (
     <HomePageWrapper>
-      <Header />      <HeroSection
+      <HeroSection
         user={user}
         isAuthenticated={isAuthenticated}
         welcomeTitle={isAuthenticated 
