@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from pytz import timezone
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
