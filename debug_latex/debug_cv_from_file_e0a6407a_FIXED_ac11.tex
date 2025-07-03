@@ -1,0 +1,122 @@
+\documentclass[letterpaper, 11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{left=1in, right=1in, top=0.75in, bottom=0.75in}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+
+% Color Definitions
+\definecolor{primary}{HTML}{3498DB}
+\definecolor{secondary}{HTML}{2980B9}
+\definecolor{text}{HTML}{2C3E50}
+\definecolor{background}{HTML}{FFFFFF}
+
+% Custom Commands
+\newcommand{\sectiontitle}[1]{\vspace{0.1in}\noindent{\Large\color{primary} #1}\vspace{0.05in}\hrulefill}
+\newcommand{\subsectiontitle}[1]{\vspace{0.05in}\noindent{\large\color{secondary} #1}}
+\newcommand{\entry}[4]{
+    \vspace{0.02in}
+    \noindent\textbf{#1}
+    \hfill
+    #2
+    \newline
+    \textit{#3}
+    \newline
+    #4
+}
+
+\newcommand{\skill}[1]{\texttt{#1}}
+
+\begin{document}
+
+\pagestyle{empty} % Suppress page numbers
+
+% Header
+\begin{center}
+    {\Huge \color{primary} Luong Nguyen Minh An} \\
+    \vspace{0.05in}
+    \small
+    \color{text}
+    Email: luongnguyenminhan02052004@gmail.com | Phone: 0921 421 727 | LinkedIn: https://www.linkedin.com/in/luongnguyenminhan | Address: Thu Duc, Ho Chi Minh City
+\end{center}
+
+\sectiontitle{Summary}
+Ứng vi\^{e}n Luong Nguyen Minh An đang t\`{i}m kiếm cơ hội trong lĩnh vực C\^{o}ng nghệ Th\^{o}ng tin, đặc biệt l\`{a} c\'{a}c vị tr\'{i} li\^{e}n quan đến Tr\'{i} tuệ Nh\^{a}n tạo (AI) v\`{a} Ph\'{a}t triển Web/API. Với kinh nghiệm thực tập tại FPT Telecom -- Meobeo.ai ở vai tr\`{o} AI Intern, ứng vi\^{e}n đ\~{a} thể hiện khả năng vượt trội trong việc ph\'{a}t triển c\'{a}c giải ph\'{a}p AI tự động h\'{o}a quy tr\`{i}nh, bao gồm tạo ghi ch\'{u} cuộc họp, xử lý \^{a}m thanh với Pyannote, nhận dạng giọng n\'{o}i, v\`{a} t\'{i}ch hợp lịch Google, mang lại hiệu quả giảm thời gian t\`{i}m kiếm th\^{o}ng tin tới 50\% v\`{a} giảm nỗ lực ghi ch\'{u} thủ c\^{o}ng tới 60\%. Ứng vi\^{e}n c\`{o}n tham gia v\`{a}o c\'{a}c dự \'{a}n c\'{a} nh\^{a}n với vai tr\`{o} AI Engineer, x\^{a}y dựng chatbot b\'{a}n h\`{a}ng sử dụng kiến tr\'{u}c RAG v\`{a} LangChain, cũng như chatbot t\`{a}i ch\'{i}nh t\'{i}ch hợp xử lý chi ph\'{i} v\`{a} OCR. Về kỹ năng, ứng vi\^{e}n th\`{a}nh thạo Python, c\'{a}c nguy\^{e}n tắc thiết kế hướng đối tượng, ph\'{a}t triển API với FastAPI, c\'{a}c framework AI như LangChain/LangGraph, v\`{a} c\'{o} kiến thức s\^{a}u về Machine Learning, Deep Learning, Computer Vision, NLP, cơ sở dữ liệu (MongoDB, MySQL, Qdrant) v\`{a} DevOps (Docker, Kubernetes, CI/CD). Ứng vi\^{e}n c\`{o}n sở hữu nhiều chứng chỉ chuy\^{e}n ng\`{a}nh từ Coursera về Ph\'{a}t triển Phần mềm, Xử lý Ng\^{o}n ngữ Tự nhi\^{e}n, Khoa học Dữ liệu, Ph\'{a}t triển Full Stack v\`{a} Học s\^{a}u. Ứng vi\^{e}n đang theo học ng\`{a}nh C\^{o}ng nghệ Th\^{o}ng tin tại Đại học FPT với GPA 8.6/10 v\`{a} dự kiến tốt nghiệp th\'{a}ng 7/2025.
+
+\sectiontitle{Experience}
+\entry{FPT Telecom -- Meobeo.ai}{Ho Chi Minh City}{AI Intern}{2024-09-01 -- Present}
+\begin{itemize}[leftmargin=0.2in]
+    \item Engineered a modular, flow-based agent in Python to fully automate meeting-note generation via advanced prompt engineering and context-aware summarization, enabling real-time note delivery.
+    \item Orchestrated end-to-end integration of speech-to-text and Pyannote for speaker diarization, producing enriched, timestamped transcripts with keyword extraction---reducing information retrieval time by 50\%.
+    \item Architected a speaker-identification module using voice-embedding techniques and clustering algorithms to recognize and remember individual speakers across sessions uniquely.
+    \item Developed synchronization logic via RESTful connectors to Google Calendar, automatically aligning key insights, follow-up tasks, and action items with users’ calendars and sending contextual email summaries.
+    \item Secured session management and data protection with JWT-based authentication, ensuring GDPR-compliant handling of sensitive meeting data.
+    \item Deployed containerized microservices using Docker Compose and Kubernetes, with automated CI/CD pipelines in GitHub Actions---achieving zero-downtime rollouts and horizontal scaling to support 200+ concurrent users.
+    \item Accelerated organizational productivity by cutting manual note-taking effort by 60\% and improving meeting follow-through rates by 40\%
+\end{itemize}
+
+\sectiontitle{Education}
+\entry{FPT University}{}{Information Technology}{Expected Graduation: 2025-07-01, GPA: 8.6}
+
+\sectiontitle{Projects}
+\entry{AI-driven Sales Consultant Chatbot}{}{}{Technologies: FastAPI, MongoDB, MySQL, Qdrant VectorDB, LangChain, LangGraph, ReAct Agent}
+\begin{itemize}[leftmargin=0.2in]
+    \item Engineered a FastAPI-based chatbot API, integrating MongoDB, MySQL, and Qdrant VectorDB for seamless data storage.
+    \item Implemented Retrieval-Augmented Generation (RAG) architecture to ensure highly relevant information retrieval.
+    \item Leveraged LangChain and LangGraph frameworks to integrate large language models for Python-based solutions.
+    \item Orchestrated a ReAct Agent-based sales consultant chatbot to address complex customer inquiries dynamically.
+    \item Applied SOLID principles and clean-code practices to maintain a scalable, maintainable backend.
+    \item Authored comprehensive API documentation and in-line code comments to facilitate future development.
+    \item Structured the project repository following industry best practices for FastAPI applications.
+\end{itemize}
+
+\entry{Financial Chatbot - Third-Party}{}{}{Technologies: LangChain, LangGraph, LLM APIs, RAG}
+\begin{itemize}[leftmargin=0.2in]
+    \item Developed a multi-turn chatbot using the LangChain LangGraph framework and LLM APIs to deliver intelligent financial guidance.
+    \item Designed and implemented a RAG system to provide accurate, context-aware financial responses.
+    \item Managed user expense records with full CRUD operations, generating personalized financial insights on demand.
+    \item Built an intuitive chat interface enabling users to rapidly input and categorize income and expenses.
+    \item Optimized mobile OCR algorithms to extract expense details from transaction screenshots with high accuracy.
+    \item Devised preprocessing routines to redact sensitive bank details before external API calls, bolstering data security.
+    \item Executed model quantization techniques, reducing memory footprint and boosting recognition speed by over 30\% on mobile devices.
+\end{itemize}
+
+\entry{WSTE: Whitebox Style Transfer with Example-based Learning}{}{}{Technologies: VGG network, STROTSS algorithm}
+\begin{itemize}[leftmargin=0.2in]
+    \item Conducted a comprehensive literature review to define project methodology and benchmarks.
+    \item Analyzed VGG network architecture within the STROTSS algorithm to drive image style transfer innovations.
+    \item Integrated image segmentation techniques to enable multi-style fusion within single images.
+\end{itemize}
+
+\sectiontitle{Skills}
+\begin{itemize}[label={}, itemsep=0.1em]
+    \item \textbf{Programming Languages:} \skill{Python}, \skill{R}
+    \item \textbf{Programming Principles:} \skill{Object-Oriented Design}, \skill{SOLID Principles}, \skill{Clean Code}
+    \item \textbf{AI Techniques:} \skill{Prompt Engineering}, \skill{ReAct Agent}, \skill{Speaker Diarization}, \skill{Speaker Identification}
+    \item \textbf{Web Frameworks:} \skill{FastAPI}
+    \item \textbf{API Design:} \skill{RESTful API Design}
+    \item \textbf{Frameworks:} \skill{Flow-Based Agent Frameworks}, \skill{LangChain}, \skill{LangGraph}
+    \item \textbf{Tools:} \skill{API Documentation}, \skill{PowerBI}, \skill{MS Excel}, \skill{Docker}, \skill{Docker Compose}, \skill{Kubernetes}, \skill{GitHub Actions}, \skill{Git}
+    \item \textbf{Cloud Platforms:} \skill{EKS}, \skill{AWS}, \skill{Azure}
+    \item \textbf{DevOps Practices:} \skill{CI/CD}
+    \item \textbf{Fields:} \skill{Machine Learning}, \skill{Deep Learning}, \skill{Computer Vision}, \skill{Natural Language Processing}, \skill{Audio Processing}
+    \item \textbf{Libraries:} \skill{Pyannote}
+    \item \textbf{Databases:} \skill{MongoDB}, \skill{MySQL}, \skill{SQLite}, \skill{MS SQL Server}, \skill{Qdrant}, \skill{VectorDB}
+    \item \textbf{Skills:} \skill{Data Analysis}, \skill{Data Visualization}
+    \item \textbf{Soft Skills:} \skill{Critical Thinking}, \skill{Problem Solving}, \skill{Collaboration}, \skill{Communication}, \skill{Research}, \skill{Technical Writing}, \skill{Presentation}
+\end{itemize}
+
+\sectiontitle{Certificates}
+\begin{itemize}[leftmargin=0.2in]
+    \item Software Development Lifecycle Specialization - Coursera
+    \item Natural Language Processing Specialization - Coursera
+    \item Applied Data Science with Python Specialization - Coursera
+    \item IBM Full Stack Software Developer Specialization - Coursera
+    \item Deep Learning Specialization - Coursera
+    \item Big Data Specialization - Coursera
+\end{itemize}
+
+\end{document}

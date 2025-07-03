@@ -1,5 +1,5 @@
-# Use Python 3.11 slim-buster as the base image
-FROM python:3.11-slim-buster
+# Use Python 3.11 slim-bookworm as the base image (newer pango libraries)
+FROM python:3.11-slim-bookworm
 
 # Set environment variable to prevent Python from writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -7,21 +7,36 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Set working directory in the container
 WORKDIR /app
 
-# Install required system dependencies
+# Install required system dependencies for weasyprint HTML to PDF conversion
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libcairo2 \
+    libcairo2-dev \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libgdk-pixbuf2.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz0b \
+    libfribidi0 \
+    libgdk-pixbuf-2.0-0 \
+    libgdk-pixbuf2.0-dev \
     libffi-dev \
     shared-mime-info \
     libglib2.0-0 \
-    libjpeg-dev \
+    libglib2.0-dev \
+    libjpeg62-turbo-dev \
     libopenjp2-7-dev \
-    fonts-dejavu \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    pkg-config \
+    libgirepository1.0-dev \
+    libcairo-gobject2 \
+    fonts-dejavu-core \
     fonts-liberation \
-    netcat-openbsd && \
+    fonts-noto-core \
+    fonts-noto-cjk \
+    netcat-openbsd \
+    build-essential \
+    python3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
@@ -39,6 +54,14 @@ RUN pip install uv && \
 # Copy the backend code, excluding the frontend folder
 COPY --chown=appuser:appuser . .
 RUN rm -rf frontend/
+
+# Create temp_cvs directory for CV generation
+RUN mkdir -p temp_cvs && chown -R appuser:appuser temp_cvs
+
+# ============ DEBUG MODE - REMOVE IN PRODUCTION ============
+# Create debug directory for HTML source storage (DEBUG ONLY)
+RUN mkdir -p debug_html && chown -R appuser:appuser debug_html
+# ============ END DEBUG MODE ============
 
 # Expose port
 EXPOSE 8000

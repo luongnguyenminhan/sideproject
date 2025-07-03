@@ -11,6 +11,9 @@ services:
     volumes:
       - .:/app
       - cv_data:/temp_cvs
+      # ============ DEBUG MODE - REMOVE IN PRODUCTION ============
+      - debug_html:/debug_html  # DEBUG: Mount debug folder for HTML source storage
+      # ============ END DEBUG MODE ============
     environment:
       - ENV=development
       - RUN_TESTS=false  
@@ -37,6 +40,9 @@ services:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
       - PYTHONDONTWRITEBYTECODE=1
+      # ============ DEBUG MODE - REMOVE IN PRODUCTION ============
+      - CV_DEBUG_MODE=true  # DEBUG: Enable HTML source debugging
+      # ============ END DEBUG MODE ============
     env_file:
       - .env
     # Add extra_hosts to ensure host.docker.internal works on all Docker environments
@@ -126,4 +132,7 @@ volumes:
   minio-data:
   cv_data:  # Add new volume for CV files
   qdrant-data:  # Add volume for QdrantDB storage
+  # ============ DEBUG MODE - REMOVE IN PRODUCTION ============
+  debug_html:  # DEBUG: Volume for HTML source debugging
+  # ============ END DEBUG MODE ============
 

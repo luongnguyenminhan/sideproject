@@ -1,0 +1,56 @@
+% Classic CV Template
+% Traditional academic-style CV
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}{\bfseries}{\thesubsection}{1em}{}
+
+% Remove page numbers
+\pagestyle{empty}
+
+% Custom commands
+\newcommand{\name}[1]{\begin{center}\LARGE\bfseries #1\end{center}}
+\newcommand{\contact}[1]{\begin{center} #1 \end{center}}
+\newcommand{\workitem}[4]{\textbf{#1} \hfill #2 \\ \textit{#3} \hfill #4}
+
+\begin{document}
+
+% Header
+\name{[FIRST_NAME] [LAST_NAME]}
+\contact{[EMAIL] | [PHONE] | [ADDRESS]}
+
+\vspace{10pt}
+
+% Summary
+\section{Summary}
+[SUMMARY]
+
+% Work Experience
+\section{Work Experience}
+% [WORK_EXPERIENCE_ITEMS]
+
+% Education
+\section{Education}
+% [EDUCATION_ITEMS]
+
+% Skills
+\section{Skills}
+% [SKILLS_ITEMS]
+
+% Projects
+\section{Projects}
+% [PROJECTS_ITEMS]
+
+% Certificates
+\section{Certificates}
+% [CERTIFICATES_ITEMS]
+
+\end{document} 

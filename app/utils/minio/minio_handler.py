@@ -49,7 +49,7 @@ class MinioHandler:
 			secure=secure_param,  # Use the parsed boolean value
 		)
 		self.bucket_name = settings.MINIO_BUCKET_NAME
-		self._ensure_bucket_exists()
+		# self._ensure_bucket_exists()
 
 	def _ensure_bucket_exists(self):
 		"""Check if the bucket exists and create it if it doesn't."""
@@ -88,53 +88,71 @@ class MinioHandler:
 
 	async def upload_file(
 		self,
-		file_content: bytes,
-		file_name: str,
-		meeting_id: str,
-		content_type: str = 'audio/mpeg',
-		file_type: str = 'audio',
+		bucket_name: str = None,
+		object_name: str = None,
+		file_path: str = None,
+		file_content: bytes = None,
+		content_type: str = 'application/octet-stream',
 	) -> str:
 		"""
-		Upload a file to MinIO.
+		Upload file to MinIO với flexible parameters cho CV generation
 
 		Args:
-		    file_content: The binary content of the file
-		    file_name: The name to save the file as
-		    meeting_id: Meeting ID for organizing files
-		    content_type: The content type of the file
-		    file_type: Type of file for folder organization
+		        bucket_name: Bucket name (optional, dùng default nếu None)
+		        object_name: Object name/path trong bucket
+		        file_path: Path tới file trên disk (nếu upload từ file)
+		        file_content: Binary content (nếu upload từ memory)
+		        content_type: MIME type của file
 
 		Returns:
-		    The object name (path) in MinIO storage
+		        Object name sau khi upload
 		"""
 		try:
-			logger.info(f"Starting upload of '{file_name}', size: {len(file_content)} bytes")
+			bucket = bucket_name or self.bucket_name
 
-			# Convert bytes to file-like object
-			file_data = io.BytesIO(file_content)
-			file_size = len(file_content)
+			# Ensure bucket exists
+			if not self.minio_client.bucket_exists(bucket):
+				self.minio_client.make_bucket(bucket)
+				logger.info(f'Created bucket: {bucket}')
 
-			# Generate a safe object name with UUID, meeting_id and file_type
-			object_name = self._generate_safe_object_name(meeting_id, file_name, file_type)
-			logger.info(f'Generated safe object name: {object_name}')
+			if file_content:
+				# Upload từ memory
+				file_data = io.BytesIO(file_content)
+				file_size = len(file_content)
+				logger.info(f'Uploading from memory: {object_name}, size: {file_size} bytes')
+			elif file_path:
+				# Upload từ file path
+				file_size = os.path.getsize(file_path)
+				with open(file_path, 'rb') as file_data:
+					logger.info(f'Uploading from file: {file_path} -> {object_name}, size: {file_size} bytes')
+					self.minio_client.put_object(
+						bucket_name=bucket,
+						object_name=object_name,
+						data=file_data,
+						length=file_size,
+						content_type=content_type,
+					)
+				return object_name
+			else:
+				raise ValueError('Either file_path or file_content must be provided')
 
-			# Upload the file to MinIO
+			# Upload the file
 			self.minio_client.put_object(
-				bucket_name=self.bucket_name,
+				bucket_name=bucket,
 				object_name=object_name,
 				data=file_data,
 				length=file_size,
 				content_type=content_type,
 			)
 
-			logger.info(f"File '{file_name}' uploaded successfully to MinIO as '{object_name}'")
+			logger.info(f'File uploaded successfully: {object_name}')
 			return object_name
 
 		except S3Error as err:
 			logger.error(f'Error uploading file to MinIO: {err}')
 			raise
 		except Exception as e:
-			logger.error(f'Unexpected error uploading file to MinIO: {str(e)}')
+			logger.error(f'Unexpected error uploading file: {str(e)}')
 			raise
 
 	async def upload_fastapi_file(self, file: UploadFile, meeting_id: str, file_type: str = 'audio') -> str:
@@ -156,13 +174,15 @@ class MinioHandler:
 			# Reset file cursor
 			await file.seek(0)
 
-			# Use the upload_file method
+			# Generate object name
+			object_name = self._generate_safe_object_name(meeting_id, file.filename, file_type)
+
+			# Use the new upload_file method
 			return await self.upload_file(
+				bucket_name=self.bucket_name,
+				object_name=object_name,
 				file_content=file_content,
-				file_name=file.filename,
-				meeting_id=meeting_id,
 				content_type=file.content_type or 'application/octet-stream',
-				file_type=file_type,
 			)
 
 		except Exception as err:
@@ -193,29 +213,17 @@ class MinioHandler:
 		try:
 			logger.info(f"Starting upload of '{filename}' as bytes, size: {len(content)} bytes")
 
-			# Convert bytes to file-like object
-			file_data = io.BytesIO(content)
-			file_size = len(content)
-
-			# Generate a safe object name with UUID, meeting_id and file_type
+			# Generate object name
 			object_name = self._generate_safe_object_name(meeting_id, filename, file_type)
-			logger.info(f'Generated safe object name: {object_name}')
 
-			# Upload the content to MinIO
-			self.minio_client.put_object(
+			# Use the new upload_file method
+			return await self.upload_file(
 				bucket_name=self.bucket_name,
 				object_name=object_name,
-				data=file_data,
-				length=file_size,
+				file_content=content,
 				content_type=content_type,
 			)
 
-			logger.info(f"Bytes uploaded successfully to MinIO as '{object_name}'")
-			return object_name
-
-		except S3Error as err:
-			logger.error(f'Error uploading bytes to MinIO: {err}')
-			raise
 		except Exception as e:
 			logger.error(f'Unexpected error uploading bytes to MinIO: {str(e)}')
 			raise
@@ -342,6 +350,34 @@ class MinioHandler:
 			raise
 		except Exception as err:
 			logger.error(f'File not found in MinIO: {err}')
+			raise
+
+	async def get_presigned_url(self, bucket_name: str, object_name: str, expires_in: int = 3600) -> str:
+		"""
+		Get presigned URL cho file download
+
+		Args:
+		        bucket_name: Bucket name
+		        object_name: Object name trong bucket
+		        expires_in: Thời gian expire (seconds)
+
+		Returns:
+		        Presigned URL
+		"""
+		try:
+			from datetime import timedelta
+
+			url = self.minio_client.presigned_get_object(
+				bucket_name=bucket_name,
+				object_name=object_name,
+				expires=timedelta(seconds=expires_in),
+			)
+
+			logger.info(f'Generated presigned URL for: {object_name} (expires in {expires_in}s)')
+			return url
+
+		except S3Error as err:
+			logger.error(f'Error generating presigned URL: {err}')
 			raise
 
 

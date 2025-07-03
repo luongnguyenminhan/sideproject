@@ -170,5 +170,13 @@
   "failed_to_download_file": "Failed to download file",
   "failed_to_get_cv_metadata": "Failed to get CV metadata",
   "invalid_cv_file_type": "Invalid CV file type",
-  "no_cv_data_found": "No CV data found"
+  "no_cv_data_found": "No CV data found",
+  "cv_generation_completed": "CV generation completed",
+  "preview_generated_successfully": "Preview generated successfully",
+  "preview_generation_failed": "Preview generation failed",
+  "batch_generation_completed": "Batch generation completed: {success} successful, {failed} failed",
+  "templates_retrieved_successfully": "Templates retrieved successfully",
+  "system_info_retrieved_successfully": "System info retrieved successfully",
+  "cv_file_not_found": "CV file not found",
+  "temp_files_cleaned_successfully": "Temporary files cleaned successfully"
 }

@@ -7,6 +7,28 @@ class ProcessCVRequest(RequestSchema):
 	cv_file_url: Optional[str] = None
 
 
+class CVRegenRequest(RequestSchema):
+	"""Request schema cho CV regeneration"""
+
+	cv_file_url: Optional[str] = None
+	template_type: Optional[str] = Field(default='modern', description='Template type: modern, classic, creative')
+	color_theme: Optional[str] = Field(default='blue', description='Color theme: blue, green, red, purple, etc.')
+	custom_prompt: Optional[str] = Field(default=None, description='Custom prompt cho AI')
+
+
+class CVRegenResponse(BaseModel):
+	"""Response schema cho CV regeneration"""
+
+	success: bool = Field(description='Trạng thái regeneration')
+	message: Optional[str] = Field(default=None, description='Thông báo')
+	cv_analysis: Optional['ProcessCVResponse'] = Field(default=None, description='Kết quả CV analysis')
+	pdf_file_url: Optional[str] = Field(default=None, description='URL file PDF')
+	pdf_download_url: Optional[str] = Field(default=None, description='URL download PDF')
+	file_size: Optional[int] = Field(default=None, description='Kích thước file PDF')
+	generation_time: Optional[float] = Field(default=None, description='Thời gian generation')
+	job_id: Optional[str] = Field(default=None, description='ID của generation job')
+
+
 class PersonalInformation(BaseModel):
 	full_name: Optional[str] = None
 	email: Optional[str] = None

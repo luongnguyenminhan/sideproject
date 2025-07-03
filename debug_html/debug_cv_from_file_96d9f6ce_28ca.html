@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Luong Nguyen Minh An</title>
+    <style>
+        /* CSS Reset */
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed,
+        figure, figcaption, footer, header, hgroup,
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure,
+        footer, header, hgroup, menu, nav, section {
+            display: block;
+        }
+
+        body {
+            line-height: 1;
+        }
+
+        ol, ul {
+            list-style: none;
+        }
+
+        blockquote, q {
+            quotes: none;
+        }
+
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+            content: '';
+            content: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #2C3E50;
+            background-color: #FFFFFF;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            background-color: #fff;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: #3498DB;
+            color: #FFFFFF;
+            padding: 20px;
+            border-right: 1px solid #2980B9;
+        }
+
+        .sidebar h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .sidebar p {
+            margin-bottom: 5px;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+        }
+
+        .contact-info a {
+            color: #FFFFFF;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            color: #3498DB;
+            margin-bottom: 10px;
+        }
+
+        .section h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .section h4 {
+            font-size: 1em;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .section p {
+            margin-bottom: 10px;
+        }
+
+        .section ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section li {
+            margin-bottom: 5px;
+        }
+
+        /* Skill Styles */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill {
+            background-color: #ecf0f1;
+            color: #2C3E50;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                width: 95%;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #2980B9;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                font-size: 12pt;
+                color: #000;
+                background-color: #fff;
+            }
+
+            .container {
+                width: 100%;
+                box-shadow: none;
+                border: none;
+                margin: 0;
+            }
+
+            .sidebar {
+                background-color: #fff !important;
+                color: #000 !important;
+                border-right: none !important;
+                border-bottom: 1px solid #000 !important;
+            }
+
+            .sidebar h1, .sidebar a {
+                color: #000 !important;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .section {
+                border-bottom: 1px solid #ccc;
+                margin-bottom: 10px;
+            }
+
+            a {
+                text-decoration: none !important;
+                color: inherit !important;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Luong Nguyen Minh An</h1>
+            <div class="contact-info">
+                <p>&#x2709; <a href="mailto:luongnguyenminhan02052004@gmail.com">luongnguyenminhan02052004@gmail.com</a></p>
+                <p>&#x260E; <a href="tel:0921421727">0921 421 727</a></p>
+                <p>&#x1F469;&#x200D;&#x1F4BB; <a href="https://www.linkedin.com/in/luongnguyenminhan" target="_blank">LinkedIn Profile</a></p>
+                <p>&#x1F3E0; Thu Duc, Ho Chi Minh City</p>
+            </div>
+        </div>
+        <div class="main-content">
+            <section class="section">
+                <h2>Summary</h2>
+                <p>Ứng viên có định hướng nghề nghiệp trong lĩnh vực AI và Kỹ thuật Phần mềm, thể hiện qua vai trò AI Intern tại FPT Telecom – Meobeo.ai và các dự án cá nhân như AI-driven Sales Consultant Chatbot và Financial Chatbot. Với kinh nghiệm thực tập gần một năm, ứng viên đã tích lũy được kỹ năng chuyên môn sâu về phát triển ứng dụng AI, xử lý ngôn ngữ tự nhiên (NLP), thị giác máy tính (Computer Vision), và kỹ thuật học máy (Machine Learning). Nổi bật là khả năng kỹ thuật trong việc xây dựng các mô-đun AI phức tạp như tự động hóa ghi chú cuộc họp, nhận dạng người nói, cùng với kinh nghiệm triển khai ứng dụng bằng Python, FastAPI, Docker, Kubernetes và các công cụ CI/CD. Các dự án đã hoàn thành cho thấy năng lực áp dụng các kiến trúc tiên tiến như RAG, ReAct Agent và các framework như LangChain, LangGraph. Ứng viên sở hữu nền tảng học vấn vững chắc với chuyên ngành Công nghệ Thông tin tại Đại học FPT cùng nhiều chứng chỉ chuyên sâu từ Coursera về Phát triển Phần mềm, NLP, Khoa học Dữ liệu, Học sâu và Big Data.</p>
+            </section>
+            <section class="section">
+                <h2>Experience</h2>
+                <div class="experience">
+                    <h3>AI Intern</h3>
+                    <h4>FPT Telecom – Meobeo.ai, Ho Chi Minh City</h4>
+                    <p>September 2024 - Present</p>
+                    <ul>
+                        <li>Engineered a modular, flow-based agent in Python to fully automate meeting-note generation via advanced prompt engineering and context-aware summarization, enabling real-time note delivery.</li>
+                        <li>Orchestrated end-to-end integration of speech-to-text and Pyannote for speaker diarization, producing enriched, timestamped transcripts with keyword extraction—reducing information retrieval time by 50%.</li>
+                        <li>Architected a speaker-identification module using voice-embedding techniques and clustering algorithms to recognize and remember individual speakers across sessions uniquely.</li>
+                        <li>Developed synchronization logic via RESTful connectors to Google Calendar, automatically aligning key insights, follow-up tasks, and action items with users’ calendars and sending contextual email summaries.</li>
+                        <li>Secured session management and data protection with JWT-based authentication, ensuring GDPR-compliant handling of sensitive meeting data.</li>
+                        <li>Deployed containerized microservices using Docker Compose and Kubernetes, with automated CI/CD pipelines in GitHub Actions—achieving zero-downtime rollouts and horizontal scaling to support 200+ concurrent users.</li>
+                        <li>Accelerated organizational productivity by cutting manual note-taking effort by 60% and improving meeting follow-through rates by 40%</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Education</h2>
+                <div class="education">
+                    <h3>FPT University</h3>
+                    <h4>Information Technology</h4>
+                    <p>Expected Graduation: July 2025, GPA: 8.6</p>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Skills</h2>
+                <div class="skills-container">
+                    <span class="skill">Python</span>
+                    <span class="skill">R</span>
+                    <span class="skill">Object-Oriented Design</span>
+                    <span class="skill">SOLID Principles</span>
+                    <span class="skill">Clean Code</span>
+                    <span class="skill">Prompt Engineering</span>
+                    <span class="skill">FastAPI</span>
+                    <span class="skill">RESTful API Design</span>
+                    <span class="skill">LangChain</span>
+                    <span class="skill">LangGraph</span>
+                    <span class="skill">ReAct Agent</span>
+                    <span class="skill">API Documentation</span>
+                    <span class="skill">Machine Learning</span>
+                    <span class="skill">Deep Learning</span>
+                    <span class="skill">Computer Vision</span>
+                    <span class="skill">Natural Language Processing</span>
+                    <span class="skill">Speaker Diarization</span>
+                    <span class="skill">Pyannote</span>
+                    <span class="skill">Speaker Identification</span>
+                    <span class="skill">Audio Processing</span>
+                    <span class="skill">MongoDB</span>
+                    <span class="skill">MySQL</span>
+                    <span class="skill">SQLite</span>
+                    <span class="skill">MS SQL Server</span>
+                    <span class="skill">Qdrant</span>
+                    <span class="skill">Data Analysis</span>
+                    <span class="skill">Data Visualization</span>
+                    <span class="skill">PowerBI</span>
+                    <span class="skill">MS Excel</span>
+                    <span class="skill">Docker</span>
+                    <span class="skill">Docker Compose</span>
+                    <span class="skill">Kubernetes</span>
+                    <span class="skill">GitHub Actions</span>
+                    <span class="skill">CI/CD</span>
+                    <span class="skill">AWS</span>
+                    <span class="skill">Azure</span>
+                    <span class="skill">Git</span>
+                    <span class="skill">Critical Thinking</span>
+                    <span class="skill">Problem Solving</span>
+                    <span class="skill">Collaboration</span>
+                    <span class="skill">Communication</span>
+                    <span class="skill">Research</span>
+                    <span class="skill">Technical Writing</span>
+                    <span class="skill">Presentation</span>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Projects</h2>
+                <div class="project">
+                    <h3>AI-driven Sales Consultant Chatbot</h3>
+                    <p>Engineered a FastAPI-based chatbot API, integrating MongoDB, MySQL, and Qdrant VectorDB for seamless data storage. Implemented Retrieval-Augmented Generation (RAG) architecture to ensure highly relevant information retrieval. Leveraged LangChain and LangGraph frameworks to integrate large language models for Python-based solutions. Orchestrated a ReAct Agent-based sales consultant chatbot to address complex customer inquiries dynamically. Applied SOLID principles and clean-code practices to maintain a scalable, maintainable backend. Authored comprehensive API documentation and in-line code comments to facilitate future development. Structured the project repository following industry best practices for FastAPI applications.</p>
+                    <p>Technologies: FastAPI, MongoDB, MySQL, Qdrant VectorDB, Retrieval-Augmented Generation (RAG), LangChain, LangGraph, ReAct Agent, SOLID principles, Clean Code</p>
+                </div>
+                <div class="project">
+                    <h3>Financial Chatbot - Third-Party</h3>
+                    <p>Developed a multi-turn chatbot using the LangChain LangGraph framework and LLM APIs to deliver intelligent financial guidance. Designed and implemented a RAG system to provide accurate, context-aware financial responses. Managed user expense records with full CRUD operations, generating personalized financial insights on demand. Built an intuitive chat interface enabling users to rapidly input and categorize income and expenses. Optimized mobile OCR algorithms to extract expense details from transaction screenshots with high accuracy. Devised preprocessing routines to redact sensitive bank details before external API calls, bolstering data security. Executed model quantization techniques, reducing memory footprint and boosting recognition speed by over 30% on mobile devices.</p>
+                    <p>Technologies: LangChain, LangGraph, LLM APIs, RAG, CRUD, OCR, Model Quantization</p>
+                </div>
+                <div class="project">
+                    <h3>WSTE: Whitebox Style Transfer with Example-based Learning</h3>
+                    <p>Conducted a comprehensive literature review to define project methodology and benchmarks. Analyzed VGG network architecture within the STROTSS algorithm to drive image style transfer innovations. Integrated image segmentation techniques to enable multi-style fusion within single images.</p>
+                    <p>Technologies: VGG network architecture, STROTSS algorithm, Image Segmentation</p>
+                </div>
+            </section>
+             <section class="section">
+                <h2>Certificates</h2>
+                <ul>
+                    <li>Software Development Lifecycle Specialization - Coursera</li>
+                    <li>Natural Language Processing Specialization - Coursera</li>
+                    <li>Applied Data Science with Python Specialization - Coursera</li>
+                    <li>IBM Full Stack Software Developer Specialization - Coursera</li>
+                    <li>Deep Learning Specialization - Coursera</li>
+                    <li>Big Data Specialization - Coursera</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

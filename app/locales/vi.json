@@ -194,5 +194,13 @@
   "conversation_session_mismatch": "Cuộc trò chuyện và phiên không khớp",
   "failed_to_submit_answers": "Gửi câu trả lời thất bại",
   "no_active_session_found": "Không tìm thấy phiên hoạt động",
-  "failed_to_delete_session": "Xóa phiên thất bại"
+  "failed_to_delete_session": "Xóa phiên thất bại",
+  "cv_generation_completed": "Tạo CV hoàn tất",
+  "preview_generated_successfully": "Tạo xem trước thành công",
+  "preview_generation_failed": "Tạo xem trước thất bại",
+  "batch_generation_completed": "Tạo hàng loạt hoàn tất: {success} thành công, {failed} thất bại",
+  "templates_retrieved_successfully": "Lấy danh sách templates thành công",
+  "system_info_retrieved_successfully": "Lấy thông tin hệ thống thành công",
+  "cv_file_not_found": "Không tìm thấy file CV",
+  "temp_files_cleaned_successfully": "Dọn dẹp tệp tạm thành công"
 }

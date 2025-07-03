@@ -1,0 +1,155 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+
+% Color definitions
+\definecolor{primary}{HTML}{3498DB}
+\definecolor{secondary}{HTML}{2980B9}
+\definecolor{text}{HTML}{2C3E50}
+\definecolor{background}{HTML}{FFFFFF}
+
+% Custom commands
+\newcommand{\sectiontitle}[1]{\vspace{0.5em}\noindent{\Large\color{primary}\textbf{#1}}\vspace{0.2em}}
+\newcommand{\subsectiontitle}[1]{\vspace{0.3em}\noindent{\large\color{secondary}\textbf{#1}}\vspace{0.1em}}
+\newcommand{\entry}[4]{
+    \vspace{0.1em}
+    \noindent\textbf{#1} \hfill #2\\
+    \textit{#3} \hfill #4
+    \vspace{0.1em}
+}
+
+\newcommand{\responsibility}[1]{\item #1}
+
+\begin{document}
+
+\pagestyle{empty}
+
+% Header
+\begin{center}
+    {\Huge \color{text} \textbf{Luong Nguyen Minh An}} \\
+    \vspace{0.2em}
+    \small
+    \color{text}
+    Email: luongnguyenminhan02052004@gmail.com | Phone: 0921 421 727 | LinkedIn: luongnguyenminhan | Address: Thu Duc, Ho Chi Minh City
+\end{center}
+
+\vspace{0.5em}
+
+% Summary
+\sectiontitle{Summary}
+\noindent Ứng vi\^{e}n hướng đến c\'{a}c vị tr\'{i} Kỹ sư AI/ML với kinh nghiệm thực tập về AI tại FPT Telecom -- Meobeo.ai, tập trung v\`{a}o ph\'{a}t triển c\'{a}c t\'{a}c nh\^{a}n tự động h\'{o}a quy tr\`{i}nh tạo ghi ch\'{u} cuộc họp bằng Python, t\'{i}ch hợp c\'{a}c c\^{o}ng nghệ như nhận dạng giọng n\'{o}i, xử lý \^{a}m thanh v\`{a} AI đ\`{a}m thoại. Ứng vi\^{e}n c\'{o} kinh nghiệm thực tế trong việc triển khai c\'{a}c giải ph\'{a}p AI như chatbot hỗ trợ b\'{a}n h\`{a}ng v\`{a} chatbot tư vấn t\`{a}i ch\'{i}nh, \'{a}p dụng kiến tr\'{u}c RAG, c\'{a}c framework như LangChain, LangGraph, v\`{a} c\'{a}c c\^{o}ng nghệ cơ sở dữ liệu như MongoDB, MySQL, Qdrant. B\^{e}n cạnh đ\'{o}, ứng vi\^{e}n c\`{o}n c\'{o} kinh nghiệm với DevOps (Docker, Kubernetes, CI/CD) v\`{a} sở hữu c\'{a}c chứng chỉ chuy\^{e}n s\^{a}u về Ph\'{a}t triển phần mềm, Xử lý ng\^{o}n ngữ tự nhi\^{e}n, Khoa học dữ liệu v\`{a} Học s\^{a}u từ Coursera.
+
+\vspace{0.5em}
+
+% Experience
+\sectiontitle{Experience}
+\begin{itemize}[leftmargin=*, itemsep=0.2em]
+    \item \entry{FPT Telecom -- Meobeo.ai}{2024-09-01 -- Present}{AI Intern}{Ho Chi Minh City}
+        \begin{itemize}[leftmargin=1.5em, itemsep=0.1em]
+            \item Engineered a modular, flow-based agent in Python to fully automate meeting-note generation via advanced prompt engineering and context-aware summarization, enabling real-time note delivery.
+            \item Orchestrated end-to-end integration of speech-to-text and Pyannote for speaker diarization, producing enriched, timestamped transcripts with keyword extraction---reducing information retrieval time by 50%.
+            \item Architected a speaker-identification module using voice-embedding techniques and clustering algorithms to recognize and remember individual speakers across sessions uniquely.
+            \item Developed synchronization logic via RESTful connectors to Google Calendar, automatically aligning key insights, follow-up tasks, and action items with users’ calendars and sending contextual email summaries.
+            \item Secured session management and data protection with JWT-based authentication, ensuring GDPR-compliant handling of sensitive meeting data.
+            \item Deployed containerized microservices using Docker Compose and Kubernetes, with automated CI/CD pipelines in GitHub Actions---achieving zero-downtime rollouts and horizontal scaling to support 200+ concurrent users.
+            \item Accelerated organizational productivity by cutting manual note-taking effort by 60% and improving meeting follow-through rates by 40%
+        \end{itemize}
+\end{itemize}
+
+\vspace{0.5em}
+
+% Education
+\sectiontitle{Education}
+\begin{itemize}[leftmargin=*, itemsep=0.2em]
+    \item \entry{FPT University}{2025-07-01 (Expected)}{Information Technology}{GPA: 8.6}
+\end{itemize}
+
+\vspace{0.5em}
+
+% Skills
+\sectiontitle{Skills}
+\subsectiontitle{Programming Languages}
+\noindent Python, R
+
+\subsectiontitle{Programming Concepts}
+\noindent Object-Oriented Design, SOLID Principles, Clean Code
+
+\subsectiontitle{AI Techniques}
+\noindent Prompt Engineering, Speaker Diarization (Pyannote), Speaker Identification
+
+\subsectiontitle{Web Frameworks}
+\noindent FastAPI
+
+\subsectiontitle{API Design}
+\noindent RESTful API Design
+
+\subsectiontitle{Frameworks}
+\noindent LangChain, LangGraph, ReAct Agent
+
+\subsectiontitle{Technical Skills}
+\noindent API Documentation, Audio Processing
+
+\subsectiontitle{AI/ML}
+\noindent Machine Learning, Deep Learning, Computer Vision, Natural Language Processing
+
+\subsectiontitle{Databases}
+\noindent MongoDB, MySQL, SQLite, MS SQL Server, Qdrant (VectorDB)
+
+\subsectiontitle{Data Skills}
+\noindent Data Analysis, Data Visualization
+
+\subsectiontitle{Tools}
+\noindent PowerBI, MS Excel
+
+\subsectiontitle{DevOps Tools}
+\noindent Docker, Docker Compose, Kubernetes, GitHub Actions, Git
+
+\subsectiontitle{DevOps Practices}
+\noindent CI/CD
+
+\subsectiontitle{Cloud Platforms}
+\noindent AWS, Azure
+
+\subsectiontitle{Soft Skills}
+\noindent Critical Thinking, Problem Solving, Collaboration, Communication, Research, Technical Writing, Presentation
+
+\vspace{0.5em}
+
+% Projects
+\sectiontitle{Projects}
+\begin{itemize}[leftmargin=*, itemsep=0.2em]
+    \item \subsectiontitle{AI-driven Sales Consultant Chatbot}
+        \noindent Engineered a FastAPI-based chatbot API, integrating MongoDB, MySQL, and Qdrant VectorDB for seamless data storage. Implemented Retrieval-Augmented Generation (RAG) architecture to ensure highly relevant information retrieval. Leveraged LangChain and LangGraph frameworks to integrate large language models for Python-based solutions. Orchestrated a ReAct Agent-based sales consultant chatbot to address complex customer inquiries dynamically. Applied SOLID principles and clean-code practices to maintain a scalable, maintainable backend. Authored comprehensive API documentation and in-line code comments to facilitate future development. Structured the project repository following industry best practices for FastAPI applications.
+        \vspace{0.2em}
+        \noindent \textit{Technologies:} FastAPI, MongoDB, MySQL, Qdrant VectorDB, RAG, LangChain, LangGraph, ReAct Agent
+
+    \item \subsectiontitle{Financial Chatbot - Third-Party}
+        \noindent Developed a multi-turn chatbot using the LangChain LangGraph framework and LLM APIs to deliver intelligent financial guidance. Designed and implemented a RAG system to provide accurate, context-aware financial responses. Managed user expense records with full CRUD operations, generating personalized financial insights on demand. Built an intuitive chat interface enabling users to rapidly input and categorize income and expenses. Optimized mobile OCR algorithms to extract expense details from transaction screenshots with high accuracy. Devised preprocessing routines to redact sensitive bank details before external API calls, bolstering data security. Executed model quantization techniques, reducing memory footprint and boosting recognition speed by over 30% on mobile devices.
+        \vspace{0.2em}
+        \noindent \textit{Technologies:} LangChain, LangGraph, LLM APIs, RAG, OCR
+
+    \item \subsectiontitle{WSTE: Whitebox Style Transfer with Example-based Learning}
+        \noindent Conducted a comprehensive literature review to define project methodology and benchmarks. Analyzed VGG network architecture within the STROTSS algorithm to drive image style transfer innovations. Integrated image segmentation techniques to enable multi-style fusion within single images.
+        \vspace{0.2em}
+        \noindent \textit{Technologies:} VGG network, STROTSS algorithm, Image segmentation
+\end{itemize}
+
+\vspace{0.5em}
+
+% Certificates
+\sectiontitle{Certificates}
+\begin{itemize}[leftmargin=*, itemsep=0.2em]
+    \item Software Development Lifecycle Specialization (Coursera)
+    \item Natural Language Processing Specialization (Coursera)
+    \item Applied Data Science with Python Specialization (Coursera)
+    \item IBM Full Stack Software Developer Specialization (Coursera)
+    \item Deep Learning Specialization (Coursera)
+    \item Big Data Specialization (Coursera)
+\end{itemize}
+
+\end{document}
