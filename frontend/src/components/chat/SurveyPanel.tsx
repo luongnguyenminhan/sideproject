@@ -7,6 +7,7 @@ import { faClipboardList, faTimes, faChevronLeft } from '@fortawesome/free-solid
 import { useTranslation } from '@/contexts/TranslationContext'
 import { Question } from '@/types/question.types'
 import SurveyContainer from '@/components/survey/SurveyContainer'
+import { surveyAPI, type SurveyResponse } from '@/apis/surveyApi'
 
 interface SurveyPanelProps {
   isOpen: boolean
@@ -39,105 +40,92 @@ export function SurveyPanel({
     setIsProcessing(true)
 
     try {
-      // Call the enhanced survey processing API that's optimized for chat integration
-      const token = localStorage.getItem('access_token') // Adjust based on your auth implementation
-      
-      const response = await fetch('/api/v1/question-sessions/process-and-send-to-chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          type: 'survey_response',
-          answers: answers,
-          conversation_id: conversationId,
-          timestamp: new Date().toISOString()
-        })
-      })
+      // Chuẩn bị survey response data
+      const surveyData: SurveyResponse = {
+        type: 'survey_response',
+        answers: answers,
+        conversation_id: conversationId,
+        timestamp: new Date().toISOString()
+      }
 
-      if (response.ok) {
-        const result = await response.json()
+      try {
+        // Gọi API optimized cho chat integration
+        const result = await surveyAPI.processAndSendToChat(surveyData)
         console.log('[SurveyPanel] Enhanced survey processing result:', result)
         
-        // Extract the processed data
-        const surveyData = result.data
-        const websocketMessages = surveyData?.websocket_messages || []
-        
-        // Send messages to chat using the callback
-        if (onSendToChat && websocketMessages.length > 0) {
-          for (let i = 0; i < websocketMessages.length; i++) {
-            const message = websocketMessages[i]
-            const isAIMessage = message.role === 'assistant'
-            
-            // Add delay between messages for better UX
-            if (i > 0) {
-              await new Promise(resolve => setTimeout(resolve, 1000))
-            }
-            
-            await onSendToChat(message.content, isAIMessage)
-            console.log(`[SurveyPanel] Message ${i + 1}/${websocketMessages.length} sent to chat (AI: ${isAIMessage})`)
-          }
-        }
-
-        // Send via WebSocket if available (alternative/backup method)
-        if (websocket && websocket.isConnected() && websocketMessages.length > 0) {
-          for (let i = 0; i < websocketMessages.length; i++) {
-            const message = websocketMessages[i]
-            
-            // Add delay between WebSocket messages
-            if (i > 0) {
-              await new Promise(resolve => setTimeout(resolve, 1500))
-            }
-            
-            websocket.sendRawMessage(JSON.stringify(message))
-            console.log(`[SurveyPanel] WebSocket message ${i + 1}/${websocketMessages.length} sent`)
-          }
-        }
-
-        // Call original completion callback if provided
-        if (onSurveyComplete) {
-          await onSurveyComplete(answers)
-        }
-
-        console.log('[SurveyPanel] Enhanced survey processing completed successfully')
-        
-      } else {
-        console.error('[SurveyPanel] Failed to process survey workflow:', response.statusText)
-        
-        // Fallback: try the original complete workflow endpoint
-        const fallbackResponse = await fetch('/api/v1/question-sessions/complete-survey-workflow', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            type: 'survey_response',
-            answers: answers,
-            conversation_id: conversationId,
-            timestamp: new Date().toISOString()
-          })
-        })
-
-        if (fallbackResponse.ok) {
-          const fallbackResult = await fallbackResponse.json()
-          const humanMessage = fallbackResult.data?.human_readable_response
-          const aiResponse = fallbackResult.data?.ai_response
+        if (result.error_code === 0 && result.data) {
+          // Extract the processed data
+          const surveyResultData = result.data
+          const websocketMessages = surveyResultData?.websocket_messages || []
           
-          if (humanMessage && onSendToChat) {
-            await onSendToChat(humanMessage, false)
-            if (aiResponse) {
-              setTimeout(() => onSendToChat(aiResponse, true), 1000)
+          // Send messages to chat using the callback
+          if (onSendToChat && websocketMessages.length > 0) {
+            for (let i = 0; i < websocketMessages.length; i++) {
+              const message = websocketMessages[i]
+              const isAIMessage = message.role === 'assistant'
+              
+              // Add delay between messages for better UX
+              if (i > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000))
+              }
+              
+              await onSendToChat(message.content, isAIMessage)
+              console.log(`[SurveyPanel] Message ${i + 1}/${websocketMessages.length} sent to chat (AI: ${isAIMessage})`)
+            }
+          }
+
+          // Send via WebSocket if available (alternative/backup method)
+          if (websocket && websocket.isConnected() && websocketMessages.length > 0) {
+            for (let i = 0; i < websocketMessages.length; i++) {
+              const message = websocketMessages[i]
+              
+              // Add delay between WebSocket messages
+              if (i > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1500))
+              }
+              
+              websocket.sendRawMessage(JSON.stringify(message))
+              console.log(`[SurveyPanel] WebSocket message ${i + 1}/${websocketMessages.length} sent`)
             }
           }
         }
+      } catch (primaryError) {
+        console.error('[SurveyPanel] Primary API failed, trying fallback:', primaryError)
         
-        // Final fallback: just call original callback
-        if (onSurveyComplete) {
-          await onSurveyComplete(answers)
+        // Fallback: thử complete workflow endpoint
+        try {
+          const fallbackResult = await surveyAPI.processSurveyWorkflow(surveyData)
+          
+          if (fallbackResult.error_code === 0 && fallbackResult.data) {
+            const humanMessage = fallbackResult.data.human_readable_response
+            const aiResponse = fallbackResult.data.ai_response
+            
+            if (humanMessage && onSendToChat) {
+              await onSendToChat(humanMessage, false)
+              if (aiResponse) {
+                setTimeout(() => onSendToChat(aiResponse.content, true), 1000)
+              }
+            }
+          }
+        } catch (fallbackError) {
+          console.error('[SurveyPanel] Fallback API also failed:', fallbackError)
+          
+          // Final fallback: submit basic response
+          try {
+            await surveyAPI.submitSurveyResponse(answers, conversationId)
+          } catch (basicError) {
+            console.error('[SurveyPanel] Basic submit also failed:', basicError)
+          }
         }
       }
+
+      // Call original completion callback if provided
+      if (onSurveyComplete) {
+        await onSurveyComplete(answers)
+      }
+
+      console.log('[SurveyPanel] Enhanced survey processing completed successfully')
+      
     } catch (error) {
       console.error('[SurveyPanel] Error processing survey:', error)
       

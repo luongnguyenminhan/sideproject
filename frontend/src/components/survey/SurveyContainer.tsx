@@ -6,7 +6,8 @@ import { Check, ChevronLeft, ArrowRight } from 'lucide-react';
 import { questionSessionService } from '@/apis/questionSessionService';
 import { Question, QuestionOption } from '@/types/question.types';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { submitSurveyResponse } from '@/apis/questionApi';
+
+import { surveyAPI, type SurveyResponse } from '@/apis/surveyApi';
 import AnimatedSurveyWrapper from './AnimatedSurveyWrapper';
 import AnimatedStepper from './AnimatedStepper';
 import QuestionRenderer from './QuestionRenderer';
@@ -124,38 +125,29 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
         } else if (!websocket?.isConnected()) {
           // Enhanced API call for survey processing with AI integration
           try {
-            const response = await fetch('/api/v1/question-sessions/complete-survey-workflow', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Adjust based on your auth implementation
-              },
-              body: JSON.stringify({
-                type: 'survey_response',
-                answers: selectedAnswers,
-                conversation_id: conversationId,
-                timestamp: new Date().toISOString()
-              })
-            });
+            const surveyData: SurveyResponse = {
+              type: 'survey_response',
+              answers: selectedAnswers,
+              conversation_id: conversationId,
+              timestamp: new Date().toISOString()
+            };
 
-            if (response.ok) {
-              const result = await response.json();
-              console.log('[SurveyContainer] Complete survey workflow processed:', result);
-              
-              // If there's an AI response, you might want to display it or handle it
-              if (result.data?.ai_response?.content) {
-                console.log('[SurveyContainer] AI Response:', result.data.ai_response.content);
-                // You could emit this to the parent component or handle it as needed
-              }
-            } else {
-              console.error('[SurveyContainer] Failed to process complete survey workflow');
-              // Fallback to original API submission
-              await submitSurveyResponse(selectedAnswers);
+            const result = await surveyAPI.processSurveyWorkflow(surveyData);
+            console.log('[SurveyContainer] Complete survey workflow processed:', result);
+            
+            // If there's an AI response, you might want to display it or handle it
+            if (result.error_code === 0 && result.data?.ai_response?.content) {
+              console.log('[SurveyContainer] AI Response:', result.data.ai_response.content);
+              // You could emit this to the parent component or handle it as needed
             }
           } catch (apiError) {
             console.error('[SurveyContainer] Error calling complete survey workflow API:', apiError);
             // Fallback to original API submission
-            await submitSurveyResponse(selectedAnswers);
+            try {
+              await surveyAPI.submitSurveyResponse(selectedAnswers, conversationId);
+            } catch (fallbackError) {
+              console.error('[SurveyContainer] Fallback API also failed:', fallbackError);
+            }
           }
         }
         

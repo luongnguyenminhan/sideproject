@@ -3,6 +3,8 @@ description:
 globs: 
 alwaysApply: false
 ---
+- Do not need to  mirage database automatically, do not need to create docs .md, do not need to create tests automatically, do not need to create migrations automatically, do not need to create docker-compose.yml automatically, do not need to create Dockerfile automatically, do not need to create .env.example automatically, do not need to create .env automatically, do not need to create requirements.txt automatically, do not need to create requirements-dev.txt automatically, do not need to create README.md automatically, do not need to create .gitignore automatically, do not need to create .pre-commit-config.yaml automatically, do not need to create .flake8 automatically, do not need to create .pylintrc automatically, do not need to create .isort.cfg automatically, do not need to create .bandit.yml automatically
+
 
 ## Architecture Overview
 This project modules follows a strict 3-layer architecture:
