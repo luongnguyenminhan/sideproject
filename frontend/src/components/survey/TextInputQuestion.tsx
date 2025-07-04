@@ -2,6 +2,7 @@
 
 import { User, Mail, Building, MessageSquare, PenTool } from 'lucide-react';
 import { QuestionComponentProps, QuestionOption } from '@/types/question.types';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const TextInputQuestion: React.FC<QuestionComponentProps> = ({
   question,
@@ -9,6 +10,7 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
   selectedAnswers,
   onAnswerChange,
 }) => {
+  const { t } = useTranslation();
   const inputValues = (selectedAnswers[questionIndex] as Record<string, string>) || {};
   const options = question.Question_data as QuestionOption[];
 
@@ -52,21 +54,21 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
               <span className='text-[color:var(--primary)]'>
                 <PenTool className='w-5 h-5' />
               </span>
-              <span>{question.subtitle || 'Your Answer'}</span>
-              <span className='text-[color:var(--destructive)]'>*</span>
+              <span>{question.subtitle || t('survey.textInput.yourAnswer')}</span>
+              <span className='text-[color:var(--destructive)]'>{t('survey.textInput.required')}</span>
             </div>
           </label>
           
           <textarea
             value={freeFormValue}
             onChange={(e) => handleFreeFormChange(e.target.value)}
-            placeholder={`Share your thoughts about: ${question.Question}`}
+            placeholder={`${t('survey.textInput.shareThoughts')} ${question.Question}`}
             rows={4}
             className='w-full px-4 py-3 rounded-xl border-2 border-[color:var(--border)] bg-[color:var(--background)] text-[color:var(--foreground)] focus:border-[color:var(--primary)] focus:ring-4 focus:ring-[color:var(--primary)]/20 transition-all duration-300 resize-none placeholder:text-[color:var(--muted-foreground)]'
           />
           
           <div className='mt-2 text-xs text-[color:var(--muted-foreground)]'>
-            💡 Take your time to share your experience and thoughts
+            {t('survey.textInput.takeTime')}
           </div>
         </div>
       </div>
@@ -82,7 +84,7 @@ const TextInputQuestion: React.FC<QuestionComponentProps> = ({
             <div className='flex items-center space-x-2'>
               <span className='text-[color:var(--primary)]'>{getIcon(option.id)}</span>
               <span>{option.label}</span>
-              {option.required && <span className='text-[color:var(--destructive)]'>*</span>}
+              {option.required && <span className='text-[color:var(--destructive)]'>{t('survey.textInput.required')}</span>}
             </div>
           </label>
           {option.type === 'textarea' ? (

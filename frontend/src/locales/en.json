@@ -294,6 +294,12 @@
       "text_input": "Text Input",
       "sub_form": "Sub Form",
       "unknown_type": "Unknown Type"
+    },
+    "textInput": {
+      "yourAnswer": "Your Answer",
+      "shareThoughts": "Share your thoughts about:",
+      "takeTime": "💡 Take your time to share your experience and thoughts",
+      "required": "*"
     }
   },
   "team": {

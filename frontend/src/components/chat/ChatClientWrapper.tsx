@@ -1079,23 +1079,8 @@ export function ChatClientWrapper() {
             conversationId={state.activeConversationId || undefined}
             onSurveyComplete={async (answers) => {
               console.log('[ChatClientWrapper] Survey completed with answers:', answers)
-              
-              // Send survey response back via WebSocket if connected
-              if (websocket && websocket.isConnected()) {
-                try {
-                  const surveyResponse = {
-                    type: 'survey_response',
-                    answers: answers,
-                    conversation_id: state.activeConversationId,
-                    timestamp: new Date().toISOString()
-                  }
-                  
-                  websocket.sendRawMessage(JSON.stringify(surveyResponse))
-                  console.log('[ChatClientWrapper] Survey response sent via WebSocket')
-                } catch (error) {
-                  console.error('[ChatClientWrapper] Failed to send survey response:', error)
-                }
-              }
+              // Note: WebSocket sending is now handled by SurveyContainer/SurveyPanel
+              // No need to duplicate WebSocket logic here
             }}
             onSendToChat={async (message: string, isAIResponse?: boolean) => {
               console.log('[ChatClientWrapper] Sending survey message to chat:', { message, isAIResponse })

@@ -106,54 +106,39 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
     } else {
       setIsSubmitting(true);
       try {
-        // Send survey response via WebSocket if available
-        if (websocket && websocket.isConnected()) {
-          const surveyResponse = {
-            type: 'survey_response',
-            answers: selectedAnswers,
-            conversation_id: conversationId,
-            timestamp: new Date().toISOString()
-          };
-          
-          websocket.sendRawMessage(JSON.stringify(surveyResponse));
+        console.log('[SurveyContainer] Starting survey completion - single API + WebSocket flow');
+        
+        const surveyData: SurveyResponse = {
+          type: 'survey_response',
+          answers: selectedAnswers,
+          conversation_id: conversationId,
+          timestamp: new Date().toISOString()
+        };
+
+        // Single API call - processSurveyWorkflow handles everything
+        const result = await surveyAPI.processSurveyWorkflow(surveyData);
+        console.log('[SurveyContainer] Survey workflow completed:', result);
+
+        // Single WebSocket message (only if connected and API succeeded)
+        if (websocket && websocket.isConnected() && result.error_code === 0) {
+          websocket.sendRawMessage(JSON.stringify(surveyData));
           console.log('[SurveyContainer] Survey response sent via WebSocket');
         }
 
         // Call completion callback if provided
         if (onSurveyComplete) {
           await onSurveyComplete(selectedAnswers);
-        } else if (!websocket?.isConnected()) {
-          // Enhanced API call for survey processing with AI integration
-          try {
-            const surveyData: SurveyResponse = {
-              type: 'survey_response',
-              answers: selectedAnswers,
-              conversation_id: conversationId,
-              timestamp: new Date().toISOString()
-            };
-
-            const result = await surveyAPI.processSurveyWorkflow(surveyData);
-            console.log('[SurveyContainer] Complete survey workflow processed:', result);
-            
-            // If there's an AI response, you might want to display it or handle it
-            if (result.error_code === 0 && result.data?.ai_response?.content) {
-              console.log('[SurveyContainer] AI Response:', result.data.ai_response.content);
-              // You could emit this to the parent component or handle it as needed
-            }
-          } catch (apiError) {
-            console.error('[SurveyContainer] Error calling complete survey workflow API:', apiError);
-            // Fallback to original API submission
-            try {
-              await surveyAPI.submitSurveyResponse(selectedAnswers, conversationId);
-            } catch (fallbackError) {
-              console.error('[SurveyContainer] Fallback API also failed:', fallbackError);
-            }
-          }
         }
         
         setShowResults(true);
       } catch (error) {
-        console.error('Error submitting survey:', error);
+        console.error('[SurveyContainer] Survey completion failed:', error);
+        
+        // Simple fallback: still call completion callback
+        if (onSurveyComplete) {
+          await onSurveyComplete(selectedAnswers);
+        }
+        setShowResults(true);
       } finally {
         setIsSubmitting(false);
       }

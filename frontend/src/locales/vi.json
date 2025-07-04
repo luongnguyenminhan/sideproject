@@ -295,6 +295,12 @@
       "text_input": "Nhập văn bản",
       "sub_form": "Biểu mẫu con",
       "unknown_type": "Loại không xác định"
+    },
+    "textInput": {
+      "yourAnswer": "Câu trả lời của bạn",
+      "shareThoughts": "Chia sẻ suy nghĩ của bạn về:",
+      "takeTime": "💡 Hãy dành thời gian chia sẻ kinh nghiệm và suy nghĩ của bạn",
+      "required": "*"
     }
   },
   "team": {
