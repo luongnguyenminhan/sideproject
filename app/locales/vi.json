@@ -185,6 +185,7 @@
   "survey_response_processed_and_ai_integrated_successfully": "Phản hồi khảo sát đã được xử lý và tích hợp AI thành công",
   "survey_formatted_as_human_message_successfully": "Khảo sát đã được định dạng thành tin nhắn người dùng thành công",
   "complete_survey_workflow_processed_successfully": "Quy trình khảo sát hoàn chỉnh đã được xử lý thành công",
+  "complete_survey_workflow_with_n8n_analysis_processed_successfully": "Quy trình khảo sát hoàn chỉnh với phân tích N8N đã được xử lý thành công",
   "survey_processed_and_ready_for_chat_integration": "Khảo sát đã được xử lý và sẵn sàng tích hợp chat",
   "survey_response_processing_failed": "Xử lý phản hồi khảo sát thất bại",
   "ai_integration_failed": "Tích hợp AI thất bại",

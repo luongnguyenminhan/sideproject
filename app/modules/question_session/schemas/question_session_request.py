@@ -47,6 +47,7 @@ class ParseSurveyResponseRequest(RequestSchema):
 	type: str = Field(..., description="Message type (should be 'survey_response')")
 	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
 	conversation_id: str = Field(..., description='Conversation ID')
+	session_id: Optional[str] = Field(default=None, description='Question session ID for question metadata')
 	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
 
 
@@ -56,8 +57,12 @@ class CompleteSurveyWorkflowRequest(RequestSchema):
 	type: str = Field(..., description="Message type (should be 'survey_response')")
 	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
 	conversation_id: str = Field(..., description='Conversation ID')
+	session_id: Optional[str] = Field(default=None, description='Question session ID for question metadata')
 	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
-	processing_type: Optional[str] = Field(default='analysis', description='Type of AI processing: analysis, summary, insights')
+	processing_type: Optional[str] = Field(
+		default='analysis',
+		description='Type of AI processing: analysis, summary, insights',
+	)
 	custom_ai_prompt: Optional[str] = Field(default=None, description='Custom prompt for AI processing')
 	enable_chat_integration: Optional[bool] = Field(default=True, description='Enable chat integration')
 
@@ -68,5 +73,6 @@ class FormatSurveyAsHumanMessageRequest(RequestSchema):
 	type: str = Field(..., description="Message type (should be 'survey_response')")
 	answers: Dict[str, Any] = Field(..., description='Raw answers data from frontend')
 	conversation_id: str = Field(..., description='Conversation ID')
+	session_id: Optional[str] = Field(default=None, description='Question session ID for question metadata')
 	timestamp: Optional[str] = Field(default=None, description='Response timestamp')
 	include_analysis_request: Optional[bool] = Field(default=True, description='Include request for AI analysis')

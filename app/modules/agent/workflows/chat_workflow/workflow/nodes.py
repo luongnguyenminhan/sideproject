@@ -142,7 +142,6 @@ class WorkflowNodes:
 
 	async def agent_with_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Agent Node WITH Tools - Uses tools when needed"""
-		logger.info('[agent_with_tools_node] Starting agent WITH tools')
 
 		# Get system prompt
 		system_prompt = DEFAULT_SYSTEM_PROMPT
@@ -158,35 +157,35 @@ class WorkflowNodes:
 
 		# Get ALL available tools
 		all_tools = get_tool_definitions(self.workflow.config)
-		logger.info(f'[agent_with_tools_node] Available tools: {[getattr(tool, "name", "unknown") for tool in all_tools]}')
+		pass
 
 		# Bind tools to model
 		try:
 			model_with_tools = self.workflow.llm.bind_tools(all_tools)
-			logger.info(f'[agent_with_tools_node] Successfully bound {len(all_tools)} tools to LLM')
+			pass
 		except Exception as e:
-			logger.error(f'[agent_with_tools_node] ERROR binding tools: {str(e)}')
+			pass
 			raise
 
 		# Prepare messages for LLM
 		enhanced_messages = [SystemMessage(content=system_prompt)] + messages
 
-		logger.info(f'[agent_with_tools_node] Calling LLM with {len(enhanced_messages)} messages and {len(all_tools)} tools')
+		pass
 
 		try:
 			response = await model_with_tools.ainvoke(enhanced_messages)
-			logger.info('[agent_with_tools_node] LLM response received')
+			pass
 
 			# Check if response contains tool calls
 			if hasattr(response, 'tool_calls') and response.tool_calls:
-				logger.info(f'[agent_with_tools_node] {len(response.tool_calls)} tool calls generated!')
+				pass
 				for i, tool_call in enumerate(response.tool_calls):
-					logger.info(f'[agent_with_tools_node] Tool {i + 1}: {tool_call.get("name", "unknown")}')
+					pass
 			else:
-				logger.info('[agent_with_tools_node] No tool calls in response')
+				pass
 
 		except Exception as e:
-			logger.error(f'[agent_with_tools_node] LLM call failed: {str(e)}')
+			pass
 			raise
 
 		# Return updated state
@@ -224,7 +223,7 @@ class WorkflowNodes:
 						},
 					)
 					if not tool_validation.get('is_safe', True):
-						logger.warning(f'[tools_node] Tool call validation failed: {tool_validation["summary"]}')
+						pass
 						# Continue with execution but log the concern
 			except Exception as e:
 				print(f'[tools_node] Tool validation failed: {str(e)}')
@@ -247,8 +246,8 @@ class WorkflowNodes:
 				set_authorization_token(auth_token)
 				set_conversation_context(conversation_id, user_id)
 				print(f'[tools_node] Context set for question composer tool - Conversation: {conversation_id}, User: {user_id}')
-			except ImportError as e:
-				logger.warning(f'[tools_node] Could not import question composer functions: {e}')
+			except ImportError:
+				pass
 
 			# For any other tools that support set_authorization_token method
 			for tool in self.workflow._tools:
@@ -256,9 +255,9 @@ class WorkflowNodes:
 					print(f'[tools_node] Setting token for tool: {tool.name}')
 					tool.set_authorization_token(auth_token)
 				else:
-					logger.debug(f'[tools_node] Tool {getattr(tool, "name", "unknown")} does not support authorization token')
+					pass
 		else:
-			logger.warning('[tools_node] No authorization token provided in config')
+			pass
 
 		# Execute tools
 		tool_node = ToolNode(self.workflow._tools)
@@ -300,7 +299,7 @@ class WorkflowNodes:
 				break
 
 		if not ai_response:
-			logger.warning('[output_validation_node] No AI response found')
+			pass
 			return {
 				**state,
 				'output_validation': {'is_safe': True, 'no_response': True},

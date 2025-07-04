@@ -22,7 +22,86 @@ class N8NAPIClient:
 		self.cv_webhook_endpoint = '/webhook/888a07e8-25d6-4671-a36c-939a52740f31'
 		self.timeout = 30.0
 
-	async def generate_questions(self, session_id: str, authorization_token: Optional[str] = None) -> Dict[str, Any]:
+	async def process_survey_response(
+		self,
+		session_id: str,
+		survey_summary: str,
+		authorization_token: Optional[str] = None,
+	) -> Dict[str, Any]:
+		"""
+		Call N8N API to process survey response and generate insights
+
+		Args:
+		    session_id: ID của conversation/session
+		    survey_summary: Tổng hợp câu hỏi và câu trả lời dưới dạng text
+		    authorization_token: Token từ user header
+
+		Returns:
+		    Response từ N8N API (insights, recommendations, etc.)
+		"""
+		logger.info(f'🚀 [N8NAPIClient] Processing survey response for session: {session_id}')
+
+		url = f'{self.base_url}{self.question_webhook_endpoint}'
+
+		# Prepare request body - include survey summary for analysis
+		request_body = {
+			'sessionId': session_id,
+			'type': 'survey_response_analysis',
+			'surveySummary': survey_summary,
+		}
+
+		# Prepare headers
+		headers = {'Content-Type': 'application/json'}
+
+		if authorization_token:
+			headers['Authorization'] = f'Bearer {authorization_token}'
+			headers['X-Header-Authentication'] = 'n8ncvextraction'
+			logger.info(f'🔑 [N8NAPIClient] Authorization token provided')
+		else:
+			logger.warning(f'⚠️ [N8NAPIClient] No authorization token provided')
+
+		try:
+			logger.info(f'📤 [N8NAPIClient] Sending survey analysis request to: {url}')
+			logger.info(f'📝 [N8NAPIClient] Request body keys: {list(request_body.keys())}')
+
+			async with httpx.AsyncClient(timeout=self.timeout) as client:
+				response = await client.post(url, json=request_body, headers=headers)
+
+			logger.info(f'📥 [N8NAPIClient] Survey analysis response status: {response.status_code}')
+
+			if response.status_code == 200:
+				response_data = response.json()
+				logger.info(f'✅ [N8NAPIClient] Survey analysis successful')
+				logger.info(f'📊 [N8NAPIClient] Response keys: {list(response_data.keys()) if isinstance(response_data, dict) else "Non-dict response"}')
+				return response_data
+			else:
+				logger.error(f'❌ [N8NAPIClient] Survey analysis failed with status: {response.status_code}')
+				logger.error(f'❌ [N8NAPIClient] Response text: {response.text}')
+				raise HTTPException(
+					status_code=response.status_code,
+					detail=f'N8N Survey Analysis API call failed: {response.text}',
+				)
+
+		except httpx.TimeoutException:
+			logger.error(f'⏰ [N8NAPIClient] Survey analysis timeout after {self.timeout}s')
+			raise HTTPException(status_code=408, detail='N8N Survey Analysis API request timeout')
+		except httpx.RequestError as e:
+			logger.error(f'🌐 [N8NAPIClient] Survey analysis network error: {str(e)}')
+			raise HTTPException(
+				status_code=503,
+				detail=f'N8N Survey Analysis API network error: {str(e)}',
+			)
+		except Exception as e:
+			logger.error(
+				f'💥 [N8NAPIClient] Survey analysis unexpected error: {str(e)}',
+				exc_info=True,
+			)
+			raise HTTPException(
+				status_code=500,
+				detail=f'N8N Survey Analysis API unexpected error: {str(e)}',
+			)
+
+	async def generate_questions(self, session_id: str, authorization_token: Optional[str] = None, custom_prompt: Optional[str] = None) -> Dict[str, Any]:
 		"""
 		Call N8N API to generate questions
 
@@ -38,7 +117,7 @@ class N8NAPIClient:
 		url = f'{self.base_url}{self.question_webhook_endpoint}'
 
 		# Prepare request body - use sessionId as specified by user
-		request_body = {'sessionId': session_id}
+		request_body = {'sessionId': session_id, 'customPrompt': custom_prompt}
 
 		# Prepare headers
 		headers = {'Content-Type': 'application/json'}

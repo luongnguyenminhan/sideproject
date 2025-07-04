@@ -151,6 +151,7 @@
   "survey_response_processed_and_ai_integrated_successfully": "Survey response processed and AI integrated successfully",
   "survey_formatted_as_human_message_successfully": "Survey formatted as human message successfully",
   "complete_survey_workflow_processed_successfully": "Complete survey workflow processed successfully",
+  "complete_survey_workflow_with_n8n_analysis_processed_successfully": "Complete survey workflow with N8N analysis processed successfully",
   "survey_processed_and_ready_for_chat_integration": "Survey processed and ready for chat integration",
   "survey_response_processing_failed": "Survey response processing failed",
   "ai_integration_failed": "AI integration failed",

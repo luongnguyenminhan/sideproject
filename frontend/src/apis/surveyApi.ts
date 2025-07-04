@@ -6,6 +6,7 @@ export interface SurveyResponse {
   type: 'survey_response';
   answers: Record<number | string, unknown>;
   conversation_id?: string;
+  session_id?: string;
   timestamp: string;
 }
 
@@ -47,12 +48,13 @@ export const surveyAPI = {
   },
 
   // Submit survey response đơn giản (fallback - tự động tìm session)
-  submitSurveyResponse: async (answers: Record<number | string, unknown>, conversationId?: string): Promise<CommonResponse<any>> => {
+  submitSurveyResponse: async (answers: Record<number | string, unknown>, conversationId?: string, sessionId?: string): Promise<CommonResponse<any>> => {
     // Convert to ParseSurveyResponseRequest format
     const requestData: SurveyResponse = {
       type: 'survey_response',
       answers: answers,
       conversation_id: conversationId || '',
+      session_id: sessionId,
       timestamp: new Date().toISOString()
     };
 

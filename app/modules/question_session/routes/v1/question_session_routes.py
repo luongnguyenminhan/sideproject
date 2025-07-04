@@ -5,8 +5,8 @@ CRUD operations for question sessions and survey management
 
 import logging
 from datetime import datetime
-from typing import Dict, Any
-from fastapi import APIRouter, Depends
+from typing import Dict, Any, Optional
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.base_model import APIResponse
@@ -256,7 +256,7 @@ async def process_survey_response_for_ai(
 	"""
 	user_id = current_user_payload['user_id']
 
-	logger.info(f'Processing survey response for AI integration - user: {user_id}, conversation: {request.conversation_id}')
+	logger.info(f'Processing survey response for AI integration - user: {user_id}, conversation: {request.conversation_id}, session_id: {request.session_id}')
 
 	# Initialize the survey response processor
 	processor = SurveyResponseProcessor(db)
@@ -299,7 +299,7 @@ async def format_survey_as_human_message(
 	"""
 	user_id = current_user_payload['user_id']
 
-	logger.info(f'Formatting survey response as human message - user: {user_id}')
+	logger.info(f'Formatting survey response as human message - user: {user_id}, conversation: {request.conversation_id}, session_id: {request.session_id}')
 
 	# Initialize the survey response processor
 	processor = SurveyResponseProcessor(db)
@@ -327,41 +327,76 @@ async def complete_survey_workflow(
 	request: ParseSurveyResponseRequest,
 	db: Session = Depends(get_db),
 	current_user_payload: dict = Depends(get_current_user),
+	authorization: Optional[str] = Header(None),
 ):
 	"""
-	Complete survey workflow: Process responses + AI analysis + Chat integration
+	Complete survey workflow with N8N analysis: Process responses + N8N AI analysis + Results
 
-	This endpoint provides the full pipeline:
-	1. Process and store survey responses
-	2. Convert to human-readable format
-	3. Send to AI agent for analysis
-	4. Return comprehensive results including AI feedback
-	5. Optionally send to chat as human message
+	Enhanced pipeline with N8N integration:
+	1. Process and store survey responses in database
+	2. Convert responses to human-readable text format
+	3. Send to N8N API for advanced AI analysis and insights
+	4. Return comprehensive results including N8N analysis
+	5. Maintain compatibility for chat integration
 	"""
 	user_id = current_user_payload['user_id']
 
-	logger.info(f'Starting complete survey workflow - user: {user_id}, conversation: {request.conversation_id}')
+	logger.info(f'Starting N8N-enhanced survey workflow - user: {user_id}, conversation: {request.conversation_id}, session_id: {request.session_id}')
 
-	# Import the integration service
-	from app.modules.question_session.services.survey_chat_integration import (
-		SurveyChatIntegrationService,
-	)
+	# Extract authorization token from header
+	auth_token = None
+	if authorization and authorization.startswith('Bearer '):
+		auth_token = authorization[7:]  # Remove 'Bearer ' prefix
+		logger.info(f'Authorization token extracted for N8N API calls')
+	else:
+		logger.warning(f'No authorization token provided for N8N API calls')
 
-	# Initialize the integration service
-	integration_service = SurveyChatIntegrationService(db)
+	# Initialize the survey response processor with N8N integration
+	processor = SurveyResponseProcessor(db)
 
-	# Process the complete workflow
-	result = await integration_service.process_survey_and_chat_response(
-		survey_request=request.model_dump(),
-		conversation_id=request.conversation_id,
-		user_id=user_id,
-		custom_ai_prompt='Please analyze this survey response and provide thoughtful insights and feedback.',  # Enhanced prompt
-	)
+	# Process with N8N analysis
+	result = await processor.process_survey_response_with_n8n_analysis(request=request, user_id=user_id, authorization_token=auth_token)
+
+	# Enhance result with WebSocket-ready messages for compatibility
+	enhanced_result = {
+		**result,
+		'websocket_messages': (
+			[
+				{
+					'type': 'chat_message',
+					'role': 'user',
+					'content': result.get('human_readable_response', ''),
+					'conversation_id': request.conversation_id,
+					'user_id': user_id,
+					'source': 'survey_completion',
+					'timestamp': datetime.now().isoformat(),
+				},
+				{
+					'type': 'chat_message',
+					'role': 'assistant',
+					'content': result.get('ai_response', ''),
+					'conversation_id': request.conversation_id,
+					'user_id': user_id,
+					'source': 'n8n_survey_analysis',
+					'timestamp': datetime.now().isoformat(),
+				},
+			]
+			if result.get('human_readable_response') and result.get('ai_response')
+			else []
+		),
+		'chat_integration': {
+			'ready_for_websocket': bool(result.get('human_readable_response') and result.get('ai_response')),
+			'human_message_available': bool(result.get('human_readable_response')),
+			'ai_response_available': bool(result.get('ai_response')),
+			'n8n_analysis_available': bool(result.get('n8n_analysis')),
+			'n8n_success': result.get('processing_metadata', {}).get('n8n_success', False),
+		},
+	}
 
 	return APIResponse(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
-		message=_('complete_survey_workflow_processed_successfully'),
-		data=result,
+		message=_('complete_survey_workflow_with_n8n_analysis_processed_successfully'),
+		data=enhanced_result,
 	)
 
 
@@ -384,7 +419,7 @@ async def process_survey_and_send_to_chat(
 	"""
 	user_id = current_user_payload['user_id']
 
-	logger.info(f'Processing survey and preparing for chat integration - user: {user_id}, conversation: {request.conversation_id}')
+	logger.info(f'Processing survey and preparing for chat integration - user: {user_id}, conversation: {request.conversation_id}, session_id: {request.session_id}')
 
 	# Import the integration service
 	from app.modules.question_session.services.survey_chat_integration import (

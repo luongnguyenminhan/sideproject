@@ -19,21 +19,21 @@ tools = [generate_survey_questions, rag_search]
 def get_tools(config: Dict[str, Any] = None) -> List:
 	"""Get all tools for the workflow"""
 	all_tools = tools.copy()
-	logger.info(f'[BasicTools] Base tools count: {len(all_tools)}')
+	pass
 
 	# Add CV profile tool if db_session is available in config
 	if config and hasattr(config, 'db_session') and config.db_session:
-		logger.info('[BasicTools] Database session found, adding CV profile tool')
+		pass
 		try:
 			from .cv_profile_tool import get_cv_profile_tool
 
 			cv_tool = get_cv_profile_tool(config.db_session)
 			all_tools.append(cv_tool)
-			logger.info('[BasicTools] CV profile tool added')
-		except ImportError as e:
-			logger.warning(f'[BasicTools] Could not import CV profile tool: {e}')
+			pass
+		except ImportError:
+			pass
 
-	logger.info(f'[BasicTools] Total tools count: {len(all_tools)}')
+	pass
 	return all_tools
 
 

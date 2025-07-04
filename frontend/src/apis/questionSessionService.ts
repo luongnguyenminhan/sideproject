@@ -190,43 +190,7 @@ class QuestionSessionService {
     }
   }
 
-  /**
-   * Process survey response and send to chat (enhanced endpoint)
-   */
-  async processAndSendToChat(data: {
-    type: string;
-    answers: Record<number, unknown>;
-    conversation_id?: string;
-    timestamp?: string;
-  }) {
-    try {
-      console.log('[QuestionSessionService] Processing survey and sending to chat:', data);
-      const response = await axiosInstance.post('/question-sessions/process-and-send-to-chat', data);
-      return response;
-    } catch (error) {
-      console.error('[QuestionSessionService] Error processing survey and sending to chat:', error);
-      throw error;
-    }
-  }
 
-  /**
-   * Complete survey workflow (fallback endpoint)
-   */
-  async completeSurveyWorkflow(data: {
-    type: string;
-    answers: Record<number, unknown>;
-    conversation_id?: string;
-    timestamp?: string;
-  }) {
-    try {
-      console.log('[QuestionSessionService] Completing survey workflow:', data);
-      const response = await axiosInstance.post('/question-sessions/complete-survey-workflow', data);
-      return response;
-    } catch (error) {
-      console.error('[QuestionSessionService] Error completing survey workflow:', error);
-      throw error;
-    }
-  }
 
   /**
    * Cancel/delete a question session

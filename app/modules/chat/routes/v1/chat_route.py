@@ -37,14 +37,12 @@ class WebSocketManager:
 	async def connect(self, websocket: WebSocket, user_id: str):
 		await websocket.accept()
 		self.active_connections[user_id] = websocket
-		logger.info(f'[WebSocketManager] ✅ Connected user {user_id}, total connections: {len(self.active_connections)}')
 
 	def disconnect(self, user_id: str):
 		if user_id in self.active_connections:
 			del self.active_connections[user_id]
-			logger.info(f'[WebSocketManager] 🔌 Disconnected user {user_id}, remaining connections: {len(self.active_connections)}')
 		else:
-			logger.warning(f'[WebSocketManager] ⚠️ Attempted to disconnect non-existent user: {user_id}')
+			pass
 
 	async def send_message(self, user_id: str, message: dict):
 		"""Send message to WebSocket client with comprehensive logging"""
@@ -55,41 +53,30 @@ class WebSocketManager:
 				message_type = message.get('type', 'unknown')
 
 				# Log the outgoing message with details
-				logger.info(f'[WebSocketManager] 📤 SENDING to user {user_id}:')
-				logger.info(f'[WebSocketManager] 📤   Message type: {message_type}')
-				logger.info(f'[WebSocketManager] 📤   Message size: {len(message_str)} chars')
 
 				# Log content preview based on message type
 				if message_type == 'user_message':
 					content = message.get('message', {}).get('content', '')
-					logger.info(f'[WebSocketManager] 📤   User message content preview: {content[:100]}...' + (' (truncated)' if len(content) > 100 else ''))
 				elif message_type == 'assistant_message_complete':
 					content = message.get('message', {}).get('content', '')
 					model = message.get('message', {}).get('model_used', 'unknown')
 					response_time = message.get('message', {}).get('response_time_ms', 'unknown')
-					logger.info(f'[WebSocketManager] 📤   Assistant message content preview: {content[:100]}...' + (' (truncated)' if len(content) > 100 else ''))
-					logger.info(f'[WebSocketManager] 📤   Model used: {model}, Response time: {response_time}ms')
 				elif message_type == 'assistant_typing':
 					status = message.get('status', False)
-					logger.info(f'[WebSocketManager] 📤   Typing indicator: {"ON" if status else "OFF"}')
 				elif message_type == 'error':
 					error_msg = message.get('message', 'Unknown error')
-					logger.info(f'[WebSocketManager] 📤   Error message: {error_msg}')
 				elif message_type in ['ping', 'pong']:
-					logger.info(f'[WebSocketManager] 📤   Heartbeat: {message_type}')
+					pass
 				else:
-					logger.info(f'[WebSocketManager] 📤   Message keys: {list(message.keys())}')
+					pass
 
 				await websocket.send_text(message_str)
-				logger.info(f'[WebSocketManager] ✅ Message sent successfully to user {user_id}')
 
 			except Exception as e:
-				logger.error(f'[WebSocketManager] ❌ Error sending message to user {user_id}: {e}')
-				logger.error(f'[WebSocketManager] ❌ Message that failed: {message.get("type", "unknown")} type')
+				pass
 				self.disconnect(user_id)
 		else:
-			logger.warning(f'[WebSocketManager] ⚠️ Cannot send message to user {user_id}: Not connected')
-			logger.warning(f'[WebSocketManager] ⚠️ Active connections: {list(self.active_connections.keys())}')
+			pass
 
 
 # Global WebSocket manager instance
@@ -137,28 +124,26 @@ async def websocket_chat_endpoint(
 		# Get authorization token for N8N API from query params
 		authorization_token = query_params.get('authorization_token')
 		if authorization_token:
-			logger.info(f'[WebSocket] 🔐 Authorization token (first 20 chars): {authorization_token[:20]}...')
+			pass
 
 		# Verify WebSocket token
 		try:
 			if not token:
-				logger.error('[WebSocket] ❌ TOKEN ERROR: WebSocket token missing')
+				pass
 				await WebSocketErrorHandler.handle_auth_error(websocket, reason='Token required')
 				return
 
-			logger.info('[WebSocket] 🔍 Verifying WebSocket token...')
 			token_data = verify_websocket_token(token)
 
 			user_id = token_data.get('user_id')
 			if not user_id:
-				logger.error('[WebSocket] ❌ TOKEN ERROR: Invalid token - no user_id found')
+				pass
 				await WebSocketErrorHandler.handle_auth_error(websocket, reason='Invalid token')
 				return
 
-			logger.info(f'[WebSocket] ✅ TOKEN VERIFIED: User ID = {user_id}')
 
 		except Exception as e:
-			logger.error(f'[WebSocket] ❌ TOKEN VERIFICATION FAILED: {str(e)}')
+			pass
 			await WebSocketErrorHandler.handle_auth_error(websocket, reason='Authentication failed')
 			return
 
@@ -176,16 +161,12 @@ async def websocket_chat_endpoint(
 		try:
 			while True:
 				# Receive message from client
-				logger.info('[WebSocket] 📬 WAITING for client message...')
 				data = await websocket.receive_text()
-				logger.info(f'[WebSocket] 📨 RECEIVED RAW DATA: {data[:200]}...' + (' (truncated)' if len(data) > 200 else ''))
 
 				try:
 					message_data = json.loads(data)
-					logger.info(f'[WebSocket] 📦 PARSED MESSAGE: Type={message_data.get("type")}, Keys={list(message_data.keys())}')
 				except json.JSONDecodeError as e:
 					logger.error(f'[WebSocket] ❌ JSON DECODE ERROR: {str(e)}')
-					logger.info('[WebSocket] 📤 SENDING ERROR response for invalid JSON')
 					await websocket_manager.send_message(
 						user_id,
 						{'type': 'error', 'message': 'Invalid JSON format'},
@@ -196,10 +177,6 @@ async def websocket_chat_endpoint(
 					content = message_data.get('content', '').strip()
 					api_key = message_data.get('api_key')
 
-					logger.info(f'[WebSocket] 💬 CHAT MESSAGE received:')
-					logger.info(f'[WebSocket] 💬   Content length: {len(content)} chars')
-					logger.info(f'[WebSocket] 💬   Content preview: {content[:100]}...' + (' (truncated)' if len(content) > 100 else ''))
-					logger.info(f'[WebSocket] 💬   API key provided: {bool(api_key)}')
 
 					if not content:
 						logger.warning('[WebSocket] ⚠️ EMPTY CONTENT: Sending error response')
@@ -211,14 +188,12 @@ async def websocket_chat_endpoint(
 
 					# Create user message
 					try:
-						logger.info('[WebSocket] 💾 CREATING user message in database...')
 						user_message = chat_repo.create_message(
 							conversation_id=conversation_id,
 							user_id=user_id,
 							content=content,
 							role='user',
 						)
-						logger.info(f'[WebSocket] ✅ USER MESSAGE SAVED: ID={user_message.id}')
 					except Exception as e:
 						logger.error(f'[WebSocket] ❌ FAILED to save user message: {str(e)}')
 						await websocket_manager.send_message(
@@ -246,11 +221,6 @@ async def websocket_chat_endpoint(
 					try:
 						# Get AI response with streaming using Agent system
 						# Pass authorization token to AI service
-						logger.info('[WebSocket] 🤖 STARTING AI response generation...')
-						logger.info(f'[WebSocket] 🤖   Conversation ID: {conversation_id}')
-						logger.info(f'[WebSocket] 🤖   User ID: {user_id}')
-						logger.info(f'[WebSocket] 🤖   Authorization token available: {bool(authorization_token)}')
-						logger.info(f'[WebSocket] 🤖   API key provided: {bool(api_key)}')
 
 						ai_response = await chat_repo.get_ai_response(
 							conversation_id=conversation_id,
@@ -260,10 +230,6 @@ async def websocket_chat_endpoint(
 							authorization_token=authorization_token,  # Pass authorization token
 						)
 
-						logger.info(f'[WebSocket] ✅ AI RESPONSE received:')
-						logger.info(f'[WebSocket] ✅   Content length: {len(ai_response.get("content", ""))} chars')
-						logger.info(f'[WebSocket] ✅   Model used: {ai_response.get("model_used")}')
-						logger.info(f'[WebSocket] ✅   Response time: {ai_response.get("response_time_ms")}ms')
 
 						# Create AI message in database
 						ai_message = chat_repo.create_message(
@@ -303,9 +269,6 @@ async def websocket_chat_endpoint(
 						await websocket_manager.send_message(user_id, {'type': 'assistant_typing', 'status': False})
 
 				elif message_data.get('type') == 'survey_response':
-					logger.info('[WebSocket] 📝 SURVEY_RESPONSE received')
-					logger.info(f'[WebSocket] 📝   Answers keys: {list(message_data.get("answers", {}).keys())}')
-					logger.info(f'[WebSocket] 📝   Conversation ID: {message_data.get("conversation_id")}')
 
 					try:
 						# Import here to avoid circular imports
@@ -335,7 +298,6 @@ async def websocket_chat_endpoint(
 									survey_data=[],  # Empty data, will be populated from answers
 									session_name='Survey Response Session',
 								)
-								logger.info(f'[WebSocket] 📝 Created new session: {active_session_id}')
 							except Exception as session_error:
 								logger.warning(f'[WebSocket] 📝 Could not create session: {session_error}')
 
@@ -351,7 +313,6 @@ async def websocket_chat_endpoint(
 						question_session_repo = QuestionSessionRepo(db)
 						result = question_session_repo.parse_survey_response(survey_request, user_id)
 
-						logger.info(f'[WebSocket] ✅ SURVEY_RESPONSE processed: {result.session_id}')
 
 						# Send confirmation back to client
 						await websocket_manager.send_message(
@@ -381,24 +342,21 @@ async def websocket_chat_endpoint(
 
 				else:
 					message_type = message_data.get('type', 'unknown')
-					logger.warning(f'[WebSocket] ⚠️ UNKNOWN MESSAGE TYPE: {message_type}')
-					logger.warning(f'[WebSocket] ⚠️ Message keys: {list(message_data.keys())}')
+					pass
 
 		except WebSocketDisconnect:
-			logger.info(f'[WebSocket] 🔌 CLIENT DISCONNECTED: User {user_id} closed connection')
+			pass
 	except Exception as e:
-		logger.error(f'[WebSocket] ❌ UNEXPECTED ERROR for user {user_id}: {e}')
-		logger.error(f'[WebSocket] ❌ Error type: {type(e).__name__}')
+		pass
 		try:
 			await websocket_manager.send_message(user_id, {'type': 'error', 'message': _('websocket_error')})
 		except Exception as send_error:
-			logger.error(f'[WebSocket] ❌ Failed to send error message to user {user_id}: {send_error}')
+			pass
 	finally:
 		if user_id:
-			logger.info(f'[WebSocket] 🧹 CLEANUP: Disconnecting user {user_id}')
 			websocket_manager.disconnect(user_id)
 		else:
-			logger.warning('[WebSocket] 🧹 CLEANUP: No user_id available for cleanup')
+			pass
 
 
 @route.post('/send-message', response_model=APIResponse)
@@ -531,7 +489,6 @@ async def upload_cv_for_chat(
 		# Store CV context trong conversation (nếu có)
 		if conversation_id:
 			cv_service = CVIntegrationService(db)
-			logger.info(f'Storing CV context for conversation: {conversation_id} using service: {type(cv_service).__name__}')
 			# Extract cv_analysis_result from the ProcessCVResponse
 			cv_analysis_data = cv_data.get('cv_analysis_result')
 			if hasattr(cv_analysis_data, 'model_dump'):

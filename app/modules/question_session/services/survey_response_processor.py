@@ -14,6 +14,7 @@ from ...agent.services.langgraph_service import LangGraphService
 from ...chat.dal.conversation_dal import ConversationDAL
 from ..repository.question_session_repo import QuestionSessionRepo
 from ..schemas.question_session_request import ParseSurveyResponseRequest
+from app.utils.n8n_api_client import n8n_client
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +155,182 @@ class SurveyResponseProcessor:
 			}
 			print(f'🔄 [SurveyProcessor] Returning error response: {error_result["processing_metadata"]}')
 			return error_result
+
+	async def process_survey_response_with_n8n_analysis(
+		self,
+		request: ParseSurveyResponseRequest,
+		user_id: str,
+		authorization_token: Optional[str] = None,
+	) -> Dict[str, Any]:
+		"""
+		Complete survey response processing with N8N analysis:
+		1. Store survey responses in database
+		2. Convert responses to human-readable text
+		3. Send to N8N API for advanced analysis
+		4. Return formatted result with N8N insights
+
+		Args:
+		    request: Survey response data from frontend
+		    user_id: User ID
+		    authorization_token: Authorization token for N8N API
+
+		Returns:
+		    Dictionary with processed response and N8N analysis
+		"""
+		print(f'🚀 [SurveyProcessor] Starting N8N-enhanced survey processing for user {user_id}')
+		print(f'📝 [SurveyProcessor] Request: conversation_id={request.conversation_id}, answers_count={len(request.answers)}')
+		logger.info(f'Processing survey response with N8N analysis for user {user_id}, conversation {request.conversation_id}')
+
+		try:
+			# Step 1: Store survey responses in database
+			print(f'💾 [SurveyProcessor] Step 1: Storing survey responses in database...')
+			parsed_response = self.question_session_repo.parse_survey_response(request, user_id)
+			print(f'✅ [SurveyProcessor] Survey response stored: session_id={parsed_response.session_id}')
+			logger.info(f'Survey response stored successfully: {parsed_response.session_id}')
+
+			# Step 2: Convert survey responses to human-readable text
+			print(f'🔤 [SurveyProcessor] Step 2: Converting responses to human-readable text...')
+			human_text = self._convert_responses_to_human_text(request.answers, request.conversation_id, user_id)
+			print(f'✅ [SurveyProcessor] Human text generated: {len(human_text)} characters')
+			logger.info(f'Survey responses converted to human text: {len(human_text)} characters')
+
+			# Step 3: Prepare comprehensive survey data for N8N API
+			print(f'🔮 [SurveyProcessor] Step 3: Preparing comprehensive survey data for N8N...')
+			n8n_analysis = None
+			try:
+				# Enhanced survey summary với questions + answers
+				enhanced_survey_summary = self._create_enhanced_survey_summary_for_n8n(
+					request.answers,
+					request.conversation_id,
+					user_id,
+					request.session_id,
+				)
+
+				print(f'📊 [SurveyProcessor] Enhanced summary length: {len(enhanced_survey_summary)} characters')
+
+				n8n_response = await n8n_client.process_survey_response(
+					session_id=request.conversation_id,
+					survey_summary=enhanced_survey_summary,
+					authorization_token=authorization_token,
+				)
+
+				n8n_analysis = n8n_response
+				print(f'✅ [SurveyProcessor] N8N analysis completed successfully')
+				print(f'📊 [SurveyProcessor] N8N response keys: {list(n8n_response.keys()) if isinstance(n8n_response, dict) else "Non-dict response"}')
+				logger.info(f'N8N analysis completed for survey response')
+
+			except Exception as n8n_error:
+				print(f'⚠️ [SurveyProcessor] N8N analysis failed: {str(n8n_error)}')
+				logger.warning(f'N8N analysis failed: {n8n_error}')
+				n8n_analysis = {
+					'error': str(n8n_error),
+					'fallback_message': 'Survey analysis could not be completed via N8N API.',
+				}
+
+			# Step 4: Prepare comprehensive response
+			print(f'📦 [SurveyProcessor] Step 4: Preparing comprehensive response with N8N insights...')
+			result = {
+				'survey_processing': {
+					'session_id': parsed_response.session_id,
+					'conversation_id': parsed_response.conversation_id,
+					'total_answers': parsed_response.total_answers,
+					'answers_processed': parsed_response.answers_processed,
+					'session_status': parsed_response.session_status,
+					'completion_date': (parsed_response.completion_date.isoformat() if parsed_response.completion_date else None),
+				},
+				'human_readable_response': human_text,
+				'n8n_analysis': n8n_analysis,
+				'ai_response': self._extract_ai_response_from_n8n(n8n_analysis),
+				'processing_metadata': {
+					'processed_at': datetime.now().isoformat(),
+					'user_id': user_id,
+					'n8n_processing_enabled': True,
+					'n8n_success': n8n_analysis is not None and 'error' not in n8n_analysis,
+					'response_length': len(human_text),
+					'success': True,
+				},
+			}
+
+			print(f'🎉 [SurveyProcessor] N8N-enhanced survey processing completed successfully!')
+			print(f'📊 [SurveyProcessor] Result: session_id={parsed_response.session_id}, n8n_success={result["processing_metadata"]["n8n_success"]}')
+			logger.info(f'N8N-enhanced survey processing completed for session {parsed_response.session_id}')
+			return result
+
+		except Exception as e:
+			print(f'💥 [SurveyProcessor] Error in N8N-enhanced processing: {str(e)}')
+			logger.error(f'Error in N8N-enhanced survey processing: {e}')
+			# Return error response
+			error_result = {
+				'survey_processing': None,
+				'human_readable_response': None,
+				'n8n_analysis': None,
+				'ai_response': f'Error processing survey responses: {str(e)}',
+				'processing_metadata': {
+					'processed_at': datetime.now().isoformat(),
+					'user_id': user_id,
+					'n8n_processing_enabled': True,
+					'n8n_success': False,
+					'success': False,
+					'error': str(e),
+				},
+			}
+			return error_result
+
+	def _extract_ai_response_from_n8n(self, n8n_analysis: Optional[Dict[str, Any]]) -> Optional[str]:
+		"""
+		Extract AI response from N8N analysis result
+
+		Args:
+		    n8n_analysis: N8N API response
+
+		Returns:
+		    Formatted AI response text or None
+		"""
+		if not n8n_analysis or 'error' in n8n_analysis:
+			return None
+
+		try:
+			# Try different possible response fields from N8N
+			possible_fields = [
+				'ai_response',
+				'response',
+				'analysis',
+				'insights',
+				'recommendations',
+				'content',
+				'summary',
+				'result',
+			]
+
+			for field in possible_fields:
+				if field in n8n_analysis and n8n_analysis[field]:
+					response_content = n8n_analysis[field]
+
+					# Handle different response formats
+					if isinstance(response_content, str):
+						return response_content
+					elif isinstance(response_content, dict):
+						# If it's a dict, try to extract content
+						if 'content' in response_content:
+							return response_content['content']
+						elif 'text' in response_content:
+							return response_content['text']
+						elif 'message' in response_content:
+							return response_content['message']
+					elif isinstance(response_content, list) and len(response_content) > 0:
+						# If it's a list, take the first item
+						first_item = response_content[0]
+						if isinstance(first_item, str):
+							return first_item
+						elif isinstance(first_item, dict) and 'content' in first_item:
+							return first_item['content']
+
+			# If no specific field found, return a generic message
+			return f'Survey analysis completed successfully. Analysis data: {json.dumps(n8n_analysis, indent=2)[:500]}...'
+
+		except Exception as e:
+			logger.warning(f'Error extracting AI response from N8N analysis: {e}')
+			return 'Survey analysis completed, but response formatting failed.'
 
 	def _convert_responses_to_human_text(self, answers: Dict[str, Any], conversation_id: str, user_id: str) -> str:
 		"""
@@ -552,3 +729,172 @@ class SurveyResponseProcessor:
 			print(f'💥 [SurveyProcessor.send_survey_response_to_chat_via_websocket] Error: {str(e)}')
 			logger.error(f'Error sending survey response via WebSocket: {e}')
 			return False
+
+	def _create_enhanced_survey_summary_for_n8n(
+		self,
+		answers: Dict[str, Any],
+		conversation_id: str,
+		user_id: str,
+		session_id: Optional[str] = None,
+	) -> str:
+		"""
+		Create enhanced survey summary for N8N API including both questions and answers
+
+		Args:
+		    answers: User's survey answers
+		    conversation_id: Conversation ID
+		    user_id: User ID
+		    session_id: Optional session ID to get specific questions
+
+		Returns:
+		    Enhanced survey summary with questions and answers formatted for N8N analysis
+		"""
+		print(f'🔍 [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Creating enhanced summary with session_id: {session_id}')
+
+		try:
+			# Try to get session data using session_id first
+			session_data = None
+			questions_data = None
+
+			if session_id:
+				print(f'📋 [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Using provided session_id: {session_id}')
+				try:
+					session_detail = self.question_session_repo.get_session_detail(session_id, user_id)
+					if session_detail and session_detail.session:
+						session_data = session_detail.session
+						questions_data = session_data.questions_data
+						print(f'✅ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Found session data from session_id')
+				except Exception as e:
+					print(f'⚠️ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Error getting session by ID: {e}')
+
+			# Fallback: get active session from conversation
+			if not questions_data:
+				print(f'🔄 [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Fallback: getting active sessions from conversation')
+				active_sessions = self.question_session_repo.question_session_dal.get_conversation_sessions(
+					conversation_id=conversation_id,
+					user_id=user_id,
+					session_status='active',
+				)
+
+				if active_sessions:
+					session_data = active_sessions[0]
+					questions_data = session_data.questions_data
+					print(f'✅ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Found questions from active session: {session_data.id}')
+
+			# Build comprehensive summary
+			summary_parts = []
+			summary_parts.append('=== SURVEY ANALYSIS REQUEST ===')
+			summary_parts.append(f'Session ID: {session_data.id if session_data else "Unknown"}')
+			summary_parts.append(f'Session Name: {session_data.name if session_data else "Unknown"}')
+			summary_parts.append(f'Session Type: {session_data.session_type if session_data else "survey"}')
+			summary_parts.append(f'Conversation ID: {conversation_id}')
+			summary_parts.append(f'Completed At: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+			summary_parts.append('')
+
+			if questions_data and isinstance(questions_data, list):
+				print(f'📝 [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Processing {len(questions_data)} questions with answers')
+				summary_parts.append('=== QUESTIONS AND ANSWERS ===')
+
+				for i, (question_index, answer_value) in enumerate(answers.items()):
+					question_data = self._get_question_by_index(questions_data, question_index)
+
+					if question_data:
+						# Extract question info
+						question_text = question_data.get('Question', f'Question {question_index}')
+						question_type = question_data.get('Question_type', 'unknown')
+						question_subtitle = question_data.get('subtitle', '')
+						question_options = question_data.get('Question_data', [])
+
+						# Format question section
+						summary_parts.append(f'--- Question {int(question_index) + 1} ---')
+						summary_parts.append(f'Question: {question_text}')
+						if question_subtitle:
+							summary_parts.append(f'Subtitle: {question_subtitle}')
+						summary_parts.append(f'Type: {question_type}')
+
+						# Include available options for context
+						if question_options and isinstance(question_options, list):
+							summary_parts.append('Available Options:')
+							for option in question_options:
+								if isinstance(option, dict):
+									option_id = option.get('id', option.get('ID', ''))
+									option_label = option.get('label', option.get('Label', ''))
+									if option_id and option_label:
+										summary_parts.append(f'  - {option_id}: {option_label}')
+
+						# Format user's answer with mapping
+						formatted_answer = self._format_answer_for_n8n(answer_value, question_options)
+						summary_parts.append(f"User's Answer: {formatted_answer}")
+						summary_parts.append('')
+					else:
+						# Question data not found - use basic format
+						summary_parts.append(f'--- Question {int(question_index) + 1} ---')
+						summary_parts.append(f'Question: Question {question_index} (details unavailable)')
+						summary_parts.append(f"User's Answer: {str(answer_value)}")
+						summary_parts.append('')
+			else:
+				print(f'⚠️ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] No questions data available, using basic format')
+				summary_parts.append('=== SURVEY RESPONSES (Without Question Context) ===')
+				for question_id, answer_value in answers.items():
+					summary_parts.append(f'Question {question_id}: {str(answer_value)}')
+				summary_parts.append('')
+
+			# Add analysis instructions for N8N
+			summary_parts.append('=== ANALYSIS INSTRUCTIONS ===')
+			summary_parts.append('Please analyze this survey data and provide:')
+			summary_parts.append('1. Summary of user responses')
+			summary_parts.append('2. Key insights and patterns')
+			summary_parts.append('3. Personalized recommendations')
+			summary_parts.append('4. Relevant follow-up questions or actions')
+			summary_parts.append('5. Any career guidance or next steps (if applicable)')
+
+			result = '\n'.join(summary_parts)
+			print(f'✅ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Enhanced summary created: {len(result)} characters')
+
+			return result
+
+		except Exception as e:
+			print(f'❌ [SurveyProcessor._create_enhanced_survey_summary_for_n8n] Error creating enhanced summary: {e}')
+			logger.error(f'Error creating enhanced survey summary for N8N: {e}')
+
+			# Fallback to basic human text
+			return self._convert_responses_to_human_text(answers, conversation_id, user_id)
+
+	def _format_answer_for_n8n(self, answer_value: Any, question_options: List[Dict[str, Any]]) -> str:
+		"""
+		Format answer value for N8N with option mapping
+
+		Args:
+		    answer_value: The user's answer
+		    question_options: Available options for this question
+
+		Returns:
+		    Formatted answer string with labels where possible
+		"""
+		try:
+			if isinstance(answer_value, list):
+				# Multiple selection - map each ID to label
+				mapped_answers = []
+				for item in answer_value:
+					mapped_item = self._map_answer_id_to_label(item, question_options)
+					mapped_answers.append(mapped_item)
+				return f'[{", ".join(mapped_answers)}]'
+
+			elif isinstance(answer_value, dict):
+				# Complex answer object
+				if len(answer_value) == 1 and 'value' in answer_value:
+					return self._map_answer_id_to_label(answer_value['value'], question_options)
+				else:
+					formatted_parts = []
+					for key, value in answer_value.items():
+						mapped_value = self._map_answer_id_to_label(value, question_options)
+						formatted_parts.append(f'{key}: {mapped_value}')
+					return f'{{{", ".join(formatted_parts)}}}'
+
+			else:
+				# Single value - try to map to label
+				return self._map_answer_id_to_label(answer_value, question_options)
+
+		except Exception as e:
+			logger.warning(f'Error formatting answer for N8N: {e}')
+			return str(answer_value)

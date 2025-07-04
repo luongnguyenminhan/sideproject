@@ -7,7 +7,6 @@ import { faClipboardList, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { Question } from '@/types/question.types'
 import SurveyContainer from '@/components/survey/SurveyContainer'
-import { surveyAPI, type SurveyResponse } from '@/apis/surveyApi'
 
 interface SurveyPanelProps {
   isOpen: boolean
@@ -33,38 +32,13 @@ export function SurveyPanel({
   const { t } = useTranslation()
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Simplified survey completion handler - single API + WebSocket
+  // Simplified survey completion handler - chỉ pass through, để SurveyContainer xử lý
   const handleSurveyComplete = async (answers: Record<number, unknown>) => {
     console.log('[SurveyPanel] Survey completed with answers:', answers)
     setIsProcessing(true)
 
     try {
-      // Single API call - processSurveyWorkflow handles everything
-      const surveyData: SurveyResponse = {
-        type: 'survey_response',
-        answers: answers,
-        conversation_id: conversationId,
-        timestamp: new Date().toISOString()
-      }
-
-      const result = await surveyAPI.processSurveyWorkflow(surveyData)
-      console.log('[SurveyPanel] Survey workflow completed:', result)
-      
-      // Handle AI response if available
-      if (result.error_code === 0 && result.data) {
-        const humanMessage = result.data.human_readable_response
-        const aiResponse = result.data.ai_response
-        
-        // Send to chat if callback provided
-        if (humanMessage && onSendToChat) {
-          await onSendToChat(humanMessage, false)
-          if (aiResponse?.content) {
-            setTimeout(() => onSendToChat(aiResponse.content, true), 1000)
-          }
-        }
-      }
-
-      // Call original completion callback
+      // Call completion callback - let SurveyContainer handle API calls
       if (onSurveyComplete) {
         await onSurveyComplete(answers)
       }
@@ -73,17 +47,12 @@ export function SurveyPanel({
       
     } catch (error) {
       console.error('[SurveyPanel] Survey completion failed:', error)
-      
-      // Simple fallback: still call completion callback
-      if (onSurveyComplete) {
-        await onSurveyComplete(answers)
-      }
     } finally {
       setIsProcessing(false)
     }
   }
 
-  // Debug logging for survey panel
+  // Debug logging for survey panel  
   console.log('[SurveyPanel] Render with props:', {
     isOpen,
     questionsCount: questions.length,
@@ -91,14 +60,8 @@ export function SurveyPanel({
     title,
     conversationId,
     isProcessing,
-    questionsPreview: questions.slice(0, 2),
-    questionsStructure: questions.map((q, i) => ({
-      index: i,
-      question: q.Question?.substring(0, 50) + '...',
-      type: q.Question_type,
-      hasData: !!q.Question_data,
-      dataType: Array.isArray(q.Question_data) ? 'array' : typeof q.Question_data
-    }))
+    hasSendToChatCallback: !!onSendToChat,
+    questionsPreview: questions.slice(0, 2)
   })
 
   if (!isOpen) return null
@@ -153,6 +116,7 @@ export function SurveyPanel({
                 websocket={websocket}
                 conversationId={conversationId}
                 isEmbedded={true}
+                onSendToChat={onSendToChat}
               />
             </div>
           </div>

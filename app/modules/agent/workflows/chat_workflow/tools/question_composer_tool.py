@@ -49,6 +49,7 @@ def get_conversation_context() -> tuple[Optional[str], Optional[str]]:
 @tool(return_direct=False)
 async def generate_survey_questions(
 	description: str = 'Generate personalized survey questions based on user request',
+	custom_prompt: str = None,
 ) -> str:
 	"""
 	🔥 CRITICAL TOOL: Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
@@ -106,6 +107,7 @@ async def generate_survey_questions(
 			n8n_response = await n8n_client.generate_questions(
 				session_id=conversation_id,
 				authorization_token=authorization_token,
+				custom_prompt=custom_prompt,
 			)
 			logger.info('[generate_survey_questions] ✅ N8N API call successful')
 		except Exception as n8n_error:

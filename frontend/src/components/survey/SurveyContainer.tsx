@@ -19,6 +19,7 @@ interface SurveyContainerProps {
   conversationId?: string;
   isEmbedded?: boolean; // Để biết có phải đang chạy trong panel hay không
   onClose?: () => void;
+  onSendToChat?: (message: string, isAIResponse?: boolean) => void;
 }
 
 const SurveyContainer: React.FC<SurveyContainerProps> = ({ 
@@ -27,7 +28,8 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
   websocket,
   conversationId,
   isEmbedded = false,
-  onClose
+  onClose,
+  onSendToChat
 }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
@@ -112,12 +114,35 @@ const SurveyContainer: React.FC<SurveyContainerProps> = ({
           type: 'survey_response',
           answers: selectedAnswers,
           conversation_id: conversationId,
+          session_id: currentSessionId || undefined, // Include session_id if available
           timestamp: new Date().toISOString()
         };
+
+        console.log('[SurveyContainer] Survey data prepared:', {
+          type: surveyData.type,
+          conversation_id: surveyData.conversation_id,
+          session_id: surveyData.session_id,
+          answers_count: Object.keys(surveyData.answers).length,
+          timestamp: surveyData.timestamp
+        });
 
         // Single API call - processSurveyWorkflow handles everything
         const result = await surveyAPI.processSurveyWorkflow(surveyData);
         console.log('[SurveyContainer] Survey workflow completed:', result);
+
+        // Handle AI response if available
+        if (result.error_code === 0 && result.data) {
+          const humanMessage = result.data.human_readable_response
+          const aiResponse = result.data.ai_response
+          
+          // Send to chat if callback provided
+          if (humanMessage && onSendToChat) {
+            await onSendToChat(humanMessage, false)
+            if (aiResponse?.content) {
+              setTimeout(() => onSendToChat(aiResponse.content, true), 1000)
+            }
+          }
+        }
 
         // Single WebSocket message (only if connected and API succeeded)
         if (websocket && websocket.isConnected() && result.error_code === 0) {
