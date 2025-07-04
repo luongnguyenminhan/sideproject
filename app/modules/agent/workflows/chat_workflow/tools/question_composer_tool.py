@@ -82,6 +82,7 @@ async def generate_survey_questions(
 
 	Args:
 	    description: Brief description of the survey purpose (optional)
+	    custom_prompt: Custom prompt for the survey you pass the user request in detail here (optional)
 
 	Returns:
 	    Success message confirming survey was generated and sent to user interface
