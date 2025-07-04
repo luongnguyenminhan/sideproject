@@ -27,7 +27,7 @@ import { FileSidebar } from './FileSidebar'
 import { MobileSidebar } from './MobileSidebar'
 import { SystemPromptEditor } from './SystemPromptEditor'
 import { CVModal } from '@/components/chat/CVModal'
-import { SurveyPanelWrapper } from './SurveyPanelWrapper'
+import { ResizableChatLayout } from './ResizableChatLayout'
 
 export function ChatClientWrapper() {
   const { t } = useTranslation()
@@ -56,15 +56,6 @@ export function ChatClientWrapper() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [surveyTitle, setSurveyTitle] = useState('Survey Form')
   const [surveyConversationId, setSurveyConversationId] = useState<string | null>(null)
-  const [surveyPanelWidth, setSurveyPanelWidth] = useState(() => {
-    // Load saved width from localStorage or default to 50%
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('surveyPanelWidth')
-      return saved ? Number(saved) : 50
-    }
-    return 50
-  })
-  const [isResizing, setIsResizing] = useState(false)
 
   const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
@@ -829,75 +820,11 @@ export function ChatClientWrapper() {
     setIsFileSidebarCollapsed(prev => !prev)
   }
 
-  // Resizable survey panel handlers
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsResizing(true)
-  }, [])
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing) return
-    
-    const container = document.querySelector('.chat-container')
-    if (!container) return
-    
-    const containerRect = container.getBoundingClientRect()
-    const mouseX = e.clientX
-    const containerRight = containerRect.right
-    const containerWidth = containerRect.width
-    
-    // Calculate distance from right edge to mouse position
-    const distanceFromRight = containerRight - mouseX
-    // Convert to percentage of container width
-    const newWidth = Math.max(20, Math.min(80, (distanceFromRight / containerWidth) * 100))
-    
-    setSurveyPanelWidth(newWidth)
-    
-    // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('surveyPanelWidth', newWidth.toString())
-    }
-  }, [isResizing])
-
-  const handleMouseUp = useCallback(() => {
-    setIsResizing(false)
-  }, [])
-
-  // Setup global mouse events for resizing
-  useEffect(() => {
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isResizing, handleMouseMove, handleMouseUp])
-
   // Keyboard shortcuts for survey panel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (surveyModalVisible && e.key === 'Escape') {
         setSurveyModalVisible(false)
-      }
-      // Reset to default size with Ctrl/Cmd + R
-      if (surveyModalVisible && (e.ctrlKey || e.metaKey) && e.key === 'r') {
-        e.preventDefault()
-        setSurveyPanelWidth(50)
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('surveyPanelWidth', '50')
-        }
       }
     }
 
@@ -915,7 +842,7 @@ export function ChatClientWrapper() {
   }, [websocket])
 
   return (
-    <div className={`flex h-full chat-container ${isResizing ? 'select-none' : ''}`}>
+    <div className="flex h-full chat-container">
 
       {/* Desktop Conversation Sidebar */}
       <div className={`hidden md:block border-r border-[color:var(--border)] transition-all duration-300 ease-in-out ${
@@ -938,43 +865,87 @@ export function ChatClientWrapper() {
         />
       </div>
 
-      {/* Main Chat Area - adjusts width based on survey state */}
-      <div 
-        className="flex flex-col min-w-0 flex-grow"
-        style={{
-          width: surveyModalVisible 
-            ? `${100 - surveyPanelWidth}%` 
-            : isFileSidebarCollapsed 
-              ? '100%' 
-              : 'calc(100% - 320px)', // Account for file sidebar when survey is closed
-          transition: isResizing 
-            ? 'none' // Disable transition during resize for smooth dragging
-            : 'width 300ms ease-in-out',
-          minWidth: '300px' // Ensure chat area doesn't get too small
-        }}
-      >
-        <ChatInterface
-        conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
-        activeConversationId={state.activeConversationId}
-        messages={state.messages}
-        isLoading={state.isLoading}
-        isTyping={state.isTyping}
-        error={state.error}
-        onSendMessage={handleSendMessage}
-        onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
-        isConversationSidebarCollapsed={isConversationSidebarCollapsed}
-        isFileSidebarCollapsed={isFileSidebarCollapsed}
-        onToggleConversationSidebar={handleToggleConversationSidebar}
-        onToggleFileSidebar={handleToggleFileSidebar}
-        onToggleSurvey={handleToggleSurveyModal}
-        onOpenSurvey={handleOpenSurvey}
-        // hasSurveyData now checked per-message
-        isSurveyOpen={surveyModalVisible}
-        />
+      {/* Main Content Area with Resizable Chat + Survey */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <ResizableChatLayout
+          isSurveyOpen={surveyModalVisible}
+          onSurveyClose={() => {
+            setSurveyModalVisible(false)
+            setSurveyConversationId(null)
+          }}
+          websocket={websocket}
+          conversationId={state.activeConversationId || undefined}
+          onSurveyComplete={async (answers) => {
+            console.log('[ChatClientWrapper] Survey completed with answers:', answers)
+            // Note: WebSocket sending is now handled by SurveyContainer/SurveyPanel
+            // No need to duplicate WebSocket logic here
+          }}
+          onSendToChat={async (message: string, isAIResponse?: boolean) => {
+            console.log('[ChatClientWrapper] Sending survey message to chat:', { message, isAIResponse })
+            
+            // Add message to chat interface
+            if (state.activeConversationId) {
+              const newMessage = {
+                id: Date.now().toString(),
+                role: isAIResponse ? 'assistant' : 'user',
+                content: message,
+                timestamp: new Date(),
+                conversation_id: state.activeConversationId
+              }
+              
+              // Update messages state to show the message immediately
+              setState(prev => ({
+                ...prev,
+                messages: [...prev.messages, newMessage as any]
+              }))
+              
+              console.log('[ChatClientWrapper] Message added to chat interface')
+            }
+          }}
+          fallbackQuestions={surveyData}
+        >
+          <ChatInterface
+            conversation={state.conversations.find(conv => conv.id === state.activeConversationId) || null}
+            activeConversationId={state.activeConversationId}
+            messages={state.messages}
+            isLoading={state.isLoading}
+            isTyping={state.isTyping}
+            error={state.error}
+            onSendMessage={handleSendMessage}
+            onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+            isConversationSidebarCollapsed={isConversationSidebarCollapsed}
+            isFileSidebarCollapsed={isFileSidebarCollapsed}
+            onToggleConversationSidebar={handleToggleConversationSidebar}
+            onToggleFileSidebar={handleToggleFileSidebar}
+            onToggleSurvey={handleToggleSurveyModal}
+            onOpenSurvey={handleOpenSurvey}
+            isSurveyOpen={surveyModalVisible}
+          />
+        </ResizableChatLayout>
       </div>
 
+      {/* Desktop File Sidebar - show when survey is closed */}
+      {!surveyModalVisible && state.activeConversationId && (
+        <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
+          isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+        }`}>
+            <FileSidebar
+              uploadedFiles={state.uploadedFiles}
+              isLoading={fileLoadingStates.files || false}
+              conversationId={state.activeConversationId}
+              onDeleteFile={handleDeleteFile}
+              onUploadFiles={handleUploadFiles}
+              onUploadCV={handleUploadCV}
+              isCVUploading={isCVUploading}
+              hasSurveyData={surveyData.length > 0}
+              onOpenSurvey={handleOpenSurvey}
+              onClose={() => setIsFileSidebarCollapsed(true)}
+            />
+        </div>
+      )}
+
       {/* DEBUG: Survey State Logging */}
-      {state.activeConversationId && (
+      {/* {state.activeConversationId && (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
           <Button
             onClick={() => {
@@ -1028,106 +999,7 @@ export function ChatClientWrapper() {
             🌐 Log WebSocket State
           </Button>
         </div>
-      )}
-
-      {/* Resizable Survey Panel */}
-      {surveyModalVisible && (
-        <>
-          {/* Resize Handle */}
-          <div 
-            className="w-1 bg-[color:var(--border)] hover:bg-[color:var(--primary)] cursor-col-resize transition-colors duration-200 hidden lg:block relative group select-none"
-            onMouseDown={handleMouseDown}
-            onDoubleClick={() => {
-              setSurveyPanelWidth(50)
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('surveyPanelWidth', '50')
-              }
-            }}
-            title={`Survey Panel: ${Math.round(surveyPanelWidth)}% • Kéo để thay đổi kích thước • Double-click để reset về 50% • Ctrl+R để reset`}
-            style={{ 
-              cursor: isResizing ? 'col-resize' : 'col-resize',
-              zIndex: isResizing ? 9999 : 'auto'
-            }}
-          >
-            {/* Visual indicator */}
-            <div className="absolute inset-y-0 left-1/2 transform -translate-x-1/2 w-1 bg-[color:var(--primary)]/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-[color:var(--background)] border border-[color:var(--border)] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-              <div className="w-1 h-4 bg-[color:var(--muted-foreground)] rounded-full"></div>
-            </div>
-          </div>
-          
-          {/* Survey Panel */}
-          <div 
-            className="border-l-0 border-[color:var(--border)] hidden lg:block"
-            style={{ 
-              width: `${surveyPanelWidth}%`,
-              transition: isResizing 
-                ? 'none' // Disable transition during resize for smooth dragging
-                : 'width 300ms ease-in-out',
-              minWidth: '250px', // Ensure survey doesn't get too small
-              maxWidth: '80%'    // Ensure chat area always has space
-            }}
-          >
-          <SurveyPanelWrapper
-            isOpen={surveyModalVisible}
-            onClose={() => {
-              setSurveyModalVisible(false)
-              setSurveyConversationId(null)
-            }}
-            fallbackQuestions={surveyData}
-            websocket={websocket}
-            conversationId={state.activeConversationId || undefined}
-            onSurveyComplete={async (answers) => {
-              console.log('[ChatClientWrapper] Survey completed with answers:', answers)
-              // Note: WebSocket sending is now handled by SurveyContainer/SurveyPanel
-              // No need to duplicate WebSocket logic here
-            }}
-            onSendToChat={async (message: string, isAIResponse?: boolean) => {
-              console.log('[ChatClientWrapper] Sending survey message to chat:', { message, isAIResponse })
-              
-              // Add message to chat interface
-              if (state.activeConversationId) {
-                const newMessage = {
-                  id: Date.now().toString(),
-                  role: isAIResponse ? 'assistant' : 'user',
-                  content: message,
-                  timestamp: new Date(),
-                  conversation_id: state.activeConversationId
-                }
-                
-                // Update messages state to show the message immediately
-                setState(prev => ({
-                  ...prev,
-                  messages: [...prev.messages, newMessage as any]
-                }))
-                
-                console.log('[ChatClientWrapper] Message added to chat interface')
-              }
-            }}
-          />
-          </div>
-        </>
-      )}
-
-      {/* Desktop File Sidebar - hide when survey is open, show when closed */}
-      {!surveyModalVisible && state.activeConversationId && (
-        <div className={`hidden lg:block border-l border-[color:var(--border)] transition-all duration-300 ease-in-out ${
-          isFileSidebarCollapsed ? 'w-0 overflow-hidden' : 'w-80'
-        }`}>
-            <FileSidebar
-              uploadedFiles={state.uploadedFiles}
-              isLoading={fileLoadingStates.files || false}
-              conversationId={state.activeConversationId}
-              onDeleteFile={handleDeleteFile}
-              onUploadFiles={handleUploadFiles}
-              onUploadCV={handleUploadCV}
-              isCVUploading={isCVUploading}
-              hasSurveyData={surveyData.length > 0}
-              onOpenSurvey={handleOpenSurvey}
-              onClose={() => setIsFileSidebarCollapsed(true)}
-            />
-        </div>
-      )}
+      )} */}
      
       {/* Mobile Sidebar */}
       <MobileSidebar

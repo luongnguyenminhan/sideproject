@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #ffffff;
@@ -29,7 +32,7 @@
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
   --scrollbar-width: 6px;
   --scrollbar-border-radius: 3px;
-  
+
   /* Custom gradient colors */
   --gradient-bg-from: #eff6ff;
   --gradient-bg-via: #ffffff;
@@ -39,7 +42,7 @@
   --gradient-text-to: #1e40af;
   --gradient-button-from: #3b82f6;
   --gradient-button-to: #1d4ed8;
-  
+
   /* Feature card colors */
   --feature-blue: #dbeafe;
   --feature-blue-dark: #1e3a8a;
@@ -57,7 +60,7 @@
   --feature-yellow-dark: #713f12;
   --feature-yellow-text: #ca8a04;
   --feature-yellow-text-dark: #facc15;
-  
+
   /* Auth page specific */
   --auth-bg-from: #eff6ff;
   --auth-bg-via: #ffffff;
@@ -67,11 +70,26 @@
   --auth-floating-blue: rgba(59, 130, 246, 0.1);
   --auth-floating-purple: rgba(147, 51, 234, 0.1);
   --auth-floating-pink: rgba(236, 72, 153, 0.1);
-  
+
   /* Animation and interactive colors */
   --hover-scale: 1.05;
   --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   --card-hover-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 /* Dark mode theme variables */
@@ -96,12 +114,12 @@
   --border: #334155;
   --input: #334155;
   --ring: #3b82f6;
-  
+
   /* Scrollbar colors for dark mode */
   --scrollbar-track: transparent;
   --scrollbar-thumb: rgba(255, 255, 255, 0.2);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
-  
+
   /* Custom gradient colors - dark mode */
   --gradient-bg-from: #111827;
   --gradient-bg-via: #1f2937;
@@ -111,7 +129,7 @@
   --gradient-text-to: #93c5fd;
   --gradient-button-from: #3b82f6;
   --gradient-button-to: #1d4ed8;
-  
+
   /* Feature card colors - dark mode */
   --feature-blue: #1943b8;
   --feature-blue-dark: #1e3a8a;
@@ -129,7 +147,7 @@
   --feature-yellow-dark: #713f12;
   --feature-yellow-text: #facc15;
   --feature-yellow-text-dark: #facc15;
-  
+
   /* Auth page specific - dark mode */
   --auth-bg-from: #111827;
   --auth-bg-via: #1f2937;
@@ -139,7 +157,7 @@
   --auth-floating-blue: rgba(59, 130, 246, 0.05);
   --auth-floating-purple: rgba(147, 51, 234, 0.05);
   --auth-floating-pink: rgba(236, 72, 153, 0.05);
-  
+
   /* Animation and interactive colors - dark mode */
   --hover-scale: 1.05;
   --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
@@ -168,12 +186,12 @@
     --border: #334155;
     --input: #334155;
     --ring: #3b82f6;
-    
+
     /* Scrollbar colors for system dark mode */
     --scrollbar-track: transparent;
     --scrollbar-thumb: rgba(255, 255, 255, 0.2);
     --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
-    
+
     /* Custom gradient colors - system dark mode */
     --gradient-bg-from: #111827;
     --gradient-bg-via: #1f2937;
@@ -183,7 +201,7 @@
     --gradient-text-to: #93c5fd;
     --gradient-button-from: #3b82f6;
     --gradient-button-to: #1d4ed8;
-    
+
     /* Feature card colors - system dark mode */
     --feature-blue: #1e3a8a;
     --feature-blue-dark: #1e3a8a;
@@ -201,7 +219,7 @@
     --feature-yellow-dark: #713f12;
     --feature-yellow-text: #facc15;
     --feature-yellow-text-dark: #facc15;
-    
+
     /* Auth page specific - system dark mode */
     --auth-bg-from: #111827;
     --auth-bg-via: #1f2937;
@@ -211,7 +229,7 @@
     --auth-floating-blue: rgba(59, 130, 246, 0.05);
     --auth-floating-purple: rgba(147, 51, 234, 0.05);
     --auth-floating-pink: rgba(236, 72, 153, 0.05);
-    
+
     /* Animation and interactive colors - system dark mode */
     --hover-scale: 1.05;
     --button-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
@@ -373,7 +391,7 @@
   .table-cell-safe {
     max-width: 150px;
   }
-  
+
   .code-block-container {
     font-size: 0.75rem;
   }

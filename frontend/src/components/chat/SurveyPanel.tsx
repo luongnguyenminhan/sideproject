@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboardList, faTimes, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faClipboardList, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useTranslation } from '@/contexts/TranslationContext'
 import { Question } from '@/types/question.types'
 import SurveyContainer from '@/components/survey/SurveyContainer'
@@ -17,7 +17,7 @@ interface SurveyPanelProps {
   websocket?: { isConnected: () => boolean; sendRawMessage: (message: string) => void } | null
   conversationId?: string
   onSurveyComplete?: (answers: Record<number, unknown>) => void
-  onSendToChat?: (message: string, isAIResponse?: boolean) => void // New prop for sending to chat
+  onSendToChat?: (message: string, isAIResponse?: boolean) => void
 }
 
 export function SurveyPanel({
@@ -31,7 +31,6 @@ export function SurveyPanel({
   onSendToChat
 }: SurveyPanelProps) {
   const { t } = useTranslation()
-  const [isMinimized, setIsMinimized] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Simplified survey completion handler - single API + WebSocket
@@ -105,121 +104,82 @@ export function SurveyPanel({
   if (!isOpen) return null
 
   return (
-    <div className={`h-full flex flex-col bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)] transition-all duration-300 ease-in-out ${
-      isMinimized ? 'w-12' : 'w-full'
-    }`}>
-      {/* Survey Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[color:var(--border)]/20 bg-[color:var(--background)]/10 backdrop-blur-md flex-shrink-0">
-        {!isMinimized ? (
-          <>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-[color:var(--feature-blue)] to-[color:var(--feature-purple)] rounded-xl flex items-center justify-center shadow-lg">
-                <FontAwesomeIcon icon={faClipboardList} className="text-white text-lg" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent">
-                  {title}
-                  {isProcessing && (
-                    <span className="ml-2 inline-flex items-center">
-                      <div className="w-4 h-4 border-2 border-[color:var(--feature-blue)] border-t-transparent rounded-full animate-spin"></div>
-                    </span>
-                  )}
-                </h2>
-                <p className="text-xs text-[color:var(--muted-foreground)]">
-                  {isProcessing 
-                    ? 'Processing survey response...' 
-                    : `${questions.length} questions • AI-Generated`
-                  }
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setIsMinimized(true)}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group"
-                title="Minimize survey"
-              >
-                <FontAwesomeIcon 
-                  icon={faChevronLeft} 
-                  className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)]" 
-                />
-              </Button>
-              <Button
-                onClick={onClose}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group"
-                title="Close survey"
-              >
-                <FontAwesomeIcon 
-                  icon={faTimes} 
-                  className="text-sm text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)]" 
-                />
-              </Button>
-            </div>
-          </>
-        ) : (
-          <div className="w-full flex justify-center">
-            <Button
-              onClick={() => setIsMinimized(false)}
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group"
-              title="Expand survey"
-            >
-              <FontAwesomeIcon 
-                icon={faClipboardList} 
-                className="text-sm text-[color:var(--feature-blue)] group-hover:text-[color:var(--foreground)]" 
+    <div className="h-full flex flex-col bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)]">
+      {/* Survey Header - Compact for Resizable Layout */}
+      <div className="flex items-center justify-between p-3 border-b border-[color:var(--border)]/20 bg-[color:var(--background)]/10 backdrop-blur-md flex-shrink-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="w-8 h-8 bg-gradient-to-r from-[color:var(--feature-blue)] to-[color:var(--feature-purple)] rounded-lg flex items-center justify-center shadow-lg">
+            <FontAwesomeIcon icon={faClipboardList} className="text-white text-sm" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-bold bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] bg-clip-text text-transparent truncate">
+              {title}
+              {isProcessing && (
+                <span className="ml-2 inline-flex items-center">
+                  <div className="w-3 h-3 border-2 border-[color:var(--feature-blue)] border-t-transparent rounded-full animate-spin"></div>
+                </span>
+              )}
+            </h2>
+            <p className="text-xs text-[color:var(--muted-foreground)] truncate">
+              {isProcessing 
+                ? 'Processing...' 
+                : `${questions.length} questions`
+              }
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={onClose}
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-[color:var(--accent)] transition-all duration-200 group flex-shrink-0"
+          title="Close survey"
+        >
+          <FontAwesomeIcon 
+            icon={faTimes} 
+            className="text-xs text-[color:var(--muted-foreground)] group-hover:text-[color:var(--foreground)]" 
+          />
+        </Button>
+      </div>
+
+      {/* Survey Content - Optimized for Resizable */}
+      <div className="flex-1 overflow-hidden">
+        {questions.length > 0 ? (
+          <div className="h-full p-2">
+            <div className="bg-[color:var(--background)]/95 rounded-xl shadow-lg border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden">
+              <SurveyContainer 
+                questions={questions}
+                onSurveyComplete={handleSurveyComplete}
+                websocket={websocket}
+                conversationId={conversationId}
+                isEmbedded={true}
               />
-            </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="h-full flex items-center justify-center p-4">
+            <div className="text-center max-w-xs">
+              <div className="w-16 h-16 mx-auto mb-4 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
+                <FontAwesomeIcon icon={faClipboardList} className="text-2xl text-[color:var(--muted-foreground)]" />
+              </div>
+              <h3 className="text-lg font-semibold text-[color:var(--foreground)] mb-2">
+                {t('survey.noQuestions') || 'No Questions'}
+              </h3>
+              <p className="text-[color:var(--muted-foreground)] text-sm">
+                {t('survey.waitingForData') || 'Waiting for survey data...'}
+              </p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Survey Content */}
-      {!isMinimized && (
-        <div className="flex-1 overflow-hidden">
-          {questions.length > 0 ? (
-            <div className="h-full p-2">
-              <div className="bg-[color:var(--background)]/95 rounded-2xl shadow-xl border border-[color:var(--border)]/50 backdrop-blur-sm h-full overflow-hidden">
-                <SurveyContainer 
-                  questions={questions}
-                  onSurveyComplete={handleSurveyComplete} // Use our enhanced handler
-                  websocket={websocket}
-                  conversationId={conversationId}
-                  isEmbedded={true}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center p-8">
-              <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-6 bg-[color:var(--muted)] rounded-full flex items-center justify-center">
-                  <FontAwesomeIcon icon={faClipboardList} className="text-3xl text-[color:var(--muted-foreground)]" />
-                </div>
-                <h3 className="text-xl font-semibold text-[color:var(--foreground)] mb-2">
-                  {t('survey.noQuestions') || 'No Survey Questions'}
-                </h3>
-                <p className="text-[color:var(--muted-foreground)] text-sm">
-                  {t('survey.waitingForData') || 'Waiting for survey data...'}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Minimized State Indicator */}
-      {isMinimized && questions.length > 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center p-2">
-          <div className="w-8 h-8 bg-[color:var(--feature-green)] rounded-full flex items-center justify-center mb-2 animate-pulse">
-            <span className="text-white text-xs font-bold">{questions.length}</span>
-          </div>
-          <div className="text-xs text-[color:var(--muted-foreground)] text-center transform -rotate-90 whitespace-nowrap">
-            Survey Active
-          </div>
+      {/* Status Indicator for Processing */}
+      {isProcessing && (
+        <div className="px-3 py-2 bg-[color:var(--background)]/90 border-t border-[color:var(--border)]/20 flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-[color:var(--feature-blue)] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs text-[color:var(--muted-foreground)]">
+            Processing survey response...
+          </span>
         </div>
       )}
     </div>

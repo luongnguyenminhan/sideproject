@@ -58,7 +58,7 @@ export default function HeroSection({
             className="p-6 max-w-4xl mx-auto"
             opacity={0.08}
           >
-            <div className="text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-200 leading-relaxed">
+            <div className="text-xl md:text-2xl lg:text-3xl text-[color:var(--text-primary)] leading-relaxed">
               {description}
             </div>
           </LiquidGlass>
