@@ -25,7 +25,7 @@ def set_authorization_token(token: str):
 	"""Set authorization token for N8N API calls in current context"""
 	global _current_authorization_token
 	_current_authorization_token = token
-	logger.info(f'[QuestionComposer] Authorization token set: {token[:20] if token else None}...')
+	print(f'[QuestionComposer] Authorization token set: {token[:20] if token else None}...')
 
 
 def set_conversation_context(conversation_id: str, user_id: str = None):
@@ -49,7 +49,7 @@ def get_conversation_context() -> tuple[Optional[str], Optional[str]]:
 @tool(return_direct=False)
 async def generate_survey_questions(
 	description: str = 'Generate personalized survey questions based on user request',
-	custom_prompt: str = None,
+	custom_prompt: str = 'Ask user with a super long question',
 ) -> str:
 	"""
 	🔥 CRITICAL TOOL: Generate intelligent survey questions using N8N API and send to frontend via WebSocket.
@@ -101,16 +101,16 @@ async def generate_survey_questions(
 
 	try:
 		# Call N8N API to generate questions
-		logger.info(f'[generate_survey_questions] 📞 Calling N8N API for conversation: {conversation_id}')
-		logger.info(f'[generate_survey_questions] 🔑 Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
-
+		print(f'[generate_survey_questions] 📞 Calling N8N API for conversation: {conversation_id}')
+		print(f'[generate_survey_questions] 🔑 Using authorization token: {authorization_token[:20] if authorization_token else "None"}...')
+		print(f'[generate_survey_questions] 🔧 Custom prompt: {custom_prompt}')
 		try:
 			n8n_response = await n8n_client.generate_questions(
 				session_id=conversation_id,
 				authorization_token=authorization_token,
 				custom_prompt=custom_prompt,
 			)
-			logger.info('[generate_survey_questions] ✅ N8N API call successful')
+			print('[generate_survey_questions] ✅ N8N API call successful')
 		except Exception as n8n_error:
 			logger.warning(f'[generate_survey_questions] ⚠️ N8N API failed, using mock data: {n8n_error}')
 
@@ -148,9 +148,9 @@ async def _send_survey_to_frontend(conversation_id: str, user_id: str, n8n_respo
 
 		# Send via WebSocket if user is connected
 		if user_id and user_id in websocket_manager.active_connections:
-			logger.info(f'[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id}')
+			print(f'[_send_survey_to_frontend] Sending survey data via WebSocket to user: {user_id}')
 			await websocket_manager.send_message(user_id, survey_message)
-			logger.info('[_send_survey_to_frontend] Survey data sent successfully via WebSocket')
+			print('[_send_survey_to_frontend] Survey data sent successfully via WebSocket')
 		else:
 			logger.warning(f'[_send_survey_to_frontend] User {user_id} not connected to WebSocket')
 
@@ -187,7 +187,7 @@ async def _create_question_session(conversation_id: str, user_id: str, survey_da
 				description='AI Generated Career Survey',
 			)
 
-			logger.info(f'[_create_question_session] Question session created: {result.get("session_id")}')
+			print(f'[_create_question_session] Question session created: {result.get("session_id")}')
 			return result
 
 		finally:
@@ -205,5 +205,5 @@ async def _create_question_session(conversation_id: str, user_id: str, survey_da
 
 def get_question_composer_tool(db_session: Session = None):
 	"""Factory function để tạo question composer tool instance"""
-	logger.info('[get_question_composer_tool] Creating question composer tool')
+	print('[get_question_composer_tool] Creating question composer tool')
 	return generate_survey_questions
