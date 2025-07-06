@@ -22,7 +22,7 @@ import { AnimatedButton } from '@/components/animations/AnimatedButton';
 import { AnimatedList } from '@/components/animations/AnimatedList';
 import { motion, AnimatePresence } from 'framer-motion';
 import { processMessageText } from '@/utils/text-processing';
-import { ChatClientWrapper } from '@/components/chat/ChatClientWrapper';
+import ChatClientWrapper from './ChatClientWrapper';
 
 interface FloatingChatBubbleProps {
   onToggle?: () => void
