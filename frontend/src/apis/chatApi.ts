@@ -286,7 +286,7 @@ class ChatApi {
     }
 
     // WebSocket v2 route: /api/v1/chat/v2/ws/{conversation_id}
-    return `${protocol}//${basePath}/api/v1/chat/v2/ws/${conversationId}?${params.toString()}`;
+    return `${protocol}//${basePath}/api/v2/chat/ws/${conversationId}?${params.toString()}`;
   }
 
   // Get chat history for n8n context
