@@ -11,7 +11,7 @@ from app.core.database import get_db
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 from ..schemas.file_request import FileListRequest
-from app.modules.chat.services import file_service
+from app.modules.chat.services.file_service import file_service
 from ..dal.file_dal import FileDAL
 
 logger = logging.getLogger(__name__)
