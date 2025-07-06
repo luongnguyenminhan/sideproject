@@ -11,7 +11,7 @@ from app.middleware.translation_manager import _
 
 logger = logging.getLogger(__name__)
 
-route = APIRouter(prefix='/chat/v2', tags=['Chat V2'])
+route = APIRouter(prefix='/chat', tags=['Chat V2'])
 
 
 class WebSocketManagerV2:
@@ -79,7 +79,10 @@ async def websocket_chat_v2_endpoint(
 
 		# Verify user has access to conversation
 		try:
-			chat_repo.get_conversation_by_id(conversation_id, user_id)
+			conversation = chat_repo.get_conversation_by_id(conversation_id, user_id)
+			if not conversation:
+				await WebSocketErrorHandler.handle_forbidden_error(websocket, reason='Conversation not found')
+				return
 		except Exception as e:
 			logger.error(f'Access denied: {e}')
 			await WebSocketErrorHandler.handle_forbidden_error(websocket, reason='Access denied to conversation')

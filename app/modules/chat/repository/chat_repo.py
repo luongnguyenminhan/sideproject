@@ -145,7 +145,10 @@ class ChatRepo:
 
 		# Get user_id from conversation if not provided
 		if not user_id:
-			conversation = self.get_conversation_by_id(conversation_id, '')  # Fix: use empty string for user_id check
+			# Get conversation without user_id check first to extract user_id
+			conversation = self.conversation_dal.get_by_id(conversation_id)
+			if not conversation:
+				raise NotFoundException(_('conversation_not_found'))
 			user_id = conversation.user_id
 
 		# Get user's API key if not provided
@@ -210,7 +213,10 @@ class ChatRepo:
 
 		# Get user_id from conversation if not provided
 		if not user_id:
-			conversation = self.get_conversation_by_id(conversation_id, '')  # Fix: use empty string for user_id check
+			# Get conversation without user_id check first to extract user_id
+			conversation = self.conversation_dal.get_by_id(conversation_id)
+			if not conversation:
+				raise NotFoundException(_('conversation_not_found'))
 			user_id = conversation.user_id
 
 		# Get user's API key if not provided
