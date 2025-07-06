@@ -390,3 +390,22 @@ export interface ChatError {
   message: string
   details?: string
 }
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string | Date;
+  conversation_id?: string;
+  model_used?: string;
+  response_time_ms?: number;
+  isStreaming?: boolean;
+}
+
+export interface ChatHistory {
+  messages: ChatMessage[];
+  total_count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}

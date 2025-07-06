@@ -97,5 +97,13 @@ export interface PaginationMetadata {
   has_previous: boolean;
 }
 
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
 export type ApiResponse<T> = Promise<CommonResponse<T>>;
 export type ApiErrorResponse = Promise<ApiError>;

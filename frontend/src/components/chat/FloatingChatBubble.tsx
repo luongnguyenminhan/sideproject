@@ -22,8 +22,19 @@ import { AnimatedButton } from '@/components/animations/AnimatedButton';
 import { AnimatedList } from '@/components/animations/AnimatedList';
 import { motion, AnimatePresence } from 'framer-motion';
 import { processMessageText } from '@/utils/text-processing';
+import { ChatClientWrapper } from '@/components/chat/ChatClientWrapper';
 
-export default function FloatingChatBubble() {
+interface FloatingChatBubbleProps {
+  onToggle?: () => void
+  initialConversationId?: string
+  useWebSocketV2?: boolean // New prop to choose WebSocket version
+}
+
+export default function FloatingChatBubble({ 
+  onToggle, 
+  initialConversationId,
+  useWebSocketV2 = false // Default to v1 for backward compatibility
+}: FloatingChatBubbleProps) {
   const { t } = useTranslation();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -188,6 +199,41 @@ export default function FloatingChatBubble() {
       setIsLoading(false);
     }
   };
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+    if (onToggle) {
+      onToggle();
+    }
+  };
+
+  // Pass useWebSocketV2 to ChatClientWrapper
+  const renderChatInterface = () => {
+    if (!isOpen || !activeConversationId) return null
+
+    return (
+      <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-[color:var(--background)] border border-[color:var(--border)] rounded-lg shadow-xl z-50 flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-[color:var(--border)]">
+          <h3 className="text-lg font-semibold text-[color:var(--foreground)]">
+            {t('chat.title') || 'Chat'}
+          </h3>
+          <button
+            onClick={handleToggle}
+            className="text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)] transition-colors"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+        
+        <div className="flex-1 overflow-hidden">
+          <ChatClientWrapper 
+            conversationId={activeConversationId}
+            useWebSocketV2={useWebSocketV2}
+          />
+        </div>
+      </div>
+    )
+  }
 
   // UI
   if (!isOpen) {
@@ -445,6 +491,7 @@ export default function FloatingChatBubble() {
           </motion.div>
         )}
       </AnimatePresence>
+      {renderChatInterface()}
     </div>
   );
 }

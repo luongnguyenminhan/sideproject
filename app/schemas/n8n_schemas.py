@@ -70,6 +70,24 @@ class N8NAPIResponse(ResponseSchema):
 	error: Optional[str] = Field(None, description='Error message if any')
 
 
+class N8NChatWorkflowResponse(ResponseSchema):
+	"""Response from N8N chat workflow"""
+
+	model_config = ConfigDict(from_attributes=True)
+
+	output: str = Field(..., description='AI response content')
+
+
+class N8NChatWorkflowAPIResponse(ResponseSchema):
+	"""Complete response from N8N chat workflow API"""
+
+	model_config = ConfigDict(from_attributes=True)
+
+	data: List[N8NChatWorkflowResponse] = Field(..., description='Response data array')
+	status: Optional[str] = Field(None, description='Response status')
+	error: Optional[str] = Field(None, description='Error message if any')
+
+
 def convert_n8n_to_internal_format(n8n_response: Dict[str, Any]) -> Dict[str, Any]:
 	"""
 	Convert N8N API response to our internal format
@@ -128,3 +146,37 @@ def convert_n8n_to_internal_format(n8n_response: Dict[str, Any]) -> Dict[str, An
 		result['analysis'] = analysis_data.get('analysis_text', analysis_data.get('analysis', result['analysis']))
 
 	return result
+
+
+def convert_n8n_chat_response_to_internal_format(
+	n8n_response: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+	"""
+	Convert N8N chat workflow response to internal format
+
+	Args:
+	    n8n_response: Response từ N8N chat workflow API format [{"output": "content"}]
+
+	Returns:
+	    Response theo format internal của chúng ta
+	"""
+	if isinstance(n8n_response, list) and len(n8n_response) > 0:
+		output_content = n8n_response[0].get('output', '')
+
+		return {
+			'content': output_content,
+			'model_used': 'n8n-chat-workflow',
+			'usage': {
+				'prompt_tokens': 0,  # N8N không trả về token info
+				'completion_tokens': len(output_content.split()),
+				'total_tokens': len(output_content.split()),
+			},
+			'response_time_ms': 0,  # Sẽ được tính ở client
+		}
+	else:
+		return {
+			'content': '',
+			'model_used': 'n8n-chat-workflow',
+			'usage': {'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0},
+			'response_time_ms': 0,
+		}

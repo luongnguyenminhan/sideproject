@@ -15,7 +15,7 @@ import {
 } from '@/types/chat.type'
 import type { Question } from '@/types/question.types'
 import { getErrorMessage } from '@/utils/apiHandler'
-import { ChatWebSocket, createChatWebSocket } from '@/utils/websocket'
+import { ChatWebSocket, ChatWebSocketV2, createChatWebSocket, createChatWebSocketV2 } from '@/utils/websocket'
 import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useCallback, useEffect, useState } from 'react'
@@ -29,7 +29,14 @@ import { SystemPromptEditor } from './SystemPromptEditor'
 import { CVModal } from '@/components/chat/CVModal'
 import { ResizableChatLayout } from './ResizableChatLayout'
 
-export function ChatClientWrapper() {
+interface ChatClientWrapperProps {
+  conversationId?: string
+  useWebSocketV2?: boolean // New prop to choose WebSocket version
+}
+
+export default function ChatClientWrapper({ 
+  useWebSocketV2 = false // Default to v1 for backward compatibility
+}: ChatClientWrapperProps) {
   const { t } = useTranslation()
   const [state, setState] = useState<ChatState>({
     conversations: [],
@@ -57,7 +64,8 @@ export function ChatClientWrapper() {
   const [surveyTitle, setSurveyTitle] = useState('Survey Form')
   const [surveyConversationId, setSurveyConversationId] = useState<string | null>(null)
 
-  const [websocket, setWebsocket] = useState<ChatWebSocket | null>(null)
+  // Updated websocket state to handle both v1 and v2
+  const [websocket, setWebsocket] = useState<ChatWebSocket | ChatWebSocketV2 | null>(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   // Agent management state
@@ -453,27 +461,49 @@ export function ChatClientWrapper() {
         setState(prev => ({ ...prev, wsToken: tokenResponse.token }))
 
         // Create WebSocket connection with both tokens
-        const ws = createChatWebSocket({
-          conversationId,
-          token: tokenResponse.token,
-          authorizationToken, // Pass the authorization token
-          onMessage: handleWebSocketMessage,
-          onError: (error) => {
-            console.error('[ChatClientWrapper] WebSocket error:', error)
-            setState(prev => ({ 
-              ...prev, 
-              error: 'WebSocket connection error',
-              isTyping: false
-            }))
-          },
-          onClose: (event) => {
-            console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
-          },
-          onOpen: () => {
-            console.log('[ChatClientWrapper] WebSocket connected')
-            setState(prev => ({ ...prev, error: null }))
-          }
-        })
+        const ws = useWebSocketV2 
+          ? createChatWebSocketV2({
+              conversationId,
+              token: tokenResponse.token,
+              authorizationToken, // Pass the authorization token
+              onMessage: handleWebSocketMessage,
+              onError: (error) => {
+                console.error('[ChatClientWrapper] WebSocket error:', error)
+                setState(prev => ({ 
+                  ...prev, 
+                  error: 'WebSocket connection error',
+                  isTyping: false
+                }))
+              },
+              onClose: (event) => {
+                console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
+              },
+              onOpen: () => {
+                console.log('[ChatClientWrapper] WebSocket connected')
+                setState(prev => ({ ...prev, error: null }))
+              }
+            })
+          : createChatWebSocket({
+              conversationId,
+              token: tokenResponse.token,
+              authorizationToken, // Pass the authorization token
+              onMessage: handleWebSocketMessage,
+              onError: (error) => {
+                console.error('[ChatClientWrapper] WebSocket error:', error)
+                setState(prev => ({ 
+                  ...prev, 
+                  error: 'WebSocket connection error',
+                  isTyping: false
+                }))
+              },
+              onClose: (event) => {
+                console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
+              },
+              onOpen: () => {
+                console.log('[ChatClientWrapper] WebSocket connected')
+                setState(prev => ({ ...prev, error: null }))
+              }
+            })
 
         await ws.connect()
         setWebsocket(ws)

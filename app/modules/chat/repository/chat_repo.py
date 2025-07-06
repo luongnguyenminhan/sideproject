@@ -14,6 +14,7 @@ from app.core.database import get_db
 from app.exceptions.exception import NotFoundException, ValidationException
 from app.middleware.translation_manager import _
 from app.modules.chat.services.cv_integration_service import CVIntegrationService
+from app.utils.n8n_api_client import n8n_client
 
 from ....core.config import GOOGLE_API_KEY
 from ...agent.dal.agent_dal import AgentDAL
@@ -105,6 +106,32 @@ class ChatRepo:
 			)
 
 			return message
+
+	async def get_ai_response_from_n8n(
+		self,
+		conversation_id: str,
+		user_message: str,
+		user_id: str,
+		authorization_token: str = None,
+	) -> dict:
+		"""Get AI response from N8N chat workflow directly"""
+		logger.info(f'🚀 [ChatRepo] Getting AI response from N8N for conversation: {conversation_id}')
+
+		try:
+			# Call N8N chat workflow directly
+			result = await n8n_client.call_chat_workflow(
+				conversation_id=conversation_id,
+				user_message=user_message,
+				user_id=user_id,
+				authorization_token=authorization_token,
+			)
+
+			logger.info(f'✅ [ChatRepo] N8N chat workflow response received')
+			return result
+
+		except Exception as e:
+			logger.error(f'❌ [ChatRepo] Error getting N8N response: {e}')
+			raise ValidationException(_('ai_response_failed'))
 
 	async def get_ai_response(
 		self,
