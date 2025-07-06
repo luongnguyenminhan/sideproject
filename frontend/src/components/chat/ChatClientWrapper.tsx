@@ -450,6 +450,7 @@ export default function ChatClientWrapper({
       const authorizationToken = Cookies.get('access_token')
       
       console.log('[setupWebSocket] Authorization token:', authorizationToken ? authorizationToken.substring(0, 20) + '...' : 'Not found')
+      console.log(`[setupWebSocket] Using WebSocket ${useWebSocketV2 ? 'V2 (n8n)' : 'V1 (agent)'}`)
       
       // Get WebSocket token
       console.log('[setupWebSocket] Requesting WebSocket token for conversation:', conversationId)
@@ -468,18 +469,18 @@ export default function ChatClientWrapper({
               authorizationToken, // Pass the authorization token
               onMessage: handleWebSocketMessage,
               onError: (error) => {
-                console.error('[ChatClientWrapper] WebSocket error:', error)
+                console.error('[ChatClientWrapper] WebSocket V2 error:', error)
                 setState(prev => ({ 
                   ...prev, 
-                  error: 'WebSocket connection error',
+                  error: 'WebSocket V2 connection error',
                   isTyping: false
                 }))
               },
               onClose: (event) => {
-                console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
+                console.log('[ChatClientWrapper] WebSocket V2 closed:', event.code, event.reason)
               },
               onOpen: () => {
-                console.log('[ChatClientWrapper] WebSocket connected')
+                console.log('🚀 [ChatClientWrapper] WebSocket V2 (n8n) connected successfully!')
                 setState(prev => ({ ...prev, error: null }))
               }
             })
@@ -489,24 +490,27 @@ export default function ChatClientWrapper({
               authorizationToken, // Pass the authorization token
               onMessage: handleWebSocketMessage,
               onError: (error) => {
-                console.error('[ChatClientWrapper] WebSocket error:', error)
+                console.error('[ChatClientWrapper] WebSocket V1 error:', error)
                 setState(prev => ({ 
                   ...prev, 
-                  error: 'WebSocket connection error',
+                  error: 'WebSocket V1 connection error',
                   isTyping: false
                 }))
               },
               onClose: (event) => {
-                console.log('[ChatClientWrapper] WebSocket closed:', event.code, event.reason)
+                console.log('[ChatClientWrapper] WebSocket V1 closed:', event.code, event.reason)
               },
               onOpen: () => {
-                console.log('[ChatClientWrapper] WebSocket connected')
+                console.log('🔗 [ChatClientWrapper] WebSocket V1 (agent) connected successfully!')
                 setState(prev => ({ ...prev, error: null }))
               }
             })
 
         await ws.connect()
         setWebsocket(ws)
+        
+        // Log connection success
+        console.log(`✅ WebSocket ${useWebSocketV2 ? 'V2 (n8n)' : 'V1 (agent)'} setup completed for conversation: ${conversationId}`)
       } else {
         console.error('[setupWebSocket] No token received or token is undefined:', tokenResponse)
         setState(prev => ({ 
@@ -516,7 +520,7 @@ export default function ChatClientWrapper({
         }))
       }
     } catch (error) {
-      console.error('Failed to setup WebSocket:', error)
+      console.error(`Failed to setup WebSocket ${useWebSocketV2 ? 'V2' : 'V1'}:`, error)
       setState(prev => ({ 
         ...prev, 
         error: getErrorMessage(error),
@@ -974,62 +978,83 @@ export default function ChatClientWrapper({
         </div>
       )}
 
-      {/* DEBUG: Survey State Logging */}
-      {/* {state.activeConversationId && (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-          <Button
-            onClick={() => {
-              console.log('[DEBUG] Current Survey State:', {
-                surveyDataLength: surveyData.length,
-                surveyConversationId,
-                activeConversationId: state.activeConversationId,
-                surveyModalVisible,
-                surveyData: surveyData.slice(0, 1),
-                surveyDataFull: surveyData
-              })
-            }}
-            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded shadow-lg"
-          >
-            🔍 Log Survey State
-          </Button>
-          <Button
-            onClick={() => {
-              handleOpenSurvey()
-            }}
-            className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded shadow-lg"
-          >
-            📋 Open Survey
-          </Button>
-          <Button
-            onClick={() => {
-              // Simulate having a session ID like from the API response
-              const testSessionId = '8bc52db4-a549-4a3f-a568-9d90991194e2'
-              console.log('[DEBUG] Setting session ID:', testSessionId)
-              window.sessionStorage.setItem('current_survey_session_id', testSessionId)
-              
-              console.log('[DEBUG] Session storage after set:', window.sessionStorage.getItem('current_survey_session_id'))
-              
-              handleOpenSurvey()
-              console.log('[DEBUG] Called handleOpenSurvey')
-            }}
-            className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 rounded shadow-lg"
-          >
-            🎯 Test Session ID
-          </Button>
-          <Button
-            onClick={() => {
-              console.log('[DEBUG] WebSocket State:', {
-                isConnected: websocket?.isConnected(),
-                hasWebSocket: !!websocket,
-                connectionState: websocket?.getConnectionState()
-              })
-            }}
-            className="bg-purple-500 hover:bg-purple-600 text-white text-xs px-3 py-1 rounded shadow-lg"
-          >
-            🌐 Log WebSocket State
-          </Button>
+      {/* DEBUG: WebSocket V2 Testing Panel */}
+      {process.env.NODE_ENV === 'development' && state.activeConversationId && (
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 bg-[color:var(--card)] border border-[color:var(--border)] rounded-lg p-4 shadow-lg max-w-sm">
+          <div className="text-sm font-semibold text-[color:var(--foreground)] mb-2">
+            🧪 WebSocket {useWebSocketV2 ? 'V2 (n8n)' : 'V1 (Agent)'} Test Panel
+          </div>
+          
+          <div className="text-xs text-[color:var(--muted-foreground)] space-y-1">
+            <div>Status: {websocket?.isConnected() ? '🟢 Connected' : '🔴 Disconnected'}</div>
+            <div>Conversation: {state.activeConversationId?.substring(0, 8)}...</div>
+            <div>Version: {useWebSocketV2 ? 'V2 (n8n)' : 'V1 (Agent)'}</div>
+          </div>
+          
+          <div className="flex flex-col gap-1">
+            <Button
+              onClick={() => {
+                console.log('[DEBUG] WebSocket Test - Current State:', {
+                  isConnected: websocket?.isConnected(),
+                  hasWebSocket: !!websocket,
+                  connectionState: websocket?.getConnectionState(),
+                  version: useWebSocketV2 ? 'V2' : 'V1',
+                  activeConversationId: state.activeConversationId,
+                  wsToken: state.wsToken
+                })
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+              size="sm"
+            >
+              🔍 Log WebSocket State
+            </Button>
+            
+            <Button
+              onClick={() => {
+                if (websocket?.isConnected()) {
+                  const testMessage = `Test message from WebSocket ${useWebSocketV2 ? 'V2' : 'V1'} at ${new Date().toLocaleTimeString()}`
+                  websocket.sendMessage(testMessage)
+                  console.log(`[DEBUG] Sent test message via WebSocket ${useWebSocketV2 ? 'V2' : 'V1'}:`, testMessage)
+                } else {
+                  console.error('[DEBUG] Cannot send test message - WebSocket not connected')
+                }
+              }}
+              className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded"
+              size="sm"
+            >
+              📤 Send Test Message
+            </Button>
+            
+            <Button
+              onClick={() => {
+                if (websocket?.isConnected()) {
+                  websocket.sendPing()
+                  console.log(`[DEBUG] Sent ping via WebSocket ${useWebSocketV2 ? 'V2' : 'V1'}`)
+                } else {
+                  console.error('[DEBUG] Cannot send ping - WebSocket not connected')
+                }
+              }}
+              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-2 py-1 rounded"
+              size="sm"
+            >
+              🏓 Send Ping
+            </Button>
+            
+            <Button
+              onClick={() => {
+                if (state.activeConversationId) {
+                  setupWebSocket(state.activeConversationId)
+                  console.log(`[DEBUG] Reconnecting WebSocket ${useWebSocketV2 ? 'V2' : 'V1'}`)
+                }
+              }}
+              className="bg-purple-500 hover:bg-purple-600 text-white text-xs px-2 py-1 rounded"
+              size="sm"
+            >
+              🔄 Reconnect
+            </Button>
+          </div>
         </div>
-      )} */}
+      )}
      
       {/* Mobile Sidebar */}
       <MobileSidebar

@@ -12,4 +12,12 @@
 // - empty-chat-state.tsx
 // - messages-container.tsx
 
-export { ChatInterface } from './chat-interface';
+import ChatClientWrapper from './ChatClientWrapper'
+
+export default function ChatInterface() {
+  return (
+    <div className="h-full">
+      <ChatClientWrapper useWebSocketV2={true} />
+    </div>
+  )
+}

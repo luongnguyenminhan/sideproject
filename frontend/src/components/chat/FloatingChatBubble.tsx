@@ -228,7 +228,7 @@ export default function FloatingChatBubble({
         <div className="flex-1 overflow-hidden">
           <ChatClientWrapper 
             conversationId={activeConversationId}
-            useWebSocketV2={useWebSocketV2}
+            useWebSocketV2={true}
           />
         </div>
       </div>
