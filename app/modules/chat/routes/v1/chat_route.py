@@ -7,6 +7,7 @@ from fastapi import (
 	WebSocketDisconnect,
 	UploadFile,
 	File,
+	Query,
 )
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -21,6 +22,8 @@ from app.middleware.translation_manager import _
 from app.exceptions.exception import ValidationException
 from app.middleware.websocket_middleware import WebSocketErrorHandler
 from app.modules.chat.services.cv_integration_service import CVIntegrationService
+from app.modules.chat.dal.message_dal import MessageDAL
+from app.modules.chat.dal.conversation_dal import ConversationDAL
 import logging
 
 logger = logging.getLogger(__name__)
@@ -141,7 +144,6 @@ async def websocket_chat_endpoint(
 				await WebSocketErrorHandler.handle_auth_error(websocket, reason='Invalid token')
 				return
 
-
 		except Exception as e:
 			pass
 			await WebSocketErrorHandler.handle_auth_error(websocket, reason='Authentication failed')
@@ -176,7 +178,6 @@ async def websocket_chat_endpoint(
 				if message_data.get('type') == 'chat_message':
 					content = message_data.get('content', '').strip()
 					api_key = message_data.get('api_key')
-
 
 					if not content:
 						logger.warning('[WebSocket] ⚠️ EMPTY CONTENT: Sending error response')
@@ -230,7 +231,6 @@ async def websocket_chat_endpoint(
 							authorization_token=authorization_token,  # Pass authorization token
 						)
 
-
 						# Create AI message in database
 						ai_message = chat_repo.create_message(
 							conversation_id=conversation_id,
@@ -269,7 +269,6 @@ async def websocket_chat_endpoint(
 						await websocket_manager.send_message(user_id, {'type': 'assistant_typing', 'status': False})
 
 				elif message_data.get('type') == 'survey_response':
-
 					try:
 						# Import here to avoid circular imports
 						from app.modules.question_session.repository.question_session_repo import (
@@ -313,7 +312,6 @@ async def websocket_chat_endpoint(
 						question_session_repo = QuestionSessionRepo(db)
 						result = question_session_repo.parse_survey_response(survey_request, user_id)
 
-
 						# Send confirmation back to client
 						await websocket_manager.send_message(
 							user_id,
@@ -350,7 +348,7 @@ async def websocket_chat_endpoint(
 		pass
 		try:
 			await websocket_manager.send_message(user_id, {'type': 'error', 'message': _('websocket_error')})
-		except Exception as send_error:
+		except Exception:
 			pass
 	finally:
 		if user_id:
@@ -582,3 +580,52 @@ async def get_cv_metadata(
 	except Exception as e:
 		logger.error(f'Error getting CV metadata: {e}')
 		raise ValidationException(_('failed_to_get_cv_metadata'))
+
+
+@route.get('/conversation/{conversation_id}/history', response_model=APIResponse)
+@handle_exceptions
+async def get_chat_history(
+	conversation_id: str,
+	limit: int = Query(20, ge=1, le=100),
+	page: int = Query(1, ge=1),
+	db: Session = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
+):
+	"""Lấy lịch sử chat của 1 conversation"""
+	user_id = current_user.get('user_id')
+	# Kiểm tra quyền truy cập
+	conversation_dal = ConversationDAL(db)
+	conversation = conversation_dal.get_user_conversation_by_id(conversation_id, user_id)
+	if not conversation:
+		return APIResponse(
+			error_code=BaseErrorCode.ERROR_CODE_NOT_FOUND,
+			message=_('conversation_not_found'),
+			data=None,
+		)
+	# Lấy messages
+	message_dal = MessageDAL(db)
+	paginated = message_dal.get_conversation_messages(
+		conversation_id=conversation_id,
+		page=page,
+		page_size=limit,
+	)
+	# Chuyển đổi dữ liệu trả về
+	messages = [
+		{
+			'id': m.id,
+			'content': m.content,
+			'role': m.role.value if hasattr(m.role, 'value') else m.role,
+			'timestamp': m.timestamp.isoformat() if m.timestamp else None,
+		}
+		for m in paginated.items
+	]
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('chat_history_retrieved'),
+		data={
+			'messages': messages,
+			'total': paginated.total_count,
+			'page': paginated.page,
+			'page_size': paginated.page_size,
+		},
+	)
