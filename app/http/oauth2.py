@@ -22,7 +22,7 @@ def get_current_user(data: str = Depends(oauth2_scheme)):
 		payload = jwt_generator.decode_token(data, SECRET_KEY, TOKEN_ISSUER, TOKEN_AUDIENCE)
 		return payload
 	except Exception as e:
-		print(f'Unexpected error in get_current_user: {e}')
+		print(f'Unexpected error in get_current_user: {e}, {data}')
 		raise UnauthorizedException(_('token_verification_failed')) from e
 
 
