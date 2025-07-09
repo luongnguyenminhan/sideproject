@@ -83,7 +83,7 @@ class N8NAPIClient:
             )
 
             if response.status_code == 200:
-                logger.info(f"🪵 [N8NAPIClient] Raw response text: {response.text}")
+                logger.info(f"🪵 [N8NAPIClient] Raw response text: {response}")
                 response_data = response.json()
                 logger.info(f"✅ [N8NAPIClient] Chat workflow successful")
 
