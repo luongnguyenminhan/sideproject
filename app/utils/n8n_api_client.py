@@ -59,6 +59,7 @@ class N8NAPIClient:
             "content": user_message,
             "conversation_id": conversation_id,
             "user_id": user_id,
+            "auth_token": authorization_token,
         }
 
         # Prepare headers
