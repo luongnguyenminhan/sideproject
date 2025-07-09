@@ -347,5 +347,5 @@ class MinioHandler:
 
 # Create a singleton instance
 # Temporarily disable MinIO for testing
-# minio_handler = MinioHandler()
-minio_handler = None
+minio_handler = MinioHandler()
+# minio_handler = None
