@@ -28,6 +28,11 @@ SERVICE = 'gemini'
 MODEL_NAME = 'model/gemini-2.0-flash'
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+# PayOS Configuration
+PAYOS_CLIENT_ID = os.getenv('PAYOS_CLIENT_ID')
+PAYOS_API_KEY = os.getenv('PAYOS_API_KEY')
+PAYOS_CHECKSUM_KEY = os.getenv('PAYOS_CHECKSUM_KEY')
 print(f'GOOGLE_API_KEY: {GOOGLE_API_KEY}')
 
 # Google OAuth Settings

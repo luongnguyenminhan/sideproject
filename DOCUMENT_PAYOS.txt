@@ -1,0 +1,138 @@
+Cài đặt thư viện payOS cho dự án Python
+Cài đặt thư viện với pip:
+
+# Windows
+pip install payos
+
+# Linux/macOS
+pip3 install payos
+
+Khởi tạo đối tượng PayOS
+Bạn cần khởi tạo đối tượng PayOS bằng client_id, api_key và checksum_key của cổng thanh toán mà bạn đã tạo.
+
+Xem hướng dẫn
+from payos import PayOS
+import os
+
+client_id = os.environ.get('PAYOS_CLIENT_ID')
+api_key = os.environ.get('PAYOS_API_KEY')
+checksum_key = os.environ.get('PAYOS_CHECKSUM_KEY')
+
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+
+
+Các phương thức có trong đối tượng PayOS
+Phương thức	Kiểu tham số đầu vào	Mô tả	Kiểu trả về
+createPaymentLink	PaymentData	Tạo link thanh toán cho dữ liệu đơn hàng	CreatePaymentResult
+getPaymentLinkInformation	Union[str, int]	Lấy thông tin thanh toán của đơn hàng đã tạo link thanh toán.	PaymentLinkInformation
+cancelPaymentLink	Union[str, int], str	Hủy link thanh toán của đơn hàng.	PaymentLinkInformation
+confirmWebhook	str	Xác thực URL Webhook của kênh thanh toán và thêm hoặc cập nhật URL Webhook cho Kênh thanh toán đó nếu thành công	str
+verifyPaymentWebhookData	json	Xác minh dữ liệu nhận được qua webhook sau khi thanh toán	WebhookData
+
+Phương thức createPaymentLink
+Tạo link thanh toán cho dữ liệu đơn hàng với đầu vào là paymentData có kiểu PaymentData và trả về CreatePaymentResult.
+
+Xem hướng dẫn
+from payos import PayOS, ItemData, PaymentData
+
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+
+item = ItemData(name="Mì tôm hảo hảo ly", quantity=1, price=1000)
+
+paymentData = PaymentData(orderCode=11, amount=1000, description="Thanh toan don hang",
+     items=[item], cancelUrl="http://localhost:8000", returnUrl="http://localhost:8000")
+
+paymentLinkData = payOS.createPaymentLink(paymentData = paymentData)
+
+
+Phương thức getPaymentLinkInformation
+Lấy thông tin thanh toán của đơn hàng đã tạo link thanh toán với đầu vào là orderId có kiểu Union[str, int] và trả về PaymentLinkInformation
+
+Xem hướng dẫn
+from payos import PayOS
+
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+
+orderId = 1
+
+paymentLinkInfo = payOS.getPaymentLinkInformation(orderId = orderId)
+
+
+Phương thức confirmWebhook
+Xác thực URL Webhook của kênh thanh toán và thêm hoặc cập nhật URL Webhook cho Kênh thanh toán. Có đầu vào là webhookUrl có kiểu là str và trả về kiểu str.
+
+Xem hướng dẫn
+from payos import PayOS
+
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+
+payOS.confirmWebhook("https://your-webhook-url/")
+
+Phương thức verifyPaymentWebhookData
+Phương thức verifyPaymentWebhookData dùng để xác minh dữ liệu nhận được qua webhook sau khi thanh toán, có đầu vào là webhookBody có kiểu là json và có kiểu trả về là WebhookData.
+
+Xem hướng dẫn
+from payos import PayOS
+
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+
+webhookBody = {
+    "code": "00",
+    "desc": "success",
+    "success": true,
+    "data": {
+        "accountNumber": "0399609015",
+        "amount": 1000,
+        "description": "Ma giao dich thu nghiem",
+        "reference": "FT23325781308800",
+        "transactionDateTime": "2023-11-21 15:20:34",
+        "virtualAccountNumber": "",
+        "counterAccountBankId": "",
+        "counterAccountBankName": "",
+        "counterAccountName": "",
+        "counterAccountNumber": "",
+        "virtualAccountName": "",
+        "orderCode": 52422,
+        "currency": "VND",
+        "paymentLinkId": "b646a39ca8654d8fa03e0dc8bec7264c",
+        "code": "00",
+        "desc": "success"
+    },
+    "signature": "1f2eb76896a3a8e10e1f560bed4087f788c5d654af6d0a1d394351806a34d6dd"
+}
+
+webhookData = payOS.verifyPaymentWebhookData(webhookBody)
+
+
+Các kiểu dữ liệu
+Chúng tôi cung cấp thêm phương thức to_json() có thể giúp bạn chuyển các kiểu dữ liệu đối với các đối tượng trong PayOS sang kiểu json trong python.
+
+Kiểu Dữ Liệu PaymentData
+Sau khi đã khởi tạo đối tượng PayOS, để có thể tạo đường dẫn thanh toán, bạn cần phải khởi tạo PaymentData. Trong PaymentData, có 6 trường chính bắt buộc mà bạn phải khởi tạo:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| |orderCode| Mã đơn hàng | int| | amount| Số tiền thanh toán | int| | description | Mô tả cho thanh toán, được dùng làm nội dung chuyển khoản | str| | items| Danh sách các sản phẩm | List[ItemData]| | cancelUrl| Đường dẫn sẽ được chuyển tiếp đến trang web hoặc ứng dụng của bạn khi người dùng bấm hủy đơn hàng | str| | returnUrl| Đường dẫn sẽ được chuyển tiếp đến trang web hoặc ứng dụng của bạn khi người dùng đã thanh toán đơn hàng thành công |str|
+
+Kiểu Dữ Liệu ItemData
+Dữ liệu này lưu trữ thông tin sản phẩm của đơn hàng và được thêm vào items trong PaymentData. Có 3 trường chính bắt buộc mà bạn phải khởi tạo:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| | name| Tên sản phẩm | str| | quantity| Số lượng sản phẩm | int| | price| Giá sản phẩm | int|
+
+Kiểu Dữ Liệu CreatePaymentResult
+Kiểu dữ liệu này được trả về khi gọi phương thức createPaymentLink. Trong CreatePaymentResult, có các thông tin sau:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| | bin| Mã BIN ngân hàng | str| | accountNumber| Số tài khoản kênh thanh toán | str| | accountName| Tên chủ tài khoản của kênh thanh toán | str| | amount| Số tiền thanh toán | int| | description| Mô tả cho đơn hàng, được dùng làm nội dung chuyển khoản |str| | orderCode| Mã đơn hàng | int| | currency| Đơn vị tiền tệ | str| | paymentLinkId| ID của link thanh toán |str| | status| Trạng thái thanh toán | str| | checkoutUrl| Đường dẫn đến trang thanh toán | str| | qrCode| Dữ liệu cho mã QR Code cho việc quét mã thanh toán | str|
+
+Kiểu Dữ Liệu PaymentLinkInformation
+Kiểu dữ liệu này được trả về khi gọi phương thức cancelPaymentLink và getPaymentLinkInformation. Trong PaymentLinkInformation, có các thông tin sau:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| | id| ID link thanh toán | str| | orderCode| Mã đơn hàng | int| | amount| Biểu thị tổng số tiền thanh toán | int| | amountPaid| Biểu thị số tiền đã thanh toán | int| | amountRemaining| Biểu thị số tiền còn lại phải thanh toán | int| | status| Đại diện cho trạng thái của thanh toán | str| | createdAt| Đại diện cho thời điểm tạo thanh toán | str| | transactions| Danh sách các giao dịch chuyển khoản của link thanh toán| List[Transaction] | cancellationReason| Đại diện cho lý do hủy thanh toán (nếu có) | str hoặc None| | canceledAt| Đại diện cho thời điểm link thanh toán bị hủy (nếu có) | str hoặc None|
+
+Kiểu Dữ Liệu Transaction
+Kiểu dữ liệu này được sử dụng trong PaymentLinkInformation. Trong Transaction, có các thông tin sau:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| | reference| Mã tham chiếu của giao dịch | str| | amount| Số tiền thanh toán | int| | accountNumber| Số tài khoản liên quan đến thanh toán | str| | description| Nội dung chuyển khoản | str| | transactionDateTime| Đại diện cho thời gian thực hiện giao dịch thanh toán | str| | virtualAccountName| Tên chủ tài khoản ảo (nếu có) | str hoặc None| | virtualAccountNumber| Số tài khoản ảo (nếu có) | str hoặc None| | counterAccountBankId| Mã ngân hàng đối ứng (nếu có) | str hoặc None| | counterAccountBankName| Tên ngân hàng đối ứng (nếu có) | str hoặc None| | counterAccountName| Tên chủ tài khoản đối ứng (nếu có) | str hoặc None| | counterAccountNumber| Số tài khoản đối ứng (nếu có) | str hoặc None|
+
+Kiểu Dữ Liệu WebhookData
+Kiểu dữ liệu này được trả về khi gọi verifyPaymentWebhookData. Trong WebhookData, có các thông tin sau:
+
+| Tên trường | Mô tả | Kiểu dữ liệu | | :---------| :----- | : ----------| | orderCode| Mã đơn hàng | int| | amount| Biểu thị tổng số tiền thanh toán | int| | description| Nội dung chuyển khoản | str| | accountNumber| Số tài khoản của kênh thanh toán | str| | reference| Mã tham chiếu của giao dịch | str| | transactionDateTime| Đại diện cho thời gian thực hiện giao dịch | str| | currency| Đơn vị tiền tệ | str| | paymentLinkId| ID của link thanh toán | str| | code| Mã trạng thái thanh toán | str| | desc| Mô tả về trạng thái thanh toán | str| | counterAccountBankId| Mã ngân hàng đối ứng (nếu có) | str hoặc None| | counterAccountBankName| Tên ngân hàng đối ứng (nếu có) | str hoặc None| | counterAccountName| Tên chủ tài khoản đối ứng (nếu có) | str hoặc None| | counterAccountNumber| Số tài khoản đối ứng (nếu có) | str hoặc None| | virtualAccountName| Tên chủ tài khoản ảo (nếu có) | str hoặc None| | virtualAccountNumber| Số tài khoản ảo (nếu có) | str hoặc None|
