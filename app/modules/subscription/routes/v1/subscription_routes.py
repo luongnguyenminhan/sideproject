@@ -18,10 +18,10 @@ from app.core.base_model import APIResponse
 
 
 # Create router with prefix and tags
-router = APIRouter(prefix="/subscription", tags=["Subscription"])
+route = APIRouter(prefix="/subscription", tags=["Subscription"])
 
 
-@router.get("/me/rank", response_model=APIResponse[UserRankResponse])
+@route.get("/me/rank", response_model=APIResponse[UserRankResponse])
 async def get_user_rank(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -37,7 +37,7 @@ async def get_user_rank(
     )
 
 
-@router.post("/payment/create-link", response_model=APIResponse[CreatePaymentResponse])
+@route.post("/payment/create-link", response_model=APIResponse[CreatePaymentResponse])
 async def create_payment_link(
     order_data: OrderCreate,
     current_user: User = Depends(get_current_user),
@@ -57,7 +57,7 @@ async def create_payment_link(
     )
 
 
-@router.post("/webhook/payos")
+@route.post("/webhook/payos")
 async def payos_webhook(
     request: Request,
     db: Session = Depends(get_db)
