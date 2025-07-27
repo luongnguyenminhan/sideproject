@@ -6,6 +6,43 @@ To make it easy for you to get started with GitLab, here's a list of recommended
 
 Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
+## Subscription System
+
+The application includes a subscription system with PayOS integration that allows users to subscribe to different plans:
+
+- **Basic**: Free tier with limited features
+- **Pro**: Premium tier with enhanced features (399,000 VND/month)
+- **Ultra**: Top-tier with all premium features (699,000 VND/month)
+
+### Setup Instructions
+
+1. Configure PayOS credentials in your environment variables:
+   ```
+   PAYOS_CLIENT_ID=your_client_id
+   PAYOS_API_KEY=your_api_key
+   PAYOS_CHECKSUM_KEY=your_checksum_key
+   ```
+
+2. Run database migrations to create subscription tables:
+   ```
+   alembic upgrade subscription_migration
+   ```
+
+3. Seed initial rank data:
+   ```
+   python -m app.modules.subscription.scripts.seed_ranks
+   ```
+
+### API Endpoints
+
+- **GET /api/v1/me/rank**: Get the current user's subscription rank and details
+- **POST /api/v1/payment/create-link**: Create a payment link for subscription
+- **POST /api/v1/webhook/payos**: Webhook endpoint for PayOS payment notifications
+
+### Cron Jobs
+
+The system includes a periodic task that runs every 5 minutes to check pending orders and update their status.
+
 ## Add your files
 
 - [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
