@@ -1,10 +1,11 @@
 """User model"""
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, String
+from sqlalchemy import Boolean, Column, DateTime, Enum, String, ForeignKey
 from sqlalchemy.orm import validates, relationship
 
 from app.core.base_model import BaseEntity
 from app.enums.user_enums import UserRoleEnum
+from app.enums.subscription_enums import RankEnum
 
 
 class User(BaseEntity):
@@ -23,12 +24,22 @@ class User(BaseEntity):
 	confirmed = Column(Boolean, nullable=False, default=True)
 	fcm_token = Column(String(255), nullable=True)
 	last_login_at = Column(DateTime(timezone=True), nullable=True)
+	
+	# Subscription related fields
+	rank = Column(Enum(RankEnum), nullable=False, default=RankEnum.BASIC)
+	rank_activated_at = Column(DateTime(timezone=True), nullable=True)
+	rank_expired_at = Column(DateTime(timezone=True), nullable=True)
 
 	# Chat system relationships
 	conversations = relationship('Conversation', back_populates='user', cascade='all, delete-orphan')
 	messages = relationship('Message', back_populates='user', cascade='all, delete-orphan')
 	files = relationship('File', back_populates='user', cascade='all, delete-orphan')
+	# Payment relationships
+	payments = relationship('Payment', back_populates='user', cascade='all, delete-orphan')
 	question_sessions = relationship('QuestionSession', back_populates='user', cascade='all, delete-orphan')
+
+	# Subscription relationships
+	subscription_orders = relationship('Order', back_populates='user', cascade='all, delete-orphan')
 
 	# Agent relationship (if users can own agents)
 	agents = relationship('Agent', back_populates='user', cascade='all, delete-orphan')

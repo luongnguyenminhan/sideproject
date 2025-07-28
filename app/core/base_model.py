@@ -50,7 +50,7 @@ class ResponseSchema(BaseModel):
 	model_config = ConfigDict(from_attributes=True)
 
 
-class APIResponse(BaseModel):
+class APIResponse(BaseModel, Generic[T]):
 	"""APIResponse"""
 
 	error_code: int | None = Body(default=1, description='Mã lỗi', examples=[0])

@@ -26,8 +26,17 @@ def custom_openapi(app: FastAPI):
 		routes=app.routes,
 	)
 	# Add Bearer token authentication to Swagger UI
-	openapi_schema['components']['securitySchemes'] = {'Bearer': {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}}
-	openapi_schema['security'] = [{'Bearer': []}]
+	openapi_schema['components']['securitySchemes'] = {
+		'BearerAuth': {
+			'type': 'http',
+			'scheme': 'bearer',
+			'bearerFormat': 'JWT',
+			'description': 'Enter JWT token with Bearer prefix'
+		}
+	}
+	
+	# Apply security globally to all operations
+	openapi_schema['security'] = [{'BearerAuth': []}]
 
 	# Store the modified schema
 	app.openapi_schema = openapi_schema

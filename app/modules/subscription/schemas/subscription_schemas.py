@@ -1,0 +1,78 @@
+"""Subscription schemas"""
+
+from datetime import datetime
+from typing import List, Dict, Optional, Any, Union
+
+from pydantic import BaseModel, Field
+
+from app.core.base_model import RequestSchema, ResponseSchema
+from app.enums.subscription_enums import RankEnum, OrderStatusEnum
+
+
+class RankBase(BaseModel):
+    """Base Rank schema"""
+    name: RankEnum
+    description: str
+    benefits: Dict[str, Any]
+    price: str
+
+
+class RankCreate(RankBase):
+    """Schema for creating a Rank"""
+    pass
+
+
+class RankResponse(RankBase, ResponseSchema):
+    """Schema for Rank response"""
+    id: str
+
+
+class UserRankResponse(ResponseSchema):
+    """Schema for User's current rank"""
+    rank: RankEnum
+    description: str
+    benefits: Dict[str, Any]
+    activated_at: Optional[datetime] = None
+    expired_at: Optional[datetime] = None
+    is_active: bool
+
+
+class OrderBase(BaseModel):
+    """Base Order schema"""
+    rank_type: RankEnum
+    amount: float
+    status: OrderStatusEnum
+
+
+class OrderCreate(RequestSchema):
+    """Schema for creating an Order"""
+    rank_type: RankEnum = Field(..., description="The subscription rank to purchase")
+
+
+class OrderResponse(OrderBase, ResponseSchema):
+    """Schema for Order response"""
+    id: str
+    order_code: str
+    user_id: str
+    payment_link_id: Optional[str] = None
+    checkout_url: Optional[str] = None
+    created_at: datetime
+    expired_at: datetime
+    activated_at: Optional[datetime] = None
+    expired_subscription_at: Optional[datetime] = None
+
+
+class CreatePaymentResponse(ResponseSchema):
+    """Schema for payment link creation response"""
+    checkout_url: str
+    order_code: str
+    expired_at: datetime
+
+
+class PayOSWebhookRequest(BaseModel):
+    """Schema for PayOS webhook request"""
+    code: str
+    desc: str
+    success: bool
+    data: Dict[str, Any]
+    signature: str
