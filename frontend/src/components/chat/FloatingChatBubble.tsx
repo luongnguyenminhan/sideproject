@@ -2,26 +2,26 @@
 // FloatingChatBubble.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import chatApi from '@/apis/chatApi';
+import AnimatedRibbon from '@/components/animations/AnimatedRibbon';
+import type { Conversation, Message, UploadedFile } from '@/types/chat.type';
+import { convertToUIConversation, convertToUIFile, convertToUIMessage } from '@/types/chat.type';
+import { faComments, faEdit, faPaperPlane, faPlus, faSync, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { MessageCodeBlock } from './message-code-block';
 import { TypingIndicator } from './typing-indicator';
-import chatApi from '@/apis/chatApi';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AnimatedRibbon from '@/components/animations/AnimatedRibbon';
-import { faComments, faPaperPlane, faSync, faTrash, faPlus, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
-import type { Conversation, Message, UploadedFile } from '@/types/chat.type';
-import { convertToUIConversation, convertToUIMessage, convertToUIFile } from '@/types/chat.type';
 
-import { useTranslation } from '@/contexts/TranslationContext';
-import { ScrambledText } from '@/components/animations/ScrambledText';
-import { FadeIn } from '@/components/animations/FadeIn';
-import { SlideIn } from '@/components/animations/SlideIn';
 import { AnimatedButton } from '@/components/animations/AnimatedButton';
 import { AnimatedList } from '@/components/animations/AnimatedList';
-import { motion, AnimatePresence } from 'framer-motion';
+import { FadeIn } from '@/components/animations/FadeIn';
+import { ScrambledText } from '@/components/animations/ScrambledText';
+import { SlideIn } from '@/components/animations/SlideIn';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { processMessageText } from '@/utils/text-processing';
+import { AnimatePresence, motion } from 'framer-motion';
 import ChatClientWrapper from './ChatClientWrapper';
 
 interface FloatingChatBubbleProps {

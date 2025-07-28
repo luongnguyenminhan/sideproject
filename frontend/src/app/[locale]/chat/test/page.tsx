@@ -16,7 +16,7 @@ const mockDictionary = {
 }
 
 export default function ChatTestPage() {
-  const [useV2, setUseV2] = useState(true)
+  const [useV2, setUseV2] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
 
   return (
@@ -41,7 +41,7 @@ export default function ChatTestPage() {
                     WebSocket V1 (Agent)
                   </Button>
                   <Button
-                    onClick={() => setUseV2(true)}
+                    onClick={() => setUseV2(false)}
                     variant={useV2 ? "default" : "outline"}
                     size="sm"
                   >
