@@ -1,5 +1,5 @@
 # Use Python 3.11 slim-buster as the base image
-FROM python:3.11-slim-buster
+FROM python:3.11-slim
 
 # Set environment variable to prevent Python from writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
