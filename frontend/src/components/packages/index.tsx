@@ -119,7 +119,7 @@ const Packages = () => {
         <div className='text-center mb-16'>
           <h1
             className='
-              className="text-4xl md:text-5xl mb-5 font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)] mb-6"
+              className="text-4xl md:text-5xl mb-6 font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]"
             '
           >
             Gói Dịch Vụ
