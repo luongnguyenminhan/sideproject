@@ -3,8 +3,8 @@
 
 import { ArrowRightOutlined, CheckOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import axiosInstance from '../../apis/axiosInstance';
 import PackageSkeleton from '../ui/PackageSkeleton';
-import { message } from 'antd';
 
 export const mockPackageList = {
   data: [
@@ -14,6 +14,7 @@ export const mockPackageList = {
       price: 29000,
       dailyLimit: 5,
       daysLimit: 30,
+      rank_type: 'eco',
     },
     {
       usagePackageId: 'pro-002',
@@ -21,6 +22,7 @@ export const mockPackageList = {
       price: 49000,
       dailyLimit: 10,
       daysLimit: 30,
+      rank_type: 'pro',
     },
     {
       usagePackageId: 'premium-003',
@@ -28,13 +30,13 @@ export const mockPackageList = {
       price: 79000,
       dailyLimit: 999,
       daysLimit: 30,
+      rank_type: 'ultra',
     },
   ],
 };
 
 const Packages = () => {
   const [isProcessing] = useState(false);
-
   const packageListData = mockPackageList.data;
 
   const packagesData = packageListData.map((item, index) => {
@@ -96,8 +98,21 @@ const Packages = () => {
     };
   });
 
-  const handleUpGradePackage = (pkg: any) => {
+  const handleUpGradePackage = async (pkg: any) => {
     console.log('hi', pkg);
+
+    try {
+      const res = await axiosInstance.post('/subscription/payment/create-link', {
+        rank_type: pkg.rank_type,
+      });
+
+      if (res && res.data) {
+        const url = res?.data?.data?.checkout_url;
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Error upgrading package:', error);
+    }
   };
 
   return (

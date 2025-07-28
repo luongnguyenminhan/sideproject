@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // import { ModelStats } from "@/helpers/types/dashboard.type";
 // import {
 //   useGetModelUsageQuery,
@@ -7,8 +8,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { ModelStats } from '../../../../../types/dashboard.type';
 
 const useChartView = () => {
-  const statistics = {};
-  const modelUsage = {};
+  const statistics: { data?: typeof dashboardStats } = {};
+  const modelUsage: { data?: { models?: ModelStats[] } } = {};
   const isStatisticsLoading = false;
   const isModelUsageLoading = false;
   // const { data: statistics, isLoading: isStatisticsLoading } = useGetStatisticsQuery({});
@@ -41,7 +42,7 @@ const useChartView = () => {
       numOfModels: dashboardStats?.totalModels,
       lastUpdated: new Date().toISOString(),
     };
-  }, [isLoading, modelStats, dashboardStats]);
+  }, [dashboardStats]);
 
   return {
     state: {

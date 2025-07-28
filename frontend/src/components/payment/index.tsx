@@ -52,7 +52,7 @@ const PayOSReturn = () => {
     }
 
     setPaymentData(data as unknown as PayOSPaymentData);
-  }, []);
+  }, [router]);
 
   // xác định trạng thái thanh toán dựa vào params từ PayOS
   const getStatusInfo = (code: string, status: string, cancel: string) => {

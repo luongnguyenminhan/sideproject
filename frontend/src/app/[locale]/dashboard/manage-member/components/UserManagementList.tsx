@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { SearchAndAdd } from '../../../../../components/common/table/SearchAndAdd';
 import { TableCustom } from '../../../../../components/common/table/TableCustom';
 import { TableListLayout } from '../../../../../components/layout/TableListLayout';
+import Image from 'next/image';
 
 // Type cho người dùng
 export interface User {
@@ -99,7 +100,13 @@ const UserManagementList = () => {
         dataIndex: 'profile_picture',
         width: '8%',
         render: (url: string) => (
-          <img src={url} alt='avatar' className='w-10 h-10 rounded-full object-cover border' />
+          <Image
+            src={url}
+            alt='avatar'
+            width={40}
+            height={40}
+            className='w-10 h-10 rounded-full object-cover border'
+          />
         ),
       },
       {

@@ -23,9 +23,10 @@ export const formatDate = (dateString: string | number | Date) => {
 };
 
 export const formatAmount = (amount: string | number | bigint) => {
-  if (!amount) return '0 ₫';
+  if (!amount) return '0 VND';
+  const numericAmount = typeof amount === 'string' ? Number(amount) : amount;
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
-  }).format(amount);
+  }).format(numericAmount);
 };

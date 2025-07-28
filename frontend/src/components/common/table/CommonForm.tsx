@@ -1,5 +1,6 @@
-import { Col, Form, Row } from "antd";
-import { useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Col, Form, Row } from 'antd';
 
 interface FieldConfig {
   name: string;
@@ -26,29 +27,15 @@ export function CommonForm({
   isRequired = false,
 }: CommonFormProps) {
   return (
-    <Form form={form} layout="vertical" initialValues={initialValues}>
+    <Form form={form} layout='vertical' initialValues={initialValues}>
       <Row gutter={16}>
-        {fields.map(
-          ({
-            name,
-            label,
-            component,
-            rules,
-            colSpan: fieldColSpan,
-            isRequired,
-          }) => (
-            <Col span={fieldColSpan ?? colSpan} key={name}>
-              <Form.Item
-                name={name}
-                label={label}
-                rules={rules}
-                required={isRequired}
-              >
-                {component}
-              </Form.Item>
-            </Col>
-          ),
-        )}
+        {fields.map(({ name, label, component, rules, colSpan: fieldColSpan, isRequired }) => (
+          <Col span={fieldColSpan ?? colSpan} key={name}>
+            <Form.Item name={name} label={label} rules={rules} required={isRequired}>
+              {component}
+            </Form.Item>
+          </Col>
+        ))}
       </Row>
     </Form>
   );
