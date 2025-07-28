@@ -3,6 +3,8 @@
 import os
 from typing import Dict, Any, Optional
 from datetime import datetime
+
+from sqlalchemy.orm import Session
 from payos import PayOS, PaymentData, ItemData
 
 from app.core.config import PAYOS_CLIENT_ID, PAYOS_API_KEY, PAYOS_CHECKSUM_KEY
@@ -46,14 +48,13 @@ class PayOSService:
         )
         
         # Create payment data
-        print(order_code, "---"*100)
         payment_data = PaymentData(
             orderCode=int(order_code),
             amount=int(amount),  # PayOS requires integer amount
             description=description,
             items=[item],
-            cancelUrl=f"https://app.enterviu.ai/subscription/cancel?order={order_code}",
-            returnUrl=f"https://app.enterviu.ai/subscription/success?order={order_code}",
+            cancelUrl=f"https://api.enterviu.ai/api/v1/webhook/payos/cancel?order={order_code}",
+            returnUrl=f"https://api.enterviu.ai/api/v1/webhook/payos/success?order={order_code}",
             # Optional additional metadata
             buyerName=user_email,
             buyerEmail=user_email

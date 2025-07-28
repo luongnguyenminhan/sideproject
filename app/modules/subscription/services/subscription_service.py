@@ -119,57 +119,66 @@ class SubscriptionService:
         }
     
     def handle_payment_webhook(self, webhook_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle payment webhook from PayOS
-        
-        Args:
-            webhook_data: The webhook data from PayOS
-            
-        Returns:
-            Dictionary containing processed result
-        """
+        """Handle payment webhook from PayOS and redirect to app.wc504.io.vn/payment with all params as query params"""
+        from urllib.parse import urlencode
         try:
             # Verify webhook data
             verified_data = self.payos_service.verify_webhook_data(webhook_data)
-            
+
             # Extract key information
             payment_link_id = verified_data.get("paymentLinkId")
             order_code = verified_data.get("orderCode")
             status_code = verified_data.get("code")
             transaction_id = verified_data.get("reference", "")
-            
+            desc = verified_data.get("desc", "")
+            success = verified_data.get("success", False)
+
             # Find the order
             order = None
             if order_code:
                 order = self.order_repo.get_by_order_code(str(order_code))
             elif payment_link_id:
                 order = self.order_repo.get_by_payment_link_id(payment_link_id)
-                
+
             if not order:
-                return {"success": False, "message": "Order not found"}
-            
+                redirect_url = f"https://app.wc504.io.vn/payment?{urlencode({'success': False, 'message': 'Order not found'})}"
+                return {"redirect_url": redirect_url}
+
             # Process payment status
+            params = {
+                "order_id": order.id,
+                "order_code": order.order_code,
+                "user_id": order.user_id,
+                "payment_link_id": payment_link_id,
+                "transaction_id": transaction_id,
+                "status_code": status_code,
+                "desc": desc,
+                "success": success
+            }
+
             if status_code == "00":  # Success code
                 # Mark order as completed
                 order = self.order_repo.mark_order_as_completed(order, transaction_id)
-                
+
                 # Get user and update their rank
                 user = self.db.query(User).filter(User.id == order.user_id).first()
                 if user:
                     self.order_repo.update_user_rank(user, order)
-                    
-                return {
-                    "success": True,
-                    "message": "Payment successful",
-                    "order_id": order.id,
-                    "user_id": order.user_id
-                }
+
+                params["message"] = "Payment successful"
+                params["success"] = True
             else:
                 # Payment failed
-                self.order_repo.mark_order_as_canceled(order, f"Payment failed: {verified_data.get('desc', 'Unknown error')}")
-                return {"success": False, "message": "Payment failed"}
-                
+                self.order_repo.mark_order_as_canceled(order, f"Payment failed: {desc}")
+                params["message"] = "Payment failed"
+                params["success"] = False
+
+            redirect_url = f"https://app.wc504.io.vn/payment?{urlencode(params)}"
+            return {"redirect_url": redirect_url}
+
         except Exception as e:
-            return {"success": False, "message": f"Error processing webhook: {str(e)}"}
+            redirect_url = f"https://app.wc504.io.vn/payment?{urlencode({'success': False, 'message': str(e)})}"
+            return {"redirect_url": redirect_url}
     
     def check_pending_orders(self) -> List[Dict[str, Any]]:
         """Check all pending orders and update their status

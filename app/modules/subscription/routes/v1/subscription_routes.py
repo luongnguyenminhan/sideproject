@@ -2,10 +2,13 @@
 
 from typing import Any, Dict
 from fastapi import APIRouter, Depends, Body, HTTPException, Request, status, Security
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.http.oauth2 import get_current_user, oauth2_scheme, jwt_bearer
+from ...models.order import Order
+from ...repository.order_repository import OrderRepository
 from app.modules.users.models.users import User
 from app.modules.subscription.services.subscription_service import SubscriptionService
 from app.modules.subscription.schemas.subscription_schemas import (
@@ -16,8 +19,6 @@ from app.modules.subscription.schemas.subscription_schemas import (
     OrderListResponse
 )
 from app.core.base_model import APIResponse
-from app.modules.subscription.repository.order_repository import OrderRepository
-from app.modules.subscription.models.order import Order
 from app.exceptions.handlers import handle_exceptions
 
 
@@ -81,9 +82,10 @@ async def create_payment_link(
     )
 
 
+
 @route.post(
-    "/webhook/payos", 
-    dependencies=[], 
+    "/webhook/payos",
+    dependencies=[],
     include_in_schema=True,
     operation_id="payos_webhook",
     description="PayOS webhook endpoint (no authentication required)",
@@ -98,7 +100,6 @@ async def create_payment_link(
             }
         }
     },
-    # Explicitly override the global security for this endpoint
     openapi_extra={"security": []}
 )
 @handle_exceptions
@@ -106,19 +107,14 @@ async def payos_webhook(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Handle webhook notifications from PayOS"""
-    # Get raw webhook data from request
+    """Handle webhook notifications from PayOS and redirect to payment page"""
     webhook_data = await request.json()
-    
-    # Process webhook
     subscription_service = SubscriptionService(db)
     result = subscription_service.handle_payment_webhook(webhook_data)
-    
-    # Return appropriate response
-    if result.get("success"):
-        return {"code": "00", "message": "Success"}
-    else:
-        return {"code": "99", "message": result.get("message", "Failed to process webhook")}
+    redirect_url = result.get("redirect_url")
+    if redirect_url:
+        return RedirectResponse(url=redirect_url)
+    return {"code": "99", "message": result.get("message", "Failed to process webhook")}
 
 # API: Get current user's orders
 @route.get(
