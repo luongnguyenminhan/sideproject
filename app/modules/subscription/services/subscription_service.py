@@ -76,7 +76,7 @@ class SubscriptionService:
         """
         user = self.user_repo.get_user_by_id(user_id)
         # Validate rank type
-        if rank_type not in [RankEnum.PRO, RankEnum.ULTRA]:
+        if rank_type not in [RankEnum.PRO, RankEnum.ULTRA, RankEnum.ECO, RankEnum.TEST]:
             raise CustomHTTPException(
                 message="Invalid subscription plan",
             )

@@ -7,8 +7,8 @@ class RankEnum(str, Enum):
     """User rank enumeration"""
     BASIC = "basic"  # Default rank for all users
     ECO = "eco"
-    PRO = "enterviu_pro"
-    ULTRA = "enterviu_ultra"
+    PRO = "pro"
+    ULTRA = "ultra"
     TEST = "test"
 
 
