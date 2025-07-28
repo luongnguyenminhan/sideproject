@@ -99,8 +99,6 @@ const Packages = () => {
   });
 
   const handleUpGradePackage = async (pkg: any) => {
-    console.log('hi', pkg);
-
     try {
       const res = await axiosInstance.post('/subscription/payment/create-link', {
         rank_type: pkg.rank_type,
