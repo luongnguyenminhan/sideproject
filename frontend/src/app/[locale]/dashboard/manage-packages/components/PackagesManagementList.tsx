@@ -7,27 +7,36 @@ import { useMemo, useState } from 'react';
 import { SearchAndAdd } from '../../../../../components/common/table/SearchAndAdd';
 import { TableCustom } from '../../../../../components/common/table/TableCustom';
 import { TableListLayout } from '../../../../../components/layout/TableListLayout';
+import { formatAmount } from '../../../../../lib/utils';
 
 const mockData = [
   {
     id: 1,
-    code: 'US001',
-    icon: '🧼',
-    name: 'Nguyen van a',
-    description: 'Dev lỏ',
+    code: 'PK001',
+    price: 29000,
+    name: 'Gói 1',
+    description: 'Gói cơ bản',
     createdDate: '2025-07-01T12:00:00Z',
   },
   {
     id: 2,
-    code: 'US002',
-    icon: '🛠️',
-    name: 'Nguyen van b',
-    description: 'Dev chúa',
+    code: 'PK002',
+    price: 49000,
+    name: 'Gói 2',
+    description: 'Gói nâng cao',
+    createdDate: '2025-07-01T12:00:00Z',
+  },
+  {
+    id: 3,
+    code: 'PK003',
+    price: 79000,
+    name: 'Gói 2',
+    description: 'Gói chuyên sâu',
     createdDate: '2025-07-05T10:30:00Z',
   },
 ];
 
-const UserManagementList = () => {
+const PackagesManagementList = () => {
   const [, setSearchQuery] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 10;
@@ -58,20 +67,20 @@ const UserManagementList = () => {
         render: (_: any, _record: any, index: number) => (pageIndex - 1) * pageSize + index + 1,
       },
       {
-        title: 'Mã người dùng',
+        title: 'Mã gói',
         dataIndex: 'code',
         width: '15%',
       },
       {
-        title: 'Biểu tượng',
-        dataIndex: 'icon',
-        width: '7%',
-        render: (icon: string) => <div className='text-primary'>{icon}</div>,
-      },
-      {
-        title: 'Tên người dùng',
+        title: 'Gói dịch vụ',
         dataIndex: 'name',
         width: '20%',
+      },
+      {
+        title: 'Giá',
+        dataIndex: 'price',
+        width: '7%',
+        render: (item: string) => <div className='text-primary'>{formatAmount(item)}</div>,
       },
       {
         title: 'Mô tả',
@@ -114,18 +123,18 @@ const UserManagementList = () => {
 
   return (
     <TableListLayout
-      title='Quản lý người dùng'
-      subTitle='Danh sách người dùng hiện có trong hệ thống'
+      title='Quản lý gói dịch vụ'
+      subTitle='Danh sách gói dịch vụ hiện có trong hệ thống'
       breadcrumbItems={[]}
     >
       <SearchAndAdd
-        searchPlaceholder='Tìm kiếm người dùng'
-        addButtonText='Thêm người dùng'
+        searchPlaceholder='Tìm kiếm gói'
+        addButtonText='Thêm gói dịch vụ'
         onSearch={setSearchQuery}
         onAddClick={handleOpenModalAdd}
       />
       <TableCustom
-        title='Danh sách người dùng'
+        title='Danh sách gói dịch vụ'
         columns={columns}
         dataSource={mockData}
         pagination={{
@@ -141,4 +150,4 @@ const UserManagementList = () => {
   );
 };
 
-export { UserManagementList };
+export { PackagesManagementList };

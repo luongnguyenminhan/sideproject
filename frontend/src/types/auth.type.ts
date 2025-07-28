@@ -1,7 +1,10 @@
-import { CommonResponse, RequestSchema, FilterableRequestSchema, Pagination } from './common.type';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { RANK } from '../enums';
+import { CommonResponse, FilterableRequestSchema, Pagination, RequestSchema } from './common.type';
 
 // User Response matching Python UserResponse
 export interface UserResponse {
+  data: any;
   id: string;
   email: string;
   role: string;
@@ -18,6 +21,7 @@ export interface UserResponse {
   access_token?: string | null;
   refresh_token?: string | null;
   token_type?: string | null;
+  rank?: RANK;
 }
 
 // Search User Request matching Python SearchUserRequest

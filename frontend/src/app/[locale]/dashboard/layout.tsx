@@ -3,7 +3,9 @@
 import {
   BellOutlined,
   BuildOutlined,
+  GiftOutlined,
   LogoutOutlined,
+  ReadOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -31,7 +33,9 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem('Dashboard', '1', <BuildOutlined />, undefined, '/dashboard/statistic'),
-  getItem('User', '2', <UserOutlined />, undefined, '/dashboard/manage-user'),
+  getItem('User', '2', <UserOutlined />, undefined, '/dashboard/manage-member'),
+  getItem('Package', '3', <GiftOutlined />, undefined, '/dashboard/manage-packages'),
+  getItem('SubScription', '4', <ReadOutlined />, undefined, '/dashboard/manage-user-subscription'),
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
