@@ -12,9 +12,12 @@ from app.modules.subscription.schemas.subscription_schemas import (
     OrderCreate, 
     CreatePaymentResponse, 
     UserRankResponse, 
-    PayOSWebhookRequest
+    PayOSWebhookRequest,
+    OrderListResponse
 )
 from app.core.base_model import APIResponse
+from app.modules.subscription.repository.order_repository import OrderRepository
+from app.modules.subscription.models.order import Order
 from app.exceptions.handlers import handle_exceptions
 
 
@@ -116,3 +119,65 @@ async def payos_webhook(
         return {"code": "00", "message": "Success"}
     else:
         return {"code": "99", "message": result.get("message", "Failed to process webhook")}
+
+# API: Get current user's orders
+@route.get(
+    "/me/orders",
+    response_model=APIResponse[OrderListResponse],
+    operation_id="get_user_orders",
+    description="Get the current user's subscription orders",
+    response_description="List of user's orders",
+    summary="Get user subscription orders",
+)
+@handle_exceptions
+async def get_user_orders(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get all orders for the current user, including user info"""
+    order_repo = OrderRepository(db)
+    orders = order_repo.get_user_orders(current_user['user_id'])
+    result = []
+    for order in orders:
+        order_data = order.__dict__.copy()
+        print("**"*100, type(order_data))
+        # Always query user by user_id if not loaded
+        user_obj = None
+        user_obj = db.query(User).filter(User.id == order.user_id).first()
+        order_data['user'] = user_obj.to_dict()
+        print("=="*10, order_data)
+        result.append(order_data)
+    return APIResponse(
+        error_code=0,
+        message="User orders retrieved successfully",
+        data={"orders": result}
+    )
+
+# API: Get all orders (admin)
+@route.get(
+    "/admin/orders",
+    response_model=APIResponse[OrderListResponse],
+    operation_id="get_all_orders",
+    description="Get all subscription orders (admin only)",
+    response_description="List of all orders",
+    summary="Get all subscription orders (admin)",
+)
+@handle_exceptions
+async def get_all_orders(
+    db: Session = Depends(get_db)
+):
+    """Get all orders (admin only), including user info"""
+    orders = db.query(Order).all()
+    result = []
+    for order in orders:
+        order_data = order.__dict__.copy()
+        # Always query user by user_id if not loaded
+        user_obj = None
+        user_obj = db.query(User).filter(User.id == order.user_id).first()
+        order_data['user'] = user_obj.to_dict()
+        result.append(order_data)
+    return APIResponse(
+        error_code=0,
+        message="All orders retrieved successfully",
+        data={"orders": result}
+    )
