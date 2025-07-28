@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const lineOptions = {
   plugins: {
     datalabels: {
       display: false,
     },
     legend: {
-      position: "top",
-      align: "center",
+      position: 'top',
+      align: 'center',
       labels: {
         usePointStyle: false,
         font: {
@@ -14,7 +15,7 @@ export const lineOptions = {
       },
     },
     tooltip: {
-      backgroundColor: "rgba(53, 72, 91, 0.95)",
+      backgroundColor: 'rgba(53, 72, 91, 0.95)',
       titleFont: {
         size: 13,
       },
@@ -29,7 +30,7 @@ export const lineOptions = {
   elements: {
     point: {
       radius: 3,
-      backgroundColor: "currentColor",
+      backgroundColor: 'currentColor',
       hoverRadius: 5,
       hitRadius: 8,
     },
@@ -39,11 +40,11 @@ export const lineOptions = {
   },
   scales: {
     y: {
-      type: "linear",
+      type: 'linear',
       display: true,
-      position: "left",
+      position: 'left',
       grid: {
-        color: "rgba(0, 0, 0, 0.05)",
+        color: 'rgba(0, 0, 0, 0.05)',
       },
       ticks: {
         font: {
@@ -52,17 +53,17 @@ export const lineOptions = {
       },
       title: {
         display: true,
-        text: "Số giao dịch",
+        text: 'Số giao dịch',
         font: {
           size: 12,
-          weight: "normal",
+          weight: 'normal',
         },
       },
     },
     y1: {
-      type: "linear",
+      type: 'linear',
       display: true,
-      position: "right",
+      position: 'right',
       grid: {
         drawOnChartArea: false,
       },
@@ -73,16 +74,16 @@ export const lineOptions = {
       },
       title: {
         display: true,
-        text: "Người dùng",
+        text: 'Người dùng',
         font: {
           size: 12,
-          weight: "normal",
+          weight: 'normal',
         },
       },
     },
     x: {
       grid: {
-        color: "rgba(0, 0, 0, 0.05)",
+        color: 'rgba(0, 0, 0, 0.05)',
       },
       ticks: {
         font: {
@@ -101,7 +102,7 @@ export const barOptions = {
       display: false,
     },
     legend: {
-      position: "top",
+      position: 'top',
       labels: {
         usePointStyle: false,
         padding: 20,
@@ -111,7 +112,7 @@ export const barOptions = {
       },
     },
     tooltip: {
-      backgroundColor: "rgba(53, 72, 91, 0.95)",
+      backgroundColor: 'rgba(53, 72, 91, 0.95)',
       titleFont: {
         size: 13,
       },
@@ -123,15 +124,15 @@ export const barOptions = {
       displayColors: true,
       callbacks: {
         label: function (context: any) {
-          let label = context.dataset.label || "";
+          let label = context.dataset.label || '';
           if (label) {
-            label += ": ";
+            label += ': ';
           }
           if (context.parsed.y !== null) {
-            if (label.includes("Avg")) {
-              label += new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
+            if (label.includes('Avg')) {
+              label += new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
               }).format(context.parsed.y);
             } else {
               label += context.parsed.y;
@@ -148,7 +149,7 @@ export const barOptions = {
     y: {
       beginAtZero: true,
       grid: {
-        color: "rgba(0, 0, 0, 0.05)",
+        color: 'rgba(0, 0, 0, 0.05)',
       },
       ticks: {
         font: {
@@ -157,16 +158,16 @@ export const barOptions = {
       },
       title: {
         // display: true,
-        text: "Giá trị",
+        text: 'Giá trị',
         font: {
           size: 12,
-          weight: "normal",
+          weight: 'normal',
         },
       },
     },
     x: {
       grid: {
-        color: "rgba(0, 0, 0, 0.05)",
+        color: 'rgba(0, 0, 0, 0.05)',
       },
       ticks: {
         font: {
@@ -183,7 +184,7 @@ export const donutOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: "bottom",
+      position: 'bottom',
       labels: {
         usePointStyle: false,
         padding: 20,
@@ -193,9 +194,9 @@ export const donutOptions = {
 };
 
 export const CHART_COLORS = [
-  "rgba(66, 133, 244, 0.8)", // Blue
-  "rgba(219, 68, 55, 0.8)", // Red
-  "rgba(244, 180, 0, 0.8)", // Yellow
-  "rgba(15, 157, 88, 0.8)", // Green
-  "rgba(171, 71, 188, 0.8)", // Purple
+  'rgba(66, 133, 244, 0.8)', // Blue
+  'rgba(219, 68, 55, 0.8)', // Red
+  'rgba(244, 180, 0, 0.8)', // Yellow
+  'rgba(15, 157, 88, 0.8)', // Green
+  'rgba(171, 71, 188, 0.8)', // Purple
 ];

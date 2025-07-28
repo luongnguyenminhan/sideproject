@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { normalizePath } from '../../../../lib/utils';
@@ -36,7 +37,7 @@ const useSidebar = (items: MenuItem[]) => {
       setSelectedKeys([matchedItem.key]);
       storeDefaultSelectedKeys(matchedItem.key);
     }
-  }, [pathname, items]);
+  }, [pathname, items, findMenuItem]);
 
   return {
     collapsed,

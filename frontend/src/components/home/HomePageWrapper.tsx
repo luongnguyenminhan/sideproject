@@ -32,7 +32,7 @@ export default function HomePageWrapper({ children }: HomePageWrapperProps) {
       }
     }
     getPersonal();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-[color:var(--gradient-bg-from)] via-[color:var(--gradient-bg-via)] to-[color:var(--gradient-bg-to)] relative overflow-hidden'>
