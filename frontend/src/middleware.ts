@@ -5,23 +5,19 @@ import { i18n, type Locale } from '@/i18n.config';
 // Define protected routes that require authentication
 const protectedRoutes = [
   '/home',
-  '/dashboard',
+  // '/dashboard',
   '/profile',
   '/settings',
 ];
 
 // Define auth routes that should redirect authenticated users
-const authRoutes = [
-  '/auth',
-  '/login',
-  '/signup',
-];
+const authRoutes = ['/auth', '/login', '/signup'];
 
 function getLocale(request: NextRequest): Locale {
   // Lấy locale từ URL path
   const pathname = request.nextUrl.pathname;
   const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+    locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
   );
 
   // Nếu URL không có locale, tìm locale phù hợp
@@ -31,14 +27,14 @@ function getLocale(request: NextRequest): Locale {
     if (acceptLanguage) {
       const preferredLocale = acceptLanguage
         .split(',')
-        .map((lang) => lang.split(';')[0].trim())
-        .find((lang) => i18n.locales.includes(lang as Locale));
-      
+        .map(lang => lang.split(';')[0].trim())
+        .find(lang => i18n.locales.includes(lang as Locale));
+
       if (preferredLocale) {
         return preferredLocale as Locale;
       }
     }
-    
+
     return i18n.defaultLocale;
   }
 
@@ -50,7 +46,7 @@ function getLocale(request: NextRequest): Locale {
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  
+
   // Bỏ qua các route đặc biệt
   if (
     pathname.startsWith('/_next') ||
@@ -70,7 +66,7 @@ export function middleware(request: NextRequest) {
   const localeMatch = pathname.match(localeRegex);
   let locale: string = '';
   let actualPath = pathname;
-  
+
   if (localeMatch) {
     locale = localeMatch[1];
     actualPath = localeMatch[2] || '/';
@@ -79,13 +75,13 @@ export function middleware(request: NextRequest) {
   // Check authentication requirements before locale handling
   if (locale && i18n.locales.includes(locale as Locale)) {
     // Check if the current path is protected
-    const isProtectedRoute = protectedRoutes.some(route => 
-      actualPath === route || actualPath.startsWith(route + '/')
+    const isProtectedRoute = protectedRoutes.some(
+      route => actualPath === route || actualPath.startsWith(route + '/'),
     );
 
     // Check if the current path is an auth route
-    const isAuthRoute = authRoutes.some(route => 
-      actualPath === route || actualPath.startsWith(route + '/')
+    const isAuthRoute = authRoutes.some(
+      route => actualPath === route || actualPath.startsWith(route + '/'),
     );
 
     // Redirect unauthenticated users away from protected routes
@@ -105,27 +101,27 @@ export function middleware(request: NextRequest) {
 
   // Kiểm tra xem pathname có locale chưa
   const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+    locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
   );
 
   // Redirect nếu không có locale
   if (pathnameIsMissingLocale) {
     const detectedLocale = getLocale(request);
     const newPathname = `/${detectedLocale}${pathname}`;
-    
+
     // Check auth requirements for the new path after adding locale
     const newActualPath = pathname || '/';
-    const isProtectedRoute = protectedRoutes.some(route => 
-      newActualPath === route || newActualPath.startsWith(route + '/')
+    const isProtectedRoute = protectedRoutes.some(
+      route => newActualPath === route || newActualPath.startsWith(route + '/'),
     );
-    
+
     if (isProtectedRoute && !isAuthenticated) {
       // Redirect to auth with locale
       const authUrl = new URL(`/${detectedLocale}/auth`, request.url);
       authUrl.searchParams.set('callbackUrl', newPathname);
       return NextResponse.redirect(authUrl);
     }
-    
+
     return NextResponse.redirect(new URL(newPathname, request.url));
   }
 
@@ -133,7 +129,8 @@ export function middleware(request: NextRequest) {
   const detectedLocale = getLocale(request);
   const response = NextResponse.next();
   response.headers.set('x-locale', detectedLocale);
-  
+  response.headers.set('x-pathname', pathname);
+
   return response;
 }
 
@@ -144,6 +141,6 @@ export const config = {
     // - _next static files
     // - favicon.ico
     // - files with extensions
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'
-  ]
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+  ],
 };
