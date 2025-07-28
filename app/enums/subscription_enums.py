@@ -6,8 +6,10 @@ from enum import Enum
 class RankEnum(str, Enum):
     """User rank enumeration"""
     BASIC = "basic"  # Default rank for all users
+    ECO = "eco"
     PRO = "enterviu_pro"
     ULTRA = "enterviu_ultra"
+    TEST = "test"
 
 
 class OrderStatusEnum(str, Enum):

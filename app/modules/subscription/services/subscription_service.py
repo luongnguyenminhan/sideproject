@@ -28,8 +28,10 @@ class SubscriptionService:
         
         # Define subscription plans with their prices
         self.subscription_prices = {
-            RankEnum.PRO: 399000,   # 399,000 VND for PRO
-            RankEnum.ULTRA: 699000  # 699,000 VND for ULTRA
+            RankEnum.PRO: 49000,   # 399,000 VND for PRO
+            RankEnum.ECO: 29000,
+            RankEnum.ULTRA: 79000,  # 699,000 VND for ULTRA
+            RankEnum.TEST: 5000
         }
     
     def get_user_rank(self, user_id) -> Dict[str, Any]:
