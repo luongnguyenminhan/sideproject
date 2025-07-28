@@ -9,7 +9,7 @@ export const useClipboard = (timeout = 2000) => {
   const copyToClipboard = (text: string, field: SetStateAction<string>) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedField(field);
-      setTimeout(() => setCopiedField(null), timeout);
+      setTimeout(() => setCopiedField(''), timeout);
       message.success({ content: 'Sao chép thành công', key: 'copy' });
     });
   };
