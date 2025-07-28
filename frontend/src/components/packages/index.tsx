@@ -4,28 +4,29 @@
 import { ArrowRightOutlined, CheckOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import PackageSkeleton from '../ui/PackageSkeleton';
+import { message } from 'antd';
 
 export const mockPackageList = {
   data: [
     {
       usagePackageId: 'basic-001',
       name: 'Gói Cơ Bản',
-      price: 0,
+      price: 29000,
       dailyLimit: 5,
-      daysLimit: 7,
+      daysLimit: 30,
     },
     {
       usagePackageId: 'pro-002',
       name: 'Gói Nâng Cao',
-      price: 99000,
+      price: 49000,
       dailyLimit: 10,
       daysLimit: 30,
     },
     {
       usagePackageId: 'premium-003',
       name: 'Gói Cao Cấp',
-      price: 199000,
-      dailyLimit: 20,
+      price: 79000,
+      dailyLimit: 999,
       daysLimit: 30,
     },
   ],
@@ -78,7 +79,6 @@ const Packages = () => {
           'Hỗ trợ khách hàng Premium 24/7',
           'Không quảng cáo',
           'Báo cáo chi tiết và phân tích nâng cao',
-          'Tích hợp API không giới hạn',
           ...commonFeatures,
         ],
         buttonText: '🚀 Trải nghiệm ngay',
@@ -97,11 +97,11 @@ const Packages = () => {
   });
 
   const handleUpGradePackage = (pkg: any) => {
-    console.log('buy packages', pkg);
+    console.log('hi', pkg);
   };
 
   return (
-    <section className='relative py-20 px-6 overflow-hidden bg-gray-50'>
+    <section className='relative py-20 px-6 overflow-hidden dark:bg-gray-50'>
       <div className='relative max-w-6xl mx-auto'>
         <div className='text-center mb-16'>
           <h1 className='text-3xl md:text-4xl font-bold bg-clip-text mb-4'>Gói Dịch Vụ</h1>

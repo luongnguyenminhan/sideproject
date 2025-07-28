@@ -1,5 +1,7 @@
-const Statistic = () => {
-  return <div>Statistic</div>;
+import { ChartView } from './components';
+
+const ChartPage = () => {
+  return <ChartView />;
 };
 
-export default Statistic;
+export default ChartPage;

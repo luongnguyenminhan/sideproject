@@ -1,13 +1,13 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import { type Locale } from '@/i18n.config';
-import { ThemeProvider } from 'next-themes';
-import { ReduxProvider } from '@/redux/provider';
-import PageWrapper from '@/components/layout/page-wrapper';
 import ClientWrapper from '@/components/layout/client-wrapper';
 import Header from '@/components/layout/header';
+import PageWrapper from '@/components/layout/page-wrapper';
+import { type Locale } from '@/i18n.config';
+import { ReduxProvider } from '@/redux/provider';
+import type { Metadata } from 'next';
+import { ThemeProvider } from 'next-themes';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
