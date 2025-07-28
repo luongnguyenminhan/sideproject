@@ -49,6 +49,28 @@ class OrderCreate(RequestSchema):
     rank_type: RankEnum = Field(..., description="The subscription rank to purchase")
 
 
+class UserInfo(BaseModel):
+    """Schema for User info in order response"""
+    id: str
+    profile_picture: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    locale: Optional[str] = None
+    google_id: Optional[str] = None
+    role: Optional[str] = None
+    confirmed: Optional[bool] = None
+    fcm_token: Optional[str] = None
+    last_login_at: Optional[datetime] = None
+    rank: Optional[str] = None
+    rank_activated_at: Optional[datetime] = None
+    rank_expired_at: Optional[datetime] = None
+    create_date: Optional[datetime] = None
+    update_date: Optional[datetime] = None
+    is_deleted: Optional[bool] = None
+
 class OrderResponse(OrderBase, ResponseSchema):
     """Schema for Order response"""
     id: str
@@ -60,7 +82,15 @@ class OrderResponse(OrderBase, ResponseSchema):
     expired_at: datetime
     activated_at: Optional[datetime] = None
     expired_subscription_at: Optional[datetime] = None
+    user: Optional[UserInfo] = None
 
+
+
+
+# Response schema for a list of orders
+class OrderListResponse(ResponseSchema):
+    """Schema for response containing a list of orders (with user info)"""
+    orders: List[OrderResponse]
 
 class CreatePaymentResponse(ResponseSchema):
     """Schema for payment link creation response"""

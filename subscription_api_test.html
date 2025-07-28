@@ -26,6 +26,20 @@
         <pre id="getMyRankResult"></pre>
     </div>
 
+
+    <div class="section">
+        <h2>Get My Orders</h2>
+        <button onclick="getMyOrders()">Get My Orders</button>
+        <div id="getMyOrdersResult"></div>
+    </div>
+
+
+    <div class="section">
+        <h2>Get All Orders (Admin)</h2>
+        <button onclick="getAllOrders()">Get All Orders (Admin)</button>
+        <div id="getAllOrdersResult"></div>
+    </div>
+
     <div class="section">
         <h2>Create Subscription Payment Link</h2>
         <form id="createSubPaymentForm">
@@ -54,6 +68,72 @@
         const headers = getAuthHeader();
         const res = await fetch(`${API_BASE}/me/rank`, { headers });
         document.getElementById('getMyRankResult').textContent = await res.text();
+    }
+
+
+    function renderOrdersTable(orders) {
+        if (!orders || !orders.length) return '<i>No orders found.</i>';
+        let html = `<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%">
+            <thead>
+                <tr>
+                    <th>Order Code</th>
+                    <th>Rank Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Expired At</th>
+                    <th>Checkout URL</th>
+                    <th>User Info</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        for (const o of orders) {
+            let userInfo = '';
+            if (o.user) {
+                userInfo = `<b>${o.user.name || ''}</b><br>Email: ${o.user.email || ''}<br>Role: ${o.user.role || ''}`;
+            }
+            html += `<tr>
+                <td>${o.order_code}</td>
+                <td>${o.rank_type}</td>
+                <td>${o.amount}</td>
+                <td>${o.status}</td>
+                <td>${o.created_at ? o.created_at.replace('T', ' ') : ''}</td>
+                <td>${o.expired_at ? o.expired_at.replace('T', ' ') : ''}</td>
+                <td>${o.checkout_url ? `<a href='${o.checkout_url}' target='_blank'>Link</a>` : ''}</td>
+                <td>${userInfo}</td>
+            </tr>`;
+        }
+        html += '</tbody></table>';
+        return html;
+    }
+
+    async function getMyOrders() {
+        const headers = getAuthHeader();
+        const res = await fetch(`${API_BASE}/me/orders`, { headers });
+        let text = await res.text();
+        let html = '';
+        try {
+            const json = JSON.parse(text);
+            html = renderOrdersTable(json?.data?.orders);
+        } catch {
+            html = `<pre>${text}</pre>`;
+        }
+        document.getElementById('getMyOrdersResult').innerHTML = html;
+    }
+
+
+    async function getAllOrders() {
+        const headers = getAuthHeader();
+        const res = await fetch(`${API_BASE}/admin/orders`, { headers });
+        let text = await res.text();
+        let html = '';
+        try {
+            const json = JSON.parse(text);
+            html = renderOrdersTable(json?.data?.orders);
+        } catch {
+            html = `<pre>${text}</pre>`;
+        }
+        document.getElementById('getAllOrdersResult').innerHTML = html;
     }
 
     document.getElementById('createSubPaymentForm').onsubmit = async function(e) {
