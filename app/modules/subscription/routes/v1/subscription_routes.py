@@ -41,7 +41,7 @@ async def get_user_rank(
 ):
     """Get the current user's subscription rank"""
     subscription_service = SubscriptionService(db)
-    user_rank = subscription_service.get_user_rank(current_user)
+    user_rank = subscription_service.get_user_rank(current_user['user_id'])
     
     return APIResponse(
         error_code=0,
@@ -67,7 +67,7 @@ async def create_payment_link(
     """Create a payment link for a subscription"""
     subscription_service = SubscriptionService(db)
     payment_link = subscription_service.create_payment_link(
-        user=current_user,
+        user_id=current_user['user_id'],
         rank_type=order_data.rank_type
     )
     

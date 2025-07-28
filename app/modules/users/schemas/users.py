@@ -34,6 +34,9 @@ class UserResponse(ResponseSchema):
 	confirmed: bool = Field(..., description='Account verification status', examples=[True])
 	create_date: datetime | None = Field(default=None, description='Creation date', examples=['2024-09-01 15:00:00'])
 	update_date: datetime | None = Field(default=None, description='Update date', examples=['2024-09-01 15:00:00'])
+	rank: str = Field(..., description='User rank', examples=['basic', 'premium'])
+	rank_activated_at: datetime | None = Field(default=None, description='Rank activated at', examples=['2024-09-01T15:00:00'])
+	rank_expired_at: datetime | None = Field(default=None, description='Rank expired at', examples=['2024-10-01T15:00:00'])
 	profile_picture: str | None = Field(
 		default=None,
 		description='Profile picture URL',

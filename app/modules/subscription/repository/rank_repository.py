@@ -26,6 +26,9 @@ class RankRepository(BaseRepo):
         """Get rank by name"""
         return self.dal.get_by_name(name)
 
+    def get_by_user_id(self, user_id: str) -> Optional[Rank]:
+        return self.dal.get_by_user_id(user_id)
+
     def get_all_ranks(self) -> List[Rank]:
         """Get all ranks"""
         return self.dal.get_all_ranks()

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.base_dal import BaseDAL
 from app.modules.subscription.models.rank import Rank
 from app.enums.subscription_enums import RankEnum
+from ...users.models.users import User
 
 
 class RankDAL(BaseDAL[Rank]):
@@ -23,3 +24,14 @@ class RankDAL(BaseDAL[Rank]):
     def get_all_ranks(self) -> List[Rank]:
         """Get all ranks"""
         return self.db.query(self.model).all()
+
+    def get_by_user_id(self, user_id: str) -> Optional[Rank]:
+        """
+        Get the Rank associated with a user by user_id.
+        Assumes User.rank is an Enum field referencing RankEnum.
+        """
+
+        user = self.db.query(User).filter(User.id == user_id).first()
+        if user and user.rank:
+            return self.get_by_name(user.rank)
+        return None

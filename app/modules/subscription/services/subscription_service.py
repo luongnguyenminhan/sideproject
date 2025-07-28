@@ -12,6 +12,8 @@ from app.modules.subscription.models.order import Order
 from app.modules.users.models.users import User
 from app.enums.subscription_enums import RankEnum, OrderStatusEnum
 from app.exceptions.exception import CustomHTTPException
+from ...users.repository.user_repo import UserRepo
+import uuid
 
 
 class SubscriptionService:
@@ -22,6 +24,7 @@ class SubscriptionService:
         self.rank_repo = RankRepository(db)
         self.order_repo = OrderRepository(db)
         self.payos_service = PayOSService()
+        self.user_repo = UserRepo(db)
         
         # Define subscription plans with their prices
         self.subscription_prices = {
@@ -29,7 +32,7 @@ class SubscriptionService:
             RankEnum.ULTRA: 699000  # 699,000 VND for ULTRA
         }
     
-    def get_user_rank(self, user: User) -> Dict[str, Any]:
+    def get_user_rank(self, user_id) -> Dict[str, Any]:
         """Get the current rank information for a user
         
         Args:
@@ -39,7 +42,8 @@ class SubscriptionService:
             Dictionary containing rank information
         """
         # Get rank details
-        rank = self.rank_repo.get_by_name(user.rank)
+        user = self.user_repo.get_user_by_id(user_id)
+        rank = self.rank_repo.get_by_user_id(user_id)
         
         # Check if the rank has expired
         is_active = False
@@ -58,7 +62,7 @@ class SubscriptionService:
             "is_active": is_active
         }
     
-    def create_payment_link(self, user: User, rank_type: RankEnum) -> Dict[str, Any]:
+    def create_payment_link(self, user_id: str, rank_type: RankEnum) -> Dict[str, Any]:
         """Create a payment link for a subscription
         
         Args:
@@ -68,44 +72,44 @@ class SubscriptionService:
         Returns:
             Dictionary containing payment link information
         """
+        user = self.user_repo.get_user_by_id(user_id)
         # Validate rank type
         if rank_type not in [RankEnum.PRO, RankEnum.ULTRA]:
             raise CustomHTTPException(
-                status_code=400,
-                error_code=400,
                 message="Invalid subscription plan",
-                description="Please select either PRO or ULTRA subscription plan"
             )
         
         # Get amount from subscription prices
         amount = self.subscription_prices.get(rank_type)
         if not amount:
             raise CustomHTTPException(
-                status_code=400, 
-                error_code=400,
                 message="Invalid subscription plan",
-                description="Unable to determine price for the selected subscription plan"
             )
         
         # Create payment description
-        description = f"Enterviu {rank_type} Subscription - 1 month"
+        description = f"{rank_type} 1 month"
         
         # Create payment link with PayOS
+        # Generate a random integer order code (8 digits)
+        order_code = str(uuid.uuid4().int)[:8]
         payment_data = self.payos_service.create_payment_link(
-            order_code=f"ETV-{user.id[:8]}",
+            order_code=order_code,
             amount=amount,
             description=description,
             user_email=user.email
         )
         
         # Create order in database
+        print("dang luu db")
         order = self.order_repo.create_order(
+            order_code=order_code,
             user_id=user.id,
             rank_type=rank_type,
             amount=amount,
             payment_data=payment_data
         )
-        
+        self.db.commit()
+        print("luu db xong roi")
         return {
             "checkout_url": order.checkout_url,
             "order_code": order.order_code,

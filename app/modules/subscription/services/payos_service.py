@@ -46,8 +46,9 @@ class PayOSService:
         )
         
         # Create payment data
+        print(order_code, "---"*100)
         payment_data = PaymentData(
-            orderCode=order_code,
+            orderCode=int(order_code),
             amount=int(amount),  # PayOS requires integer amount
             description=description,
             items=[item],

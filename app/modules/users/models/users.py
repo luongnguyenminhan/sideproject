@@ -35,7 +35,7 @@ class User(BaseEntity):
 	messages = relationship('Message', back_populates='user', cascade='all, delete-orphan')
 	files = relationship('File', back_populates='user', cascade='all, delete-orphan')
 	# Payment relationships
-	payments = relationship('Payment', back_populates='user', cascade='all, delete-orphan')
+	payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
 	question_sessions = relationship('QuestionSession', back_populates='user', cascade='all, delete-orphan')
 
 	# Subscription relationships

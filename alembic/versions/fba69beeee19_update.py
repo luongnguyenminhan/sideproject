@@ -1,8 +1,8 @@
-"""init
+"""update
 
-Revision ID: c3e76c20f3a6
+Revision ID: fba69beeee19
 Revises: 
-Create Date: 2025-06-29 22:27:20.970810
+Create Date: 2025-07-28 23:33:46.582793
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c3e76c20f3a6'
+revision: str = 'fba69beeee19'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -35,6 +35,18 @@ def upgrade() -> None:
     sa.Column('is_deleted', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('ranks',
+    sa.Column('name', sa.Enum('BASIC', 'PRO', 'ULTRA', name='rankenum'), nullable=False),
+    sa.Column('description', sa.String(length=500), nullable=False),
+    sa.Column('benefits', sa.JSON(), nullable=False),
+    sa.Column('price', sa.String(length=20), nullable=False),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('create_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('update_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_ranks_name'), 'ranks', ['name'], unique=True)
     op.create_table('users',
     sa.Column('profile_picture', sa.String(length=255), nullable=True),
     sa.Column('username', sa.String(length=100), nullable=True),
@@ -48,6 +60,9 @@ def upgrade() -> None:
     sa.Column('confirmed', sa.Boolean(), nullable=False),
     sa.Column('fcm_token', sa.String(length=255), nullable=True),
     sa.Column('last_login_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('rank', sa.Enum('BASIC', 'PRO', 'ULTRA', name='rankenum'), nullable=False),
+    sa.Column('rank_activated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('rank_expired_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('create_date', sa.DateTime(timezone=True), nullable=True),
     sa.Column('update_date', sa.DateTime(timezone=True), nullable=True),
@@ -89,6 +104,58 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('payments',
+    sa.Column('order_code', sa.Integer(), nullable=False),
+    sa.Column('amount', sa.Integer(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('payment_link_id', sa.String(length=255), nullable=True),
+    sa.Column('status', sa.Enum('CREATED', 'PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED', name='paymentstatus'), nullable=True),
+    sa.Column('checkout_url', sa.Text(), nullable=True),
+    sa.Column('qr_code', sa.Text(), nullable=True),
+    sa.Column('currency', sa.String(length=10), nullable=True),
+    sa.Column('user_id', sa.String(length=36), nullable=True),
+    sa.Column('reference', sa.String(length=255), nullable=True),
+    sa.Column('transaction_date_time', sa.DateTime(), nullable=True),
+    sa.Column('counter_account_bank_id', sa.String(length=255), nullable=True),
+    sa.Column('counter_account_bank_name', sa.String(length=255), nullable=True),
+    sa.Column('counter_account_name', sa.String(length=255), nullable=True),
+    sa.Column('counter_account_number', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('completed_at', sa.DateTime(), nullable=True),
+    sa.Column('cancelled_at', sa.DateTime(), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('create_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('update_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_payments_order_code'), 'payments', ['order_code'], unique=False)
+    op.create_index(op.f('ix_payments_payment_link_id'), 'payments', ['payment_link_id'], unique=False)
+    op.create_table('subscription_orders',
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('order_code', sa.String(length=50), nullable=False),
+    sa.Column('rank_type', sa.Enum('BASIC', 'PRO', 'ULTRA', name='rankenum'), nullable=False),
+    sa.Column('amount', sa.Float(), nullable=False),
+    sa.Column('status', sa.Enum('PENDING', 'COMPLETED', 'CANCELED', 'EXPIRED', name='orderstatusenum'), nullable=False),
+    sa.Column('payment_link_id', sa.String(length=100), nullable=True),
+    sa.Column('checkout_url', sa.String(length=500), nullable=True),
+    sa.Column('transaction_id', sa.String(length=100), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('expired_at', sa.DateTime(), nullable=False),
+    sa.Column('activated_at', sa.DateTime(), nullable=True),
+    sa.Column('expired_subscription_at', sa.DateTime(), nullable=True),
+    sa.Column('cancel_reason', sa.String(length=255), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('create_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('update_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_subscription_orders_order_code'), 'subscription_orders', ['order_code'], unique=True)
+    op.create_index(op.f('ix_subscription_orders_user_id'), 'subscription_orders', ['user_id'], unique=False)
     op.create_table('user_logs',
     sa.Column('user_id', sa.String(length=36), nullable=False),
     sa.Column('action', sa.String(length=255), nullable=False),
@@ -202,8 +269,16 @@ def downgrade() -> None:
     op.drop_table('messages')
     op.drop_table('files')
     op.drop_table('user_logs')
+    op.drop_index(op.f('ix_subscription_orders_user_id'), table_name='subscription_orders')
+    op.drop_index(op.f('ix_subscription_orders_order_code'), table_name='subscription_orders')
+    op.drop_table('subscription_orders')
+    op.drop_index(op.f('ix_payments_payment_link_id'), table_name='payments')
+    op.drop_index(op.f('ix_payments_order_code'), table_name='payments')
+    op.drop_table('payments')
     op.drop_table('conversations')
     op.drop_table('agents')
     op.drop_table('users')
+    op.drop_index(op.f('ix_ranks_name'), table_name='ranks')
+    op.drop_table('ranks')
     op.drop_table('global_kb')
     # ### end Alembic commands ###

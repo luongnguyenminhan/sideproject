@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import Column, String, Integer, DateTime, Text, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from app.core.base_model import BaseModel
+from app.core.base_model import BaseEntity
 
 if TYPE_CHECKING:
     from app.modules.users.models.user import User
@@ -24,7 +24,7 @@ class PaymentStatus(str, enum.Enum):
     CANCELLED = "cancelled"
 
 
-class Payment(BaseModel):
+class Payment(BaseEntity):
     """Payment model for storing payment information"""
     __tablename__ = "payments"
 
@@ -53,4 +53,4 @@ class Payment(BaseModel):
     cancelled_at: Optional[datetime] = Column(DateTime, nullable=True)
     
     # Relationships
-    user: "User" = relationship("User", back_populates="payments")
+    user = relationship("User", back_populates="payments")

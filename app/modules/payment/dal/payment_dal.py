@@ -11,24 +11,24 @@ from app.modules.payment.models.payment import Payment, PaymentStatus
 
 class PaymentDAL(BaseDAL):
     """Data Access Layer for Payment operations"""
-    def __init__(self, db_session: Session):
-        super().__init__(db_session, Payment)
+    def __init__(self, db: Session):
+        super().__init__(db, Payment)
     
     def create_payment(self, payment_data: dict) -> Payment:
         """Create a new payment record"""
         payment = Payment(**payment_data)
-        self.db_session.add(payment)
-        self.db_session.commit()
-        self.db_session.refresh(payment)
+        self.db.add(payment)
+        self.db.commit()
+        self.db.refresh(payment)
         return payment
     
     def get_payment_by_order_code(self, order_code: int) -> Payment:
         """Get payment by order code"""
-        return self.db_session.query(Payment).filter(Payment.order_code == order_code).first()
+        return self.db.query(Payment).filter(Payment.order_code == order_code).first()
     
     def get_payment_by_payment_link_id(self, payment_link_id: str) -> Payment:
         """Get payment by PayOS payment link ID"""
-        return self.db_session.query(Payment).filter(Payment.payment_link_id == payment_link_id).first()
+        return self.db.query(Payment).filter(Payment.payment_link_id == payment_link_id).first()
     
     def update_payment_status(self, payment_id: str, status: PaymentStatus, **kwargs) -> Payment:
         """Update payment status and related fields"""
@@ -49,8 +49,8 @@ class PaymentDAL(BaseDAL):
             if hasattr(payment, key):
                 setattr(payment, key, value)
         
-        self.db_session.commit()
-        self.db_session.refresh(payment)
+        self.db.commit()
+        self.db.refresh(payment)
         return payment
     
     def update_payment_from_webhook(self, payment_link_id: str, webhook_data: dict) -> Payment:
@@ -70,6 +70,6 @@ class PaymentDAL(BaseDAL):
         payment.counter_account_name = webhook_data.get("counterAccountName")
         payment.counter_account_number = webhook_data.get("counterAccountNumber")
         
-        self.db_session.commit()
-        self.db_session.refresh(payment)
+        self.db.commit()
+        self.db.refresh(payment)
         return payment

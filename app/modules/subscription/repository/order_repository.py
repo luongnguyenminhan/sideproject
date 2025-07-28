@@ -47,17 +47,16 @@ class OrderRepository(BaseRepo):
         """Get all pending orders that have passed their expiration date"""
         return self.dal.get_expired_pending_orders()
 
-    def create_order(self, user_id: str, rank_type: RankEnum, amount: float, payment_data: Dict[str, Any]) -> Order:
+    def create_order(self, order_code: int, user_id: str, rank_type: RankEnum, amount: float, payment_data: Dict[str, Any]) -> Order:
         """Create a new order"""
         # Generate a unique order code
-        order_code = f"ETV-{uuid.uuid4().hex[:8].upper()}"
         
         # Set expiration time for the payment link (15 minutes)
         expired_at = datetime.now() + timedelta(minutes=15)
         
         order_data = {
             "user_id": user_id,
-            "order_code": order_code,
+            "order_code": str(order_code),
             "rank_type": rank_type,
             "amount": amount,
             "status": OrderStatusEnum.PENDING,
