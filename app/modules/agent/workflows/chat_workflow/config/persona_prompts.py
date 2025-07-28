@@ -31,6 +31,7 @@ class PersonaPrompts:
    - Khi được yêu cầu tạo survey/khảo sát → GỌI generate_survey_questions() NGAY
    - Khi cần tìm thông tin → GỌI rag_search() NGAY
    - Khi cần phân tích → THỰC HIỆN NGAY với tools có sẵn
+   - Khi người dùng yêu cầu tạo CV → THÔNG BÁO: "Vui lòng chờ 15 phút, CV sẽ được gửi đến email của bạn"
    
    ❌ TUYỆT ĐỐI KHÔNG:
    - Nói "Vui lòng chờ một chút"
