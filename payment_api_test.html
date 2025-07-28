@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .section { margin-bottom: 2em; }
+        label { display: block; margin-top: 1em; }
+        input, textarea { width: 100%; padding: 0.5em; margin-top: 0.2em; }
+        button { margin-top: 1em; padding: 0.5em 1em; }
+        pre { background: #f4f4f4; padding: 1em; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>Payment API Test (localhost:8000/api/v1)</h1>
+    <div class="section">
+        <label>Bearer Token (Authorization)<input type="text" id="bearerToken" placeholder="Paste Bearer token here"></label>
+        <small>Chỉ cần dán nếu API yêu cầu xác thực</small>
+    </div>
+
+    <div class="section">
+        <h2>Create Payment</h2>
+        <form id="createPaymentForm">
+            <label>Order Code <input type="number" name="order_code" required></label>
+            <label>Amount <input type="number" name="amount" required></label>
+            <label>Description <input type="text" name="description" required></label>
+            <label>Cancel URL <input type="text" name="cancel_url" value="http://localhost/cancel" required></label>
+            <label>Return URL <input type="text" name="return_url" value="http://localhost/return" required></label>
+            <label>Items (JSON array)
+                <textarea name="items" rows="3" required>[{"name":"Item 1","quantity":1,"price":100000}]</textarea>
+            </label>
+            <button type="submit">Create Payment</button>
+        </form>
+        <pre id="createPaymentResult"></pre>
+        <div id="createPaymentQR" style="margin-top:1em;"></div>
+    </div>
+
+    <div class="section">
+        <h2>Get Payment Info</h2>
+        <label>Order ID <input type="text" id="getPaymentOrderId"></label>
+        <button onclick="getPaymentInfo()">Get Info</button>
+        <pre id="getPaymentInfoResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Cancel Payment</h2>
+        <label>Order ID <input type="text" id="cancelPaymentOrderId"></label>
+        <label>Reason <input type="text" id="cancelPaymentReason"></label>
+        <button onclick="cancelPayment()">Cancel Payment</button>
+        <pre id="cancelPaymentResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Verify Webhook</h2>
+        <label>Webhook URL <input type="text" id="webhookUrl" value="http://localhost/webhook"></label>
+        <button onclick="verifyWebhook()">Verify Webhook</button>
+        <pre id="verifyWebhookResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Get My Payments</h2>
+        <label>Limit <input type="number" id="myPaymentsLimit" value="10"></label>
+        <label>Offset <input type="number" id="myPaymentsOffset" value="0"></label>
+        <button onclick="getMyPayments()">Get My Payments</button>
+        <pre id="getMyPaymentsResult"></pre>
+    </div>
+
+    <script>
+    const API_BASE = 'http://localhost:8000/api/v1/payments';
+
+    function getAuthHeader() {
+        const token = document.getElementById('bearerToken').value.trim();
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    document.getElementById('createPaymentForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            order_code: Number(form.order_code.value),
+            amount: Number(form.amount.value),
+            description: form.description.value,
+            cancel_url: form.cancel_url.value,
+            return_url: form.return_url.value,
+            items: JSON.parse(form.items.value)
+        };
+        const headers = { 'Content-Type': 'application/json', ...getAuthHeader() };
+        const res = await fetch(`${API_BASE}/create-payment`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(data)
+        });
+        const text = await res.text();
+        document.getElementById('createPaymentResult').textContent = text;
+
+        // Hiển thị QR code nếu có
+        let qrDiv = document.getElementById('createPaymentQR');
+        qrDiv.innerHTML = '';
+        try {
+            const json = JSON.parse(text);
+            const qr = json?.data?.qr_code;
+            if (qr) {
+                // Sử dụng API qrserver để render hình QR
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qr)}`;
+                qrDiv.innerHTML = `<b>QR Code:</b><br><img src='${qrUrl}' alt='QR Code'><br><small>Raw: ${qr}</small>`;
+            }
+        } catch {}
+    };
+
+    async function getPaymentInfo() {
+        const orderId = document.getElementById('getPaymentOrderId').value;
+        const headers = getAuthHeader();
+        const res = await fetch(`${API_BASE}/${orderId}/info`, { headers });
+        document.getElementById('getPaymentInfoResult').textContent = await res.text();
+    }
+
+    async function cancelPayment() {
+        const orderId = document.getElementById('cancelPaymentOrderId').value;
+        const reason = document.getElementById('cancelPaymentReason').value;
+        const headers = { 'Content-Type': 'application/json', ...getAuthHeader() };
+        const res = await fetch(`${API_BASE}/${orderId}/cancel`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ cancellation_reason: reason })
+        });
+        document.getElementById('cancelPaymentResult').textContent = await res.text();
+    }
+
+    async function verifyWebhook() {
+        const url = document.getElementById('webhookUrl').value;
+        const headers = { 'Content-Type': 'application/json', ...getAuthHeader() };
+        const res = await fetch(`${API_BASE}/webhook/verify`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ webhook_url: url })
+        });
+        document.getElementById('verifyWebhookResult').textContent = await res.text();
+    }
+
+    async function getMyPayments() {
+        const limit = document.getElementById('myPaymentsLimit').value;
+        const offset = document.getElementById('myPaymentsOffset').value;
+        const headers = getAuthHeader();
+        const res = await fetch(`${API_BASE}/my-payments?limit=${limit}&offset=${offset}`, { headers });
+        document.getElementById('getMyPaymentsResult').textContent = await res.text();
+    }
+    </script>
+</body>
+</html>

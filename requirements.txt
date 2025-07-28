@@ -29,8 +29,6 @@ weasyprint>=54.0
 markdown2>=2.4.0
 python-dotenv==1.0.1
 python-jose==3.5.0
-
-
 # LangChain và LangGraph core
 langchain
 langchain-core
@@ -47,6 +45,8 @@ langchain-qdrant==0.2.0
 # Tools và utilities
 tiktoken>=0.7.0
 pyyaml>=6.0.2
+alembic
 
 pymupdf<1.26.0
 python-docx>=1.1.2
+payos==0.1.8

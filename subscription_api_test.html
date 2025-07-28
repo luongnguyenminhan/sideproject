@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .section { margin-bottom: 2em; }
+        label { display: block; margin-top: 1em; }
+        input, select, textarea { width: 100%; padding: 0.5em; margin-top: 0.2em; }
+        button { margin-top: 1em; padding: 0.5em 1em; }
+        pre { background: #f4f4f4; padding: 1em; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Subscription API Test (localhost:8000/api/v1/subscription)</h1>
+
+    <div class="section">
+        <label>Bearer Token (Authorization)<input type="text" id="bearerToken" placeholder="Paste Bearer token here"></label>
+        <small>Chỉ cần dán nếu API yêu cầu xác thực</small>
+    </div>
+
+    <div class="section">
+        <h2>Get My Rank</h2>
+        <button onclick="getMyRank()">Get My Rank</button>
+        <pre id="getMyRankResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Create Subscription Payment Link</h2>
+        <form id="createSubPaymentForm">
+            <label>Rank Type
+                <select name="rank_type" required>
+                    <option value="basic">Basic</option>
+                    <option value="enterviu_pro">Pro</option>
+                    <option value="enterviu_ultra">Ultra</option>
+                </select>
+            </label>
+            <button type="submit">Create Payment Link</button>
+        </form>
+        <pre id="createSubPaymentResult"></pre>
+        <div id="createSubPaymentQR" style="margin-top:1em;"></div>
+    </div>
+
+    <script>
+    const API_BASE = 'http://localhost:8000/api/v1/subscription';
+
+    function getAuthHeader() {
+        const token = document.getElementById('bearerToken').value.trim();
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    async function getMyRank() {
+        const headers = getAuthHeader();
+        const res = await fetch(`${API_BASE}/me/rank`, { headers });
+        document.getElementById('getMyRankResult').textContent = await res.text();
+    }
+
+    document.getElementById('createSubPaymentForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            rank_type: form.rank_type.value
+        };
+        const headers = { 'Content-Type': 'application/json', ...getAuthHeader() };
+        const res = await fetch(`${API_BASE}/payment/create-link`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(data)
+        });
+        const text = await res.text();
+        document.getElementById('createSubPaymentResult').textContent = text;
+
+        // Hiển thị QR code nếu có
+        let qrDiv = document.getElementById('createSubPaymentQR');
+        qrDiv.innerHTML = '';
+        try {
+            const json = JSON.parse(text);
+            const url = json?.data?.checkout_url;
+            if (url) {
+                // Sử dụng API qrserver để render hình QR
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+                qrDiv.innerHTML = `<b>Checkout QR Code:</b><br><img src='${qrUrl}' alt='QR Code'><br><a href='${url}' target='_blank'>Go to Checkout</a>`;
+            }
+        } catch {}
+    };
+    </script>
+</body>
+</html>

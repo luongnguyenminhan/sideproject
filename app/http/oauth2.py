@@ -1,6 +1,5 @@
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime
 
 from pytz import timezone
@@ -10,19 +9,50 @@ from app.exceptions.exception import CustomHTTPException, UnauthorizedException
 from app.middleware.translation_manager import _
 from app.utils.generate_jwt import GenerateJWToken
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
+# OAuth2 scheme for FastAPI authentication
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl='login',
+    scheme_name='BearerAuth'  # Match the name in OpenAPI schema
+)
+
+# Alternative HTTP Bearer implementation that works better with Swagger UI
+class JWTBearer(HTTPBearer):
+    def __init__(self, auto_error: bool = True):
+        super().__init__(auto_error=auto_error)
+
+    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials:
+        credentials = await super().__call__(request)
+        if credentials:
+            if not credentials.scheme == "Bearer":
+                raise UnauthorizedException(_('invalid_authentication_scheme'))
+            if not self.verify_jwt(credentials.credentials):
+                raise UnauthorizedException(_('invalid_token'))
+            return credentials.credentials
+        else:
+            raise UnauthorizedException(_('invalid_authorization_code'))
+    
+    def verify_jwt(self, token: str) -> bool:
+        try:
+            jwt_generator = GenerateJWToken()
+            payload = jwt_generator.decode_token(token, SECRET_KEY, TOKEN_ISSUER, TOKEN_AUDIENCE)
+            return True if payload else False
+        except Exception:
+            return False
+
+# Create a JWT Bearer security instance for routes
+jwt_bearer = JWTBearer()
 
 
-def get_current_user(data: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(jwt_bearer)):
 	"""
 	Trích xuất thông tin người dùng từ JWT token.
 	"""
 	try:
 		jwt_generator = GenerateJWToken()
-		payload = jwt_generator.decode_token(data, SECRET_KEY, TOKEN_ISSUER, TOKEN_AUDIENCE)
+		payload = jwt_generator.decode_token(token, SECRET_KEY, TOKEN_ISSUER, TOKEN_AUDIENCE)
 		return payload
 	except Exception as e:
-		print(f'Unexpected error in get_current_user: {e}, {data}')
+		print(f'Unexpected error in get_current_user: {e}, {token}')
 		raise UnauthorizedException(_('token_verification_failed')) from e
 
 
