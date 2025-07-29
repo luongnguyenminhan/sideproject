@@ -193,7 +193,7 @@ const PayOSReturn = () => {
                 </div>
               </div>
 
-              <div className='bg-white border rounded-xl overflow-hidden'>
+              <div className='bg-white border border-gray-600 rounded-xl overflow-hidden'>
                 <div className='bg-gray-50 px-4 py-3 border-b'>
                   <h4 className='font-semibold text-gray-800 flex items-center'>
                     <Info className='w-4 h-4 mr-2' />
@@ -205,7 +205,7 @@ const PayOSReturn = () => {
                   <div className='px-4 py-3 flex justify-between items-center'>
                     <span className='text-gray-600 text-sm'>Mã đơn hàng</span>
                     <div className='flex items-center'>
-                      <span className='font-mono text-sm font-medium mr-2'>
+                      <span className='font-mono text-sm font-medium mr-2 text-black'>
                         {paymentData?.orderCode}
                       </span>
                       <button
@@ -225,7 +225,7 @@ const PayOSReturn = () => {
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Mã giao dịch</span>
                       <div className='flex items-center'>
-                        <span className='font-mono text-sm font-medium mr-2'>
+                        <span className='font-mono text-sm font-medium mr-2 text-black'>
                           {paymentData?.id}
                         </span>
                         <button
@@ -245,7 +245,7 @@ const PayOSReturn = () => {
                   {paymentData?.bankCode && (
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Ngân hàng</span>
-                      <span className='font-medium text-sm'>
+                      <span className='font-medium text-sm text-black'>
                         {paymentData?.bankName || paymentData?.bankCode}
                       </span>
                     </div>
@@ -254,20 +254,24 @@ const PayOSReturn = () => {
                   {paymentData?.accountNumber && (
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Số tài khoản</span>
-                      <span className='font-medium text-sm'>{paymentData?.accountNumber}</span>
+                      <span className='font-medium text-sm text-black'>
+                        {paymentData?.accountNumber}
+                      </span>
                     </div>
                   )}
 
                   {paymentData?.accountName && (
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Chủ tài khoản</span>
-                      <span className='font-medium text-sm'>{paymentData?.accountName}</span>
+                      <span className='font-medium text-sm text-black'>
+                        {paymentData?.accountName}
+                      </span>
                     </div>
                   )}
 
                   <div className='px-4 py-3 flex justify-between items-center'>
                     <span className='text-gray-600 text-sm'>Phương thức</span>
-                    <span className='font-medium text-sm'>
+                    <span className='font-medium text-sm text-black'>
                       {paymentData?.paymentMethod === 'BANK_TRANSFER'
                         ? 'Chuyển khoản ngân hàng'
                         : paymentData?.paymentMethod || 'PayOS'}
@@ -278,7 +282,7 @@ const PayOSReturn = () => {
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Mã tham chiếu</span>
                       <div className='flex items-center'>
-                        <span className='font-mono text-sm font-medium mr-2'>
+                        <span className='font-mono text-sm font-medium mr-2 text-black'>
                           {paymentData?.reference}
                         </span>
                         <button
@@ -301,7 +305,7 @@ const PayOSReturn = () => {
                   {paymentData?.transactionDateTime && (
                     <div className='px-4 py-3 flex justify-between items-center'>
                       <span className='text-gray-600 text-sm'>Thời gian giao dịch</span>
-                      <span className='font-medium text-sm'>
+                      <span className='font-medium text-sm text-black'>
                         {formatDate(paymentData?.transactionDateTime)}
                       </span>
                     </div>
@@ -309,7 +313,7 @@ const PayOSReturn = () => {
 
                   <div className='px-4 py-3 flex justify-between'>
                     <span className='text-gray-600 text-sm block mb-1'>Trạng thái</span>
-                    <span className='text-sm text-gray-700 italic'>
+                    <span className='text-sm text-gray-700 italic '>
                       {getResponseCodeMessage(paymentData?.code, paymentData?.status)}
                     </span>
                   </div>

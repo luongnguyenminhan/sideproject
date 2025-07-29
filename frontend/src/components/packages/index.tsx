@@ -99,8 +99,6 @@ const Packages = () => {
   });
 
   const handleUpGradePackage = async (pkg: any) => {
-    console.log('hi', pkg);
-
     try {
       const res = await axiosInstance.post('/subscription/payment/create-link', {
         rank_type: pkg.rank_type,
@@ -116,11 +114,17 @@ const Packages = () => {
   };
 
   return (
-    <section className='relative py-20 px-6 overflow-hidden dark:bg-gray-50'>
+    <section className='relative py-20 px-6 overflow-hidden '>
       <div className='relative max-w-6xl mx-auto'>
         <div className='text-center mb-16'>
-          <h1 className='text-3xl md:text-4xl font-bold bg-clip-text mb-4'>Gói Dịch Vụ</h1>
-          <p className='text-md md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed'>
+          <h1
+            className='
+              className="text-4xl md:text-5xl mb-6 font-bold bg-clip-text text-transparent bg-gradient-to-r from-[color:var(--gradient-text-from)] via-[color:var(--gradient-text-via)] to-[color:var(--gradient-text-to)]"
+            '
+          >
+            Gói Dịch Vụ
+          </h1>
+          <p className='text-xl text-[color:var(--muted-foreground)] max-w-2xl mx-auto'>
             Chọn gói phù hợp với nhu cầu của bạn và bắt đầu hành trình khám phá những tính năng
             tuyệt vời
           </p>
