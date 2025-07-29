@@ -191,7 +191,7 @@ class CVIntegrationService:
 
 			if context_parts:
 				logger.debug(f'[CVIntegrationService] Generated {len(context_parts)} context parts')
-				return f'THÔNG TIN CV CỦA NGƯỜI DÙNG:\n{chr(10).join(context_parts)}\n---'
+				return f'THÔNG TIN CV CỦA NGƯỜI DÙNG:\n{cv_context}\n---'
 
 			logger.debug('[CVIntegrationService] No context parts generated')
 			return None
