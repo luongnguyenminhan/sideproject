@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, BaseModel
 from app.core.base_model import RequestSchema, FilterableRequestSchema
 from typing import Optional
 
@@ -24,3 +24,16 @@ class ConversationListRequest(FilterableRequestSchema):
 	search: Optional[str] = Field(default=None, description='Search by conversation name')
 	order_by: Optional[str] = Field(default='last_activity', description='Sort by field')
 	order_direction: Optional[str] = Field(default='desc', description='Sort direction: asc/desc')
+
+
+class CountConversationsRequest(BaseModel):
+	"""Request model for counting conversations with optional filters"""
+	
+	filters: list = Field(
+		default=[],
+		description='Optional filters to apply when counting conversations'
+	)
+	include_user_filter: bool = Field(
+		default=True,
+		description='Whether to filter conversations for current user only'
+	)

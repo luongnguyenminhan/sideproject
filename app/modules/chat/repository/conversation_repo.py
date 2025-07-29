@@ -33,6 +33,25 @@ class ConversationRepo:
 		)
 		return conversations
 
+	def count_conversations(self, user_id: str = None, filters: dict = None) -> int:
+		"""
+		Count total number of conversations with optional filters and user restriction
+		
+		Args:
+		    user_id (str): Optional user ID to filter conversations for specific user
+		    filters (dict): Optional filters to apply when counting conversations
+		    
+		Returns:
+		    int: Total count of conversations matching the criteria
+		"""
+		try:
+			params = filters or {}
+			result = self.conversation_dal.count_conversations(user_id, params)
+			return result
+		except Exception as ex:
+			logger.error(f"Error counting conversations: {ex}")
+			raise ex
+
 	def get_conversation_by_id(self, conversation_id: str, user_id: str):
 		"""Get conversation by ID and verify user access"""
 		conversation = self.conversation_dal.get_user_conversation_by_id(conversation_id, user_id)
