@@ -14,238 +14,309 @@ from app.exceptions.exception import ValidationException
 from app.middleware.translation_manager import _
 from app.modules.agent.models.agent import Agent
 from app.modules.agent.services.file_indexing_service import (
-	ConversationFileIndexingService,
+    ConversationFileIndexingService,
 )
 from app.modules.chat.repository.file_repo import FileRepo
 from sqlalchemy.orm import Session
 
 from app.modules.agent.workflows.chat_workflow.config.workflow_config import (
-	WorkflowConfig,
+    WorkflowConfig,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class LangGraphService(object):
-	"""Optimized LangGraph service with Agentic RAG integration via KBRepository"""
+    """Optimized LangGraph service with Agentic RAG integration via KBRepository"""
 
-	# Global workflow cache - shared across all instances
-	_global_workflow = None
-	_file_indexing_service = None
-	_file_repo = None
+    # Global workflow cache - shared across all instances
+    _global_workflow = None
+    _file_indexing_service = None
+    _file_repo = None
 
-	def __init__(self, db: Session):
-		self.db = db
-		# Initialize global workflow if not exists
-		if LangGraphService._global_workflow is None:
-			LangGraphService._init_global_workflow(db)
-		else:
-			pass
-		# Initialize shared services (only file indexing with Agentic RAG)
-		if LangGraphService._file_indexing_service is None:
-			LangGraphService._file_indexing_service = ConversationFileIndexingService(db)
-		if LangGraphService._file_repo is None:
-			LangGraphService._file_repo = FileRepo(db)
+    def __init__(self, db: Session):
+        self.db = db
+        # Initialize global workflow if not exists
+        if LangGraphService._global_workflow is None:
+            LangGraphService._init_global_workflow(db)
+        else:
+            pass
+        # Initialize shared services (only file indexing with Agentic RAG)
+        if LangGraphService._file_indexing_service is None:
+            LangGraphService._file_indexing_service = ConversationFileIndexingService(
+                db
+            )
+        if LangGraphService._file_repo is None:
+            LangGraphService._file_repo = FileRepo(db)
 
-	@classmethod
-	def _init_global_workflow(cls, db_session: Session):
-		"""Initialize global workflow instance once"""
-		try:
-			from app.modules.agent.workflows.chat_workflow import get_compiled_workflow
+    @classmethod
+    def _init_global_workflow(cls, db_session: Session):
+        """Initialize global workflow instance once"""
+        try:
+            from app.modules.agent.workflows.chat_workflow import get_compiled_workflow
+            from app.modules.agent.workflows.chat_workflow.config.workflow_config import (
+                WorkflowConfig,
+            )
 
-			cls._global_workflow = get_compiled_workflow(db_session=db_session, config=WorkflowConfig())
-		except Exception as e:
-			logger.error(f'\033[91m[_init_global_workflow] Failed to initialize global workflow: {str(e)}\033[0m')
-			raise ValidationException(f'Workflow initialization failed: {str(e)}')
+            logger.info("[LangGraphService] Initializing global workflow...")
 
-	async def _ensure_conversation_files_indexed(self, conversation_id: str):
-		"""Ensure all files in conversation are indexed in Agentic RAG"""
-		try:
-			# Check if collection already exists
-			if LangGraphService._file_indexing_service.check_collection_exists(conversation_id):
-				return
+            # Create config with proper settings
+            config = WorkflowConfig()
+            config.db_session = db_session
 
-			# Get files to index
-			files_data = await LangGraphService._file_repo.get_files_for_indexing(conversation_id)
+            # Get compiled workflow
+            cls._global_workflow = get_compiled_workflow(
+                db_session=db_session, config=config
+            )
 
-			if not files_data:
-				return
+            logger.info("[LangGraphService] Global workflow initialized successfully")
 
-			# Index files via Agentic RAG
-			result = await LangGraphService._file_indexing_service.index_conversation_files(conversation_id, files_data)
+        except Exception as e:
+            logger.error(
+                f"\033[91m[_init_global_workflow] Failed to initialize global workflow: {str(e)}\033[0m"
+            )
+            logger.error(
+                f"\033[91m[_init_global_workflow] Error type: {type(e).__name__}\033[0m"
+            )
+            logger.error(f"\033[91m[_init_global_workflow] Error details: {e}\033[0m")
 
-			# Mark files as indexed in database
-			if result['successful_file_ids']:
-				LangGraphService._file_repo.bulk_mark_files_as_indexed(result['successful_file_ids'], success=True)
+            # Try to get more detailed error information
+            import traceback
 
-		except Exception as e:
-			logger.error(f'\033[91m[_ensure_conversation_files_indexed] Error ensuring files indexed via Agentic RAG: {str(e)}\033[0m')
-			# Don't raise exception - let conversation continue without RAG
+            logger.error(
+                f"\033[91m[_init_global_workflow] Traceback: {traceback.format_exc()}\033[0m"
+            )
 
-	def _prepare_messages(
-		self,
-		system_prompt: str,
-		user_message: str,
-		conversation_history: List[Dict[str, Any]],
-	) -> List:
-		"""Prepare messages for workflow execution"""
-		from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+            raise ValidationException(f"Workflow initialization failed: {str(e)}")
 
-		messages = []
+    async def _ensure_conversation_files_indexed(self, conversation_id: str):
+        """Ensure all files in conversation are indexed in Agentic RAG"""
+        try:
+            # Check if collection already exists
+            if LangGraphService._file_indexing_service.check_collection_exists(
+                conversation_id
+            ):
+                return
 
-		# Add system prompt
-		if system_prompt:
-			messages.append(SystemMessage(content=system_prompt))
+            # Get files to index
+            files_data = await LangGraphService._file_repo.get_files_for_indexing(
+                conversation_id
+            )
 
-		# Add conversation history
-		if conversation_history:
-			for msg in conversation_history:
-				if msg.get('role') == 'user':
-					messages.append(HumanMessage(content=msg['content']))
-				elif msg.get('role') == 'assistant':
-					messages.append(AIMessage(content=msg['content']))
+            if not files_data:
+                return
 
-		# Add current user message
-		messages.append(HumanMessage(content=user_message))
+            # Index files via Agentic RAG
+            result = (
+                await LangGraphService._file_indexing_service.index_conversation_files(
+                    conversation_id, files_data
+                )
+            )
 
-		return messages
+            # Mark files as indexed in database
+            if result["successful_file_ids"]:
+                LangGraphService._file_repo.bulk_mark_files_as_indexed(
+                    result["successful_file_ids"], success=True
+                )
 
-	async def execute_conversation(
-		self,
-		agent: Agent,
-		conversation_id: str,
-		user_message: str,
-		conversation_system_prompt: str = None,
-		conversation_history: List[Dict[str, Any]] = None,
-		authorization_token: str = None,
-		user_id: str = None,
-	) -> Dict[str, Any]:
-		"""Execute conversation using basic workflow with Agentic RAG"""
-		start_time = time.time()
+        except Exception as e:
+            logger.error(
+                f"\033[91m[_ensure_conversation_files_indexed] Error ensuring files indexed via Agentic RAG: {str(e)}\033[0m"
+            )
+            # Don't raise exception - let conversation continue without RAG
 
-		try:
-			print(f'[LangGraphService] Starting conversation execution for conversation_id={conversation_id}')
+    def _prepare_messages(
+        self,
+        system_prompt: str,
+        user_message: str,
+        conversation_history: List[Dict[str, Any]],
+    ) -> List:
+        """Prepare messages for workflow execution"""
+        from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
-			# Note: Files are now indexed automatically on upload via events to Agentic RAG
+        messages = []
 
-			# Prepare system prompt
-			system_prompt = conversation_system_prompt or agent.default_system_prompt
+        # Add system prompt
+        if system_prompt:
+            messages.append(SystemMessage(content=system_prompt))
 
-			# Prepare messages
-			messages = self._prepare_messages(system_prompt, user_message, conversation_history or [])
+        # Add conversation history
+        if conversation_history:
+            for msg in conversation_history:
+                if msg.get("role") == "user":
+                    messages.append(HumanMessage(content=msg["content"]))
+                elif msg.get("role") == "assistant":
+                    messages.append(AIMessage(content=msg["content"]))
 
-			# Execute workflow - use ainvoke instead of astream to avoid __end__ issues
-			config = {
-				'configurable': {
-					'thread_id': conversation_id,
-					'conversation_id': conversation_id,
-					'user_id': user_id,  # Add for WebSocket delivery
-					'system_prompt': system_prompt,
-				}
-			}
+        # Add current user message
+        messages.append(HumanMessage(content=user_message))
 
-			# Add authorization token if provided
-			if authorization_token:
-				config['configurable']['authorization_token'] = authorization_token
-				logger.info(f'[execute_conversation] Authorization token added to config: {authorization_token[:20] if authorization_token else None}...')
-				logger.info(f'[execute_conversation] conversation_id: {conversation_id}')
-			else:
-				logger.warning('[execute_conversation] No authorization token provided')
+        return messages
 
-			workflow_input = {'messages': messages}
+    async def execute_conversation(
+        self,
+        agent: Agent,
+        conversation_id: str,
+        user_message: str,
+        conversation_system_prompt: str = None,
+        conversation_history: List[Dict[str, Any]] = None,
+        authorization_token: str = None,
+        user_id: str = None,
+    ) -> Dict[str, Any]:
+        """Execute conversation using basic workflow with Agentic RAG"""
+        start_time = time.time()
 
-			# Get result from global workflow (using ainvoke for direct result)
-			final_state = await LangGraphService._global_workflow.ainvoke(workflow_input, config)
+        try:
+            print(
+                f"[LangGraphService] Starting conversation execution for conversation_id={conversation_id}"
+            )
 
-			# Extract response from final state
-			content = self._extract_response_content(final_state)
-			tokens_used = self._get_tokens_used(final_state)
+            # Note: Files are now indexed automatically on upload via events to Agentic RAG
 
-			end_time = time.time()
-			response_time = int((end_time - start_time) * 1000)
+            # Prepare system prompt
+            system_prompt = conversation_system_prompt or agent.default_system_prompt
 
-			print(f'[LangGraphService] Response content: {content}, tokens used: {tokens_used}, response time: {response_time}ms')
+            # Prepare messages
+            messages = self._prepare_messages(
+                system_prompt, user_message, conversation_history or []
+            )
 
-			return {
-				'content': content,
-				'metadata': {
-					'model_used': f'{agent.model_provider.value}:{agent.model_name}',
-					'tokens_used': tokens_used,
-					'response_time_ms': response_time,
-					'conversation_id': conversation_id,
-				},
-			}
+            # Execute workflow - use ainvoke instead of astream to avoid __end__ issues
+            config = {
+                "configurable": {
+                    "thread_id": conversation_id,
+                    "conversation_id": conversation_id,
+                    "user_id": user_id,  # Add for WebSocket delivery
+                    "system_prompt": system_prompt,
+                }
+            }
 
-		except Exception as e:
-			logger.error(f'\033[91m[execute_conversation] Error executing conversation: {str(e)}\033[0m')
-			print(f'[LangGraphService] Exception occurred: {str(e)}')
-			raise ValidationException(f'Conversation execution failed: {str(e)}')
+            # Add authorization token if provided
+            if authorization_token:
+                config["configurable"]["authorization_token"] = authorization_token
+                logger.info(
+                    f"[execute_conversation] Authorization token added to config: {authorization_token[:20] if authorization_token else None}..."
+                )
+                logger.info(
+                    f"[execute_conversation] conversation_id: {conversation_id}"
+                )
+            else:
+                logger.warning("[execute_conversation] No authorization token provided")
 
-	def _extract_response_content(self, final_state: Dict[str, Any]) -> str:
-		"""Extract the AI response content from workflow final state"""
-		try:
-			messages = final_state.get('messages', [])
-			if not messages:
-				logger.warning('\033[93m[_extract_response_content] No messages in final state\033[0m')
-				return 'No response generated'
+            workflow_input = {"messages": messages}
 
-			# Get the last message which should be the AI response
-			last_message = messages[-1]
+            # Get result from global workflow (using ainvoke for direct result)
+            final_state = await LangGraphService._global_workflow.ainvoke(
+                workflow_input, config
+            )
 
-			# Handle different message types
-			if hasattr(last_message, 'content'):
-				content = last_message.content
-			elif isinstance(last_message, dict):
-				content = last_message.get('content', 'No content available')
-			else:
-				content = str(last_message)
+            # Extract response from final state
+            content = self._extract_response_content(final_state)
+            tokens_used = self._get_tokens_used(final_state)
 
-			return content
+            end_time = time.time()
+            response_time = int((end_time - start_time) * 1000)
 
-		except Exception as e:
-			logger.error(f'\033[91m[_extract_response_content] Error extracting response: {str(e)}\033[0m')
-			return f'Error extracting response: {str(e)}'
+            print(
+                f"[LangGraphService] Response content: {content}, tokens used: {tokens_used}, response time: {response_time}ms"
+            )
 
-	def _get_tokens_used(self, final_state: Dict[str, Any]) -> int:
-		"""Get tokens used from final state"""
-		try:
-			# Try to extract from metadata if available
-			metadata = final_state.get('metadata', {})
-			return metadata.get('tokens_used', 0)
-		except Exception as e:
-			logger.error(f'\033[91m[_get_tokens_used] Error extracting tokens used: {str(e)}\033[0m')
-			# Fallback: estimate based on content length
-			messages = final_state.get('messages', [])
-			total_chars = sum(len(str(msg)) for msg in messages)
-			return total_chars // 4  # Rough estimation
+            return {
+                "content": content,
+                "metadata": {
+                    "model_used": f"{agent.model_provider.value}:{agent.model_name}",
+                    "tokens_used": tokens_used,
+                    "response_time_ms": response_time,
+                    "conversation_id": conversation_id,
+                },
+            }
 
-	def search_conversation_context(self, conversation_id: str, query: str, top_k: int = 5) -> List[Dict]:
-		"""Search conversation context using Agentic RAG file indexing service"""
-		try:
-			# Search via file indexing service
-			documents = LangGraphService._file_indexing_service.search_conversation_context(
-				conversation_id=conversation_id,
-				query=query,
-				top_k=top_k,
-			)
+        except Exception as e:
+            logger.error(
+                f"\033[91m[execute_conversation] Error executing conversation: {str(e)}\033[0m"
+            )
+            print(f"[LangGraphService] Exception occurred: {str(e)}")
+            raise ValidationException(f"Conversation execution failed: {str(e)}")
 
-			# Convert to dict format
-			results = []
-			for doc in documents:
-				results.append({
-					'content': doc.page_content,
-					'metadata': doc.metadata,
-				})
+    def _extract_response_content(self, final_state: Dict[str, Any]) -> str:
+        """Extract the AI response content from workflow final state"""
+        try:
+            messages = final_state.get("messages", [])
+            if not messages:
+                logger.warning(
+                    "\033[93m[_extract_response_content] No messages in final state\033[0m"
+                )
+                return "No response generated"
 
-			return results
+            # Get the last message which should be the AI response
+            last_message = messages[-1]
 
-		except Exception as e:
-			logger.error(f'\033[91m[search_conversation_context] Error searching conversation context: {str(e)}\033[0m')
-			return []
+            # Handle different message types
+            if hasattr(last_message, "content"):
+                content = last_message.content
+            elif isinstance(last_message, dict):
+                content = last_message.get("content", "No content available")
+            else:
+                content = str(last_message)
 
-	@classmethod
-	def reset_global_cache(cls):
-		"""Reset global workflow cache for testing or reinitialization"""
-		cls._global_workflow = None
-		cls._file_indexing_service = None
-		cls._file_repo = None
+            return content
+
+        except Exception as e:
+            logger.error(
+                f"\033[91m[_extract_response_content] Error extracting response: {str(e)}\033[0m"
+            )
+            return f"Error extracting response: {str(e)}"
+
+    def _get_tokens_used(self, final_state: Dict[str, Any]) -> int:
+        """Get tokens used from final state"""
+        try:
+            # Try to extract from metadata if available
+            metadata = final_state.get("metadata", {})
+            return metadata.get("tokens_used", 0)
+        except Exception as e:
+            logger.error(
+                f"\033[91m[_get_tokens_used] Error extracting tokens used: {str(e)}\033[0m"
+            )
+            # Fallback: estimate based on content length
+            messages = final_state.get("messages", [])
+            total_chars = sum(len(str(msg)) for msg in messages)
+            return total_chars // 4  # Rough estimation
+
+    def search_conversation_context(
+        self, conversation_id: str, query: str, top_k: int = 5
+    ) -> List[Dict]:
+        """Search conversation context using Agentic RAG file indexing service"""
+        try:
+            # Search via file indexing service
+            documents = (
+                LangGraphService._file_indexing_service.search_conversation_context(
+                    conversation_id=conversation_id,
+                    query=query,
+                    top_k=top_k,
+                )
+            )
+
+            # Convert to dict format
+            results = []
+            for doc in documents:
+                results.append(
+                    {
+                        "content": doc.page_content,
+                        "metadata": doc.metadata,
+                    }
+                )
+
+            return results
+
+        except Exception as e:
+            logger.error(
+                f"\033[91m[search_conversation_context] Error searching conversation context: {str(e)}\033[0m"
+            )
+            return []
+
+    @classmethod
+    def reset_global_cache(cls):
+        """Reset global workflow cache for testing or reinitialization"""
+        cls._global_workflow = None
+        cls._file_indexing_service = None
+        cls._file_repo = None

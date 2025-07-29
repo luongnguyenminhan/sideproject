@@ -21,15 +21,32 @@ from typing import Dict, Any, List, Optional
 from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langgraph.prebuilt import ToolNode
 
-from ..state.workflow_state import AgentState, StateManager
-from ..tools.basic_tools import get_tools, get_tool_definitions
-from .prompts import (
-	DEFAULT_SYSTEM_PROMPT,
-	has_survey_keywords as check_survey_keywords,
-	get_matched_keywords,
-	build_enhanced_system_prompt,
-	SURVEY_KEYWORDS,
-)
+# Import state management
+try:
+	from ..state.workflow_state import AgentState, StateManager
+except ImportError as e:
+	logger.error(f"Failed to import StateManager: {e}")
+	raise
+
+# Import tools
+try:
+	from ..tools.basic_tools import get_tools, get_tool_definitions
+except ImportError as e:
+	logger.error(f"Failed to import tools: {e}")
+	raise
+
+# Import prompts
+try:
+	from .prompts import (
+		DEFAULT_SYSTEM_PROMPT,
+		has_survey_keywords as check_survey_keywords,
+		get_matched_keywords,
+		build_enhanced_system_prompt,
+		SURVEY_KEYWORDS,
+	)
+except ImportError as e:
+	logger.error(f"Failed to import prompts: {e}")
+	raise
 
 logger = logging.getLogger(__name__)
 
@@ -41,53 +58,64 @@ class WorkflowNodes:
 		"""Initialize with reference to main workflow instance"""
 		self.workflow = workflow_instance
 
-	async def input_validation_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+	async def input_validation_node(
+		self, state: AgentState, config: Dict[str, Any]
+	) -> AgentState:
 		"""Input Validation Node - Validates user input through LLM guardrails"""
-		print('[input_validation_node] Starting input validation')
-
-		# Get user message
-		user_message = StateManager.extract_last_user_message(state)
-		if not user_message:
-			logger.warning('[input_validation_node] No user message found')
-			return state
-
 		try:
+			print("[input_validation_node] Starting input validation")
+
+			# Get user message
+			user_message = StateManager.extract_last_user_message(state)
+			if not user_message:
+				logger.warning("[input_validation_node] No user message found")
+				return state
+
 			# Validate user input through guardrails
-			validation_result = await self.workflow.guardrails_manager.validate_user_input(
-				user_message,
-				context={
-					'user_id': state.get('user_id'),
-					'conversation_id': state.get('conversation_id'),
-					'timestamp': datetime.now().isoformat(),
-				},
+			validation_result = (
+				await self.workflow.guardrails_manager.validate_user_input(
+					user_message,
+					context={
+						"user_id": state.get("user_id"),
+						"conversation_id": state.get("conversation_id"),
+						"timestamp": datetime.now().isoformat(),
+					},
+				)
 			)
 
-			print(f'[input_validation_node] Validation result: {validation_result["is_safe"]} - {validation_result["summary"]}')
+			print(
+				f'[input_validation_node] Validation result: {validation_result["is_safe"]} - {validation_result["summary"]}'
+			)
 
 			# Store validation results in state
 			return {
 				**state,
-				'input_validation': validation_result,
-				'validation_passed': validation_result['is_safe'],
+				"input_validation": validation_result,
+				"validation_passed": validation_result["is_safe"],
 			}
 
 		except Exception as e:
-			print(f'[input_validation_node] Validation failed: {str(e)}')
+			print(f"[input_validation_node] Validation failed: {str(e)}")
+			logger.error(f"[input_validation_node] Error: {str(e)}")
 			# Allow processing to continue on validation error
 			return {
 				**state,
-				'input_validation': {'is_safe': True, 'error': str(e)},
-				'validation_passed': True,
+				"input_validation": {"is_safe": True, "error": str(e)},
+				"validation_passed": True,
 			}
 
-	async def business_process_analysis_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+	async def business_process_analysis_node(
+		self, state: AgentState, config: Dict[str, Any]
+	) -> AgentState:
 		"""Business Process Analysis Node - Identifies process type and applicable rules"""
-		logger.info('[business_process_analysis_node] Starting business process analysis')
+		logger.info(
+			"[business_process_analysis_node] Starting business process analysis"
+		)
 
 		# Get user message
 		user_message = StateManager.extract_last_user_message(state)
 		if not user_message:
-			logger.warning('[business_process_analysis_node] No user message found')
+			logger.warning("[business_process_analysis_node] No user message found")
 			return state
 
 		try:
@@ -95,39 +123,47 @@ class WorkflowNodes:
 			process_type = self.workflow.business_process_manager.identify_process_type(
 				user_message,
 				context={
-					'user_id': state.get('user_id'),
-					'conversation_id': state.get('conversation_id'),
-					'has_cv_context': bool(state.get('cv_context')),
-					'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
-					'user_input': user_message,
+					"user_id": state.get("user_id"),
+					"conversation_id": state.get("conversation_id"),
+					"has_cv_context": bool(state.get("cv_context")),
+					"has_valid_auth_token": bool(
+						config.get("configurable", {}).get("authorization_token")
+					),
+					"user_input": user_message,
 				},
 			)
 
 			# Get process definition
-			process_def = self.workflow.business_process_manager.get_process_definition(process_type)
+			process_def = self.workflow.business_process_manager.get_process_definition(
+				process_type
+			)
 
 			# Evaluate business rules
 			triggered_rules = self.workflow.business_process_manager.evaluate_rules(
 				process_type,
 				{
-					'user_input': user_message,
-					'has_cv_context': bool(state.get('cv_context')),
-					'has_valid_auth_token': bool(config.get('configurable', {}).get('authorization_token')),
-					'profile_completeness': 1.0,
-					'context_completeness': 1.0,
+					"user_input": user_message,
+					"has_cv_context": bool(state.get("cv_context")),
+					"has_valid_auth_token": bool(
+						config.get("configurable", {}).get("authorization_token")
+					),
+					"profile_completeness": 1.0,
+					"context_completeness": 1.0,
 				},
 			)
 
 			return {
 				**state,
-				'business_process_type': process_type.value,
-				'business_process_definition': (process_def.name if process_def else None),
-				'triggered_rules': [rule.name for rule in triggered_rules],
-				'required_tools': process_def.required_tools if process_def else [],
+				"business_process_type": process_type.value,
+				"business_process_definition": (
+					process_def.name if process_def else None
+				),
+				"triggered_rules": [rule.name for rule in triggered_rules],
+				"required_tools": process_def.required_tools if process_def else [],
 			}
 
 		except Exception as e:
-			logger.error(f'[business_process_analysis_node] Analysis failed: {str(e)}')
+			logger.error(f"[business_process_analysis_node] Analysis failed: {str(e)}")
 
 			# Simple fallback
 			from app.modules.agent.workflows.chat_workflow.config.business_process import (
@@ -136,11 +172,13 @@ class WorkflowNodes:
 
 			return {
 				**state,
-				'business_process_type': BusinessProcessType.GENERAL_CONVERSATION.value,
-				'business_process_error': str(e),
+				"business_process_type": BusinessProcessType.GENERAL_CONVERSATION.value,
+				"business_process_error": str(e),
 			}
 
-	async def agent_with_tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+	async def agent_with_tools_node(
+		self, state: AgentState, config: Dict[str, Any]
+	) -> AgentState:
 		"""Agent Node WITH Tools - Uses tools when needed"""
 
 		# Get system prompt
@@ -151,9 +189,9 @@ class WorkflowNodes:
 				system_prompt = persona_prompt
 
 		# Get messages
-		messages = state.get('messages', [])
+		messages = state.get("messages", [])
 		if not messages:
-			return {'messages': [SystemMessage(content=system_prompt)]}
+			return {"messages": [SystemMessage(content=system_prompt)]}
 
 		# Get ALL available tools
 		all_tools = get_tool_definitions(self.workflow.config)
@@ -177,7 +215,7 @@ class WorkflowNodes:
 			pass
 
 			# Check if response contains tool calls
-			if hasattr(response, 'tool_calls') and response.tool_calls:
+			if hasattr(response, "tool_calls") and response.tool_calls:
 				pass
 				for i, tool_call in enumerate(response.tool_calls):
 					pass
@@ -189,52 +227,58 @@ class WorkflowNodes:
 			raise
 
 		# Return updated state
-		return {**state, 'messages': messages + [response]}
+		return {**state, "messages": messages + [response]}
 
 	async def tools_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Tools execution node"""
-		print('[tools_node] Executing tools node')
+		print("[tools_node] Executing tools node")
 
 		# Extract conversation context from config
-		conversation_id = config.get('configurable', {}).get('conversation_id')
-		user_id = config.get('configurable', {}).get('user_id')
-		print(f'[tools_node] Conversation ID: {conversation_id}')
-		print(f'[tools_node] User ID: {user_id}')
+		conversation_id = config.get("configurable", {}).get("conversation_id")
+		user_id = config.get("configurable", {}).get("user_id")
+		print(f"[tools_node] Conversation ID: {conversation_id}")
+		print(f"[tools_node] User ID: {user_id}")
 
 		# Add conversation context to state for tools access
 		updated_state = {
 			**state,
-			'conversation_id': conversation_id,
-			'user_id': user_id,
+			"conversation_id": conversation_id,
+			"user_id": user_id,
 		}
 
 		# Validate tool calls through guardrails before execution
-		last_message = state.get('messages', [])[-1] if state.get('messages') else None
-		if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+		last_message = state.get("messages", [])[-1] if state.get("messages") else None
+		if hasattr(last_message, "tool_calls") and last_message.tool_calls:
 			try:
 				for tool_call in last_message.tool_calls:
-					tool_validation = await self.workflow.guardrails_manager.validate_tool_usage(
-						tool_call.get('name', 'unknown'),
-						tool_call.get('args', {}),
-						context={
-							'user_id': state.get('user_id'),
-							'business_process_type': state.get('business_process_type'),
-							'conversation_id': state.get('conversation_id'),
-						},
+					tool_validation = (
+						await self.workflow.guardrails_manager.validate_tool_usage(
+							tool_call.get("name", "unknown"),
+							tool_call.get("args", {}),
+							context={
+								"user_id": state.get("user_id"),
+								"business_process_type": state.get(
+									"business_process_type"
+								),
+								"conversation_id": state.get("conversation_id"),
+							},
+						)
 					)
-					if not tool_validation.get('is_safe', True):
+					if not tool_validation.get("is_safe", True):
 						pass
 						# Continue with execution but log the concern
 			except Exception as e:
-				print(f'[tools_node] Tool validation failed: {str(e)}')
+				print(f"[tools_node] Tool validation failed: {str(e)}")
 				# Continue with execution on validation error
 
 		# Update tools with authorization token and conversation context if available
-		auth_token = config.get('configurable', {}).get('authorization_token')
-		print(f'[tools_node] Authorization token available: {bool(auth_token)}')
+		auth_token = config.get("configurable", {}).get("authorization_token")
+		print(f"[tools_node] Authorization token available: {bool(auth_token)}")
 
 		if auth_token:
-			print(f'[tools_node] Setting authorization token for tools: {auth_token[:20]}...')
+			print(
+				f"[tools_node] Setting authorization token for tools: {auth_token[:20]}..."
+			)
 
 			# Set authorization token for question composer tool using global function
 			try:
@@ -245,7 +289,9 @@ class WorkflowNodes:
 
 				set_authorization_token(auth_token)
 				set_conversation_context(conversation_id, user_id)
-				print(f'[tools_node] Context set for question composer tool - Conversation: {conversation_id}, User: {user_id}')
+				print(
+					f"[tools_node] Context set for question composer tool - Conversation: {conversation_id}, User: {user_id}"
+				)
 			except ImportError:
 				pass
 
@@ -264,8 +310,8 @@ class WorkflowNodes:
 
 			# For any other tools that support set_authorization_token method
 			for tool in self.workflow._tools:
-				if hasattr(tool, 'set_authorization_token'):
-					print(f'[tools_node] Setting token for tool: {tool.name}')
+				if hasattr(tool, "set_authorization_token"):
+					print(f"[tools_node] Setting token for tool: {tool.name}")
 					tool.set_authorization_token(auth_token)
 				else:
 					pass
@@ -313,12 +359,14 @@ class WorkflowNodes:
 		print('[tools_node] Tools execution completed')
 		return result_with_tracking
 
-	async def output_validation_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
+	async def output_validation_node(
+		self, state: AgentState, config: Dict[str, Any]
+	) -> AgentState:
 		"""Output Validation Node - Validates AI response through LLM guardrails"""
-		print('[output_validation_node] Starting output validation')
+		print("[output_validation_node] Starting output validation")
 
 		# Get the last AI message
-		messages = state.get('messages', [])
+		messages = state.get("messages", [])
 		ai_response = None
 		for msg in reversed(messages):
 			if isinstance(msg, AIMessage):
@@ -329,35 +377,39 @@ class WorkflowNodes:
 			pass
 			return {
 				**state,
-				'output_validation': {'is_safe': True, 'no_response': True},
+				"output_validation": {"is_safe": True, "no_response": True},
 			}
 
 		try:
 			# Validate AI response through guardrails
-			validation_result = await self.workflow.guardrails_manager.validate_ai_response(
-				ai_response,
-				context={
-					'user_id': state.get('user_id'),
-					'conversation_id': state.get('conversation_id'),
-					'business_process_type': state.get('business_process_type'),
-					'timestamp': datetime.now().isoformat(),
-				},
+			validation_result = (
+				await self.workflow.guardrails_manager.validate_ai_response(
+					ai_response,
+					context={
+						"user_id": state.get("user_id"),
+						"conversation_id": state.get("conversation_id"),
+						"business_process_type": state.get("business_process_type"),
+						"timestamp": datetime.now().isoformat(),
+					},
+				)
 			)
 
-			print(f'[output_validation_node] Output validation: {validation_result["is_safe"]} - {validation_result["summary"]}')
+			print(
+				f'[output_validation_node] Output validation: {validation_result["is_safe"]} - {validation_result["summary"]}'
+			)
 
 			# Store validation results
 			return {
 				**state,
-				'output_validation': validation_result,
-				'response_safe': validation_result['is_safe'],
+				"output_validation": validation_result,
+				"response_safe": validation_result["is_safe"],
 			}
 
 		except Exception as e:
-			print(f'[output_validation_node] Output validation failed: {str(e)}')
+			print(f"[output_validation_node] Output validation failed: {str(e)}")
 			# Allow response to proceed on validation error
 			return {
 				**state,
-				'output_validation': {'is_safe': True, 'error': str(e)},
-				'response_safe': True,
+				"output_validation": {"is_safe": True, "error": str(e)},
+				"response_safe": True,
 			}

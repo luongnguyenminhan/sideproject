@@ -32,253 +32,264 @@ color_logger = get_color_logger(__name__)
 
 
 class ChatWorkflow:
-	"""
-	Enhanced Chat Workflow with Agentic RAG integration via KBRepository
+    """
+    Enhanced Chat Workflow with Agentic RAG integration via KBRepository
 
-	Features:
-	- Agentic RAG via KBRepository integration
-	- Always-on RAG with intelligent routing
-	- Query analysis and optimization
-	- Document grading and self-correction
-	- Conversation file indexing and retrieval
-	- Production-ready error handling
-	"""
+    Features:
+    - Agentic RAG via KBRepository integration
+    - Always-on RAG with intelligent routing
+    - Query analysis and optimization
+    - Document grading and self-correction
+    - Conversation file indexing and retrieval
+    - Production-ready error handling
+    """
 
-	def __init__(self, db_session: Session, config: Optional[WorkflowConfig] = None):
-		"""Initialize ChatWorkflow with Agentic RAG"""
-		self.start_time = time.time()
-		color_logger.workflow_start(
-			'ChatWorkflow Initialization with Agentic RAG',
-			db_session_type=type(db_session).__name__,
-			config_provided=config is not None,
-		)
+    def __init__(self, db_session: Session, config: Optional[WorkflowConfig] = None):
+        """Initialize ChatWorkflow with Agentic RAG"""
+        self.start_time = time.time()
+        color_logger.workflow_start(
+            "ChatWorkflow Initialization with Agentic RAG",
+            db_session_type=type(db_session).__name__,
+            config_provided=config is not None,
+        )
 
-		self.db_session = db_session
-		self.config = config or WorkflowConfig.from_env()
-		# Pass db_session to config for CV Context Tool
-		self.config.db_session = db_session
-		print('^^' * 100, f'Config: {self.config.to_dict()}')
+        self.db_session = db_session
+        self.config = config or WorkflowConfig.from_env()
+        # Pass db_session to config for CV Context Tool
+        self.config.db_session = db_session
+        print("^^" * 100, f"Config: {self.config.to_dict()}")
 
-		self.compiled_graph = None
+        self.compiled_graph = None
 
-		try:
-			from .workflow import create_workflow
+        try:
+            from .workflow import create_workflow
 
-			workflow_instance = create_workflow(db_session, self.config)
-			self.compiled_graph = workflow_instance.compiled_graph
+            workflow_instance = create_workflow(db_session, self.config)
+            self.compiled_graph = workflow_instance.compiled_graph
 
-		except Exception as e:
-			color_logger.error(
-				f'Agentic RAG workflow initialization failed: {str(e)}',
-				error_type=type(e).__name__,
-				fallback_mode=False,
-			)
+        except Exception as e:
+            color_logger.error(
+                f"Agentic RAG workflow initialization failed: {str(e)}",
+                error_type=type(e).__name__,
+                fallback_mode=False,
+            )
 
-			raise NodeInterrupt(
-				'Agentic RAG workflow initialization failed',
-			)
+            raise NodeInterrupt(
+                "Agentic RAG workflow initialization failed",
+            )
 
-		initialization_time = time.time() - self.start_time
-		color_logger.info(
-			'ChatWorkflow Initialization with Agentic RAG',
-			initialization_time,
-			workflow_ready=True,
-			agentic_rag_enabled=True,
-		)
+        initialization_time = time.time() - self.start_time
+        color_logger.info(
+            "ChatWorkflow Initialization with Agentic RAG",
+            initialization_time,
+            workflow_ready=True,
+            agentic_rag_enabled=True,
+        )
 
-	async def process_message(
-		self,
-		user_message: str,
-		user_id: Optional[str] = None,
-		session_id: Optional[str] = None,
-		config_override: Optional[Dict[str, Any]] = None,
-	) -> Dict[str, Any]:
-		"""
-		Process user message with Agentic RAG
-		"""
-		start_time = time.time()
-		processing_session = session_id or 'default'
+    async def process_message(
+        self,
+        user_message: str,
+        user_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        config_override: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Process user message with Agentic RAG
+        """
+        start_time = time.time()
+        processing_session = session_id or "default"
 
-		color_logger.workflow_start(
-			'Message Processing',
-			user_id=user_id,
-			session_id=processing_session,
-			message_length=len(user_message),
-		)
+        color_logger.workflow_start(
+            "Message Processing",
+            user_id=user_id,
+            session_id=processing_session,
+            message_length=len(user_message),
+        )
 
-		try:
-			from langchain_core.messages import HumanMessage
+        try:
+            from langchain_core.messages import HumanMessage
 
-			initial_state = {'messages': [HumanMessage(content=user_message)]}
-			color_logger.info(
-				f'🏗️ {Colors.BOLD}STATE:{Colors.RESET}{Colors.MAGENTA} Initial state created',
-				Colors.MAGENTA,
-				message_type='HumanMessage',
-			)
+            initial_state = {"messages": [HumanMessage(content=user_message)]}
+            color_logger.info(
+                f"🏗️ {Colors.BOLD}STATE:{Colors.RESET}{Colors.MAGENTA} Initial state created",
+                Colors.MAGENTA,
+                message_type="HumanMessage",
+            )
 
-			# Prepare config
-			runtime_config = {
-				'configurable': {
-					'thread_id': processing_session,
-					'system_prompt': getattr(self.config, 'system_prompt', None),
-					'use_rag': (self.config.rag_enabled if hasattr(self.config, 'rag_enabled') else True),
-					**self.config.to_dict(),
-				}
-			}
+            # Prepare config
+            runtime_config = {
+                "configurable": {
+                    "thread_id": processing_session,
+                    "system_prompt": getattr(self.config, "system_prompt", None),
+                    "use_rag": (
+                        self.config.rag_enabled
+                        if hasattr(self.config, "rag_enabled")
+                        else True
+                    ),
+                    **self.config.to_dict(),
+                }
+            }
 
-			if config_override:
-				runtime_config['configurable'].update(config_override)
-				color_logger.info(
-					f'🔧 {Colors.BOLD}CONFIG_OVERRIDE:{Colors.RESET}{Colors.YELLOW} Applied',
-					Colors.YELLOW,
-					overrides_count=len(config_override),
-				)
+            if config_override:
+                runtime_config["configurable"].update(config_override)
+                color_logger.info(
+                    f"🔧 {Colors.BOLD}CONFIG_OVERRIDE:{Colors.RESET}{Colors.YELLOW} Applied",
+                    Colors.YELLOW,
+                    overrides_count=len(config_override),
+                )
 
-			final_state = await self.compiled_graph.ainvoke(initial_state, config=runtime_config)
+            final_state = await self.compiled_graph.ainvoke(
+                initial_state, config=runtime_config
+            )
 
-			# Extract response
-			response = self._extract_response(final_state)
+            # Extract response
+            response = self._extract_response(final_state)
 
-			color_logger.info(
-				f'📤 {Colors.BOLD}RESPONSE:{Colors.RESET}{Colors.BRIGHT_GREEN} Generated',
-				Colors.BRIGHT_GREEN,
-				response_length=len(response),
-				response_preview=(response[:100] + '...' if len(response) > 100 else response),
-			)
+            color_logger.info(
+                f"📤 {Colors.BOLD}RESPONSE:{Colors.RESET}{Colors.BRIGHT_GREEN} Generated",
+                Colors.BRIGHT_GREEN,
+                response_length=len(response),
+                response_preview=(
+                    response[:100] + "..." if len(response) > 100 else response
+                ),
+            )
 
-			# Calculate processing metrics
-			processing_time = time.time() - start_time
-			rag_sources_count = len(final_state.get('rag_context', []))
+            # Calculate processing metrics
+            processing_time = time.time() - start_time
+            rag_sources_count = len(final_state.get("rag_context", []))
 
-			color_logger.performance_metric(
-				'processing_time',
-				f'{processing_time:.3f}',
-				's',
-				session_id=processing_session,
-			)
-			color_logger.performance_metric('rag_sources', rag_sources_count, '', session_id=processing_session)
+            color_logger.performance_metric(
+                "processing_time",
+                f"{processing_time:.3f}",
+                "s",
+                session_id=processing_session,
+            )
+            color_logger.performance_metric(
+                "rag_sources", rag_sources_count, "", session_id=processing_session
+            )
 
-			result = {
-				'response': response,
-				'state': final_state,
-				'metadata': {
-					'processing_time': processing_time,
-					'rag_used': bool(final_state.get('rag_context')),
-					'rag_sources': rag_sources_count,
-					'user_id': user_id,
-					'session_id': processing_session,
-					'agentic_rag_used': final_state.get('agentic_rag_used', True),
-				},
-			}
+            result = {
+                "response": response,
+                "state": final_state,
+                "metadata": {
+                    "processing_time": processing_time,
+                    "rag_used": bool(final_state.get("rag_context")),
+                    "rag_sources": rag_sources_count,
+                    "user_id": user_id,
+                    "session_id": processing_session,
+                    "agentic_rag_used": final_state.get("agentic_rag_used", True),
+                },
+            }
 
-			color_logger.info(
-				'Message Processing',
-				processing_time,
-				success=True,
-				rag_used=result['metadata']['rag_used'],
-				response_generated=True,
-				session_id=processing_session,
-			)
+            color_logger.info(
+                "Message Processing",
+                processing_time,
+                success=True,
+                rag_used=result["metadata"]["rag_used"],
+                response_generated=True,
+                session_id=processing_session,
+            )
 
-			return result
+            return result
 
-		except Exception as e:
-			processing_time = time.time() - start_time
-			color_logger.error(
-				f'Message processing failed: {str(e)}',
-				error_type=type(e).__name__,
-				processing_time=processing_time,
-				session_id=processing_session,
-			)
+        except Exception as e:
+            processing_time = time.time() - start_time
+            color_logger.error(
+                f"Message processing failed: {str(e)}",
+                error_type=type(e).__name__,
+                processing_time=processing_time,
+                session_id=processing_session,
+            )
 
-			# Create fallback response
-			fallback_response = 'Xin lỗi, tôi gặp sự cố khi xử lý câu hỏi của bạn. Vui lòng thử lại sau hoặc đặt câu hỏi khác.'
+            # Create fallback response
+            fallback_response = "Xin lỗi, tôi gặp sự cố khi xử lý câu hỏi của bạn. Vui lòng thử lại sau hoặc đặt câu hỏi khác."
 
-			color_logger.warning(
-				f'🔄 {Colors.BOLD}FALLBACK:{Colors.RESET}{Colors.BRIGHT_YELLOW} Using fallback response',
-				Colors.BRIGHT_YELLOW,
-				fallback_length=len(fallback_response),
-			)
+            color_logger.warning(
+                f"🔄 {Colors.BOLD}FALLBACK:{Colors.RESET}{Colors.BRIGHT_YELLOW} Using fallback response",
+                Colors.BRIGHT_YELLOW,
+                fallback_length=len(fallback_response),
+            )
 
-			return {
-				'response': fallback_response,
-				'error': str(e),
-				'metadata': {
-					'processing_time': processing_time,
-					'error_occurred': True,
-				},
-			}
+            return {
+                "response": fallback_response,
+                "error": str(e),
+                "metadata": {
+                    "processing_time": processing_time,
+                    "error_occurred": True,
+                },
+            }
 
-	def _extract_response(self, final_state: Dict[str, Any]) -> str:
-		"""Extract response từ final state"""
-		color_logger.debug(
-			'🔍 Extracting response from final state',
-			state_keys=list(final_state.keys()),
-			messages_count=len(final_state.get('messages', [])),
-		)
+    def _extract_response(self, final_state: Dict[str, Any]) -> str:
+        """Extract response từ final state"""
+        color_logger.debug(
+            "🔍 Extracting response from final state",
+            state_keys=list(final_state.keys()),
+            messages_count=len(final_state.get("messages", [])),
+        )
 
-		messages = final_state.get('messages', [])
-		if not messages:
-			color_logger.warning('No messages in final state')
-			return 'Không thể tạo phản hồi.'
+        messages = final_state.get("messages", [])
+        if not messages:
+            color_logger.warning("No messages in final state")
+            return "Không thể tạo phản hồi."
 
-		# Get last AI message
-		for i, message in enumerate(reversed(messages)):
-			if hasattr(message, 'content') and message.content:
-				content = message.content
-				if content and content.strip():
-					color_logger.debug(
-						f'Response extracted from message #{len(messages) - i}',
-						content_length=len(content),
-						message_type=type(message).__name__,
-					)
-					return content
+        # Get last AI message
+        for i, message in enumerate(reversed(messages)):
+            if hasattr(message, "content") and message.content:
+                content = message.content
+                if content and content.strip():
+                    color_logger.debug(
+                        f"Response extracted from message #{len(messages) - i}",
+                        content_length=len(content),
+                        message_type=type(message).__name__,
+                    )
+                    return content
 
-		color_logger.warning('No valid response content found in messages')
-		return 'Phản hồi không khả dụng.'
+        color_logger.warning("No valid response content found in messages")
+        return "Phản hồi không khả dụng."
 
-	def get_workflow_info(self) -> Dict[str, Any]:
-		"""Get workflow information"""
-		color_logger.info(
-			f'ℹ️ {Colors.BOLD}INFO_REQUEST:{Colors.RESET}{Colors.BRIGHT_WHITE} Getting Agentic RAG workflow information',
-			Colors.BRIGHT_WHITE,
-		)
+    def get_workflow_info(self) -> Dict[str, Any]:
+        """Get workflow information"""
+        color_logger.info(
+            f"ℹ️ {Colors.BOLD}INFO_REQUEST:{Colors.RESET}{Colors.BRIGHT_WHITE} Getting Agentic RAG workflow information",
+            Colors.BRIGHT_WHITE,
+        )
 
-		workflow_info = {
-			'name': 'MoneyEZ Enhanced Chat Workflow with Agentic RAG',
-			'version': '4.0.0',
-			'description': 'Enhanced LangGraph workflow with Agentic RAG KBRepository integration',
-			'features': [
-				'Agentic RAG via KBRepository integration',
-				'Always-on RAG with intelligent routing',
-				'Query optimization and analysis',
-				'Document grading and self-correction',
-				'Conversation file indexing',
-				'Basic calculation tools (+, -, *, /)',
-				'Vietnamese financial expertise',
-				'Production error handling',
-				'Performance monitoring',
-			],
-			'nodes': ['agent', 'tools'],
-			'config': self.config.to_dict() if hasattr(self.config, 'to_dict') else {},
-			'compiled': self.compiled_graph is not None,
-			'agentic_rag_enabled': True,
-		}
+        workflow_info = {
+            "name": "MoneyEZ Enhanced Chat Workflow with Agentic RAG",
+            "version": "4.0.0",
+            "description": "Enhanced LangGraph workflow with Agentic RAG KBRepository integration",
+            "features": [
+                "Agentic RAG via KBRepository integration",
+                "Always-on RAG with intelligent routing",
+                "Query optimization and analysis",
+                "Document grading and self-correction",
+                "Conversation file indexing",
+                "Basic calculation tools (+, -, *, /)",
+                "Vietnamese financial expertise",
+                "Production error handling",
+                "Performance monitoring",
+            ],
+            "nodes": ["agent", "tools"],
+            "config": self.config.to_dict() if hasattr(self.config, "to_dict") else {},
+            "compiled": self.compiled_graph is not None,
+            "agentic_rag_enabled": True,
+        }
 
-		color_logger.info(
-			f'📋 {Colors.BOLD}AGENTIC RAG WORKFLOW_INFO:{Colors.RESET}{Colors.BRIGHT_CYAN} Information compiled',
-			Colors.BRIGHT_CYAN,
-			version=workflow_info['version'],
-			features_count=len(workflow_info['features']),
-			nodes_count=len(workflow_info['nodes']),
-		)
+        color_logger.info(
+            f"📋 {Colors.BOLD}AGENTIC RAG WORKFLOW_INFO:{Colors.RESET}{Colors.BRIGHT_CYAN} Information compiled",
+            Colors.BRIGHT_CYAN,
+            version=workflow_info["version"],
+            features_count=len(workflow_info["features"]),
+            nodes_count=len(workflow_info["nodes"]),
+        )
 
-		return workflow_info
+        return workflow_info
 
 
 # Factory function cho easy initialization với Agentic RAG
-def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] = None) -> ChatWorkflow:
-	"""
-	Factory function để create ChatWorkflow instance với Agentic RAG
-	"""
-	return ChatWorkflow(db_session, config).compiled_graph
+def get_compiled_workflow(db_session: Session, config: Optional[WorkflowConfig] = None):
+    """
+    Factory function để create compiled workflow graph với Agentic RAG
+    """
+    workflow_instance = ChatWorkflow(db_session, config)
+    return workflow_instance.compiled_graph
