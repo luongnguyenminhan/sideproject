@@ -20,13 +20,13 @@ from app.modules.subscription.schemas.subscription_schemas import (
 )
 from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
+from urllib.parse import urlencode
 
 
 # Create router with prefix and tags
 route = APIRouter(
     prefix="/subscription", 
-    tags=["Subscription"],
-    dependencies=[Depends(jwt_bearer)],  # Use the JWT bearer security
+    tags=["Subscription"],  # Use the JWT bearer security
 )
 
 
@@ -82,8 +82,7 @@ async def create_payment_link(
     )
 
 
-
-@route.post(
+@route.get(
     "/webhook/payos",
     dependencies=[],
     include_in_schema=True,
@@ -104,17 +103,28 @@ async def create_payment_link(
 )
 @handle_exceptions
 async def payos_webhook(
-    request: Request,
+    order: str = None,
+    code: str = None,
+    id: str = None,
+    cancel: str = None,
+    status: str = None,
+    orderCode: str = None,
     db: Session = Depends(get_db)
 ):
-    """Handle webhook notifications from PayOS and redirect to payment page"""
-    webhook_data = await request.json()
+    """
+    Handle webhook notifications from PayOS via query parameters and redirect to payment page.
+    Example: /webhook/payos?order=...&code=...&id=...&cancel=...&status=...&orderCode=...
+    """
+    webhook_data = {
+        "order": order,
+        "code": code,
+        "id": id,
+        "cancel": cancel,
+        "status": status,
+        "orderCode": orderCode
+    }
     subscription_service = SubscriptionService(db)
-    result = subscription_service.handle_payment_webhook(webhook_data)
-    redirect_url = result.get("redirect_url")
-    if redirect_url:
-        return RedirectResponse(url=redirect_url)
-    return {"code": "99", "message": result.get("message", "Failed to process webhook")}
+    return subscription_service.handle_payment_webhook(webhook_data)
 
 # API: Get current user's orders
 @route.get(

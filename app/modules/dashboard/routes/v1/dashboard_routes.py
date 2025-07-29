@@ -10,15 +10,13 @@ from app.middleware.translation_manager import _
 
 route = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
+
 @route.get("/stats", response_model=APIResponse)
 @handle_exceptions
 async def get_dashboard_stats(
-    request: DashboardStatsRequest = Depends(),
-    repo: DashboardRepo = Depends()
+    request: DashboardStatsRequest = Depends(), repo: DashboardRepo = Depends()
 ):
     stats = repo.get_dashboard_stats()
     return APIResponse(
-        error_code=0,
-        message=_('success'),
-        data=DashboardStatsResponse(**stats)
+        error_code=0, message=_("success"), data=DashboardStatsResponse(**stats)
     )

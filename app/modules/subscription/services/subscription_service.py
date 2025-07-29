@@ -2,6 +2,7 @@
 
 from typing import Dict, Any, Optional, List
 from datetime import datetime
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.modules.subscription.repository.rank_repository import RankRepository
@@ -14,6 +15,7 @@ from app.enums.subscription_enums import RankEnum, OrderStatusEnum
 from app.exceptions.exception import CustomHTTPException
 from ...users.repository.user_repo import UserRepo
 import uuid
+from urllib.parse import urlencode
 
 
 class SubscriptionService:
@@ -118,23 +120,21 @@ class SubscriptionService:
             "expired_at": order.expired_at,
         }
 
-    def handle_payment_webhook(self, webhook_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle payment webhook from PayOS and redirect to app.wc504.io.vn/payment with all params as query params"""
-        from urllib.parse import urlencode
-
+    def handle_payment_webhook(self, webhook_data: Dict[str, Any]) -> RedirectResponse:
+        """
+        Handle payment webhook from PayOS, update order status, and redirect to result page
+        with all necessary data as query params.
+        """
         try:
-            # Verify webhook data
-            verified_data = self.payos_service.verify_webhook_data(webhook_data)
+            print("[Webhook] Received webhook data:", webhook_data)
+            # Accept both camelCase and snake_case for compatibility
+            order_code = webhook_data.get("orderCode")
+            status_code = webhook_data.get("code")
+            payment_link_id = webhook_data.get("id")
+            cancel = webhook_data.get("cancel")
+            status = webhook_data.get("status")
 
-            # Extract key information
-            payment_link_id = verified_data.get("paymentLinkId")
-            order_code = verified_data.get("orderCode")
-            status_code = verified_data.get("code")
-            transaction_id = verified_data.get("reference", "")
-            desc = verified_data.get("desc", "")
-            success = verified_data.get("success", False)
-
-            # Find the order
+            # Find the order by order_code
             order = None
             if order_code:
                 order = self.order_repo.get_by_order_code(str(order_code))
@@ -142,44 +142,54 @@ class SubscriptionService:
                 order = self.order_repo.get_by_payment_link_id(payment_link_id)
 
             if not order:
-                redirect_url = f"https://app.wc504.io.vn/payment?{urlencode({'success': False, 'message': 'Order not found'})}"
-                return {"redirect_url": redirect_url}
+                print("[Webhook] Order not found for order_code:", order_code, "or payment_link_id:", payment_link_id)
+                # Redirect with empty data
+                return RedirectResponse(url="https://app.wc504.io.vn/vi/payment?notfound=1")
 
-            # Process payment status
-            params = {
-                "order_id": order.id,
-                "order_code": order.order_code,
-                "user_id": order.user_id,
-                "payment_link_id": payment_link_id,
-                "transaction_id": transaction_id,
-                "status_code": status_code,
-                "desc": desc,
-                "success": success,
+            # Get user and rank
+            user = self.db.query(User).filter(User.id == order.user_id).first()
+            rank = self.db.query(Rank).filter(Rank.name == order.rank_type).first()
+
+            # Compose response data
+            response_data = {
+                "code": status_code or "",
+                "id": payment_link_id or order.payment_link_id or "",
+                "cancel": str(cancel).lower() if cancel is not None else "false",
+                "status": status or order.status or "",
+                "orderCode": order.order_code,
+                "amount": order.amount,
+                "description": rank.description if rank else "",
+                "reference": order.transaction_id or "",
+                "transactionDateTime": order.created_at.isoformat() if order.created_at else "",
+                "paymentLinkId": order.payment_link_id or "",
+                "currency": "VND",
+                "userEmail": user.email if user else "",
+                "userId": user.id if user else "",
+                "rankType": order.rank_type.value if hasattr(order.rank_type, "value") else str(order.rank_type),
+                "rankName": rank.name if rank else "",
             }
 
-            if status_code == "00":  # Success code
+            # Process payment status
+            if status == "PAID":
                 # Mark order as completed
-                order = self.order_repo.mark_order_as_completed(order, transaction_id)
-
-                # Get user and update their rank
-                user = self.db.query(User).filter(User.id == order.user_id).first()
+                order = self.order_repo.mark_order_as_completed(order, payment_link_id)
+                print("[Webhook] Order marked as completed:", order.id)
                 if user:
                     self.order_repo.update_user_rank(user, order)
-
-                params["message"] = "Payment successful"
-                params["success"] = True
+                    print("[Webhook] User rank updated for user_id:", user.id)
             else:
-                # Payment failed
-                self.order_repo.mark_order_as_canceled(order, f"Payment failed: {desc}")
-                params["message"] = "Payment failed"
-                params["success"] = False
+                # Payment failed or canceled
+                reason = f"Payment failed: status_code={status_code}, cancel={cancel}, status={status}"
+                self.order_repo.mark_order_as_canceled(order, reason)
+                print("[Webhook] Order marked as canceled:", order.id, "Reason:", reason)
 
-            redirect_url = f"https://app.wc504.io.vn/payment?{urlencode(params)}"
-            return {"redirect_url": redirect_url}
+            # Build redirect URL with all data as query params
+            redirect_url = f"https://app.wc504.io.vn/vi/payment?{urlencode(response_data)}"
+            return RedirectResponse(url=redirect_url)
 
         except Exception as e:
-            redirect_url = f"https://app.wc504.io.vn/payment?{urlencode({'success': False, 'message': str(e)})}"
-            return {"redirect_url": redirect_url}
+            print("[Webhook] Exception occurred:", str(e))
+            return RedirectResponse(url="https://app.wc504.io.vn/vi/payment?error=1")
 
     def check_pending_orders(self) -> List[Dict[str, Any]]:
         """Check all pending orders and update their status

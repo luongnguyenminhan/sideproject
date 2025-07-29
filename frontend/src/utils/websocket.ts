@@ -257,8 +257,8 @@ export class ChatWebSocketV2 {
       params.append('authorization_token', this.options.authorizationToken)
     }
 
-    // Match the backend WebSocket v2 route: /api/v2/chat/ws/{conversation_id}
-    return `${protocol}//${basePath}/api/v2/chat/ws/${conversationId}?${params.toString()}`
+    // Match the backend WebSocket v2 route: /api/v1/chat/ws/{conversation_id}
+    return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?${params.toString()}`
   }
 
   async connect(): Promise<void> {

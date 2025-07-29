@@ -5,6 +5,7 @@ from app.modules.dashboard.dal.dashboard_dal import DashboardDAL
 from app.middleware.translation_manager import _
 from app.exceptions.exception import NotFoundException
 
+
 class DashboardRepo:
     def __init__(self, db: Session = Depends(get_db)):
         self.db = db
@@ -18,5 +19,5 @@ class DashboardRepo:
         return {
             "user_count": user_count,
             "order_count": order_count,
-            "total_revenue": total_revenue
+            "total_revenue": total_revenue,
         }

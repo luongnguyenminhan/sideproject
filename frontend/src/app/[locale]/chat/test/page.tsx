@@ -59,7 +59,7 @@ export default function ChatTestPage() {
                 
                 <div className="text-xs text-[color:var(--muted-foreground)] mt-2">
                   <div>Current: WebSocket {useV2 ? 'V2 (n8n)' : 'V1 (Agent)'}</div>
-                  <div>URL Pattern: {useV2 ? '/api/v2/chat/ws/' : '/api/v1/chat/ws/'}</div>
+                  <div>URL Pattern: {useV2 ? '/api/v1/chat/ws/' : '/api/v1/chat/ws/'}</div>
                 </div>
               </div>
             </div>

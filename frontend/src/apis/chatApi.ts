@@ -285,8 +285,8 @@ class ChatApi {
       params.append('authorization_token', authorizationToken);
     }
 
-    // WebSocket v2 route: /api/v1/chat/v2/ws/{conversation_id}
-    return `${protocol}//${basePath}/api/v2/chat/ws/${conversationId}?${params.toString()}`;
+    // WebSocket v2 route: /api/v1/chat/v1/ws/{conversation_id}
+    return `${protocol}//${basePath}/api/v1/chat/ws/${conversationId}?${params.toString()}`;
   }
 
   // Get chat history for n8n context

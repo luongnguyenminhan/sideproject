@@ -53,8 +53,8 @@ class PayOSService:
             amount=int(amount),  # PayOS requires integer amount
             description=description,
             items=[item],
-            cancelUrl=f"https://api.wc504.io.vn/api/v1/webhook/payos/cancel?order={order_code}",
-            returnUrl=f"https://api.wc504.io.vn/api/v1/webhook/payos/success?order={order_code}",
+            cancelUrl=f"https://api.wc504.io.vn/api/v1/subscription/webhook/payos?order={order_code}",
+            returnUrl=f"https://api.wc504.io.vn/api/v1/subscription/webhook/payos?order={order_code}",
             # Optional additional metadata
             buyerName=user_email,
             buyerEmail=user_email
