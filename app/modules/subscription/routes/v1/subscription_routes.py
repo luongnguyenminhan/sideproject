@@ -1,3 +1,4 @@
+
 """Subscription Routes"""
 
 from typing import Any, Dict
@@ -22,6 +23,7 @@ from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
 from urllib.parse import urlencode
 
+from fastapi import Query
 
 # Create router with prefix and tags
 route = APIRouter(
@@ -30,6 +32,42 @@ route = APIRouter(
 )
 
 
+@route.get(
+    "/",
+    response_model=APIResponse[OrderListResponse],
+    operation_id="get_orders_paginated",
+    description="Get paginated subscription orders (admin only)",
+    response_description="Paginated list of orders",
+    summary="Get paginated subscription orders (admin)",
+)
+@handle_exceptions
+async def get_orders_paginated(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """Get paginated orders (admin only), including user info"""
+    total = db.query(Order).count()
+    orders = db.query(Order).order_by(Order.created_at.desc()).offset((page-1)*page_size).limit(page_size).all()
+    result = []
+    for order in orders:
+        order_data = order.__dict__.copy()
+        user_obj = db.query(User).filter(User.id == order.user_id).first()
+        order_data['user'] = user_obj.to_dict() if user_obj else None
+        result.append(order_data)
+    return APIResponse(
+        error_code=0,
+        message="Paginated orders retrieved successfully",
+        data={
+            "orders": result,
+            "paging": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": (total + page_size - 1) // page_size
+            }
+        }
+    )
 @route.get(
     "/me/rank", 
     response_model=APIResponse[UserRankResponse],

@@ -10,6 +10,9 @@ const protectedRoutes = [
   '/settings',
 ];
 
+// Define admin-only routes
+const adminOnlyRoutes = ['/dashboard/statistic'];
+
 // Define auth routes that should redirect authenticated users
 const authRoutes = ['/auth', '/login', '/signup'];
 
@@ -43,6 +46,7 @@ function getLocale(request: NextRequest): Locale {
   const locale = segments[1] as Locale;
   return i18n.locales.includes(locale) ? locale : i18n.defaultLocale;
 }
+
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -83,6 +87,34 @@ export function middleware(request: NextRequest) {
     const isAuthRoute = authRoutes.some(
       route => actualPath === route || actualPath.startsWith(route + '/'),
     );
+
+    // Check if the current path is admin-only
+    const isAdminOnlyRoute = adminOnlyRoutes.some(
+      route => actualPath === route || actualPath.startsWith(route + '/'),
+    );
+
+    // Get user role from cookie (assume role is stored in 'user_role' cookie, or decode from JWT if needed)
+    let userRole = '';
+    const userRoleCookie = request.cookies.get('user_role');
+    if (userRoleCookie) {
+      userRole = userRoleCookie.value;
+    }
+    // If you store role in JWT, decode here (not shown for brevity)
+
+    // Admin-only route: only allow admin
+    if (isAdminOnlyRoute) {
+      if (!isAuthenticated) {
+        // Not logged in, redirect to auth
+        const authUrl = new URL(`/${locale}/auth`, request.url);
+        authUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(authUrl);
+      }
+      if (userRole !== 'admin') {
+        // Not admin, redirect to home
+        const homeUrl = new URL(`/${locale}`, request.url);
+        return NextResponse.redirect(homeUrl);
+      }
+    }
 
     // Redirect unauthenticated users away from protected routes
     if (isProtectedRoute && !isAuthenticated) {
