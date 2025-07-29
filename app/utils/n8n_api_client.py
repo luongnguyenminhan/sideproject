@@ -27,7 +27,7 @@ class N8NAPIClient:
             "/webhook/786eb3d9-73e7-406e-acd9-3e4dfcb67e87/chat"
         )
         self.jd_matching_webhook_endpoint = "/webhook/888a07e8-25d6-4671-a36c-939a52740f31/jd-matching"  
-        self.timeout = 30.0
+        self.timeout = 1800.0
 
     async def call_chat_workflow(
         self,
