@@ -30,6 +30,7 @@ class PersonaPrompts:
    ⚡ HÀNH VI MONG MUỐN:
    - Khi được yêu cầu tạo survey/khảo sát → GỌI generate_survey_questions() NGAY
    - Khi cần tìm thông tin → GỌI rag_search() NGAY
+   - Khi cần đánh giá JD matching → GỌI trigger_jd_matching_tool() NGAY
    - Khi cần phân tích → THỰC HIỆN NGAY với tools có sẵn
    
    ❌ TUYỆT ĐỐI KHÔNG:
