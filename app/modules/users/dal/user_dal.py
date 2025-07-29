@@ -86,6 +86,33 @@ class UserDAL(BaseDAL[User]):
 
 		return Pagination(items=users, total_count=total_count, page=page, page_size=page_size)
 
+	def count_users(self, params: dict = None) -> int:
+		"""Count total number of users with optional filters
+		
+		Args:
+		    params (dict): Optional filters to apply when counting users
+		    
+		Returns:
+		    int: Total count of users matching the criteria
+		"""
+		logger = logging.getLogger(__name__)
+		
+		logger.info(f'Counting users with parameters: {params}')
+		
+		# Start with basic query
+		query = self.db.query(User).filter(User.is_deleted == 0)
+		
+		# Apply dynamic filters if provided
+		if params:
+			query = apply_dynamic_filters(query, User, params)
+		
+		# Count total records
+		total_count = query.count()
+		
+		logger.info(f'Total users count: {total_count}')
+		
+		return total_count
+
 	@contextmanager
 	def transaction(self):
 		"""Create a transaction context
