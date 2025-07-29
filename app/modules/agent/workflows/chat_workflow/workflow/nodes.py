@@ -20,6 +20,7 @@ from typing import Dict, Any, List, Optional
 
 from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langgraph.prebuilt import ToolNode
+logger = logging.getLogger(__name__)
 
 # Import state management
 try:
@@ -48,7 +49,6 @@ except ImportError as e:
 	logger.error(f"Failed to import prompts: {e}")
 	raise
 
-logger = logging.getLogger(__name__)
 
 
 class WorkflowNodes:

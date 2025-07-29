@@ -119,6 +119,10 @@
   "cv_processed_successfully": "Xử lý CV thành công",
   "uploading": "Đang tải lên...",
   "failed_to_download_file": "Tải file thất bại",
+  "chat": {
+    "cv":"Tải CV",
+    "uploading":"Đang tải lên..."
+  },
   "cv": {
     "uploadCV": "Tải lên CV",
     "uploadDescription": "Hỗ trợ PDF, DOC, DOCX",
