@@ -32,9 +32,8 @@ RUN python -m venv venv
 
 # Install uv and use it for dependencies
 COPY requirements.txt .
-RUN pip install uv && \
-    uv pip install --system -r requirements.txt && \
-    uv pip install --system --upgrade langgraph           
+RUN pip install --system -r requirements.txt && \
+    pip install --system --upgrade langgraph           
 
 # Copy the backend code, excluding the frontend folder
 COPY --chown=appuser:appuser . .
