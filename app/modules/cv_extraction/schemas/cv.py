@@ -108,20 +108,20 @@ class LLMTokenUsage(BaseModel):
 
 
 class CVAnalysisResult(BaseModel):
-	identified_sections: Optional[List[str]] = None
-	personal_information: Optional[PersonalInformation] = None
-	education_history: Optional[EducationHistory] = None
-	work_experience_history: Optional[WorkExperienceHistory] = None
-	projects: Optional[ProjectsShowcase] = None
+	identified_sections: Optional[List[str]] | Optional[Any]= None
+	personal_information: Optional[PersonalInformation] | Optional[Any] = None
+	education_history: Optional[EducationHistory] | Optional[Any] = None
+	work_experience_history: Optional[WorkExperienceHistory] |Optional[Any] = None
+	projects: Optional[ProjectsShowcase] | Optional[Any] = None
 	certificates_and_courses: Optional[CertificatesAndCourses] = None
 	interests_and_hobbies: Optional[Any] = None
-	skills_summary: Optional[SkillsSummary] = None
-	other_sections_data: Optional[Dict[str, Any]] = None
-	inferred_characteristics: Optional[List[CharacteristicItem]] = None
-	keywords: Optional[List[str]] = None
-	cv_summary: Optional[str] = None
-	extracted_keywords: Optional[ExtractedKeywords] = None
-	llm_token_usage: Optional[LLMTokenUsage] = None
+	skills_summary: Optional[SkillsSummary] | Optional[Any] = None
+	other_sections_data: Optional[Dict[str, Any]] | Optional[Any] = None
+	inferred_characteristics: Optional[List[CharacteristicItem]] | Optional[Any]= None
+	keywords: Optional[List[str]] | Optional[Any]= None
+	cv_summary: Optional[str] | Optional[Any]= None
+	extracted_keywords: Optional[ExtractedKeywords] | Optional[Any]= None
+	llm_token_usage: Optional[LLMTokenUsage] | Optional[Any]= None
 
 
 class ProcessCVResponse(BaseModel):
