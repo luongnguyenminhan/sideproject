@@ -21,6 +21,7 @@ class BusinessProcessType(str, Enum):
 	CAREER_GUIDANCE = 'career_guidance'
 	GENERAL_CONVERSATION = 'general_conversation'
 	SURVEY_GENERATION = 'survey_generation'
+	JD_MATCHING = 'jd_matching'
 
 
 class ProcessStep(str, Enum):
@@ -185,6 +186,52 @@ class BusinessProcessManager:
 					'user_understanding_confirmed',
 				],
 			),
+			BusinessProcessType.JD_MATCHING: ProcessDefinition(
+				process_type=BusinessProcessType.JD_MATCHING,
+				name='JD Matching Process',
+				description='Process for analyzing job-candidate matching using N8N integration',
+				steps=[
+					ProcessStep.INTAKE,
+					ProcessStep.VALIDATION,
+					ProcessStep.PROCESSING,
+					ProcessStep.REVIEW,
+					ProcessStep.COMPLETION,
+				],
+				rules=[
+					BusinessRule(
+						name='jd_data_required',
+						description='Job description data must be provided for matching',
+						condition="'jd' in user_input.lower() or 'job description' in user_input.lower()",
+						action='request_jd_data',
+						priority=3,
+					),
+					BusinessRule(
+						name='candidate_data_required',
+						description='Candidate profile data must be provided for matching',
+						condition="'candidate' in user_input.lower() or 'profile' in user_input.lower()",
+						action='request_candidate_data',
+						priority=3,
+					),
+					BusinessRule(
+						name='authorization_required',
+						description='Valid authorization token required for N8N API',
+						condition='not has_valid_auth_token',
+						action='request_authentication',
+						priority=5,
+					),
+				],
+				required_tools=['trigger_jd_matching_tool'],
+				escalation_conditions=[
+					'n8n_api_unavailable',
+					'repeated_matching_failures',
+					'complex_matching_scenario',
+				],
+				completion_criteria=[
+					'matching_analysis_completed',
+					'results_delivered',
+					'user_acknowledged',
+				],
+			),
 		}
 
 	def identify_process_type(self, user_input: str, context: Dict[str, Any]) -> BusinessProcessType:
@@ -195,6 +242,10 @@ class BusinessProcessManager:
 		survey_keywords = ['survey', 'question', 'questionnaire', 'assessment', 'khảo sát', 'câu hỏi', 'đánh giá']
 		cv_keywords = ['cv', 'resume', 'curriculum', 'profile', 'hồ sơ']
 		career_keywords = ['career', 'job', 'work', 'sự nghiệp', 'nghề nghiệp', 'công việc', 'tư vấn']
+		jd_matching_keywords = ['jd matching', 'job matching', 'candidate evaluation', 'recruitment', 'hiring', 'screening', 'job fit', 'role fit', 'candidate assessment', 'matching score', 'recruitment workflow']
+
+		if any(keyword in user_input_lower for keyword in jd_matching_keywords):
+			return BusinessProcessType.JD_MATCHING
 
 		if any(keyword in user_input_lower for keyword in survey_keywords):
 			return BusinessProcessType.SURVEY_GENERATION

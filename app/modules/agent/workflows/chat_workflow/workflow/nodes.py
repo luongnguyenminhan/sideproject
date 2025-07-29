@@ -249,6 +249,19 @@ class WorkflowNodes:
 			except ImportError:
 				pass
 
+			# Set authorization token for JD matching tool using global function
+			try:
+				from ..tools.jd_matching_tool import (
+					set_authorization_token as set_jd_authorization_token,
+					set_conversation_context as set_jd_conversation_context,
+				)
+
+				set_jd_authorization_token(auth_token)
+				set_jd_conversation_context(conversation_id, user_id)
+				print(f'[tools_node] Context set for JD matching tool - Conversation: {conversation_id}, User: {user_id}')
+			except ImportError:
+				pass
+
 			# For any other tools that support set_authorization_token method
 			for tool in self.workflow._tools:
 				if hasattr(tool, 'set_authorization_token'):
@@ -267,24 +280,38 @@ class WorkflowNodes:
 		survey_generated = False
 		survey_questions_count = 0
 
-		# Check if survey generation tool was called
+		# Track JD matching execution in state
+		jd_matching_executed = False
+		jd_matching_session_id = None
+
+		# Check if tools were called
 		last_message = result.get('messages', [])[-1] if result.get('messages') else None
 		if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
 			for tool_call in last_message.tool_calls:
 				if tool_call.get('name') == 'generate_survey_questions':
 					survey_generated = True
 					print('[tools_node] ✅ Survey generation tool was executed')
-					break
+				elif tool_call.get('name') == 'trigger_jd_matching_tool':
+					jd_matching_executed = True
+					print('[tools_node] ✅ JD matching tool was executed')
+					# Extract session ID from response if available
+					if hasattr(last_message, 'content') and '<jd_matching>' in last_message.content:
+						import re
+						match = re.search(r'<jd_matching>([^<]+)</jd_matching>', last_message.content)
+						if match:
+							jd_matching_session_id = match.group(1)
 
-		# Add survey tracking to result state
-		result_with_survey_tracking = {
+		# Add tracking to result state
+		result_with_tracking = {
 			**result,
 			'survey_generated': survey_generated,
 			'survey_questions_count': survey_questions_count,
+			'jd_matching_executed': jd_matching_executed,
+			'jd_matching_session_id': jd_matching_session_id,
 		}
 
 		print('[tools_node] Tools execution completed')
-		return result_with_survey_tracking
+		return result_with_tracking
 
 	async def output_validation_node(self, state: AgentState, config: Dict[str, Any]) -> AgentState:
 		"""Output Validation Node - Validates AI response through LLM guardrails"""

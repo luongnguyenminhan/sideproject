@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 # Import the main tools
 from .question_composer_tool import generate_survey_questions
 from .rag_tool import rag_search
+from .jd_matching_tool import trigger_jd_matching_tool
 
 # List of available tools
-tools = [generate_survey_questions, rag_search]
+tools = [generate_survey_questions, rag_search, trigger_jd_matching_tool]
 
 
 def get_tools(config: Dict[str, Any] = None) -> List:

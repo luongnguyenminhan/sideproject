@@ -275,6 +275,38 @@ export default function ChatClientWrapper({
         }
         break
 
+      case 'jd_matching_data':
+        console.log('[ChatClientWrapper] Raw JD matching data received:')
+        console.log('- Message object:', message)
+        console.log('- Data field:', message.data)
+        console.log('- Description:', message.description)
+        
+        if (message.data) {
+          // Process JD matching data
+          const receivedConversationId = message.conversation_id || state.activeConversationId
+          const sessionId = message.session_id
+          const description = message.description || 'JD Matching Analysis'
+          
+          console.log('[ChatClientWrapper] Processing JD matching data for conversation:', receivedConversationId)
+          console.log('[ChatClientWrapper] JD matching session ID:', sessionId)
+          console.log('[ChatClientWrapper] JD matching description:', description)
+          
+          // Store JD matching data for potential future use
+          // For now, we'll just log it since there's no specific UI component for JD matching results
+          console.log('[ChatClientWrapper] JD matching data stored:', {
+            conversationId: receivedConversationId,
+            sessionId: sessionId,
+            description: description,
+            data: message.data
+          })
+          
+          // TODO: Implement JD matching results display component
+          // This could be similar to survey panel but for showing matching results
+        } else {
+          console.error('[ChatClientWrapper] Invalid JD matching data format')
+        }
+        break
+
       case 'pong':
         console.log('[ChatClientWrapper] Received pong from server')
         break

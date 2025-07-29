@@ -26,6 +26,7 @@ class N8NAPIClient:
         self.chat_webhook_endpoint = (
             "/webhook/786eb3d9-73e7-406e-acd9-3e4dfcb67e87/chat"
         )
+        self.jd_matching_webhook_endpoint = "/webhook/888a07e8-25d6-4671-a36c-939a52740f31/jd-matching"  
         self.timeout = 30.0
 
     async def call_chat_workflow(
@@ -445,6 +446,63 @@ class N8NAPIClient:
                 f"💥 [N8NAPIClient] Error downloading file: {str(e)}", exc_info=True
             )
             return None, ""
+
+    async def trigger_jd_matching(
+        self,
+        jd_data: dict,
+        candidate_data: dict,
+        authorization_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Trigger the JD matching workflow on n8n.
+
+        Args:
+            jd_data: Job Description data as dict
+            candidate_data: Candidate profile data as dict
+            authorization_token: Optional auth token for n8n
+
+        Returns:
+            Response from n8n workflow
+        """
+        logger.info(f"[N8NAPIClient] Triggering JD matching workflow on n8n")
+        url = f"{self.base_url}{self.jd_matching_webhook_endpoint}"
+        request_body = {
+            "jd": jd_data,
+            "candidate": candidate_data,
+        }
+        headers = {"Content-Type": "application/json"}
+        if authorization_token:
+            headers["Authorization"] = f"Bearer {authorization_token}"
+            logger.info("[N8NAPIClient] Authorization token provided for JD matching")
+        else:
+            logger.warning("[N8NAPIClient] No authorization token provided for JD matching")
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(url, json=request_body, headers=headers)
+            logger.info(f"[N8NAPIClient] JD matching response status: {response.status_code}")
+            if response.status_code == 200:
+                data = await response.json()
+                if isinstance(data, dict):
+                    return data
+                elif isinstance(data, list):
+                    return {"result": data}
+                else:
+                    return {"result": data}
+            else:
+                logger.error(f"[N8NAPIClient] JD matching failed: {response.text}")
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"N8N JD matching API call failed: {response.text}",
+                )
+        except httpx.TimeoutException:
+            logger.error(f"[N8NAPIClient] JD matching timeout after {self.timeout}s")
+            raise HTTPException(status_code=408, detail="N8N JD matching API request timeout")
+        except httpx.RequestError as e:
+            logger.error(f"[N8NAPIClient] JD matching network error: {str(e)}")
+            raise HTTPException(status_code=503, detail=f"N8N JD matching API network error: {str(e)}")
+        except Exception as e:
+            logger.error(f"[N8NAPIClient] JD matching unexpected error: {str(e)}", exc_info=True)
+            raise HTTPException(status_code=500, detail=f"N8N JD matching API unexpected error: {str(e)}")
 
 
 # Singleton instance
