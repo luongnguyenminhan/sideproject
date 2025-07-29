@@ -67,6 +67,21 @@ class SearchUserResponse(APIResponse):
 	data: PaginatedResponse[UserResponse] | None
 
 
+class CountUsersResponse(ResponseSchema):
+	"""Count users response model"""
+	
+	total_count: int = Field(..., description='Total number of users', examples=[150])
+
+
+class CountUsersRequest(BaseModel):
+	"""Request model for counting users with optional filters"""
+	
+	filters: list = Field(
+		default=[],
+		description='Optional filters to apply when counting users'
+	)
+
+
 class GoogleDirectLoginRequest(BaseModel):
 	"""Request model for direct Google OAuth login (used by mobile apps)"""
 

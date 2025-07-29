@@ -47,6 +47,24 @@ class OrderRepository(BaseRepo):
         """Get all pending orders that have passed their expiration date"""
         return self.dal.get_expired_pending_orders()
 
+    def count_completed_orders(self, user_id: str = None, filters: dict = None) -> int:
+        """
+        Count total number of completed orders with optional filters and user restriction
+        
+        Args:
+            user_id (str): Optional user ID to filter orders for specific user
+            filters (dict): Optional filters to apply when counting orders
+            
+        Returns:
+            int: Total count of completed orders matching the criteria
+        """
+        try:
+            params = filters or {}
+            result = self.dal.count_completed_orders(user_id, params)
+            return result
+        except Exception as ex:
+            raise ex
+
     def create_order(self, order_code: int, user_id: str, rank_type: RankEnum, amount: float, payment_data: Dict[str, Any]) -> Order:
         """Create a new order"""
         # Generate a unique order code

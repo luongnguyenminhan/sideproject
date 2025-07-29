@@ -3,6 +3,7 @@ from sqlalchemy import desc, asc
 from app.core.base_dal import BaseDAL
 from app.core.base_model import Pagination
 from app.modules.chat.models.conversation import Conversation
+from app.utils.filter_utils import apply_dynamic_filters
 from typing import Optional
 import logging
 
@@ -71,3 +72,33 @@ class ConversationDAL(BaseDAL[Conversation]):
 		else:
 			pass  # logger.info(f'\033[95m[ConversationDAL.get_user_conversation_by_id] Conversation not found: {conversation_id}\033[0m')
 		return conversation
+
+	def count_conversations(self, user_id: str = None, params: dict = None) -> int:
+		"""Count total number of conversations with optional filters and user restriction
+		
+		Args:
+		    user_id (str): Optional user ID to filter conversations for specific user
+		    params (dict): Optional filters to apply when counting conversations
+		    
+		Returns:
+		    int: Total count of conversations matching the criteria
+		"""
+		logger.info(f'Counting conversations with user_id: {user_id}, params: {params}')
+		
+		# Start with basic query
+		query = self.db.query(Conversation).filter(Conversation.is_deleted == False)
+		
+		# Apply user filter if provided (for user-specific counts)
+		if user_id:
+			query = query.filter(Conversation.user_id == user_id)
+		
+		# Apply dynamic filters if provided
+		if params:
+			query = apply_dynamic_filters(query, Conversation, params)
+		
+		# Count total records
+		total_count = query.count()
+		
+		logger.info(f'Total conversations count: {total_count}')
+		
+		return total_count

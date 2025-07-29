@@ -11,6 +11,7 @@ from app.middleware.auth_middleware import verify_token
 from app.middleware.translation_manager import _
 from app.modules.users.repository.user_repo import UserRepo
 from app.modules.users.schemas.users import (
+	CountUsersResponse,
 	PaginatedResponse,
 	SearchUserRequest,
 	SearchUserResponse,
@@ -125,4 +126,55 @@ async def update_current_user_profile(
 		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
 		message=_('operation_successful'),
 		data=UserResponse.model_validate(updated_user),
+	)
+
+
+@route.get('/count', response_model=APIResponse)
+@handle_exceptions
+async def count_users(
+	filters_json: str | None = Query(None, description='JSON string of filters'),
+	current_user_payload: dict = Depends(get_current_user),
+	repo: UserRepo = Depends(),
+):
+	"""
+	Count total number of users with optional filtering
+
+	Supports filtering using a JSON string of filters with field, operator, and value.
+	
+	Example with structured filters:
+	GET /users/count?filters_json=[{"field":"role","operator":"eq","value":"user"}]
+	
+	Available operators:
+	- eq: Equal
+	- ne: Not equal  
+	- lt: Less than
+	- lte: Less than or equal
+	- gt: Greater than
+	- gte: Greater than or equal
+	- contains: String contains
+	- startswith: String starts with
+	- endswith: String ends with
+	- in_list: Value is in a list
+	- not_in: Value is not in a list
+	- is_null: Field is null
+	- is_not_null: Field is not null
+	"""
+	filters = []
+	if filters_json:
+		try:
+			filters = json.loads(filters_json)
+			if not isinstance(filters, list):
+				filters = []
+		except json.JSONDecodeError:
+			filters = []
+		except Exception:
+			filters = []
+
+	filter_params = {'filters': filters} if filters else {}
+	total_count = repo.count_users(filter_params)
+	
+	return APIResponse(
+		error_code=BaseErrorCode.ERROR_CODE_SUCCESS,
+		message=_('operation_successful'),
+		data=CountUsersResponse(total_count=total_count),
 	)

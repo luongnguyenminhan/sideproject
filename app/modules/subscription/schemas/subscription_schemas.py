@@ -92,6 +92,13 @@ class OrderListResponse(ResponseSchema):
     """Schema for response containing a list of orders (with user info)"""
     orders: List[OrderResponse]
 
+
+class CountCompletedOrdersResponse(ResponseSchema):
+    """Count completed orders response model"""
+    
+    total_count: int = Field(..., description='Total number of completed orders', examples=[42])
+
+
 class CreatePaymentResponse(ResponseSchema):
     """Schema for payment link creation response"""
     checkout_url: str

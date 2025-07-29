@@ -2,9 +2,10 @@
 """Subscription Routes"""
 
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, Body, HTTPException, Request, status, Security
+from fastapi import APIRouter, Depends, Body, HTTPException, Request, status, Security, Query
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+import json
 
 from app.core.database import get_db
 from app.http.oauth2 import get_current_user, oauth2_scheme, jwt_bearer
@@ -17,13 +18,13 @@ from app.modules.subscription.schemas.subscription_schemas import (
     CreatePaymentResponse, 
     UserRankResponse, 
     PayOSWebhookRequest,
-    OrderListResponse
+    OrderListResponse,
+    CountCompletedOrdersResponse
 )
 from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
+from app.middleware.translation_manager import _
 from urllib.parse import urlencode
-
-from fastapi import Query
 
 # Create router with prefix and tags
 route = APIRouter(
@@ -224,4 +225,69 @@ async def get_all_orders(
         error_code=0,
         message="All orders retrieved successfully",
         data={"orders": result}
+    )
+
+
+@route.get(
+    "/orders/count/completed",
+    response_model=APIResponse[CountCompletedOrdersResponse],
+    operation_id="count_completed_orders",
+    description="Count completed subscription orders",
+    response_description="Count of completed orders",
+    summary="Count completed subscription orders",
+)
+@handle_exceptions
+async def count_completed_orders(
+    filters_json: str | None = Query(None, description='JSON string of filters'),
+    include_user_filter: bool = Query(False, description='Whether to filter orders for current user only'),
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Count total number of completed orders with optional filtering
+
+    Supports filtering using a JSON string of filters with field, operator, and value.
+    By default, counts all completed orders (admin view).
+    
+    Example with structured filters:
+    GET /subscription/orders/count/completed?filters_json=[{"field":"rank_type","operator":"eq","value":"pro"}]
+    
+    Available operators:
+    - eq: Equal
+    - ne: Not equal  
+    - lt: Less than
+    - lte: Less than or equal
+    - gt: Greater than
+    - gte: Greater than or equal
+    - contains: String contains
+    - startswith: String starts with
+    - endswith: String ends with
+    - in_list: Value is in a list
+    - not_in: Value is not in a list
+    - is_null: Field is null
+    - is_not_null: Field is not null
+    """
+    filters = []
+    if filters_json:
+        try:
+            filters = json.loads(filters_json)
+            if not isinstance(filters, list):
+                filters = []
+        except json.JSONDecodeError:
+            filters = []
+        except Exception:
+            filters = []
+
+    filter_params = {'filters': filters} if filters else {}
+    
+    # Get user_id if include_user_filter is True
+    user_id = current_user.get('user_id') if include_user_filter else None
+    
+    order_repo = OrderRepository(db)
+    total_count = order_repo.count_completed_orders(user_id, filter_params)
+    
+    return APIResponse(
+        error_code=0,
+        message=_('operation_successful'),
+        data=CountCompletedOrdersResponse(total_count=total_count),
     )

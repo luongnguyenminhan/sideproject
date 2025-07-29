@@ -36,6 +36,24 @@ class UserRepo(BaseRepo):
 		except Exception as ex:
 			raise ex
 
+	def count_users(self, filters: dict = None) -> int:
+		"""
+		Count total number of users with optional filters
+		
+		Args:
+		    filters (dict): Optional filters to apply when counting users
+		    
+		Returns:
+		    int: Total count of users matching the criteria
+		"""
+		try:
+			params = filters or {}
+			result = self.user_dal.count_users(params)
+			return result
+		except Exception as ex:
+			logger.error(f"Error counting users: {ex}")
+			raise ex
+
 	def get_user_by_id(self, user_id: str) -> User:
 		"""
 		Retrieve a user by their ID
