@@ -44,7 +44,7 @@ const UserManagementList = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://api.wc504.io.vn/api/v1/users/?page=${pageIndex}&page_size=${pageSize}`,
+          `http://localhost:8000/api/v1/users/?page=${pageIndex}&page_size=${pageSize}`,
           {
             method: 'GET',
             headers: {

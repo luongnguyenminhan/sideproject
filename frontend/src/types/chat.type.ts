@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RequestSchema, FilterableRequestSchema } from './common.type'
 import { Question } from './question.types'
 
@@ -250,7 +251,7 @@ export interface WebSocketOptions {
 }
 
 export interface WebSocketResponse {
-  type: 'user_message' | 'assistant_message_chunk' | 'assistant_message_complete' | 'assistant_typing' | 'error' | 'pong' | 'survey_data'
+  type: 'user_message' | 'assistant_message_chunk' | 'assistant_message_complete' | 'assistant_typing' | 'error' | 'pong' | 'survey_data' | 'jd_matching_data'
   message?: {
     id?: string
     content: string
@@ -263,9 +264,11 @@ export interface WebSocketResponse {
   is_final?: boolean
   status?: boolean
   error?: string
-  data?: Question[] // For survey_data messages
+  data?: any // For survey_data, jd_matching_data, etc.
   conversation_id?: string
   timestamp?: string
+  description?: string // For jd_matching_data
+  session_id?: string // For jd_matching_data
 }
 
 export interface ChatWebSocketMessage extends RequestSchema {

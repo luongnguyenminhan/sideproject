@@ -1,10 +1,11 @@
+
 {
   "aboutUs": {
     "social": {
       "about": "Về chúng tôi",
       "followers": "Người theo dõi"
     },
-    "title": "Giới thiệu EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp"
+    "title": "Giới thiệu EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm"
   },
   "auth": {
     "allowPopups": "Cho phép cửa sổ bật lên để đăng nhập",
@@ -29,8 +30,8 @@
     "description": "Mô tả",
     "nextImage": " ",
     "prevImage": " ",
-    "subtitle": "Khám phá thế giới truyền thông sáng tạo",
-    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp"
+    "subtitle": "Khám phá thế giới nghề nghiệp hiện đại",
+    "title": "EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm"
   },
   "chat": {
     "agentManagement": {
@@ -61,7 +62,7 @@
       "provider": "Nhà cung cấp",
       "selectModel": "Chọn mô hình",
       "selectProvider": "Chọn nhà cung cấp",
-      "subtitle": "Cấu hình AI cho hỗ trợ truyền thông.",
+      "subtitle": "Cấu hình AI cho hỗ trợ nghề nghiệp.",
       "temperature": "Nhiệt độ",
       "title": "Quản lý trợ lý AI",
       "updateAgent": "Cập nhật tác nhân",
@@ -71,7 +72,7 @@
       "validationSuccess": "Xác thực thành công",
       "validationTab": "Xác thực"
     },
-    "assistant": "Trợ lý Truyền thông",
+    "assistant": "Trợ lý Nghề nghiệp",
     "chats": "Trò chuyện",
     "conversations": "Cuộc hội thoại",
     "copied": "Đã sao chép",
@@ -115,8 +116,8 @@
     "typing": "Đang nhập...",
     "uploadedFiles": "Tệp đã tải lên",
     "uploadFilesDescription": "Đính kèm tài liệu để thảo luận chuyên sâu",
-    "welcomeDescription": "Hỗ trợ hoạt động truyền thông của CLB, tạo nội dung sáng tạo và quản lý thông tin hiệu quả. Trợ lý AI giúp bạn viết bài, lên ý tưởng và tối ưu hóa nội dung truyền thông.",
-    "welcomeTitle": "Chào mừng đến với Nền tảng CLB Truyền thông",
+    "welcomeDescription": "Hỗ trợ chỉnh sửa CV, định hướng nghề nghiệp, tối ưu hóa hồ sơ và kết nối với nhà tuyển dụng. Trợ lý AI giúp bạn viết CV, chuẩn bị phỏng vấn và phát triển sự nghiệp.",
+    "welcomeTitle": "Chào mừng đến với Nền tảng Chỉnh sửa CV & Việc làm",
     "errorCreateConversation": "Không thể tạo cuộc hội thoại",
     "errorDeleteConversation": "Không thể xóa cuộc hội thoại",
     "errorLoadConversations": "Không thể tải cuộc hội thoại",
@@ -129,7 +130,7 @@
     "uploadDragDrop": "Kéo và thả tệp để tải lên"
   },
   "common": {
-    "branding": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
+    "branding": "EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm",
     "cancel": "Hủy",
     "delete": "Xóa",
     "download": "Tải xuống",
@@ -141,31 +142,31 @@
     "yes": "Có"
   },
   "footer": {
-    "copyright": "© 2024 EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
+    "copyright": "© 2024 EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm",
     "legal": {
       "cookies": "Chính sách Cookie",
       "privacy": "Chính sách Bảo mật",
       "terms": "Điều khoản Dịch vụ"
     },
     "location": "Việt Nam",
-    "madeWith": "Được tạo ra với đam mê truyền thông",
+    "madeWith": "Được tạo ra với đam mê nghề nghiệp",
     "social": {
       "followUs": "Theo dõi chúng tôi"
     },
-    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
+    "title": "EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm",
     "company": {
-      "title": "CLB",
+      "title": "Công ty",
       "about": "Về chúng tôi",
-      "team": "Thành viên",
-      "careers": "Tham gia",
+      "team": "Đội ngũ",
+      "careers": "Tuyển dụng",
       "contact": "Liên hệ"
     },
     "products": {
-      "title": "Hoạt động",
+      "title": "Dịch vụ",
       "webDevelopment": "Phát triển web",
       "mobileApps": "Ứng dụng di động",
       "aiSolutions": "Giải pháp AI",
-      "consulting": "Tư vấn truyền thông"
+      "consulting": "Tư vấn nghề nghiệp"
     },
     "resources": {
       "title": "Tài nguyên",
@@ -176,9 +177,9 @@
     }
   },
   "home": {
-    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình truyền thông của bạn.",
+    "authenticatedDescription": "Chào mừng trở lại! Tiếp tục hành trình nghề nghiệp của bạn.",
     "confirmed": "Đã xác nhận",
-    "description": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp - nơi kết nối ứng viên với cơ hội việc làm, xây dựng hồ sơ chuyên nghiệp và nhận hướng dẫn nghề nghiệp. Nền tảng AI hỗ trợ xây dựng hồ sơ, ghép đôi việc làm và phát triển sự nghiệp hiệu quả.",
+    "description": "EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm - nơi kết nối ứng viên với cơ hội việc làm, xây dựng hồ sơ chuyên nghiệp và nhận hướng dẫn nghề nghiệp. Nền tảng AI hỗ trợ xây dựng hồ sơ, ghép đôi việc làm và phát triển sự nghiệp hiệu quả.",
     "email": "Email",
     "facebookPageName": "Trang Facebook",
     "facebookPostCountPrefix": "Bài đăng:",
@@ -203,7 +204,7 @@
         }
       },
       "globalReady": {
-        "description": "Hỗ trợ đa ngôn ngữ cho người học toàn cầu",
+        "description": "Hỗ trợ đa ngôn ngữ cho người dùng toàn cầu",
         "title": "Sẵn sàng toàn cầu",
         "features": {
           "multiLanguageSupport": "Hỗ trợ nhiều ngôn ngữ",
@@ -226,7 +227,7 @@
     "getStarted": "Bắt đầu",
     "learnMore": "Tìm hiểu thêm",
     "post": "Bài đăng",
-    "title": "EnterViu - Nền tảng Nghề nghiệp Chuyên nghiệp",
+    "title": "EnterViu - Nền tảng Chỉnh sửa CV & Giới thiệu Việc làm",
     "unknownTime": "Không rõ thời gian",
     "userInformation": "Thông tin người dùng",
     "username": "Tên đăng nhập",
@@ -303,51 +304,6 @@
       "required": "*"
     }
   },
-  "team": {
-    "leadership": {
-      "bio": "Tiểu sử",
-      "experience": "Kinh nghiệm",
-      "name": "Tên",
-      "role": "Vai trò",
-      "title": "Người sáng lập",
-      "ceo": {
-        "name": "Lê Dương Tịnh Nghi",
-        "role": "Trưởng CLB Truyền thông",
-        "bio": "Nghi là người có tầm nhìn và đam mê mạnh mẽ với lĩnh vực truyền thông. Với khả năng lãnh đạo tự nhiên và sự sáng tạo, Nghi đã dẫn dắt CLB phát triển vượt bậc.",
-        "experience": "Kinh nghiệm hoạt động đoàn thể và quản lý dự án truyền thông."
-      },
-      "cto": {
-        "name": "Lương Nguyễn Minh An",
-        "role": "Phó Trưởng CLB - Kỹ thuật",
-        "bio": "An là chuyên gia về công nghệ trong CLB, phụ trách phát triển các giải pháp kỹ thuật và hệ thống hỗ trợ hoạt động CLB.",
-        "experience": "Kinh nghiệm lập trình, thiết kế web và quản lý hệ thống."
-      },
-      "designer": {
-        "name": "Đặng Phan Gia Đức",
-        "role": "Phó Trưởng CLB - Nội dung",
-        "bio": "Đức chuyên về sáng tạo nội dung và thiết kế truyền thông, mang đến những ý tưởng độc đáo và hấp dẫn cho các hoạt động CLB.",
-        "experience": "Kinh nghiệm sáng tạo nội dung, thiết kế đồ họa và quản lý mạng xã hội."
-      }
-    },
-    "subtitle": "Gặp gỡ thành viên sáng lập",
-    "title": "Thành viên CLB",
-    "values": {
-      "description": "Chúng tôi tin vào việc kết nối học sinh và phát triển kỹ năng truyền thông một cách sáng tạo.",
-      "title": "Giá trị cốt lõi",
-      "innovation": {
-        "title": "Sáng tạo",
-        "description": "Chúng tôi luôn tìm tòi ý tưởng mới và ứng dụng công nghệ để nâng cao chất lượng nội dung truyền thông."
-      },
-      "quality": {
-        "title": "Chất lượng",
-        "description": "Chúng tôi cam kết tạo ra những sản phẩm truyền thông chất lượng cao, chuyên nghiệp và ý nghĩa."
-      },
-      "community": {
-        "title": "Cộng đồng",
-        "description": "Chúng tôi xây dựng một cộng đồng học sinh gắn kết, hỗ trợ lẫn nhau trong học tập và phát triển kỹ năng."
-      }
-    }
-  },
   "userProfile": {
     "email": "Email",
     "name": "Họ và tên",
@@ -376,5 +332,19 @@
     "emailNotificationsDescription": "Nhận cập nhật và tin tức qua email.",
     "pushNotifications": "Thông báo đẩy",
     "pushNotificationsDescription": "Nhận cập nhật tức thì trên thiết bị của bạn."
+  },
+    "cv": {
+    "cvAnalysis": "Phân tích CV",
+    "summary": "Tóm tắt",
+    "personalInfo": "Thông tin cá nhân",
+    "skills": "Kỹ năng",
+    "experience": "Kinh nghiệm làm việc",
+    "education": "Học vấn",
+    "certificates": "Chứng chỉ & Khóa học",
+    "projects": "Dự án",
+    "insights": "Đặc điểm & Nhận định AI",
+    "keywords": "Từ khóa",
+    "analysisStats": "Thống kê phân tích",
+    "workExperience": "Kinh nghiệm làm việc"
   }
 }

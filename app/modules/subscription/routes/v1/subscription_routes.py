@@ -1,8 +1,16 @@
-
 """Subscription Routes"""
 
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, Body, HTTPException, Request, status, Security, Query
+from fastapi import (
+    APIRouter,
+    Depends,
+    Body,
+    HTTPException,
+    Request,
+    status,
+    Security,
+    Query,
+)
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import json
@@ -14,12 +22,12 @@ from ...repository.order_repository import OrderRepository
 from app.modules.users.models.users import User
 from app.modules.subscription.services.subscription_service import SubscriptionService
 from app.modules.subscription.schemas.subscription_schemas import (
-    OrderCreate, 
-    CreatePaymentResponse, 
-    UserRankResponse, 
+    OrderCreate,
+    CreatePaymentResponse,
+    UserRankResponse,
     PayOSWebhookRequest,
     OrderListResponse,
-    CountCompletedOrdersResponse
+    CountCompletedOrdersResponse,
 )
 from app.core.base_model import APIResponse
 from app.exceptions.handlers import handle_exceptions
@@ -28,7 +36,7 @@ from urllib.parse import urlencode
 
 # Create router with prefix and tags
 route = APIRouter(
-    prefix="/subscription", 
+    prefix="/subscription",
     tags=["Subscription"],  # Use the JWT bearer security
 )
 
@@ -45,16 +53,22 @@ route = APIRouter(
 async def get_orders_paginated(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get paginated orders (admin only), including user info"""
     total = db.query(Order).count()
-    orders = db.query(Order).order_by(Order.created_at.desc()).offset((page-1)*page_size).limit(page_size).all()
+    orders = (
+        db.query(Order)
+        .order_by(Order.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
     result = []
     for order in orders:
         order_data = order.__dict__.copy()
         user_obj = db.query(User).filter(User.id == order.user_id).first()
-        order_data['user'] = user_obj.to_dict() if user_obj else None
+        order_data["user"] = user_obj.to_dict() if user_obj else None
         result.append(order_data)
     return APIResponse(
         error_code=0,
@@ -65,12 +79,14 @@ async def get_orders_paginated(
                 "page": page,
                 "page_size": page_size,
                 "total": total,
-                "total_pages": (total + page_size - 1) // page_size
-            }
-        }
+                "total_pages": (total + page_size - 1) // page_size,
+            },
+        },
     )
+
+
 @route.get(
-    "/me/rank", 
+    "/me/rank",
     response_model=APIResponse[UserRankResponse],
     operation_id="get_user_rank",
     description="Get the current user's subscription rank",
@@ -79,22 +95,21 @@ async def get_orders_paginated(
 )
 @handle_exceptions
 async def get_user_rank(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Get the current user's subscription rank"""
     subscription_service = SubscriptionService(db)
-    user_rank = subscription_service.get_user_rank(current_user['user_id'])
-    
+    user_rank = subscription_service.get_user_rank(current_user["user_id"])
+
     return APIResponse(
         error_code=0,
         message="User rank retrieved successfully",
-        data=UserRankResponse(**user_rank)
+        data=UserRankResponse(**user_rank),
     )
 
 
 @route.post(
-    "/payment/create-link", 
+    "/payment/create-link",
     response_model=APIResponse[CreatePaymentResponse],
     operation_id="create_payment_link",
     description="Create a payment link for a subscription",
@@ -105,19 +120,18 @@ async def get_user_rank(
 async def create_payment_link(
     order_data: OrderCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Create a payment link for a subscription"""
     subscription_service = SubscriptionService(db)
     payment_link = subscription_service.create_payment_link(
-        user_id=current_user['user_id'],
-        rank_type=order_data.rank_type
+        user_id=current_user["user_id"], rank_type=order_data.rank_type
     )
-    
+
     return APIResponse(
         error_code=0,
         message="Payment link created successfully",
-        data=CreatePaymentResponse(**payment_link)
+        data=CreatePaymentResponse(**payment_link),
     )
 
 
@@ -132,13 +146,11 @@ async def create_payment_link(
         200: {
             "description": "Successful webhook processing",
             "content": {
-                "application/json": {
-                    "example": {"code": "00", "message": "Success"}
-                }
-            }
+                "application/json": {"example": {"code": "00", "message": "Success"}}
+            },
         }
     },
-    openapi_extra={"security": []}
+    openapi_extra={"security": []},
 )
 @handle_exceptions
 async def payos_webhook(
@@ -148,7 +160,7 @@ async def payos_webhook(
     cancel: str = None,
     status: str = None,
     orderCode: str = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Handle webhook notifications from PayOS via query parameters and redirect to payment page.
@@ -160,10 +172,11 @@ async def payos_webhook(
         "id": id,
         "cancel": cancel,
         "status": status,
-        "orderCode": orderCode
+        "orderCode": orderCode,
     }
     subscription_service = SubscriptionService(db)
     return subscription_service.handle_payment_webhook(webhook_data)
+
 
 # API: Get current user's orders
 @route.get(
@@ -176,27 +189,27 @@ async def payos_webhook(
 )
 @handle_exceptions
 async def get_user_orders(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Get all orders for the current user, including user info"""
     order_repo = OrderRepository(db)
-    orders = order_repo.get_user_orders(current_user['user_id'])
+    orders = order_repo.get_user_orders(current_user["user_id"])
     result = []
     for order in orders:
         order_data = order.__dict__.copy()
-        print("**"*100, type(order_data))
+        print("**" * 100, type(order_data))
         # Always query user by user_id if not loaded
         user_obj = None
         user_obj = db.query(User).filter(User.id == order.user_id).first()
-        order_data['user'] = user_obj.to_dict()
-        print("=="*10, order_data)
+        order_data["user"] = user_obj.to_dict()
+        print("==" * 10, order_data)
         result.append(order_data)
     return APIResponse(
         error_code=0,
         message="User orders retrieved successfully",
-        data={"orders": result}
+        data={"orders": result},
     )
+
 
 # API: Get all orders (admin)
 @route.get(
@@ -208,9 +221,7 @@ async def get_user_orders(
     summary="Get all subscription orders (admin)",
 )
 @handle_exceptions
-async def get_all_orders(
-    db: Session = Depends(get_db)
-):
+async def get_all_orders(db: Session = Depends(get_db)):
     """Get all orders (admin only), including user info"""
     orders = db.query(Order).all()
     result = []
@@ -219,12 +230,12 @@ async def get_all_orders(
         # Always query user by user_id if not loaded
         user_obj = None
         user_obj = db.query(User).filter(User.id == order.user_id).first()
-        order_data['user'] = user_obj.to_dict()
+        order_data["user"] = user_obj.to_dict()
         result.append(order_data)
     return APIResponse(
         error_code=0,
         message="All orders retrieved successfully",
-        data={"orders": result}
+        data={"orders": result},
     )
 
 
@@ -238,23 +249,25 @@ async def get_all_orders(
 )
 @handle_exceptions
 async def count_completed_orders(
-    filters_json: str | None = Query(None, description='JSON string of filters'),
-    include_user_filter: bool = Query(False, description='Whether to filter orders for current user only'),
+    filters_json: str | None = Query(None, description="JSON string of filters"),
+    include_user_filter: bool = Query(
+        False, description="Whether to filter orders for current user only"
+    ),
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """
     Count total number of completed orders with optional filtering
 
     Supports filtering using a JSON string of filters with field, operator, and value.
     By default, counts all completed orders (admin view).
-    
+
     Example with structured filters:
     GET /subscription/orders/count/completed?filters_json=[{"field":"rank_type","operator":"eq","value":"pro"}]
-    
+
     Available operators:
     - eq: Equal
-    - ne: Not equal  
+    - ne: Not equal
     - lt: Less than
     - lte: Less than or equal
     - gt: Greater than
@@ -278,16 +291,16 @@ async def count_completed_orders(
         except Exception:
             filters = []
 
-    filter_params = {'filters': filters} if filters else {}
-    
+    filter_params = {"filters": filters} if filters else {}
+
     # Get user_id if include_user_filter is True
-    user_id = current_user.get('user_id') if include_user_filter else None
-    
+    user_id = current_user.get("user_id") if include_user_filter else None
+
     order_repo = OrderRepository(db)
     total_count = order_repo.count_completed_orders(user_id, filter_params)
-    
+
     return APIResponse(
         error_code=0,
-        message=_('operation_successful'),
+        message=_("operation_successful"),
         data=CountCompletedOrdersResponse(total_count=total_count),
     )
