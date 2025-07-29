@@ -47,7 +47,7 @@ export default function LoginModal({
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
       // Verify origin for security
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.wc504.io.vn/api/v1';
       const allowedOrigins = [new URL(apiBaseUrl).origin, window.location.origin];
 
       if (!allowedOrigins.includes(event.origin) && event.origin !== '*') {
@@ -140,7 +140,7 @@ export default function LoginModal({
       setIsLoading(true);
       dispatch(loginStart());
 
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.wc504.io.vn/api/v1';
       const googleLoginUrl = `${apiBaseUrl}/auth/google/login`;
 
       // Show loading message
